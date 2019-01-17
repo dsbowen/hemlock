@@ -1,1 +1,1 @@
-web: gunicorn hello-world:app
+web: gunicorn heroku_test:app
