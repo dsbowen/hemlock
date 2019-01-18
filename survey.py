@@ -1,7 +1,12 @@
+from hemlock.models.branch import Branch
+from hemlock.models.page import Page
 from hemlock.models.question import Question
 
 def start():
-    return True
-    
+	b = Branch()
+	p = Page(branch=b)
+	q = Question(page=p, text='hello world')
+	return b
+	
 def end():
-    return True
+	return 'thank you!'
