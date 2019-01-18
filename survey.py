@@ -1,3 +1,7 @@
 from hemlock.models.question import Question
 
-q = Question(text='Hello Moon')
+def start():
+    return True
+    
+def end():
+    return True

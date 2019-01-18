@@ -1,5 +1,4 @@
 from hemlock import app, db
-
 from hemlock.models.question import Question
 
 @app.shell_context_processor
