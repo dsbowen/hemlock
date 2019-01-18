@@ -1,5 +1,6 @@
-from hemlock import app
+from hemlock import app, db
+import survey
 
 @app.route('/')
 def index():
-	return "Hello World"
+    return survey.q.text
