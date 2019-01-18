@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block questions %}
+	{% if end_message %}
+		{{ end_message }}
+	{% else %}
+		<form action='' method='post' novalidate>
+		{{ page }}
+		</form>
+	{% endif %}
+{% endblock %}
