@@ -23,9 +23,3 @@ def download():
     output.headers['Content-Disposition'] = 'attachment; filename=data.csv'
     output.headers['Context-type'] = 'text/csv'
     return output
-    # with open('test.csv', 'w') as test_file:
-        # x = csv.writer(test_file, delimiter=' ', quotechar='|', quoting = csv.QUOTE_MINIMAL)
-        # x.writerow(['hello world'])
-        # return Response(test_file, mimetype='text/csv')
-        # return send_file(test_file, mimetype='text/csv', attachment_filename='test.csv', as_attachment=True)
-    # return data
