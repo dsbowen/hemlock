@@ -6,6 +6,7 @@ def start():
 	b = Branch()
 	p = Page(branch=b)
 	q = Question(page=p, text='hello world')
+	q = Question(page=p, qtype='free', text="what's your name?")
 	return b
 	
 def end():
