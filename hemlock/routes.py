@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, session, request, Markup, make_response
+from flask import render_template, redirect, url_for, session, request, Markup, make_response, request
 from hemlock import app, db
 from hemlock.models.participant import Participant
 from hemlock.models.branch import Branch
@@ -25,6 +25,9 @@ def index():
 def survey():
     part = Participant.query.get(session['part_id'])
     
+    if request.method == 'POST':
+        return 'hello world'
+    
     branch = part.get_branch()
     if branch is None:
         return render_template('page.html', end_message=Markup(Survey.end()))
@@ -34,6 +37,7 @@ def survey():
         return terminate_branch(part, branch)
         
     db.session.commit()
+    # session['page_id'] = page.id
     return render_template('page.html', page=Markup(page.render()))
     
 def terminate_branch(part, branch):
