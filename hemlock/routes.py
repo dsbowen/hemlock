@@ -26,6 +26,9 @@ def survey():
     part = Participant.query.get(session['part_id'])
     
     if request.method == 'POST':
+        # validate
+        # reload page if invalid
+        # if valid, record responses and continue
         return redirect(url_for('survey'))
     
     branch = part.get_branch()
@@ -51,6 +54,7 @@ def terminate_branch(part, branch):
 	
 @app.route('/download')
 def download():
+    # figure out how to download cleaned data
 	data = Question.query.get(1).text
 	
 	si = io.StringIO()
