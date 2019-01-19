@@ -26,7 +26,7 @@ def survey():
     part = Participant.query.get(session['part_id'])
     
     if request.method == 'POST':
-        return 'hello world'
+        return redirect(url_for('survey'))
     
     branch = part.get_branch()
     if branch is None:
