@@ -3,6 +3,7 @@ from hemlock import app, db
 from hemlock.models.participant import Participant
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
+from hemlock.models.question import Question
 import io
 import csv
 
@@ -27,10 +28,12 @@ def index():
 def survey():
     part = Participant.query.get(session['part_id'])
     page = part.get_page()
+        
     if page.validate_on_submit():
         part.advance_page()
         db.session.commit()
         return redirect(url_for('survey'))
+        
     return render_template('page.html', page=Markup(page.render()))
     
 @app.route('/download')

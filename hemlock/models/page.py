@@ -10,7 +10,7 @@ def hidden_tag():
 
 class Page(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    participant = db.relationship('Participant', backref='curr_page', lazy='dynamic')
+    part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     questions = db.relationship('Question', backref='page', lazy='dynamic')
     valid = db.Column(db.Boolean, default=False)
@@ -31,7 +31,8 @@ class Page(db.Model):
         return rendered_html
         
     def validate_on_submit(self):
-        for question in self.questions:
-            question.data = request.form.get(str(question.id))
-            # ADD QUESTION VALIDATION HERE
+        if request.method == 'POST':    
+            for question in self.questions:
+                question.set_data(request.form.get(str(question.id)))
+                # ADD QUESTION VALIDATION HERE
         return request.method == 'POST'
