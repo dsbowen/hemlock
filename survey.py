@@ -10,6 +10,7 @@ def Start():
     b.set_args(q2.id)
     q2.assign_page(p)
     q1.assign_page(p)
+    q2.assign_page(p)
     p = Page(branch=b)
     q = Question(page=p, text='hello moon')
     return b

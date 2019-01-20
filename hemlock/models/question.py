@@ -1,4 +1,5 @@
 from hemlock import db
+# from hemlock.models.page import Page
 
 def render_text(q):
     return q.text
@@ -10,21 +11,32 @@ def render_free(q):
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     qtype = db.Column(db.String(16))
     text = db.Column(db.Text)
     default = db.Column(db.Text)
-    page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     data = db.Column(db.Text)
+    order = db.Column(db.Integer)
     
-    def __init__(self, qtype='text', page=None, text='', default='', data=None):
+    def __init__(self, page=None, qtype='text', text='', default='', data=None, order=None):
         self.set_qtype(qtype)
-        self.assign_page(page)
+        self.assign_page(page, order)
         self.set_text(text)
         self.set_default(default)
         self.set_data(data)
+        self.set_order(order)
         db.session.add(self)
         db.session.commit()
     
+    # remove from previous page
+    # assign to new page
+    # assign new order
+    def assign_page(self, page, order=None):
+        if self.page:
+            self.page.remove_question(self)
+        self.page = page
+        self.set_order(order)
+        
     def set_qtype(self, qtype):
         self.qtype = qtype
     
@@ -37,8 +49,10 @@ class Question(db.Model):
     def set_data(self, data):
         self.data = data
         
-    def assign_page(self, page):
-        self.page = page
+    def set_order(self, order=None):
+        if order is None and self.page:
+            order = len(self.page.questions.all()) - 1
+        self.order = order
         
     def render(self):
         rendered_html = '<p>\n'

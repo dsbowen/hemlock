@@ -27,10 +27,16 @@ class Page(db.Model):
         
     def set_terminal(self, terminal=True):
         self.terminal = terminal
+        
+    def remove_question(self, question):
+        self.questions.remove(question)
+        questions = self.questions.order_by('order')
+        for i in range(len(self.questions.all())):
+            questions[0].set_order(i)
     
     def render(self):
         rendered_html = hidden_tag()
-        for question in self.questions:
+        for question in self.questions.order_by('order'):
             rendered_html += question.render()
         if not self.terminal:
             rendered_html += "<p align=right><input type='submit' name='submit' value='>>'></p>"
