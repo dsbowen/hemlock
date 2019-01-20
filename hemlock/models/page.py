@@ -20,9 +20,6 @@ class Page(db.Model):
         
     def set_terminal(self, terminal=True):
         self.terminal = terminal
-        
-    def validate_on_submit(self):
-        return self.valid
     
     def render(self):
         rendered_html = hidden_tag()
@@ -31,3 +28,6 @@ class Page(db.Model):
         if not self.terminal:
             rendered_html += "<p align=right><input type='submit' name='submit' value='>>'></p>"
         return rendered_html
+        
+    def validate_on_submit(self):
+        return True
