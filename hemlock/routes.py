@@ -6,6 +6,8 @@ from hemlock.models.page import Page
 import io
 import csv
 
+from survey import Start #
+
 @app.route('/')
 def index():
     db.create_all()
@@ -15,7 +17,7 @@ def index():
     db.session.commit()
     session['part_id'] = part.id
     
-    root = Branch(part=part, next='start')
+    root = Branch(part=part, next=Start)
     part.advance_page()
     db.session.commit()
     
@@ -30,12 +32,6 @@ def survey():
         db.session.commit()
         return redirect(url_for('survey'))
     return render_template('page.html', page=Markup(page.render()))
-    
-    # if request.method == 'POST':
-        # validate
-        # reload page if invalid
-        # if valid, record responses and continue
-        # return redirect(url_for('survey'))
     
 @app.route('/download')
 def download():

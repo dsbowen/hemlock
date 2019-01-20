@@ -1,7 +1,7 @@
 from hemlock import db
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
-import survey
+# import survey
 
 class Participant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,5 +26,5 @@ class Participant(db.Model):
         next = branch.get_next()
         self.branch_stack.remove(branch)
         if next is not None:
-            new_branch = getattr(survey, next)()
+            new_branch = next()
             new_branch.part = self
