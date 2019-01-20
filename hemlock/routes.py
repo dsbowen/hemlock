@@ -32,6 +32,9 @@ def survey():
         db.session.commit()
         return redirect(url_for('survey'))
         
+    if page.terminal:
+        part.store_data()
+        
     return render_template('page.html', page=Markup(page.render()))
     
 @app.route('/download')

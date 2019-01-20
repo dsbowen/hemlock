@@ -46,7 +46,7 @@ class Page(db.Model):
     def render(self):
         rendered_html = hidden_tag()
         for question in self.questions.order_by('order'):
-            rendered_html += question.render()
+            rendered_html += question.render(self.part)
         if not self.terminal:
             rendered_html += "<p align=right><input type='submit' name='submit' value='>>'></p>"
         return rendered_html

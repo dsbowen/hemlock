@@ -11,16 +11,21 @@ def render_free(q):
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     qtype = db.Column(db.String(16))
+    var = db.Column(db.Text)
     text = db.Column(db.Text)
     default = db.Column(db.Text)
     data = db.Column(db.Text)
     order = db.Column(db.Integer)
     
-    def __init__(self, page=None, order=None, qtype='text', text='', default='', data=None):
+    def __init__(self, page=None, order=None, var=None, qtype='text', text='', default='',
+        data=None):
+        
         self.set_qtype(qtype)
         self.assign_page(page, order)
+        self.set_var(var)
         self.set_text(text)
         self.set_default(default)
         self.set_data(data)
@@ -41,6 +46,9 @@ class Question(db.Model):
             order = len(self.page.questions.all()) - 1
         self.order = order
         
+    def set_var(self, var):
+        self.var = var
+        
     def set_qtype(self, qtype):
         self.qtype = qtype
     
@@ -53,7 +61,10 @@ class Question(db.Model):
     def set_data(self, data):
         self.data = data
         
-    def render(self):
+    def render(self, part):
+        self.part = part
+        db.session.commit()
+        
         rendered_html = '<p>\n'
         if self.qtype == 'text':
             rendered_html += render_text(self)
