@@ -15,15 +15,24 @@ class Page(db.Model):
     questions = db.relationship('Question', backref='page', lazy='dynamic')
     valid = db.Column(db.Boolean, default=False)
     terminal = db.Column(db.Boolean, default=False)
+    order = db.Column(db.Integer)
     
-    def __init__(self, branch=None, terminal=False):
-        self.assign_branch(branch)
+    def __init__(self, branch=None, order=None, terminal=False):
+        self.assign_branch(branch, order)
         self.set_terminal(terminal)
         db.session.add(self)
         db.session.commit()
     
-    def assign_branch(self, branch):
+    def assign_branch(self, branch, order=None):
+        if self.branch:
+            self.branch.remove_page(self)
         self.branch = branch
+        self.set_order(order)
+        
+    def set_order(self, order=None):
+        if order is None and self.branch:
+            order = len(self.branch.page_queue.all()) - 1
+        self.order = order
         
     def set_terminal(self, terminal=True):
         self.terminal = terminal
@@ -32,7 +41,7 @@ class Page(db.Model):
         self.questions.remove(question)
         questions = self.questions.order_by('order')
         for i in range(len(self.questions.all())):
-            questions[0].set_order(i)
+            questions[i].set_order(i)
     
     def render(self):
         rendered_html = hidden_tag()

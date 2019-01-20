@@ -17,8 +17,8 @@ class Branch(db.Model):
     def dequeue(self):
         if not self.page_queue.all():
             return None
-        page = self.page_queue[0]
-        self.page_queue.remove(page)
+        page = self.page_queue.order_by('order').first()
+        self.remove_page(page)
         return page
         
     def set_next(self, next):
@@ -33,3 +33,9 @@ class Branch(db.Model):
                 return self.next(self.args)
             return self.next()
         return None
+        
+    def remove_page(self, page):
+        self.page_queue.remove(page)
+        pages = self.page_queue.order_by('order')
+        for i in range(len(self.page_queue.all())):
+            pages[i].set_order(i)

@@ -4,15 +4,13 @@ from hemlock.models.question import Question
 
 def Start():
     b = Branch(next=End)
-    p = Page(branch=b)
-    q1 = Question(text='hello world')
-    q2 = Question(qtype='free', text="what's your name?")
-    b.set_args(q2.id)
-    q2.assign_page(p)
-    q1.assign_page(p)
-    q2.assign_page(p)
+    p1 = Page(branch=b)
+    q = Question(page=p1, text='hello world')
+    q = Question(page=p1, qtype='free', text="what's your name?")
+    b.set_args(q.id)
     p = Page(branch=b)
     q = Question(page=p, text='hello moon')
+    p1.assign_branch(b)
     return b
     
 def End(name_id):
