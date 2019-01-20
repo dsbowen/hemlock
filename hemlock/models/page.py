@@ -1,3 +1,4 @@
+from flask import request
 from hemlock import db
 from hemlock.models.question import Question
 from random import choice
@@ -30,4 +31,7 @@ class Page(db.Model):
         return rendered_html
         
     def validate_on_submit(self):
-        return True
+        for question in self.questions:
+            question.data = request.form.get(str(question.id))
+            # ADD QUESTION VALIDATION HERE
+        return request.method == 'POST'
