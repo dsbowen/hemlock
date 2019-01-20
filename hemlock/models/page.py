@@ -16,6 +16,12 @@ class Page(db.Model):
     valid = db.Column(db.Boolean, default=False)
     terminal = db.Column(db.Boolean, default=False)
     
+    def __init__(self, branch=None, terminal=False):
+        self.assign_branch(branch)
+        self.set_terminal(terminal)
+        db.session.add(self)
+        db.session.commit()
+    
     def assign_branch(self, branch):
         self.branch = branch
         

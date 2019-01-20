@@ -14,8 +14,6 @@ def index():
     db.create_all()
     
     part = Participant()
-    db.session.add(part)
-    db.session.commit()
     session['part_id'] = part.id
     
     root = Branch(part=part, next=Start)

@@ -8,6 +8,12 @@ class Branch(db.Model):
     next = db.Column(db.PickleType)
     args = db.Column(db.PickleType)
     
+    def __init__(self, part=None, next=None):
+        self.part = part
+        self.set_next(next)
+        db.session.add(self)
+        db.session.commit()
+    
     def dequeue(self):
         if not self.page_queue.all():
             return None

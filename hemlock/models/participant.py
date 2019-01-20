@@ -6,6 +6,10 @@ class Participant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     branch_stack = db.relationship('Branch', backref='part', lazy='dynamic')
     curr_page = db.relationship('Page', uselist=False, backref='part')
+    
+    def __init__(self):
+        db.session.add(self)
+        db.session.commit()
         
     def get_page(self):
         return self.curr_page
