@@ -12,6 +12,7 @@ class Page(db.Model):
     participant = db.relationship('Participant', backref='curr_page', lazy='dynamic')
     branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     questions = db.relationship('Question', backref='page', lazy='dynamic')
+    valid = db.Column(db.Boolean, default=False)
     terminal = db.Column(db.Boolean, default=False)
     
     def assign_branch(self, branch):
@@ -19,6 +20,9 @@ class Page(db.Model):
         
     def set_terminal(self, terminal=True):
         self.terminal = terminal
+        
+    def validate_on_submit(self):
+        return self.valid
     
     def render(self):
         rendered_html = hidden_tag()

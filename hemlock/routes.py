@@ -16,6 +16,7 @@ def index():
     session['part_id'] = part.id
     
     root = Branch(part=part, next='start')
+    part.advance_page()
     db.session.commit()
     
     return redirect(url_for('survey'))
@@ -23,9 +24,11 @@ def index():
 @app.route('/survey', methods=['GET', 'POST'])
 def survey():
     part = Participant.query.get(session['part_id'])
-    part.advance_page()
     page = part.get_page()
-    db.session.commit()
+    if page.validate_on_submit():
+        part.advance_page()
+        db.session.commit()
+        return redirect(url_for('survey'))
     return render_template('page.html', page=Markup(page.render()))
     
     # if request.method == 'POST':
