@@ -4,6 +4,7 @@
 # last modified 01/21/2019
 ###############################################################################
 
+from datetime import datetime
 from hemlock import db
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
@@ -25,9 +26,16 @@ class Participant(db.Model):
     num_rows = db.Column(db.Integer, default=0)
     
     # Add participant to database and commit on initialization
+    # also initialize participant id and start time questions
     def __init__(self):
         db.session.add(self)
         db.session.commit()
+        id = Question(var='id', data=self.id, all_rows=True)
+        id.part = self
+        start = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
+        start.part = self
+        # ADD IP ADDRESS, LOCATION, ETC, HERE
+        # ALSO HAVE SEPARATE IP ADDRESS TABLE
         
     # Return current page
     def get_page(self):
@@ -58,10 +66,13 @@ class Participant(db.Model):
             new_branch.part = self
             
     # Store participant data
+    # add end time variable
     # processes data from each question the participant answered
     # pads variables so they are all of equal length
     # clears branches, pages, and questions from database
     def store_data(self):
+        end = Question(var='end_time', data=datetime.utcnow(), all_rows=True)
+        end.part = self
         for question in self.questions:
             if question.var:
                 self.process_question(question)
