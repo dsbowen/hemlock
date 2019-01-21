@@ -42,13 +42,14 @@ class Participant(db.Model):
             if question.var:
                 self.process_question(question)
         self.clear_memory()
+        var = Variable.query.filter_by(part_id=self.id, name='name').first()
+        return str(var.data)
         
     def process_question(self, question):
         var = Variable.query.filter_by(part_id=self.id, name=question.var).first()
         if not var:
             var = Variable(part=self, name=question.var)
         var.add_data(question.data)
-        return str(var.data)
         
     def clear_memory(self):
         for branch in Branch.query.filter_by(part_id=self.id).all():
