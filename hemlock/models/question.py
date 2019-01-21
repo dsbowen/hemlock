@@ -19,9 +19,10 @@ class Question(db.Model):
     default = db.Column(db.Text)
     data = db.Column(db.Text)
     order = db.Column(db.Integer)
+    all_rows = db.Column(db.Boolean)
     
     def __init__(self, page=None, order=None, var=None, qtype='text', text='', default='',
-        data=None):
+        data=None, all_rows=False):
         
         self.set_qtype(qtype)
         self.assign_page(page, order)
@@ -29,6 +30,7 @@ class Question(db.Model):
         self.set_text(text)
         self.set_default(default)
         self.set_data(data)
+        self.set_all_rows(all_rows)
         db.session.add(self)
         db.session.commit()
     
@@ -60,6 +62,9 @@ class Question(db.Model):
         
     def set_data(self, data):
         self.data = data
+        
+    def set_all_rows(self, all_rows):
+        self.all_rows = all_rows
         
     def render(self, part):
         self.part = part

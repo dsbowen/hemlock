@@ -4,6 +4,7 @@ from hemlock.models.participant import Participant
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 from hemlock.models.question import Question
+from hemlock.models.variable import Variable
 import io
 import csv
 
@@ -33,18 +34,29 @@ def survey():
         return redirect(url_for('survey'))
         
     if page.terminal:
-        return part.store_data()
+        part.store_data()
         
     return render_template('page.html', page=Markup(page.render()))
     
 @app.route('/download')
 def download():
-    # figure out how to download cleaned data
-    data = Question.query.get(1).text
+    column = {}
+    num_rows = 0
+    
+    participants = Participant.query.all()
+    for part in participants:
+        vars = Variable.query.filter_by(part_id=part.id).all()
+        for var in vars:
+            if var.name not in column:
+                column[var.name] = [''] * num_rows
+            column[var.name] += var.data
+        num_rows += part.num_rows
     
     si = io.StringIO()
     cw = csv.writer(si)
-    cw.writerow([data])
+    cw.writerow(column.keys())
+    export_data = zip(*list(column.values()))
+    cw.writerows(export_data)
     output = make_response(si.getvalue())
     output.headers['Content-Disposition'] = 'attachment; filename=data.csv'
     output.headers['Context-type'] = 'text/csv'

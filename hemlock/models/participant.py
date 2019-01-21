@@ -1,3 +1,4 @@
+from sqlalchemy import desc
 from hemlock import db
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
@@ -10,6 +11,7 @@ class Participant(db.Model):
     curr_page = db.relationship('Page', uselist=False, backref='part')
     questions = db.relationship('Question', backref='part', lazy='dynamic')
     variables = db.relationship('Variable', backref='part', lazy='dynamic')
+    num_rows = db.Column(db.Integer, default=0)
     
     def __init__(self):
         db.session.add(self)
@@ -41,14 +43,14 @@ class Participant(db.Model):
         for question in self.questions:
             if question.var:
                 self.process_question(question)
+        for var in self.variables:
+            var.pad(self.num_rows)
         self.clear_memory()
-        var = Variable.query.filter_by(part_id=self.id, name='name').first()
-        return str(var.data)
         
     def process_question(self, question):
         var = Variable.query.filter_by(part_id=self.id, name=question.var).first()
         if not var:
-            var = Variable(part=self, name=question.var)
+            var = Variable(part=self, name=question.var, all_rows=question.all_rows)
         var.add_data(question.data)
         
     def clear_memory(self):
