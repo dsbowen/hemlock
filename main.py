@@ -1,3 +1,9 @@
+###############################################################################
+# Main file for Hemlock surveys
+# by Dillon Bowen
+# last modified 01/21/2019
+###############################################################################
+
 from hemlock import app, db
 from hemlock.models.participant import Participant
 from hemlock.models.branch import Branch

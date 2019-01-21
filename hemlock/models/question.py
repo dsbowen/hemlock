@@ -1,14 +1,32 @@
-from hemlock import db
-# from hemlock.models.page import Page
+###############################################################################
+# Question model
+# by Dillon Bowen
+# last modified 01/21/2019
+###############################################################################
 
+from hemlock import db
+
+# Renders question text in html format
 def render_text(q):
     return q.text
     
+# Renders free response question in html format
 def render_free(q):
     html = render_text(q) + '\n<br>\n'
     html += "<input name='" + str(q.id) + "' type='text' value='" + q.default + "'>\n"
     return html
 
+# Data:
+# ID of participant to whom the question belongs
+# ID of the page to which the question belongs
+# Question type (qtype)
+# Variable in which the question data will be stored
+# Text
+# Default answer
+# Data
+# Order in which question appears on page
+# All_rows indicator
+#   i.e. the question data will appear in all of its participant's rows
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
@@ -21,6 +39,7 @@ class Question(db.Model):
     order = db.Column(db.Integer)
     all_rows = db.Column(db.Boolean)
     
+    # Adds question to database and commits on initialization
     def __init__(self, page=None, order=None, var=None, qtype='text', text='', default='',
         data=None, all_rows=False):
         
@@ -34,38 +53,50 @@ class Question(db.Model):
         db.session.add(self)
         db.session.commit()
     
-    # remove from old page
-    # assign to new page
-    # assign new order
+    # Assign to page
+    # removes question from old page (if any)
+    # assigns question to new page
+    # adds itself to the new page question list (default at end)
     def assign_page(self, page, order=None):
         if self.page:
             self.page.remove_question(self)
         self.page = page
         self.set_order(order)
         
+    # Set the order in which the question appears in its page
+    # appears at the end of the page by default
     def set_order(self, order=None):
         if order is None and self.page:
             order = len(self.page.questions.all()) - 1
         self.order = order
         
+    # Set the variable in which question data will be stored
     def set_var(self, var):
         self.var = var
         
+    # Set question type (default text only)
     def set_qtype(self, qtype):
         self.qtype = qtype
     
+    # Set text
     def set_text(self, text):
         self.text = text
-        
+    
+    # Set default answer
     def set_default(self, default):
         self.default = default
         
+    # Set the data
     def set_data(self, data):
         self.data = data
         
+    # Set the all_rows indicator
+    # i.e. the question data will appear in all of its participant's rows
     def set_all_rows(self, all_rows):
         self.all_rows = all_rows
         
+    # Render the question in html
+    # assign to participant upon rendering
     def render(self, part):
         self.part = part
         db.session.commit()

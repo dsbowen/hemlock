@@ -1,10 +1,21 @@
-from sqlalchemy import desc
+###############################################################################
+# Participant model
+# by Dillon Bowen
+# last modified 01/21/2019
+###############################################################################
+
 from hemlock import db
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 from hemlock.models.question import Question
 from hemlock.models.variable import Variable
 
+# Data:
+# Stack of Branches
+# Current Page
+# List of Questions
+# List of Variables
+# Number of rows contributed to dataset
 class Participant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     branch_stack = db.relationship('Branch', backref='part', lazy='dynamic')
@@ -13,13 +24,20 @@ class Participant(db.Model):
     variables = db.relationship('Variable', backref='part', lazy='dynamic')
     num_rows = db.Column(db.Integer, default=0)
     
+    # Add participant to database and commit on initialization
     def __init__(self):
         db.session.add(self)
         db.session.commit()
         
+    # Return current page
     def get_page(self):
         return self.curr_page
         
+    # Advance to next page
+    # inspects branch at top of stack
+    # removes next page from the branch's page queue
+    # terminates branch if page queue is empty
+    # updates current page
     def advance_page(self):
         if not self.branch_stack.all():
             return False
@@ -31,14 +49,18 @@ class Participant(db.Model):
         self.curr_page = page
         return True
         
+    # Terminate a branch
+    # if current branch points to next branch, add next branch to branch stack
     def terminate_branch(self, branch):
         new_branch = branch.get_next()
         self.branch_stack.remove(branch)
-        db.session.delete(branch)
-        db.session.commit()
         if new_branch is not None:
             new_branch.part = self
             
+    # Store participant data
+    # processes data from each question the participant answered
+    # pads variables so they are all of equal length
+    # clears branches, pages, and questions from database
     def store_data(self):
         for question in self.questions:
             if question.var:
@@ -47,12 +69,16 @@ class Participant(db.Model):
             var.pad(self.num_rows)
         self.clear_memory()
         
+    # Process question data
+    # if question belongs to a new variable, create a new variable
+    # add question data to variable
     def process_question(self, question):
         var = Variable.query.filter_by(part_id=self.id, name=question.var).first()
         if not var:
             var = Variable(part=self, name=question.var, all_rows=question.all_rows)
         var.add_data(question.data)
         
+    # Clear branches, pages, and questions from database
     def clear_memory(self):
         for branch in Branch.query.filter_by(part_id=self.id).all():
             db.session.delete(branch)

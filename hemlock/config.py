@@ -1,3 +1,9 @@
+###############################################################################
+# Configuration file for Hemlock survey append
+# by Dillon Bowen
+# last modified 01/21/2019
+###############################################################################
+
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 

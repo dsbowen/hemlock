@@ -1,3 +1,9 @@
+###############################################################################
+# Example Hemlock survey
+# by Dillon Bowen
+# last modified 01/21/2019
+###############################################################################
+
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 from hemlock.models.question import Question

@@ -1,11 +1,13 @@
+<!--
+Page template
+by Dillon Bowen
+last modified 01/21/2019
+-->
+
 {% extends 'base.html' %}
 
 {% block questions %}
-	{% if end_message %}
-		{{ end_message }}
-	{% else %}
-		<form action='' method='post' novalidate>
-		{{ page }}
-		</form>
-	{% endif %}
+	<form action='' method='post' novalidate>
+	{{ page }}
+	</form>
 {% endblock %}
