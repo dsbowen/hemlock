@@ -13,7 +13,7 @@ def Start():
     
     p = Page(branch=b)
     q = Question(page=p, text='Welcome to Hemlock!')
-    q = Question(page=p, text="Let's start with a some simple free response questions.")
+    q = Question(page=p, text="Let's start with some simple free response questions.")
     
     p = Page(branch=b)
     first = Question(page=p, var='first_name', qtype='free', all_rows=True)

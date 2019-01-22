@@ -30,6 +30,7 @@ class Participant(db.Model):
     def __init__(self):
         db.session.add(self)
         db.session.commit()
+        
         id = Question(var='id', data=self.id, all_rows=True)
         id.part = self
         start = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
