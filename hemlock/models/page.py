@@ -30,11 +30,14 @@ class Page(db.Model):
     valid = db.Column(db.Boolean, default=False)
     terminal = db.Column(db.Boolean, default=False)
     order = db.Column(db.Integer)
+    next = db.Column(db.PickleType)
+    args = db.Column(db.PickleType)
     
     # Add to database and commit upon initialization
-    def __init__(self, branch=None, order=None, terminal=False):
+    def __init__(self, branch=None, order=None, terminal=False, next=None, args=None):
         self.assign_branch(branch, order)
         self.set_terminal(terminal)
+        self.set_next(next, args)
         db.session.add(self)
         db.session.commit()
     
@@ -57,6 +60,24 @@ class Page(db.Model):
     # Indicates whether the page is terminal
     def set_terminal(self, terminal=True):
         self.terminal = terminal
+        
+    # Sets the next navigation function and arguments (optional)
+    def set_next(self, next, args=None):
+        self.next = next
+        if args is not None:
+            self.set_args(args)
+            
+    # Sets the arguments for the next navigation function
+    def set_args(self, args):
+        self.args = args
+        
+    # Return the next branch by calling the next navigation function
+    def get_next(self):
+        if self.next:
+            if self.args:
+                return self.next(self.args)
+            return self.next()
+        return None
         
     # Remove a question from page
     # reset order remaining pages

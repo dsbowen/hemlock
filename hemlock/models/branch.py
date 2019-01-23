@@ -20,9 +20,9 @@ class Branch(db.Model):
     args = db.Column(db.PickleType)
     
     # Add branch to database and commit upon initialization
-    def __init__(self, part=None, next=None):
+    def __init__(self, part=None, next=None, args=None):
         self.part = part
-        self.set_next(next)
+        self.set_next(next, args)
         db.session.add(self)
         db.session.commit()
     
@@ -35,8 +35,10 @@ class Branch(db.Model):
         return page
         
     # Set a pointer to the next navigation function
-    def set_next(self, next):
+    def set_next(self, next, args=None):
         self.next = next
+        if args is not None:
+            self.set_args(args)
         
     # Set the arguments for the next navigation function
     def set_args(self, args):
