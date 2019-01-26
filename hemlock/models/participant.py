@@ -34,8 +34,13 @@ class Participant(db.Model):
         
         id = Question(var='id', data=self.id, all_rows=True)
         id.part = self
-        ip = Question(var='ip_address', data=request.remote_addr, all_rows=True)
-        ip.part = self
+        ip = request.environ.get('HTTP_X_FORWARDED_FOR', None)
+        if ip is None:
+            ip = request.remote_addr
+        else:
+            ip = ip.split(',')[0]
+        ip_var = Question(var='ip', data=ip, all_rows=True)
+        
         start = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
         start.part = self
         # self.end = Question(var='end_time', all_rows=True)
