@@ -104,6 +104,9 @@ class Question(db.Model):
         self.part = part
         db.session.commit()
         
+        if self.qtype == 'embedded':
+            return ''
+        
         rendered_html = '<p>\n'
         if self.qtype == 'text':
             rendered_html += render_text(self)

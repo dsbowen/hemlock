@@ -27,7 +27,7 @@ class Participant(db.Model):
     
     # Add participant to database and commit on initialization
     # also initialize participant id and start time questions
-    def __init__(self):
+    def __init__(self): 
         db.session.add(self)
         db.session.commit()
         
@@ -35,8 +35,8 @@ class Participant(db.Model):
         id.part = self
         start = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
         start.part = self
-        end = Question(var='end_time', all_rows=True)
-        end.part = self
+        # self.end = Question(var='end_time', all_rows=True)
+        # self.end.part = self
         # ADD IP ADDRESS, LOCATION, ETC, HERE
         # ALSO HAVE SEPARATE IP ADDRESS TABLE
         
@@ -73,8 +73,8 @@ class Participant(db.Model):
     # pads variables so they are all of equal length
     # clears branches, pages, and questions from database
     def store_data(self):
-        end = Question.query.filter_by(part_id=self.id, var='end_time').first()
-        end.set_data(datetime.utcnow())
+        # end = Question.query.filter_by(part_id=self.id, var='end_time').first()
+        # self.end.set_data(datetime.utcnow())
         for question in self.questions:
             if question.var:
                 self.process_question(question)

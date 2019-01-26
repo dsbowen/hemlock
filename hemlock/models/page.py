@@ -100,6 +100,7 @@ class Page(db.Model):
     def validate_on_submit(self):
         if request.method == 'POST':    
             for question in self.questions:
-                question.set_data(request.form.get(str(question.id)))
+                if question.qtype != 'embedded':
+                    question.set_data(request.form.get(str(question.id)))
                 # ADD QUESTION VALIDATION HERE
         return request.method == 'POST'

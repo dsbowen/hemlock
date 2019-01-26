@@ -48,6 +48,7 @@ def survey():
         return redirect(url_for('survey'))
         
     if page.terminal:
+        db.session.commit()
         part.store_data()
         
     return render_template('page.html', page=Markup(page.render()))
