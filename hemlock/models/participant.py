@@ -34,12 +34,8 @@ class Participant(db.Model):
         
         id = Question(var='id', data=self.id, all_rows=True)
         id.part = self
-        ip = request.environ.get('HTTP_X_FORWARDED_FOR', None)
-        if ip is None:
-            ip = request.remote_addr
-        else:
-            ip = ip.split(',')[0]
-        ip_var = Question(var='ip', data=ip, all_rows=True)
+        
+        self.get_ip()
         
         start = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
         start.part = self
@@ -98,6 +94,16 @@ class Participant(db.Model):
         if not var:
             var = Variable(part=self, name=question.var, all_rows=question.all_rows)
         var.add_data(question.data)
+        
+    # Stores the participant IP address
+    def get_ip(self):
+        ip = request.environ.get('HTTP_X_FORWARDED_FOR', None)
+        if ip is None:
+            ip = request.remote_addr
+        else:
+            ip = ip.split(',')[0]
+        ip_var = Question(var='ip_address', data=ip, all_rows=True)
+        ip_var.part = self
         
     # Clear branches, pages, and questions from database
     def clear_memory(self):
