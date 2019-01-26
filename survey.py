@@ -19,6 +19,8 @@ def Start():
     q = Question(page=p, var='choice', qtype='single choice', text='single choice')
     q.add_choice('A', -1)
     q.add_choice('B', 1)
+    q.add_choice('C')
+    q.set_randomize()
     
     b.set_args(q.id)
     

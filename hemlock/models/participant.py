@@ -10,6 +10,7 @@ from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 from hemlock.models.question import Question
 from hemlock.models.variable import Variable
+from flask import request
 
 # Data:
 # Stack of Branches
@@ -33,6 +34,8 @@ class Participant(db.Model):
         
         id = Question(var='id', data=self.id, all_rows=True)
         id.part = self
+        ip = Question(var='ip_address', data=request.remote_addr, all_rows=True)
+        ip.part = self
         start = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
         start.part = self
         # self.end = Question(var='end_time', all_rows=True)

@@ -6,6 +6,7 @@
 
 from hemlock import db
 from hemlock.models.choice import Choice
+from random import shuffle
 
 # Renders question text in html format
 def render_text(q):
@@ -20,8 +21,11 @@ def render_free(q):
     
 # Renders single choice question in html format
 def render_single_choice(q):
+    choices = q.choices.order_by('order').all()
+    if q.randomize:
+        shuffle(choices)
     html = ''
-    for choice in q.choices:
+    for choice in choices:
         html += '\n<div>\n'
         html += "<input name='" + str(q.id) + "'"
         html += "type='radio'"
@@ -51,20 +55,23 @@ class Question(db.Model):
     qtype = db.Column(db.String(16))
     var = db.Column(db.Text)
     text = db.Column(db.Text)
+    randomize = db.Column(db.Boolean)
     default = db.Column(db.Text)
     data = db.Column(db.Text)
     order = db.Column(db.Integer)
     all_rows = db.Column(db.Boolean)
     
     # Adds question to database and commits on initialization
-    def __init__(self, branch=None, page=None, order=None, var=None, qtype='text', text='', default='',
-        data=None, all_rows=False):
+    def __init__(self, branch=None, page=None, order=None, var=None, 
+        qtype='text', text='', randomize=False, default='', data=None, 
+        all_rows=False):
         
         self.set_qtype(qtype)
         self.branch = branch
         self.assign_page(page, order)
         self.set_var(var)
         self.set_text(text)
+        self.set_randomize(randomize)
         self.set_default(default)
         self.set_data(data)
         self.set_all_rows(all_rows)
@@ -100,9 +107,13 @@ class Question(db.Model):
     def set_text(self, text):
         self.text = text
         
+    # Set randomization
+    def set_randomize(self, randomize=True):
+        self.randomize = randomize
+        
     # Add choice
-    def add_choice(self, text='', value=None):
-        choice = Choice(question=self, text=text, value=value)
+    def add_choice(self, text='', value=None, order=None):
+        choice = Choice(question=self, text=text, value=value, order=order)
     
     # Set default answer
     def set_default(self, default):
