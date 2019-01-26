@@ -15,8 +15,11 @@ def Start():
     q = Question(branch=b, var='condition', data='treatment', all_rows=True)
     
     p = Page(branch=b, terminal=True)
-    e = Question(page=p, var='test_var', qtype='embedded', data='testing', all_rows=True)
+    e = Question(page=p, var='test_var', qtype='embedded', data='hey there')
     q = Question(page=p, text='hello world')
+    
+    p = Page(branch=b, terminal=True)
+    q = Question(page=p, text='last page')
     
     return b
 

@@ -48,7 +48,7 @@ def survey():
         return redirect(url_for('survey'))
         
     if page.terminal:
-        db.session.commit()
+        page.render() # might change this when I record partial responses
         part.store_data()
         
     return render_template('page.html', page=Markup(page.render()))
