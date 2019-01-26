@@ -9,10 +9,19 @@ from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 from hemlock.models.question import Question
 
-def Start():
-    # e = Embedded(var='condition', data='control')
+# def Start():
+    # b = Branch()
+    
+    # q = Question(branch=b, var='condition', data='treatment', all_rows=True)
+    # p = Page(branch=b, terminal=True)
+    # q = Question(page=p, text='hello world')
+    
+    # return b
 
+def Start():
     b = Branch(next=Thanks)
+    
+    condition = Question(branch=b, var='condition', data='control', all_rows=True)
     
     p = Page(branch=b)
     q = Question(page=p, text='Welcome to Hemlock!')
@@ -40,10 +49,10 @@ def Thanks(name_ids):
     q = Question(page=p, text='Thanks for taking this survey, '+name['first'].data+' '+name['last'].data+'!')
     q = Question(page=p, text="Let's continue to some more simple free response questions.")
     
-    # p = Page(branch=b)
-    # q = Question(page=p, text="Alright, now, what are your three favorite flavors of ice cream?")
-    # for i in range(3):
-        # ice_cream(p, i+1)
+    p = Page(branch=b)
+    q = Question(page=p, text="Alright, now, what are your three favorite flavors of ice cream?")
+    for i in range(3):
+        ice_cream(p, i+1)
     
     return b
     
@@ -62,9 +71,9 @@ def FirstEst():
 def SecondEst(first_est_id):
     b = Branch()
     
-    # p = Page(branch=b)
-    # first_est = query(first_est_id).data
-    # q = Question(page=p, text='Your first estimate was '+str(first_est))
-    # q = Question(page=p, var='second_est', qtype='free', text='Please make your second estimate.')
+    p = Page(branch=b)
+    first_est = query(first_est_id).data
+    q = Question(page=p, text='Your first estimate was '+str(first_est))
+    q = Question(page=p, var='second_est', qtype='free', text='Please make your second estimate.')
     
     return b

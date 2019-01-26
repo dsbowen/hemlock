@@ -18,6 +18,7 @@ def render_free(q):
 
 # Data:
 # ID of participant to whom the question belongs
+# ID of the branch to which the question belongs (for embedded data only)
 # ID of the page to which the question belongs
 # Question type (qtype)
 # Variable in which the question data will be stored
@@ -30,6 +31,7 @@ def render_free(q):
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
+    branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     qtype = db.Column(db.String(16))
     var = db.Column(db.Text)
@@ -40,10 +42,11 @@ class Question(db.Model):
     all_rows = db.Column(db.Boolean)
     
     # Adds question to database and commits on initialization
-    def __init__(self, page=None, order=None, var=None, qtype='text', text='', default='',
+    def __init__(self, branch=None, page=None, order=None, var=None, qtype='text', text='', default='',
         data=None, all_rows=False):
         
         self.set_qtype(qtype)
+        self.branch = branch
         self.assign_page(page, order)
         self.set_var(var)
         self.set_text(text)

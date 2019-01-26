@@ -6,16 +6,20 @@
 
 from hemlock import db
 from hemlock.models.page import Page
+from hemlock.models.question import Question
+from hemlock.models.get_next import get_next
 
 # Data:
 # ID of participant to whom the branch belongs
 # Queue of pages to render
+# Set of embedded data questions
 # Next: pointer to the next navigation function
 # Arguments for the next navigation function
 class Branch(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     page_queue = db.relationship('Page', backref='branch', lazy='dynamic')
+    embedded = db.relationship('Question', backref='branch', lazy='dynamic')
     next = db.Column(db.PickleType)
     args = db.Column(db.PickleType)
     
@@ -46,11 +50,7 @@ class Branch(db.Model):
         
     # Return the next branch by calling the next navigation function
     def get_next(self):
-        if self.next:
-            if self.args:
-                return self.next(self.args)
-            return self.next()
-        return None
+        return get_next(self.next, self.args, self.part)
         
     # Remove a page from the page queue
     # reset order for remaining pages

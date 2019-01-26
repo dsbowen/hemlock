@@ -7,6 +7,7 @@
 from flask import request
 from hemlock import db
 from hemlock.models.question import Question
+from hemlock.models.get_next import get_next
 from random import choice
 from string import ascii_letters, digits
 
@@ -73,11 +74,7 @@ class Page(db.Model):
         
     # Return the next branch by calling the next navigation function
     def get_next(self):
-        if self.next:
-            if self.args:
-                return self.next(self.args)
-            return self.next()
-        return None
+        return get_next(self.next, self.args, self.part)
         
     # Remove a question from page
     # reset order remaining pages
