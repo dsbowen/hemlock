@@ -33,7 +33,7 @@ def greeting(name_id):
     q.add_choice('pretty awesome')
     q.add_choice('super awesome')
     q.add_choice('super duper awesome')
-    q.set_randomize()
+    # q.set_randomize()
     
     b.set_args(q.id)
     
