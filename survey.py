@@ -10,16 +10,26 @@ from hemlock.models.page import Page
 from hemlock.models.question import Question
 
 def Start():
-    b = Branch()
+    b = Branch(next=second)
     
     q = Question(branch=b, var='condition', data='treatment', all_rows=True)
     
-    p = Page(branch=b, terminal=True)
-    e = Question(page=p, var='test_var', qtype='embedded', data='hey there')
-    q = Question(page=p, text='hello world')
+    p = Page(branch=b)
+    q = Question(page=p, var='free', qtype='free', text='free')
+    q = Question(page=p, var='choice', qtype='single choice', text='single choice')
+    q.add_choice('A', -1)
+    q.add_choice('B', 1)
     
+    b.set_args(q.id)
+    
+    return b
+    
+def second(qid):
+    b = Branch()
+    
+    choice = query(qid).data
     p = Page(branch=b, terminal=True)
-    q = Question(page=p, text='last page')
+    q = Question(page=p, text=choice)
     
     return b
 

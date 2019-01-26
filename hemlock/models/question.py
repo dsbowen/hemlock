@@ -5,15 +5,29 @@
 ###############################################################################
 
 from hemlock import db
+from hemlock.models.choice import Choice
 
 # Renders question text in html format
 def render_text(q):
-    return q.text
+    return '<div>\n' + q.text + '\n<br></br>\n</div>\n'
     
 # Renders free response question in html format
 def render_free(q):
-    html = render_text(q) + '\n<br>\n'
-    html += "<input name='" + str(q.id) + "' type='text' value='" + q.default + "'>\n"
+    html = '\n<div>\n    '
+    html += "<input name='" + str(q.id) + "' type='text' value='" + q.default + "'>"
+    html += "\n</div>\n"
+    return html
+    
+# Renders single choice question in html format
+def render_single_choice(q):
+    html = ''
+    for choice in q.choices:
+        html += '\n<div>\n'
+        html += "<input name='" + str(q.id) + "'"
+        html += "type='radio'"
+        html += "value='" + str(choice.value) + "'>"
+        html += choice.text
+        html += '\n</div>\n'
     return html
 
 # Data:
@@ -33,6 +47,7 @@ class Question(db.Model):
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+    choices = db.relationship('Choice', backref='question', lazy='dynamic')
     qtype = db.Column(db.String(16))
     var = db.Column(db.Text)
     text = db.Column(db.Text)
@@ -84,6 +99,10 @@ class Question(db.Model):
     # Set text
     def set_text(self, text):
         self.text = text
+        
+    # Add choice
+    def add_choice(self, text='', value=None):
+        choice = Choice(question=self, text=text, value=value)
     
     # Set default answer
     def set_default(self, default):
@@ -107,9 +126,9 @@ class Question(db.Model):
         if self.qtype == 'embedded':
             return ''
         
-        rendered_html = '<p>\n'
-        if self.qtype == 'text':
-            rendered_html += render_text(self)
+        rendered_html = '\n<p>\n' + render_text(self)
         if self.qtype == 'free':
             rendered_html += render_free(self)
-        return rendered_html + '\n</p>\n'
+        if self.qtype == 'single choice':
+            rendered_html += render_single_choice(self)
+        return rendered_html + '</p>\n'
