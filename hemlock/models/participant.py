@@ -44,6 +44,11 @@ class Participant(db.Model):
     def get_page(self):
         return self.curr_page
         
+    # Advance forward one page
+    # if current page branches off, push that branch
+    # inspect the branch on top of the stack
+    # dequeue the first page in that branch's queue
+    # if there are no more pages in the queue, terminate the branch and advance
     def advance_page(self):
         if self.curr_page is not None and self.curr_page.next is not None:
             new_branch = self.curr_page.get_next()
@@ -53,22 +58,6 @@ class Participant(db.Model):
         if self.curr_page is None:
             self.terminate_branch(branch)
             return self.advance_page()
-        
-    # Advance to next page
-    # inspects branch at top of stack
-    # removes next page from the branch's page queue
-    # terminates branch if page queue is empty
-    # updates current page
-    # def advance_page(self):
-        # if not self.branch_stack.all():
-            # return False
-        # branch = self.branch_stack[-1]
-        # page = branch.dequeue()
-        # if page is None:
-            # self.terminate_branch(branch)
-            # return self.advance_page()
-        # self.curr_page = page
-        # return True
         
     # Terminate a branch
     # if current branch points to next branch, add next branch to branch stack
