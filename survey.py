@@ -10,28 +10,42 @@ from hemlock.models.page import Page
 from hemlock.models.question import Question
 
 def Start():
-    b = Branch(next=second)
-    
-    q = Question(branch=b, var='condition', data='treatment', all_rows=True)
+    b = Branch(next=greeting)
     
     p = Page(branch=b)
-    q = Question(page=p, var='free', qtype='free', text='free')
-    q = Question(page=p, var='choice', qtype='single choice', text='single choice')
-    q.add_choice('A', -1)
-    q.add_choice('B', 1)
-    q.add_choice('C')
+    q = Question(page=p, text='Halt! Who goes there?', qtype='free', var='name', all_rows=True)
+    b.set_args(q.id)
+    
+    return b
+    
+def greeting(name_id):
+    name = query(name_id).data
+    
+    b = Branch(next=goodbye)
+    
+    p = Page(branch=b)
+    q = Question(page=p, text='Oh, hey '+name+'!')
+    
+    p = Page(branch=b)
+    q = Question(page=p, text='So I figured out how to program multiple choice questions today :)')
+    q = Question(page=p, var='awesome', qtype='single choice')
+    q.set_text('How awesome is that?')
+    q.add_choice('pretty awesome')
+    q.add_choice('super awesome')
+    q.add_choice('super duper awesome')
     q.set_randomize()
     
     b.set_args(q.id)
     
     return b
     
-def second(qid):
-    b = Branch()
+def goodbye(awesome_id):
+    awesome = str(query(awesome_id).data)
     
-    choice = query(qid).data
+    b = Branch()
     p = Page(branch=b, terminal=True)
-    q = Question(page=p, text=choice)
+    q = Question(page=p, text='Indeed, it is '+awesome+", isn't it?")
+    q = Question(page=p, text='Goodnight my dear xx')
     
     return b
 

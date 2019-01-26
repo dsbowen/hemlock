@@ -81,10 +81,16 @@ def get_data():
     for part in participants:
         vars = Variable.query.filter_by(part_id=part.id).all()
         for var in vars:
-            # Pad variable values if variable has not been seen before
+            # Pad variable values if not seen before
             if var.name not in data:
                 data[var.name] = [''] * num_rows
             data[var.name] += var.data
         num_rows += part.num_rows
+        # THERE IS A WAY TO DO THIS CUTTING DOWN TIME BY A FACTOR OF 2, IF THAT MATTERS
+        # STORE VAR NAMES FROM PARTICIPANT AND ONLY PAD THE ONES THE PARTICIPANT HASN'T CONTRIBUTED TO
+        # Pad all variables
+        for key in data.keys():
+            data[key] += [''] * (num_rows - len(data[key]))
+            
     return data
     
