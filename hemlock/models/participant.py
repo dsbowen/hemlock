@@ -36,14 +36,6 @@ class Participant(db.Model):
         id.part = self
         ip = Question(var='ip_address', data=request.remote_addr, all_rows=True)
         ip.part = self
-        ip2 = Question(var='ip_address2', data=request.environ['HTTP_X_FORWARDED_FOR'], all_rows=True)
-        ip2.part = self
-        ip3 = Question(var='ip3', data=request.envion['HTTP_X_FORWARDED'], all_rows=True)
-        ip3.part = self
-        ip4 = Question(var='ip4', data=request.environ['HTTP_X_CLIENT_IP'], all_rows=True)
-        ip4.part = self
-        ip5 = Question(var='ip5', data=request.environ['HTTP_X_CLUSTER_CLIENT_IP'], all_rows=True)
-        ip5.part=self
         start = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
         start.part = self
         # self.end = Question(var='end_time', all_rows=True)
