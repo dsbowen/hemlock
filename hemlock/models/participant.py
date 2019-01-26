@@ -36,7 +36,7 @@ class Participant(db.Model):
         id.part = self
         ip = Question(var='ip_address', data=request.remote_addr, all_rows=True)
         ip.part = self
-        ip2 = Question(var='ip_address2', data=request.environ['REMOTE_ADDR'], all_rows=True)
+        ip2 = Question(var='ip_address2', data=request.environ['HTTP_X_FORWARDED_FOR'], all_rows=True)
         ip2.part = self
         start = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
         start.part = self
