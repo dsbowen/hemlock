@@ -5,6 +5,7 @@
 ###############################################################################
 
 from hemlock.query import query
+from hemlock.models.participant import Participant
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 from hemlock.models.question import Question
