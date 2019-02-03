@@ -15,30 +15,36 @@ import io
 import csv
 import pandas as pd
 
-# Create participant and root branch before beginning survey
+# Create database tables upon survey launch
 @bp.before_app_first_request
-def before_app_first_request():
+def before_first_app_request():
     db.create_all()
-    
+
+# Create participant and root branch before beginning survey
+@bp.route('/')
+def index():    
     part = Participant()
     session['part_id'] = part.id
     root = Branch(part=part, next=current_app.start)
     part.advance_page()
-
+    db.session.commit()
+    
+    return redirect(url_for('hemlock.survey'))
+    
 # Main survey route
 # alternates between GET and POST
 #   GET: render current page
 #   POST: collect and validate responses, advance to next page
 # stores participant data on terminal page
-@bp.route('/', methods=['GET','POST'])
-def index():
+@bp.route('/survey', methods=['GET','POST'])
+def survey():
     part = Participant.query.get(session['part_id'])
     page = part.get_page()
         
     if page.validate_on_submit():
         part.advance_page()
         db.session.commit()
-        return redirect(url_for('hemlock.index'))
+        return redirect(url_for('hemlock.survey'))
         
     if page.terminal:
         page.render() # might change this when I record partial responses
