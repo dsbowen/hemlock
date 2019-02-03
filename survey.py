@@ -25,7 +25,7 @@ def greeting(name_id):
     b = Branch(next=goodbye)
     
     p = Page(branch=b)
-    q = Question(page=p, text='Oh, hey '+name+'!!')
+    q = Question(page=p, text='Oh, hey {0}!!'.format(name))
     
     p = Page(branch=b)
     q = Question(page=p, text='So I figured out how to program multiple choice questions today :)')
