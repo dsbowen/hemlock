@@ -15,41 +15,37 @@ import io
 import csv
 import pandas as pd
 
-# Initial survey route
-# creates a new participant and root branch
-@bp.route('/')
-def index():
-	db.create_all()
-	
-	part = Participant()
-	session['part_id'] = part.id
-	root = Branch(part=part, next=current_app.start)
-	part.advance_page()
-	db.session.commit()
-	
-	return redirect(url_for('hemlock.survey'))
-  
+# Create participant and root branch before beginning survey
+@bp.before_app_first_request
+def before_app_first_request():
+    db.create_all()
+    
+    part = Participant()
+    session['part_id'] = part.id
+    root = Branch(part=part, next=current_app.start)
+    part.advance_page()
+
 # Main survey route
 # alternates between GET and POST
-#	GET: render current page
-#	POST: collect and validate responses, advance to next page
+#   GET: render current page
+#   POST: collect and validate responses, advance to next page
 # stores participant data on terminal page
-@bp.route('/survey', methods=['GET', 'POST'])
-def survey():
-	part = Participant.query.get(session['part_id'])
-	page = part.get_page()
-		
-	if page.validate_on_submit():
-		part.advance_page()
-		db.session.commit()
-		return redirect(url_for('hemlock.survey'))
-		
-	if page.terminal:
-		page.render() # might change this when I record partial responses
-		part.store_data()
-		
-	return render_template('page.html', page=Markup(page.render()))
-	
+@bp.route('/', methods=['GET','POST'])
+def index():
+    part = Participant.query.get(session['part_id'])
+    page = part.get_page()
+        
+    if page.validate_on_submit():
+        part.advance_page()
+        db.session.commit()
+        return redirect(url_for('hemlock.index'))
+        
+    if page.terminal:
+        page.render() # might change this when I record partial responses
+        part.store_data()
+        
+    return render_template('page.html', page=Markup(page.render()))
+    
 # Download data
 # gets data from all participants
 # writes to csv
@@ -62,4 +58,4 @@ def download():
     resp.headers['Content-Disposition'] = 'attachment; filename=data.csv'
     resp.headers['Content-Type'] = 'text/csv'
     return resp
-	
+    
