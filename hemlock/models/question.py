@@ -10,29 +10,40 @@ from random import shuffle
 
 # Renders question text in html format
 def render_text(q):
-    return '<div>\n' + q.text + '\n<br></br>\n</div>\n'
+    return '''
+        <div>
+        {0}
+        <br></br>
+        </div>'''.format(q.text)
+        
+# Renders the question body in html format
+def render_body(q):
+    if q.qtype == 'text':
+        return ''
+    if q.qtype == 'free':
+        return render_free(q)
+    if q.qtype == 'single choice':
+        return render_single_choice(q)
     
 # Renders free response question in html format
 def render_free(q):
-    html = '\n<div>\n    '
-    html += "<input name='" + str(q.id) + "' type='text' value='" + q.default + "'>"
-    html += "\n</div>\n"
-    return html
+    return '''
+        <div>
+        <input name='{0}' type='text' value='{1}'>
+        </div>
+        '''.format(q.id, q.default)
     
 # Renders single choice question in html format
 def render_single_choice(q):
     choices = q.choices.order_by('order').all()
     if q.randomize:
         shuffle(choices)
-    html = ''
-    for choice in choices:
-        html += '\n<div>\n'
-        html += "<input name='" + str(q.id) + "'"
-        html += "type='radio'"
-        html += "value='" + str(choice.value) + "'>"
-        html += choice.text
-        html += '\n</div>\n'
-    return html
+    choice_html = ['''
+        <div>
+        <input name='{0}' type='radio' value='{1}'>{2}
+        </div>
+        '''.format(q.id, c.value, c.text) for c in choices]
+    return ''.join(choice_html)
 
 # Data:
 # ID of participant to whom the question belongs
@@ -136,10 +147,9 @@ class Question(db.Model):
         
         if self.qtype == 'embedded':
             return ''
-        
-        rendered_html = '\n<p>\n' + render_text(self)
-        if self.qtype == 'free':
-            rendered_html += render_free(self)
-        if self.qtype == 'single choice':
-            rendered_html += render_single_choice(self)
-        return rendered_html + '</p>\n'
+            
+        return '''
+        <p>
+            {0}
+            {1}
+        </p>'''.format(render_text(self), render_body(self))

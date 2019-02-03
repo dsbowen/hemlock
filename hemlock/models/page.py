@@ -14,7 +14,15 @@ from string import ascii_letters, digits
 # Create a hidden tag for form (for security purposes)
 def hidden_tag():
     tag = ''.join([choice(ascii_letters + digits) for i in range(90)])
-    return "<input name='crsf_token' type='hidden' value='" + tag + "'>"
+    return "<input name='crsf_token' type='hidden' value='{0}'>".format(tag)
+    
+# Submit button
+def submit(page):
+    if page.terminal:
+        return ''
+    return '''
+        <p align=right><input type='submit' name='submit' value='>>'></p>
+        '''
 
 # Data:
 # ID of participant to whom the page belongs
@@ -81,26 +89,18 @@ class Page(db.Model):
     def remove_question(self, question):
         self.questions.remove(question)
         questions = self.questions.order_by('order')
-        for i in range(len(self.questions.all())):
-            questions[i].set_order(i)
+        [questions[i].set_order(i) for i in range(len(self.questions.all()))]
     
     # Render the html code for the form specified on this page
-    # adds a hidden tag
-    # renders html for each question
-    # adds a submit button for non-terminal pages
+    # renders html for each question in Qhtml
+    # adds a hidden tag and submit button
     def render(self):
-        rendered_html = hidden_tag()
-        for question in self.questions.order_by('order'):
-            rendered_html += question.render(self.part)
-        if not self.terminal:
-            rendered_html += "<p align=right><input type='submit' name='submit' value='>>'></p>"
-        return rendered_html
+        Qhtml = [q.render(self.part) for q in self.questions.order_by('order')]
+        return ''.join([hidden_tag()]+Qhtml+[submit(self)])
         
     # Checks if questions have valid answers upon page submission
     def validate_on_submit(self):
-        if request.method == 'POST':    
-            for question in self.questions:
-                if question.qtype != 'embedded':
-                    question.set_data(request.form.get(str(question.id)))
-                # ADD QUESTION VALIDATION HERE
+        [q.set_data(request.form.get(str(q.id))) for q in self.questions
+            if request.method=='POST' and q.qtype != 'embedded']
+        # ADD QUESTION VALIDATION HERE
         return request.method == 'POST'

@@ -45,7 +45,7 @@ def goodbye(awesome_id):
     
     b = Branch()
     p = Page(branch=b, terminal=True)
-    q = Question(page=p, text='Indeed, it is '+awesome+", isn't it?")
+    q = Question(page=p, text="Indeed, it is {0}, isn't it?".format(awesome))
     q = Question(page=p, text='Goodnight my dear xx')
     
     return b

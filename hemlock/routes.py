@@ -35,7 +35,6 @@ def index():
 # stores participant data on terminal page
 @bp.route('/survey', methods=['GET', 'POST'])
 def survey():
-	print("here2")
 	part = Participant.query.get(session['part_id'])
 	page = part.get_page()
 		

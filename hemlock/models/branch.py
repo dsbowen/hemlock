@@ -57,5 +57,4 @@ class Branch(db.Model):
     def remove_page(self, page):
         self.page_queue.remove(page)
         pages = self.page_queue.order_by('order')
-        for i in range(len(self.page_queue.all())):
-            pages[i].set_order(i)
+        [pages[i].set_order(i) for i in range(len(self.page_queue.all()))]

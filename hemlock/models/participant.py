@@ -79,11 +79,8 @@ class Participant(db.Model):
     def store_data(self):
         # end = Question.query.filter_by(part_id=self.id, var='end_time').first()
         # self.end.set_data(datetime.utcnow())
-        for question in self.questions:
-            if question.var:
-                self.process_question(question)
-        for var in self.variables:
-            var.pad(self.num_rows)
+        [self.process_question(q) for q in self.questions if q.var]
+        [var.pad for var in self.variables]
         self.clear_memory()
         
     # Process question data
@@ -107,12 +104,9 @@ class Participant(db.Model):
         
     # Clear branches, pages, and questions from database
     def clear_memory(self):
-        for branch in Branch.query.filter_by(part_id=self.id).all():
-            db.session.delete(branch)
-        for page in Page.query.filter_by(part_id=self.id).all():
-            if page != self.curr_page:
-                db.session.delete(page)
-        for question in Question.query.filter_by(part_id=self.id).all():
-            if question not in self.curr_page.questions:
-                db.session.delete(question)
+        [db.session.delete(b) for b in Branch.query.filter_by(part_id=self.id).all()]
+        [db.session.delete(p) for p in Page.query.filter_by(part_id=self.id).all()
+            if p != self.curr_page]
+        [db.session.delete(q) for q in Question.query.filter_by(part_id=self.id).all() 
+            if q not in self.curr_page.questions]
         db.session.commit()
