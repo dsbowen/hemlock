@@ -6,15 +6,25 @@
 
 from hemlock import db
 from hemlock.models.choice import Choice
+from hemlock.models.validator import Validator
 from random import shuffle
+
+# Renders errors from previous submit
+def render_errors(q):
+    error_html = ['''
+        <div style='color: #ff0000;'>
+        {0}
+        </div>
+        '''.format(error)
+        for error in q.errors]
+    return ''.join(error_html)
 
 # Renders question text in html format
 def render_text(q):
     return '''
-        <div>
         {0}
         <br></br>
-        </div>'''.format(q.text)
+        '''.format(q.text)
         
 # Renders the question body in html format
 def render_body(q):
@@ -28,9 +38,7 @@ def render_body(q):
 # Renders free response question in html format
 def render_free(q):
     return '''
-        <div>
         <input name='{0}' type='text' value='{1}'>
-        </div>
         '''.format(q.id, q.default)
     
 # Renders single choice question in html format
@@ -39,9 +47,8 @@ def render_single_choice(q):
     if q.randomize:
         shuffle(choices)
     choice_html = ['''
-        <div>
         <input name='{0}' type='radio' value='{1}'>{2}
-        </div>
+        <br></br>
         '''.format(q.id, c.value, c.text) for c in choices]
     return ''.join(choice_html)
 
@@ -63,6 +70,7 @@ class Question(db.Model):
     branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     choices = db.relationship('Choice', backref='question', lazy='dynamic')
+    validators = db.relationship('Validator', backref='question', lazy='dynamic')
     qtype = db.Column(db.String(16))
     var = db.Column(db.Text)
     text = db.Column(db.Text)
@@ -70,6 +78,7 @@ class Question(db.Model):
     default = db.Column(db.Text)
     data = db.Column(db.Text)
     order = db.Column(db.Integer)
+    errors = db.Column(db.PickleType, default=[])
     all_rows = db.Column(db.Boolean)
     
     # Adds question to database and commits on initialization
@@ -125,6 +134,10 @@ class Question(db.Model):
     # Add choice
     def add_choice(self, text='', value=None, order=None):
         choice = Choice(question=self, text=text, value=value, order=order)
+        
+    # Add validation
+    def add_validation(self, condition, message=None):
+        validation = Validator(question=self, condition=condition, message=message)
     
     # Set default answer
     def set_default(self, default):
@@ -152,4 +165,11 @@ class Question(db.Model):
         <p>
             {0}
             {1}
-        </p>'''.format(render_text(self), render_body(self))
+            {2}
+        </p>
+        '''.format(render_errors(self), render_text(self), render_body(self))
+        
+    # Validate an answer
+    def validate(self):
+        self.errors = [v.message for v in self.validators if not v.validate()]
+        return not self.errors

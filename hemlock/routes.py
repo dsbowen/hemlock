@@ -59,7 +59,7 @@ def survey():
 @bp.route('/download')
 def download():
     data = pd.concat([pd.DataFrame(p.data) for p in Participant.query.all()],
-        sort=False)
+        sort=False) 
     resp = make_response(data.to_csv())
     resp.headers['Content-Disposition'] = 'attachment; filename=data.csv'
     resp.headers['Content-Type'] = 'text/csv'

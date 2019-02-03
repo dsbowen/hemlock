@@ -10,52 +10,104 @@ from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 from hemlock.models.question import Question
 
+def not_empty(question):
+    return bool(question.data)
+
 def Start():
     b = Branch(next=greeting)
     
     p = Page(branch=b)
-    q = Question(page=p, text='Halt! Who goes there?', qtype='free', var='name', all_rows=True)
+    q = Question(page=p, text='''
+        <p>So... I didn't get around to making the back button :(</p>
+        <p>I thought it would be a good idea to be able to validate question responses first.</p>''')
+    
+    p = Page(branch=b)
+    q = Question(page=p, text='(Try leaving this question blank)')
+    q = Question(page=p, var='name', qtype='free', text="Hey there, what's your name??")
+    q.add_validation(not_empty, "I ASKED YOU A QUESTION!!!")
+    
     b.set_args(q.id)
     
     return b
+    
+def love_you(question):
+    return question.data is None or int(question.data)
     
 def greeting(name_id):
     name = query(name_id).data
     
-    b = Branch(next=goodbye)
+    b = Branch()
     
     p = Page(branch=b)
-    q = Question(page=p, text='Oh, hey {0}!!'.format(name))
+    q = Question(page=p, text="Oh, hey {0}! You have such a pretty name. I don't know if I ever told you that before.".format(name))
     
-    p = Page(branch=b)
-    q = Question(page=p, text='So I figured out how to program multiple choice questions today :)')
-    q = Question(page=p, var='awesome', qtype='single choice')
-    q.set_text('How awesome is that?')
-    q.add_choice('pretty awesome')
-    q.add_choice('super awesome')
-    q.add_choice('super duper awesome')
+    q = Question(page=p, var='love_you', qtype='single choice')
+    q.set_text("Do you know how much I love you? (Try clicking 'not very much' or leaving it blank)")
+    q.add_choice(text='mmm, not very much...', value=0)
+    q.add_choice(text='a whole hell of a lot', value=1)
+    q.add_validation(not_empty, "Oh no, please give me an answer!")
+    q.add_validation(love_you, "I'm sorry, your answer was incorrect. Please try again.")
+    
+    p = Page(branch=b, terminal=True)
+    q = Question(page=p, text="Goodnight my dear. I adore you xx")
+    
+    return b
+
+# def Start():
+    # b = Branch(next=greeting)
+    
+    # p = Page(branch=b)
+    # q = Question(page=p, text='Halt! Who goes there?', qtype='free', var='name', all_rows=True)
+    # b.set_args(q.id)
+    
+    # return b
+    
+# def integer(n):
+    # return n.isdigit()
+    
+# def g(n):
+    # if not n.isdigit():
+        # return True
+    # return int(n)>2
+    
+# def empty(d):
+    # return d is not None
+    
+# def greeting(name_id):
+    # name = query(name_id).data
+    
+    # b = Branch(next=goodbye)
+    
+    # p = Page(branch=b)
+    # q = Question(page=p, text='Oh, hey {0}!!'.format(name))
+    
+    # p = Page(branch=b)
+    # q = Question(page=p, text='So I figured out how to program multiple choice questions today :)')
+    # q = Question(page=p, var='awesome', qtype='single choice')
+    # q.set_text('How awesome is that?')
+    # q.add_choice('pretty awesome')
+    # q.add_choice('super awesome')
+    # q.add_choice('super duper awesome')
+    # q.add_validation(condition=empty, message='ANSWER THE QUESTION!!')
     # q.set_randomize()
     
-    b.set_args(q.id)
+    # b.set_args(q.id)
     
-    q = Question(page=p, text='And I figured out how to use dataframes!')
-    q = Question(page=p, var='awesome', qtype='single choice')
-    q.set_text('Pretty sweet, right?')
-    q.add_choice('hell yeah!')
-    q.add_choice('nah, not really')
-    q.set_randomize()
+    # q = Question(page=p, var='integer', qtype='free', text="What's your favorite integer greater than 2?")
+    # q.add_validation(condition=integer, message='I said an INTEGER!')
+    # q.add_validation(condition=g, message='I said GREATER THAN 2!')
     
-    return b
+    # return b
     
-def goodbye(awesome_id):
-    awesome = str(query(awesome_id).data)
+# def goodbye(awesome_id):
+    # awesome = str(query(awesome_id).data)
     
-    b = Branch()
-    p = Page(branch=b, terminal=True)
-    q = Question(page=p, text="Indeed, it is {0}, isn't it?".format(awesome))
-    q = Question(page=p, text='Goodnight my dear xx')
+    # b = Branch()
+    # p = Page(branch=b, terminal=True)
+    # q = Question(page=p, text="Indeed, it is {0}, isn't it?".format(awesome))
+    # q = Question(page=p, text='Goodnight my dear xx')
     
-    return b
+    # return b
 
 ##This is the first navigation function
 # def Start():
