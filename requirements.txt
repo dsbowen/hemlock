@@ -2,3 +2,4 @@ flask
 flask-sqlalchemy
 gunicorn
 psycopg2
+pandas

@@ -38,6 +38,13 @@ def greeting(name_id):
     
     b.set_args(q.id)
     
+    q = Question(page=p, text='And I figured out how to use dataframes!')
+    q = Question(page=p, var='awesome', qtype='single choice')
+    q.set_text('Pretty sweet, right?')
+    q.add_choice('hell yeah!')
+    q.add_choice('nah, not really')
+    q.set_randomize()
+    
     return b
     
 def goodbye(awesome_id):

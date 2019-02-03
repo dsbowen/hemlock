@@ -13,6 +13,7 @@ from hemlock.models.question import Question
 from hemlock.models.variable import Variable
 import io
 import csv
+import pandas as pd
 
 # Initial survey route
 # creates a new participant and root branch
@@ -55,38 +56,10 @@ def survey():
 # outputs csv
 @bp.route('/download')
 def download():
-	data = get_data()
-
-	si = io.StringIO()
-	cw = csv.writer(si)
-	cw.writerow(data.keys())
-	export_data = zip(*list(data.values()))
-	cw.writerows(export_data)
-	output = make_response(si.getvalue())
-	output.headers['Content-Disposition'] = 'attachment; filename=data.csv'
-	output.headers['Context-type'] = 'text/csv'
-	return output
-	
-# Get data
-# Creates a dictionary where key=variable name, value=[data]
-def get_data():
-	data = {}
-	num_rows = 0
-	
-	participants = Participant.query.all()
-	for part in participants:
-		vars = Variable.query.filter_by(part_id=part.id).all()
-		for var in vars:
-			# Pad variable values if not seen before
-			if var.name not in data:
-				data[var.name] = [''] * num_rows
-			data[var.name] += var.data
-		num_rows += part.num_rows
-		# THERE IS A WAY TO DO THIS CUTTING DOWN TIME BY A FACTOR OF 2, IF THAT MATTERS
-		# STORE VAR NAMES FROM PARTICIPANT AND ONLY PAD THE ONES THE PARTICIPANT HASN'T CONTRIBUTED TO
-		# Pad all variables
-		for key in data.keys():
-			data[key] += [''] * (num_rows - len(data[key]))
-			
-	return data
+    data = pd.concat([pd.DataFrame(p.data) for p in Participant.query.all()],
+        sort=False)
+    resp = make_response(data.to_csv())
+    resp.headers['Content-Disposition'] = 'attachment; filename=data.csv'
+    resp.headers['Content-Type'] = 'text/csv'
+    return resp
 	

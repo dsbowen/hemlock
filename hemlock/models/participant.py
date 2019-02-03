@@ -24,6 +24,7 @@ class Participant(db.Model):
     curr_page = db.relationship('Page', uselist=False, backref='part')
     questions = db.relationship('Question', backref='part', lazy='dynamic')
     variables = db.relationship('Variable', backref='part', lazy='dynamic')
+    data = db.Column(db.PickleType, default={})
     num_rows = db.Column(db.Integer, default=0)
     
     # Add participant to database and commit on initialization
@@ -80,7 +81,8 @@ class Participant(db.Model):
         # end = Question.query.filter_by(part_id=self.id, var='end_time').first()
         # self.end.set_data(datetime.utcnow())
         [self.process_question(q) for q in self.questions if q.var]
-        [var.pad for var in self.variables]
+        [var.pad(self.num_rows) for var in self.variables]
+        self.data = {var.name:var.data for var in self.variables}
         self.clear_memory()
         
     # Process question data
