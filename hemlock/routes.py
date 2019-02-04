@@ -41,8 +41,9 @@ def survey():
     part = Participant.query.get(session['part_id'])
     page = part.get_page()
         
-    if page.validate_on_submit():
-        part.advance_page()
+    if request.method == 'POST':
+        if page.validate_on_submit():
+            part.advance_page()
         db.session.commit()
         return redirect(url_for('hemlock.survey'))
         

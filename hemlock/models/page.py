@@ -100,8 +100,6 @@ class Page(db.Model):
         
     # Checks if questions have valid answers upon page submission
     def validate_on_submit(self):
-        if not request.method == 'POST':
-            return False
         [q.set_data(request.form.get(str(q.id))) for q in self.questions
             if q.qtype != 'embedded']
         return all([q.validate() for q in self.questions])
