@@ -136,8 +136,8 @@ class Question(db.Model):
         choice = Choice(question=self, text=text, value=value, order=order)
         
     # Add validation
-    def add_validation(self, condition, message=None):
-        validation = Validator(question=self, condition=condition, message=message)
+    def add_validation(self, condition, args=None):
+        validation = Validator(question=self, condition=condition, args=args)
     
     # Set default answer
     def set_default(self, default):
@@ -171,5 +171,6 @@ class Question(db.Model):
         
     # Validate an answer
     def validate(self):
-        self.errors = [v.message for v in self.validators if not v.validate()]
+        errors = [v.get_error() for v in self.validators]
+        self.errors = [error for error in errors if error is not None]
         return not self.errors

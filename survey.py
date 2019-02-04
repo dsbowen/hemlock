@@ -10,8 +10,9 @@ from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 from hemlock.models.question import Question
 
-def not_empty(question):
-    return bool(question.data)
+def not_empty(question, message):
+    if not bool(question.data):
+        return message
 
 def Start():
     b = Branch(next=greeting)
@@ -31,7 +32,8 @@ def Start():
     return b
     
 def love_you(question):
-    return question.data is None or int(question.data)
+    if question.data is not None and not int(question.data):
+        return "I'm sorry, your answer was incorrect. Please try again."
     
 def greeting(name_id):
     name = query(name_id).data
@@ -46,7 +48,7 @@ def greeting(name_id):
     q.add_choice(text='mmm, not very much...', value=0)
     q.add_choice(text='a whole hell of a lot', value=1)
     q.add_validation(not_empty, "Oh no, please give me an answer!")
-    q.add_validation(love_you, "I'm sorry, your answer was incorrect. Please try again.")
+    q.add_validation(love_you)
     
     p = Page(branch=b, terminal=True)
     q = Question(page=p, text="Goodnight my dear. I adore you xx")
