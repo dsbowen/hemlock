@@ -8,36 +8,34 @@ from hemlock import create_app, db, query, Participant, Branch, Page, Question, 
 from config import Config
 
 def Start():
-    b = Branch(next=greeting)
-    
-    # p = Page(branch=b)
-    # q = Question(page=p, text='''
-        # <p>So... I didn't get around to making the back button :(</p>
-        # <p>I thought it would be a good idea to be able to validate question responses first.</p>''')
-    
-    # p = Page(branch=b)
-    # q = Question(page=p, text='(Try leaving this question blank)')
-    # name = Question(page=p, var='name', qtype='free', text="Hey there, what's your name??")
-    # v = Validator(question=name, condition=not_empty, args="I ASKED YOU A QUESTION!")
-    
-    # p = Page(branch=b)
-    # greet = Question(page=p, render=greeting, render_args=name.id)
-    # q = Question(page=p, var='ice_cream', qtype='single choice')
-    # q.set_text("What's your favorite flavor ice cream?")
-    # c = Choice(question=q, text='chocolate')
-    # c = Choice(question=q, text='vanilla')
-    # c = Choice(question=q, text='strawberry')
-    # v = Validator(question=q, condition=not_empty, args='Please answer the question')
-    # v = Validator(question=q, condition=not_strawberry)
+    b = Branch()
     
     p = Page(branch=b)
+    q = Question(page=p, text='(Try leaving this question blank)')
+    name = Question(page=p, var='name', qtype='free', text="Hey there, what's your name?")
+    v = Validator(question=name, condition=not_empty, args="I ASKED YOU A QUESTION!")
+    
+    p = Page(branch=b)
+    greet = Question(page=p, render=greeting, render_args=name.id)
+    q = Question(page=p, var='ice_cream', qtype='single choice')
+    q.set_text("What's your favorite flavor ice cream?")
+    c = Choice(question=q, text='chocolate')
+    c = Choice(question=q, text='vanilla')
+    c = Choice(question=q, text='strawberry')
+    v = Validator(question=q, condition=not_empty, args='Please answer the question.')
+    v = Validator(question=q, condition=not_strawberry)
+    
+    p = Page(branch=b, post=check_attn)
     attn = Question(page=p, var='attention', qtype='free', text='Please enter 99')
-    p.set_post(check_passed)
     
     p = Page(branch=b, terminal=True)
     q = Question(page=p, render=pass_fail, render_args=attn.id)
     
     return b
+    
+def greeting(q, name_id):
+    name = query(name_id).data
+    q.set_text('Hello, {0}!'.format(name))
     
 def not_empty(question, message):
     if not bool(question.data):
@@ -47,20 +45,16 @@ def not_strawberry(q):
     if q.data=='strawberry':
         return "Strawberry is objectively a terrible ice cream flavor. Try again."
     
-def greeting(q, name_id):
-    name = query(name_id).data
-    q.set_text('Hello, {0}!'.format(name))
-    
-def check_passed(p):
+def check_attn(p):
     q = p.questions[0]
     q.set_data(int(q.data=='99'))
 
 def pass_fail(q, attn_id):
     passed = query(attn_id).data
     if passed:
-        q.set_text('You passed!')
+        q.set_text('Congratulations! You passed the attention check!')
     else:
-        q.set_text('You FAILED!')
+        q.set_text('You have FAILED the attention check!')
 
 app = create_app(Config, start=Start)
 
