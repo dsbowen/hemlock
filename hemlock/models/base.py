@@ -107,10 +107,10 @@ class Base():
     # returns None if no next branch
     def get_next(self):
         if self.next:
-            if self.next_args:
-                branch = self.next(self.next_args)
-            else:
+            if self.next_args is None:
                 branch = self.next()
+            else:
+                branch = self.next(self.next_args)
             for e in branch.embedded:
                 e.part = part
             return branch

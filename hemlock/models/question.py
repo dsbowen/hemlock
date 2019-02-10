@@ -77,6 +77,7 @@ class Question(db.Model, Base):
     text = db.Column(db.Text)
     randomize = db.Column(db.Boolean)
     default = db.Column(db.Text)
+    entry = db.Column(db.Text)
     data = db.Column(db.PickleType)
     rendered = db.Column(db.Boolean)
     render_function = db.Column(db.PickleType)
@@ -124,9 +125,22 @@ class Question(db.Model, Base):
     def set_default(self, default):
         self.default = default
         
+    # Records the participant's entry
+    def record_entry(self, entry):
+        self.entry = entry
+        self.set_data(entry)
+        if self.qtype == 'single choice':
+            [c.set_selected() for c in self.choices if entry==str(c.value)]
+        
     # Set the data
     def set_data(self, data):
         self.data = data
+        
+    def get_selected(self):
+        return [c for c in self.choices if c.selected]
+        
+    def get_nonselected(self):
+        return [c for c in self.choices if not c.selected]
         
     # Render the question in html
     # assign to participant upon rendering

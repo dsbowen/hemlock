@@ -10,14 +10,16 @@ from hemlock.models.base import Base
 class Choice(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    order = db.Column(db.Integer)
     text = db.Column(db.Text)
     value = db.Column(db.PickleType)
-    order = db.Column(db.Integer)
+    selected = db.Column(db.Boolean)
     
-    def __init__(self, question=None, text='', value=None, order=None):
+    def __init__(self, question=None, order=None, text='', value=None, selected=False):
         self.assign_question(question, order)
         self.set_text(text)
         self.set_value(value)
+        self.set_selected(selected)
         db.session.add(self)
         db.session.commit()
         
@@ -26,6 +28,9 @@ class Choice(db.Model, Base):
             self.value = self.text
         else:
             self.value = value
+            
+    def set_selected(self, selected=True):
+        self.selected = selected
             
     def assign_question(self, question, order=None):
         if question is not None:
