@@ -48,10 +48,10 @@ def survey():
         return redirect(url_for('hemlock.survey'))
         
     if page.terminal:
-        page.render() # might change this when I record partial responses
+        page.render_html() # might change this when I record partial responses
         part.store_data()
         
-    return render_template('page.html', page=Markup(page.render()))
+    return render_template('page.html', page=Markup(page.render_html()))
     
 # Download data
 # gets data from all participants

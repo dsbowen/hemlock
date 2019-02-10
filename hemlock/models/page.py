@@ -7,7 +7,7 @@
 from flask import request
 from hemlock import db
 from hemlock.models.question import Question
-from hemlock.models.get_next import get_next
+from hemlock.models.base import Base
 from random import choice
 from string import ascii_letters, digits
 
@@ -31,7 +31,7 @@ def submit(page):
 # Indicator of whether form submission is valid
 # Indicator of whether this page is terminal
 # Order in which the page appears in its branch
-class Page(db.Model):
+class Page(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
@@ -40,66 +40,54 @@ class Page(db.Model):
     terminal = db.Column(db.Boolean, default=False)
     order = db.Column(db.Integer)
     next = db.Column(db.PickleType)
-    args = db.Column(db.PickleType)
+    next_args = db.Column(db.PickleType)
+    render_function = db.Column(db.PickleType)
+    render_args = db.Column(db.PickleType)
+    post_function = db.Column(db.PickleType)
+    post_args = db.Column(db.PickleType)
+    rendered = db.Column(db.Boolean, default=False)
     
     # Add to database and commit upon initialization
-    def __init__(self, branch=None, order=None, terminal=False, next=None, args=None):
+    def __init__(self, branch=None, order=None, terminal=False, next=None, next_args=None, render=None, render_args=None, post=None, post_args=None):
         self.assign_branch(branch, order)
         self.set_terminal(terminal)
-        self.set_next(next, args)
+        self.set_next(next, next_args)
+        self.set_render(render, render_args)
+        self.set_post(post, post_args)
         db.session.add(self)
         db.session.commit()
     
     # Assign to branch
-    # removes from current branch (if any)
-    # adds itself to the new branch queue (default at end of queue)
+    # page to is assigned to end of queue by default
     def assign_branch(self, branch, order=None):
-        if self.branch:
-            self.branch.remove_page(self)
-        self.branch = branch
-        self.set_order(order)
+        if branch is not None:
+            self.assign_parent('branch', branch, branch.page_queue.all(), order)
         
-    # Set the order in which the page appears in its branch
-    # appears at the end of the branch by default
-    def set_order(self, order=None):
-        if order is None and self.branch:
-            order = len(self.branch.page_queue.all()) - 1
-        self.order = order
+    # Remove from branch
+    def remove_branch(self):
+        if self.branch is not None:
+            self.remove_parent('branch', self.branch.page_queue.all())
         
     # Indicates whether the page is terminal
     def set_terminal(self, terminal=True):
         self.terminal = terminal
-        
-    # Sets the next navigation function and arguments (optional)
-    def set_next(self, next, args=None):
-        self.next = next
-        if args is not None:
-            self.set_args(args)
-            
-    # Sets the arguments for the next navigation function
-    def set_args(self, args):
-        self.args = args
-        
-    # Return the next branch by calling the next navigation function
-    def get_next(self):
-        return get_next(self.next, self.args, self.part)
-        
-    # Remove a question from page
-    # reset order remaining pages
-    def remove_question(self, question):
-        self.questions.remove(question)
-        questions = self.questions.order_by('order')
-        [questions[i].set_order(i) for i in range(len(self.questions.all()))]
     
     # Render the html code for the form specified on this page
     # renders html for each question in Qhtml
     # adds a hidden tag and submit button
-    def render(self):
-        Qhtml = [q.render(self.part) for q in self.questions.order_by('order')]
+    def render_html(self):
+        if not self.rendered:
+            self.rendered = True
+            self.call_function(self, self.render_function, self.render_args)
+        Qhtml = [q.render_html() for q in self.questions.order_by('order')]
         return ''.join([hidden_tag()]+Qhtml+[submit(self)])
         
     # Checks if questions have valid answers upon page submission
     def validate_on_submit(self):
         [q.set_data(request.form.get(str(q.id))) for q in self.questions
             if q.qtype != 'embedded']
-        return all([q.validate() for q in self.questions])
+        valid = all([q.validate(self.part) for q in self.questions])
+        self.call_function(self, self.post_function, self.post_args)
+        questions = self.questions.order_by('order')
+        [q.call_function(q, q.post_function, q.post_args) for q in questions]
+        return valid

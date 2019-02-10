@@ -1,23 +1,24 @@
 ###############################################################################
 # Question model
 # by Dillon Bowen
-# last modified 01/21/2019
+# last modified 02/10/2019
 ###############################################################################
 
 from hemlock import db
 from hemlock.models.choice import Choice
 from hemlock.models.validator import Validator
+from hemlock.models.base import Base
 from random import shuffle
 
 # Renders errors from previous submit
-def render_errors(q):
-    error_html = ['''
+def render_error(q):
+    if q.error is None:
+        return ''
+    return '''
         <div style='color: #ff0000;'>
         {0}
         </div>
-        '''.format(error)
-        for error in q.errors]
-    return ''.join(error_html)
+        '''.format(q.error)
 
 # Renders question text in html format
 def render_text(q):
@@ -64,7 +65,7 @@ def render_single_choice(q):
 # Order in which question appears on page
 # All_rows indicator
 #   i.e. the question data will appear in all of its participant's rows
-class Question(db.Model):
+class Question(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
@@ -76,15 +77,19 @@ class Question(db.Model):
     text = db.Column(db.Text)
     randomize = db.Column(db.Boolean)
     default = db.Column(db.Text)
-    data = db.Column(db.Text)
+    data = db.Column(db.PickleType)
+    rendered = db.Column(db.Boolean)
+    render_function = db.Column(db.PickleType)
+    render_args = db.Column(db.PickleType)
+    post_function = db.Column(db.PickleType)
+    post_args = db.Column(db.PickleType)
     order = db.Column(db.Integer)
-    errors = db.Column(db.PickleType, default=[])
+    error = db.Column(db.PickleType)
     all_rows = db.Column(db.Boolean)
     
     # Adds question to database and commits on initialization
     def __init__(self, branch=None, page=None, order=None, var=None, 
-        qtype='text', text='', randomize=False, default='', data=None, 
-        all_rows=False):
+        qtype='text', text='', randomize=False, default='', data=None, render=None, render_args=None, post=None, post_args=None, all_rows=False):
         
         self.set_qtype(qtype)
         self.branch = branch
@@ -94,50 +99,26 @@ class Question(db.Model):
         self.set_randomize(randomize)
         self.set_default(default)
         self.set_data(data)
+        self.set_render(render, render_args)
+        self.set_post(post, post_args)
         self.set_all_rows(all_rows)
         db.session.add(self)
         db.session.commit()
     
     # Assign to page
-    # removes question from old page (if any)
-    # assigns question to new page
-    # adds itself to the new page question list (default at end)
+    # question is assigned to end of queue by default
     def assign_page(self, page, order=None):
-        if self.page:
-            self.page.remove_question(self)
-        self.page = page
-        self.set_order(order)
+        if page is not None:
+            self.assign_parent('page', page, page.questions.all(), order)
         
-    # Set the order in which the question appears in its page
-    # appears at the end of the page by default
-    def set_order(self, order=None):
-        if order is None and self.page:
-            order = len(self.page.questions.all()) - 1
-        self.order = order
-        
-    # Set the variable in which question data will be stored
-    def set_var(self, var):
-        self.var = var
+    # Remove from page
+    def remove_page(self):
+        if self.page is not None:
+            self.remove_parent('page', self.page.questions.all())
         
     # Set question type (default text only)
     def set_qtype(self, qtype):
         self.qtype = qtype
-    
-    # Set text
-    def set_text(self, text):
-        self.text = text
-        
-    # Set randomization
-    def set_randomize(self, randomize=True):
-        self.randomize = randomize
-        
-    # Add choice
-    def add_choice(self, text='', value=None, order=None):
-        choice = Choice(question=self, text=text, value=value, order=order)
-        
-    # Add validation
-    def add_validation(self, condition, args=None):
-        validation = Validator(question=self, condition=condition, args=args)
     
     # Set default answer
     def set_default(self, default):
@@ -147,16 +128,12 @@ class Question(db.Model):
     def set_data(self, data):
         self.data = data
         
-    # Set the all_rows indicator
-    # i.e. the question data will appear in all of its participant's rows
-    def set_all_rows(self, all_rows):
-        self.all_rows = all_rows
-        
     # Render the question in html
     # assign to participant upon rendering
-    def render(self, part):
-        self.part = part
-        db.session.commit()
+    def render_html(self):
+        if not self.rendered:
+            self.rendered = True
+            self.call_function(self, self.render_function, self.render_args)
         
         if self.qtype == 'embedded':
             return ''
@@ -167,10 +144,11 @@ class Question(db.Model):
             {1}
             {2}
         </p>
-        '''.format(render_errors(self), render_text(self), render_body(self))
+        '''.format(render_error(self), render_text(self), render_body(self))
         
     # Validate an answer
-    def validate(self):
+    def validate(self, part):
+        self.assign_participant(part)
         errors = [v.get_error() for v in self.validators]
-        self.errors = [error for error in errors if error is not None]
-        return not self.errors
+        self.error = next(iter([e for e in errors if e is not None]), None)
+        return self.error is None

@@ -7,7 +7,7 @@
 from hemlock import db
 from hemlock.models.page import Page
 from hemlock.models.question import Question
-from hemlock.models.get_next import get_next
+from hemlock.models.base import Base
 
 # Data:
 # ID of participant to whom the branch belongs
@@ -15,17 +15,17 @@ from hemlock.models.get_next import get_next
 # Set of embedded data questions
 # Next: pointer to the next navigation function
 # Arguments for the next navigation function
-class Branch(db.Model):
+class Branch(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     page_queue = db.relationship('Page', backref='branch', lazy='dynamic')
     embedded = db.relationship('Question', backref='branch', lazy='dynamic')
     next = db.Column(db.PickleType)
-    args = db.Column(db.PickleType)
+    next_args = db.Column(db.PickleType)
     
     # Add branch to database and commit upon initialization
     def __init__(self, part=None, next=None, args=None):
-        self.part = part
+        self.assign_participant(part)
         self.set_next(next, args)
         db.session.add(self)
         db.session.commit()
@@ -35,26 +35,9 @@ class Branch(db.Model):
         if not self.page_queue.all():
             return None
         page = self.page_queue.order_by('order').first()
-        self.remove_page(page)
+        page.remove_branch()
         return page
         
     # Set a pointer to the next navigation function
-    def set_next(self, next, args=None):
-        self.next = next
-        if args is not None:
-            self.set_args(args)
-        
-    # Set the arguments for the next navigation function
-    def set_args(self, args):
-        self.args = args
-        
-    # Return the next branch by calling the next navigation function
-    def get_next(self):
-        return get_next(self.next, self.args, self.part)
-        
-    # Remove a page from the page queue
-    # reset order for remaining pages
-    def remove_page(self, page):
-        self.page_queue.remove(page)
-        pages = self.page_queue.order_by('order')
-        [pages[i].set_order(i) for i in range(len(self.page_queue.all()))]
+    def set_next(self, next=None, args=None):
+        self.set_function('next', next, 'next_args', args)
