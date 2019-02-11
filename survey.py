@@ -10,13 +10,13 @@ from config import Config
 def Start():
     b = Branch(next=IceCream)
     
-    p = Page(branch=b)
-    name = Question(page=p, var='name', qtype='free', all_rows=True)
-    name.set_text("Hey there, what's your name?")
-    v = Validator(question=name, condition=not_empty, args="I ASKED YOU A QUESTION!")
+    # p = Page(branch=b)
+    # name = Question(page=p, var='name', qtype='free', all_rows=True)
+    # name.set_text("Hey there, what's your name?")
+    # v = Validator(question=name, condition=not_empty, args="I ASKED YOU A QUESTION!")
     
-    p = Page(branch=b)
-    q = Question(page=p, render=greet, render_args=name.id)
+    # p = Page(branch=b)
+    # q = Question(page=p, render=greet, render_args=name.id)
     
     return b
     
@@ -32,7 +32,7 @@ def IceCream():
     b = Branch()
     
     p = Page(branch=b)
-    ice_cream = Question(page=p, var='ice_cream', qtype='single choice')
+    ice_cream = Question(page=p, var='ice_cream', qtype='single choice', randomize=True)
     ice_cream.set_text("What's your favorite ice cream?")
     c = Choice(question=ice_cream, text='chocolate')
     c = Choice(question=ice_cream, text='orange')

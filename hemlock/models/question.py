@@ -8,7 +8,6 @@ from hemlock import db
 from hemlock.models.choice import Choice
 from hemlock.models.validator import Validator
 from hemlock.models.base import Base
-from random import shuffle
 
 # Renders errors from previous submit
 def render_error(q):
@@ -44,9 +43,9 @@ def render_free(q):
     
 # Renders single choice question in html format
 def render_single_choice(q):
+    if q.randomize and not q.rendered:
+        q.randomize_children(q.choices.all())
     choices = q.choices.order_by('order').all()
-    if q.randomize:
-        shuffle(choices)
     choice_html = ['''
         <input name='{0}' type='radio' value='{1}'>{2}
         <br></br>
@@ -79,7 +78,7 @@ class Question(db.Model, Base):
     default = db.Column(db.Text)
     entry = db.Column(db.Text)
     data = db.Column(db.PickleType)
-    rendered = db.Column(db.Boolean)
+    rendered = db.Column(db.Boolean, default=False)
     render_function = db.Column(db.PickleType)
     render_args = db.Column(db.PickleType)
     post_function = db.Column(db.PickleType)
@@ -146,13 +145,12 @@ class Question(db.Model, Base):
     # assign to participant upon rendering
     def render_html(self):
         if not self.rendered:
-            self.rendered = True
             self.call_function(self, self.render_function, self.render_args)
         
         if self.qtype == 'embedded':
-            return ''
-            
-        return '''
+            html = ''
+        else:
+            html = '''
         <p>
             {0}
             {1}
@@ -160,9 +158,12 @@ class Question(db.Model, Base):
         </p>
         '''.format(render_error(self), render_text(self), render_body(self))
         
+        self.rendered = True
+        
+        return html
+        
     # Validate an answer
-    def validate(self, part):
-        self.assign_participant(part)
+    def validate(self):
         errors = [v.get_error() for v in self.validators]
         self.error = next(iter([e for e in errors if e is not None]), None)
         return self.error is None

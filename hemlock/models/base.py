@@ -5,6 +5,7 @@
 ###############################################################################
 
 from hemlock import db
+from random import shuffle
 
 # Get the next branch of the survey
 # inputs: next navigation function, arguments, participant
@@ -35,7 +36,7 @@ class Base():
             return
         if order > len(children):
             raise ValueError('Order out of range')
-        self.order = order
+        self.__set_order(order)
         children_sorted = sorted(children, key=lambda x: x.order)
         [c.increment_order() for c in children_sorted[order:]]
         
@@ -56,6 +57,9 @@ class Base():
         
     def decrement_order(self):
         self.order -= 1
+        
+    def __set_order(self, order):
+        self.order = order
         
     # Sets the next navigation function and arguments
     def set_next(self, next=None, args=None):
@@ -114,3 +118,9 @@ class Base():
             for e in branch.embedded:
                 e.part = part
             return branch
+            
+    # randomizes order of children
+    def randomize_children(self, children):
+        order = list(range(len(children)))
+        shuffle(order)
+        [c.__set_order(i) for (c,i) in zip(children, order)]

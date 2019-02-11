@@ -80,14 +80,17 @@ class Page(db.Model, Base):
             self.rendered = True
             self.call_function(self, self.render_function, self.render_args)
         Qhtml = [q.render_html() for q in self.questions.order_by('order')]
+        db.session.commit()
         return ''.join([hidden_tag()]+Qhtml+[submit(self)])
         
     # Checks if questions have valid answers upon page submission
     def validate_on_submit(self):
         [q.record_entry(request.form.get(str(q.id))) for q in self.questions
             if q.qtype != 'embedded']
-        valid = all([q.validate(self.part) for q in self.questions])
+        valid = all([q.validate() for q in self.questions])
         self.call_function(self, self.post_function, self.post_args)
         questions = self.questions.order_by('order')
         [q.call_function(q, q.post_function, q.post_args) for q in questions]
+        if valid:
+            [q.assign_participant(self.part) for q in self.questions]
         return valid
