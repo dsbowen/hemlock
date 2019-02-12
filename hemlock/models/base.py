@@ -117,10 +117,14 @@ class Base():
                 branch = self.next(self.next_args)
             for e in branch.embedded:
                 e.part = part
+            if branch.randomize:
+                branch._randomize_children(branch.page_queue.all())
             return branch
             
     # randomizes order of children
-    def randomize_children(self, children):
+    def _randomize_children(self, children):
+        if not children:
+            return
         order = list(range(len(children)))
         shuffle(order)
         [c.__set_order(i) for (c,i) in zip(children, order)]

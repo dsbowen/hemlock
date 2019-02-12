@@ -38,6 +38,7 @@ class Page(db.Model, Base):
     questions = db.relationship('Question', backref='page', lazy='dynamic')
     valid = db.Column(db.Boolean, default=False)
     terminal = db.Column(db.Boolean, default=False)
+    randomize = db.Column(db.Boolean, default=False)
     order = db.Column(db.Integer)
     next = db.Column(db.PickleType)
     next_args = db.Column(db.PickleType)
@@ -48,9 +49,10 @@ class Page(db.Model, Base):
     rendered = db.Column(db.Boolean, default=False)
     
     # Add to database and commit upon initialization
-    def __init__(self, branch=None, order=None, terminal=False, next=None, next_args=None, render=None, render_args=None, post=None, post_args=None):
+    def __init__(self, branch=None, order=None, terminal=False, randomize=False, next=None, next_args=None, render=None, render_args=None, post=None, post_args=None):
         self.assign_branch(branch, order)
         self.set_terminal(terminal)
+        self.set_randomize(randomize)
         self.set_next(next, next_args)
         self.set_render(render, render_args)
         self.set_post(post, post_args)
@@ -77,9 +79,11 @@ class Page(db.Model, Base):
     # adds a hidden tag and submit button
     def render_html(self):
         if not self.rendered:
-            self.rendered = True
             self.call_function(self, self.render_function, self.render_args)
+            if self.randomize:
+                self._randomize_children(self.questions.all())
         Qhtml = [q.render_html() for q in self.questions.order_by('order')]
+        self.rendered = True
         db.session.commit()
         return ''.join([hidden_tag()]+Qhtml+[submit(self)])
         

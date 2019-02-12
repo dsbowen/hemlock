@@ -43,8 +43,6 @@ def render_free(q):
     
 # Renders single choice question in html format
 def render_single_choice(q):
-    if q.randomize and not q.rendered:
-        q.randomize_children(q.choices.all())
     choices = q.choices.order_by('order').all()
     choice_html = ['''
         <input name='{0}' type='radio' value='{1}'>{2}
@@ -146,6 +144,8 @@ class Question(db.Model, Base):
     def render_html(self):
         if not self.rendered:
             self.call_function(self, self.render_function, self.render_args)
+            if self.randomize:
+                self._randomize_children(self.choices.all())
         
         if self.qtype == 'embedded':
             html = ''
@@ -159,7 +159,6 @@ class Question(db.Model, Base):
         '''.format(render_error(self), render_text(self), render_body(self))
         
         self.rendered = True
-        
         return html
         
     # Validate an answer

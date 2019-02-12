@@ -22,11 +22,13 @@ class Branch(db.Model, Base):
     embedded = db.relationship('Question', backref='branch', lazy='dynamic')
     next = db.Column(db.PickleType)
     next_args = db.Column(db.PickleType)
+    randomize = db.Column(db.Boolean)
     
     # Add branch to database and commit upon initialization
-    def __init__(self, part=None, next=None, args=None):
+    def __init__(self, part=None, next=None, args=None, randomize=False):
         self.assign_participant(part)
         self.set_next(next, args)
+        self.set_randomize(randomize)
         db.session.add(self)
         db.session.commit()
     
