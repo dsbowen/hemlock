@@ -25,6 +25,10 @@ class Base():
     def _set_randomize(self, randomize=True):
         self._randomize = randomize
         
+    # Set the conditions for clearing the object
+    def _set_clear_on(self, clear_on=[]):
+        self._clear_on = clear_on
+        
     # Assign an object to a participant
     def _assign_participant(self, part):
         self._part = part

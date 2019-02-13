@@ -29,18 +29,18 @@ class Branch(db.Model, Base):
     
     # Add to database and commit upon initialization
     def __init__(self, next=None, next_args=None, randomize=False):        
-        self.set_next(next, next_args)
-        self.set_randomize(randomize)
+        self.next(next, next_args)
+        self.randomize(randomize)
         
         db.session.add(self)
         db.session.commit()
         
     # Set the next navigation function and arguments
-    def set_next(self, next=None, args=None):
+    def next(self, next=None, args=None):
         self._set_function('_next_function', next, '_next_args', args)
         
     # Set page randomization on/off (True/False)
-    def set_randomize(self, randomize=True):
+    def randomize(self, randomize=True):
         self._set_randomize(randomize)
         
     # Dequeue a page

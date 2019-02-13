@@ -71,6 +71,7 @@ _post_args: arguments for the post function
 _randomize: indicator of choice randomization
 _init_default: initial default option (before first post)
 _default: participant's response from last post or initial default
+_clear_on: list of situations in which question is cleared
 _rendered: indicator that the question was previously rendered
 _error: stores an error message if response was invalid
 _entry: participant's raw data entry
@@ -96,6 +97,7 @@ class Question(db.Model, Base):
     _randomize = db.Column(db.Boolean)
     _init_default = db.Column(db.PickleType)
     _default = db.Column(db.PickleType)
+    _clear_on = db.Column(db.PickleType)
     _rendered = db.Column(db.Boolean, default=False)
     _error = db.Column(db.PickleType)
     _entry = db.Column(db.Text)
@@ -107,25 +109,26 @@ class Question(db.Model, Base):
         qtype='text', var=None, all_rows=False,
         render=None, render_args=None,
         post=None, post_args=None,
-        randomize=False, default=None, data=None):
+        randomize=False, default=None, clear_on=[], data=None):
         
-        self.set_var(var)
-        self.assign_branch(branch)
-        self.assign_page(page, order)
-        self.set_text(text)
-        self.set_qtype(qtype)
-        self.set_all_rows(all_rows)
-        self.set_render(render, render_args)
-        self.set_post(post, post_args)
-        self.set_randomize(randomize)
-        self.set_default(default)
-        self.set_data(data)
+        self.var(var)
+        self.branch(branch)
+        self.page(page, order)
+        self.text(text)
+        self.qtype(qtype)
+        self.all_rows(all_rows)
+        self.render(render, render_args)
+        self.post(post, post_args)
+        self.randomize(randomize)
+        self.default(default)
+        self.clear_on(clear_on)
+        self.data(data)
         
         db.session.add(self)
         db.session.commit()
         
     # Assign to branch
-    def assign_branch(self, branch):
+    def branch(self, branch):
         if branch is not None:
             self._assign_parent('_branch', branch, branch._embedded.all())
             if branch._part_id is not None:
@@ -138,7 +141,7 @@ class Question(db.Model, Base):
             self._remove_parent('_branch', self._branch._embedded.all())
     
     # Assign to page
-    def assign_page(self, page, order=None):
+    def page(self, page, order=None):
         if page is not None:
             self._assign_parent('_page', page, page._questions.all(), order)
             
@@ -148,43 +151,48 @@ class Question(db.Model, Base):
             self._remove_parent('_page', self._page._questions.all())
             
     # Sets the question text
-    def set_text(self, text):
+    def text(self, text):
         self._set_text(text)
         
     # Set question type
-    def set_qtype(self, qtype):
+    def qtype(self, qtype):
         self._qtype = qtype
         
     # Set the variable in which question data will be stored
-    def set_var(self, var):
+    def var(self, var):
         self._set_var(var)
         
     # Set the all_rows indicator
     # i.e. the data will appear in all of the participant's dataframe rows
-    def set_all_rows(self, all_rows=True):
+    def all_rows(self, all_rows=True):
         self._set_all_rows(all_rows)
         
     # Set the render function and arguments
-    def set_render(self, render=None, args=None):
+    def render(self, render=None, args=None):
         self._set_function('_render_function', render, '_render_args', args)
         
     # Set the post function and arguments
-    def set_post(self, post=None, args=None):
+    def post(self, post=None, args=None):
         self._set_function('_post_function', post, '_post_args', args)
         
     # Turn randomization on/off (True/False)
-    def set_randomize(self, randomize=True):
+    def randomize(self, randomize=True):
         self._set_randomize(randomize)
     
     # Set default answer
     # string for free response
     # choice id for multiple choice
-    def set_default(self, default):
+    def default(self, default):
         self._init_default = default
         self._default = default
         
+    # Set conditions for clearing the question
+    # conditions are invalid, back, and forward
+    def clear_on(self, clear_on):
+        self._set_clear_on(clear_on)
+        
     # Set question data
-    def set_data(self, data):
+    def data(self, data):
         self._data = data
         
     # Get question data
@@ -213,11 +221,13 @@ class Question(db.Model, Base):
                 self._default = checked[0].id
                 entry = checked[0]._value
         self._entry = entry
-        self.set_data(entry)
+        self.data(entry)
         
     # Render the question in html
     def _render_html(self, part_id):
         self._first_render(self._choices.all())
+        if not self._rendered:
+            self._default = self._init_default
         
         if self._qtype == 'embedded':
             html = ''

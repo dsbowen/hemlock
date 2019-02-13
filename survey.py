@@ -21,7 +21,7 @@ def Start():
     c = Choice(question=q, text='yes')
     c = Choice(question=q, text='no', value=0)
     c = Choice(question=q, text='maybe', value=0)
-    q.set_default(c.id)
+    q.default(c.id)
     v = Validator(question=q, condition=yes)
     
     p = Page(branch=b, render=render, render_args=b.id)
@@ -33,9 +33,9 @@ def Start():
     c = Choice(question=q, text='yes')
     c = Choice(question=q, text='no')
     v = Validator(question=q, condition=force)
-    p.set_next(Next, q.id)
+    p.next(Next, q.id)
     
-    b.set_next(End, q.id)
+    b.next(End, q.id)
     
     return b
     
@@ -75,10 +75,10 @@ def wish(page, wish_id):
     
 def not_wish(q, wish_id):
     not_wish = query(wish_id).get_nonselected()[0].get_text()
-    q.set_text('You did not wish to answer {0}'.format(not_wish))
+    q.text('You did not wish to answer {0}'.format(not_wish))
     
 def post(q):
-    q.set_data(q.get_entry()=='yes')
+    q.data(q.get_entry()=='yes')
         
 app = create_app(Config, 
     start=Start, 

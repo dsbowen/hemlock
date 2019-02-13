@@ -62,18 +62,18 @@ class Page(db.Model, Base):
         next=None, next_args=None,
         terminal=False, randomize=False):
         
-        self.assign_branch(branch, order)
-        self.set_render(render, render_args)
-        self.set_post(post, post_args)
-        self.set_next(next, next_args)
-        self.set_terminal(terminal)
-        self.set_randomize(randomize)
+        self.branch(branch, order)
+        self.render(render, render_args)
+        self.post(post, post_args)
+        self.next(next, next_args)
+        self.terminal(terminal)
+        self.randomize(randomize)
         
         db.session.add(self)
         db.session.commit()
     
     # Assign to branch
-    def assign_branch(self, branch, order=None):
+    def branch(self, branch, order=None):
         if branch is not None:
             self._assign_parent('_branch', branch, branch._page_queue.all(), order)
         
@@ -83,23 +83,23 @@ class Page(db.Model, Base):
             self._remove_parent('_branch', self._branch._page_queue.all())
             
     # Sets the render function and arguments
-    def set_render(self, render=None, args=None):
+    def render(self, render=None, args=None):
         self._set_function('_render_function', render, '_render_args', args)
         
     # Sets the post function and arguments
-    def set_post(self, post=None, args=None):
+    def post(self, post=None, args=None):
         self._set_function('_post_function', post, '_post_args', args)
         
     # Sets the next navigation function and arguments
-    def set_next(self, next=None, args=None):
+    def next(self, next=None, args=None):
         self._set_function('_next_function', next, '_next_args', args)
         
     # Sets the terminal status (i.e. whether this page ends the survey)
-    def set_terminal(self, terminal=True):
+    def terminal(self, terminal=True):
         self._terminal = terminal
             
     # Set question randomization on/off (True/False)
-    def set_randomize(self, randomize=True):
+    def randomize(self, randomize=True):
         self._randomize = randomize    
     
     # Render the html code for the form specified on this page
