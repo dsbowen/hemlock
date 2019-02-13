@@ -11,74 +11,116 @@ import numpy as np
 
 #https://getbootstrap.com/docs/4.0/components/forms/
 
+def foo():
+    return 10
+    
+def bar():
+    return 11
+
 def Start():
-    b = Branch(randomize=True)
+    v = Validator()
+    u = Validator()
+    u.condition(foo)
+    v._copy(u.id)
+    db.session.commit()
+    print(u._condition_function)
+    print(v._condition_function)
+    u.condition(bar)
+    print(u._condition_function)
+    print(v._condition_function)
     
-    p = Page(branch=b, randomize=True)
+    c = Choice()
+    d = Choice()
+    c.text('hello moon')
+    print(d._text)
+    d._copy(c.id)
+    print(d._text)
+    c.text('hello star')
+    print(c._text)
+    print(d._text)
+    
+    q = Question()
+    p = Question()
+    q._copy(p.id)
+    q.render(foo)
+    print(q._render_function)
+    db.session.commit()
+    p._copy(q.id)
+    # print(p._render_function)
+    
+    b = Branch()
+    p = Page(branch=b, terminal=True)
     q = Question(page=p, text='hello world')
-    
-    q = Question(page=p, qtype='single choice', var='yes', text='Please say yes', randomize=True, clear_on=['invalid'])
-    c = Choice(question=q, text='yes')
-    c = Choice(question=q, text='no', value=0)
-    c = Choice(question=q, text='maybe', value=0)
-    q.default(c.id)
-    v = Validator(question=q, condition=yes)
-    
-    p = Page(branch=b, render=render, render_args=b.id)
-    q = Question(page=p, qtype='free', var='yes', text='Please say no', default='no', clear_on=['invalid'])
-    v = Validator(question=q, condition=no)
-    
-    p = Page(branch=b, randomize=True)
-    q = Question(page=p, qtype='single choice', var='yes', text='Answer what you wish', randomize=True, post=post, clear_on=['invalid'])
-    c = Choice(question=q, text='yes')
-    c = Choice(question=q, text='no')
-    v = Validator(question=q, condition=force)
-    p.next(Next, q.id)
-    
-    b.next(End, q.id)
-    
     return b
+
+# def Start():
+    # b = Branch(randomize=True)
     
-def yes(q):
-    entry = q.get_entry()
-    if entry is None or entry.lower() != 'yes':
-        return "Please say yes"
-        
-def no(q):
-    entry = q.get_entry()
-    if entry is None or entry.lower() != 'no':
-        return "Please say no"
-        
-def force(q):
-    if q.get_entry() is None:
-        return "Please answer the question"
-        
-def render(page, branch_id):
-    b = query(branch_id, Branch)
-    q = Question(branch=b, var='test', data=1, all_rows=True)
-        
-def Next(wish_id):
-    b = Branch()
-    YES = query(wish_id).get_entry().upper()
-    q = Question(branch=b, var='YES', data=YES)
-    return b
-        
-def End(wish_id):
-    b = Branch()
-    p = Page(branch=b, terminal=True, render=wish, render_args=wish_id)
-    q = Question(page=p, render=not_wish, render_args=wish_id)
-    return b
+    # p = Page(branch=b, randomize=True)
+    # q = Question(page=p, text='hello world')
     
-def wish(page, wish_id):
-    wish = query(wish_id).get_entry()
-    q = Question(page=page, text='You wished to answer {0}'.format(wish))
+    # q = Question(page=p, qtype='single choice', var='yes', text='Please say yes', randomize=True, clear_on=['invalid'])
+    # c = Choice(question=q, text='yes')
+    # c = Choice(question=q, text='no', value=0)
+    # c = Choice(question=q, text='maybe', value=0)
+    # q.default(c.id)
+    # v = Validator(question=q, condition=yes)
     
-def not_wish(q, wish_id):
-    not_wish = query(wish_id).get_nonselected()[0].get_text()
-    q.text('You did not wish to answer {0}'.format(not_wish))
+    # p = Page(branch=b, render=render, render_args=b.id)
+    # q = Question(page=p, qtype='free', var='yes', text='Please say no', default='no', clear_on=['invalid'])
+    # v = Validator(question=q, condition=no)
     
-def post(q):
-    q.data(q.get_entry()=='yes')
+    # p = Page(branch=b, randomize=True)
+    # q = Question(page=p, qtype='single choice', var='yes', text='Answer what you wish', randomize=True, post=post, clear_on=['invalid'])
+    # c = Choice(question=q, text='yes')
+    # c = Choice(question=q, text='no')
+    # v = Validator(question=q, condition=force)
+    # p.next(Next, q.id)
+    
+    # b.next(End, q.id)
+    
+    # return b
+    
+# def yes(q):
+    # entry = q.get_entry()
+    # if entry is None or entry.lower() != 'yes':
+        # return "Please say yes"
+        
+# def no(q):
+    # entry = q.get_entry()
+    # if entry is None or entry.lower() != 'no':
+        # return "Please say no"
+        
+# def force(q):
+    # if q.get_entry() is None:
+        # return "Please answer the question"
+        
+# def render(page, branch_id):
+    # b = query(branch_id, Branch)
+    # q = Question(branch=b, var='test', data=1, all_rows=True)
+        
+# def Next(wish_id):
+    # b = Branch()
+    # YES = query(wish_id).get_entry().upper()
+    # q = Question(branch=b, var='YES', data=YES)
+    # return b
+        
+# def End(wish_id):
+    # b = Branch()
+    # p = Page(branch=b, terminal=True, render=wish, render_args=wish_id)
+    # q = Question(page=p, render=not_wish, render_args=wish_id)
+    # return b
+    
+# def wish(page, wish_id):
+    # wish = query(wish_id).get_entry()
+    # q = Question(page=page, text='You wished to answer {0}'.format(wish))
+    
+# def not_wish(q, wish_id):
+    # not_wish = query(wish_id).get_nonselected()[0].get_text()
+    # q.text('You did not wish to answer {0}'.format(not_wish))
+    
+# def post(q):
+    # q.data(q.get_entry()=='yes')
         
 app = create_app(Config, 
     start=Start, 

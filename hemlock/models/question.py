@@ -282,7 +282,7 @@ class Question(db.Model, Base):
 
     # Copies selected attributes of question q
     def _copy(self, question_id):
-        q = Question.query.get(question.id)
+        q = Question.query.get(question_id)
     
         self.branch(q._branch)
         self.page(q._page)
@@ -294,11 +294,17 @@ class Question(db.Model, Base):
         self.render(q._render_function, q._render_args)
         self.post(q._post_function, q._post_args)
         self.randomize(q._randomize)
+        self.default(q._init_default)
+        self._default = q._default
+        self.clear_on(q._clear_on)
+        self.rendered = False
         self._error = q._error
+        self._entry = q._entry
         self.data(q._data)
         self._vorder = q._vorder
         
         choices = [Choice(question=self)]*len(q._choices.all())
-        [new._copy(old) for (new,old) in zip(choices,q._choices)]
+        [new._copy(old.id) for (new,old) in zip(choices,q._choices)]
+
         validators = [Validator(question=self)]*len(q._validators.all())
-        [new._copy(old) for (new,old) in zip(validators,q_validators)]
+        [new._copy(old.id) for (new,old) in zip(validators,q._validators)]

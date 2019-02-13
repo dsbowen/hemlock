@@ -6,7 +6,6 @@
 
 from hemlock import db
 from random import shuffle
-from copy import deepcopy
 
 # Base class for Hemlock models
 class Base():        
