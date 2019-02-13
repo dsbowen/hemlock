@@ -45,10 +45,11 @@ def render_free(q):
 # Renders single choice question in html format
 def render_single_choice(q):
     choices = q._choices.order_by('_order').all()
+    [c._set_checked(c.id==q._default) for c in choices]
     choice_html = ['''
-        <input name='{0}' type='radio' value='{1}'>{2}
+        <input name='{0}' type='radio' value='{1}' {2}>{3}
         <br></br>
-        '''.format(q.id, c._value, c._text) for c in choices]
+        '''.format(q.id, c.id, c._checked, c._text) for c in choices]
     return ''.join(choice_html)
 
 '''
@@ -176,6 +177,8 @@ class Question(db.Model, Base):
         self._set_randomize(randomize)
     
     # Set default answer
+    # string for free response
+    # choice id for multiple choice
     def set_default(self, default):
         self._init_default = default
         self._default = default
@@ -194,20 +197,23 @@ class Question(db.Model, Base):
         
     # Get the list of selected choices
     def get_selected(self):
-        return [c for c in self._choices if c._selected]
+        return [c for c in self._choices if c._checked=='checked']
         
     # Get the list of nonselected choices
     def get_nonselected(self):
-        return [c for c in self._choices if not c._selected]
+        return [c for c in self._choices if c._checked!='checked']
         
     # Record the participant's entry
     def _record_entry(self, entry):
-        self._entry = entry
-        self.set_data(entry)
         if self._qtype == 'free':
             self._default = entry
         elif self._qtype == 'single choice':
-            [c.set_selected() for c in self._choices if entry==str(c._value)]
+            checked = [c for c in self._choices if entry==str(c.id)]
+            if checked:
+                self._default = checked[0].id
+                entry = checked[0]._value
+        self._entry = entry
+        self.set_data(entry)
         
     # Render the question in html
     def _render_html(self, part_id):

@@ -19,7 +19,9 @@ def Start():
     
     q = Question(page=p, qtype='single choice', var='yes', text='Please say yes', randomize=True)
     c = Choice(question=q, text='yes')
-    c = Choice(question=q, text='no')
+    c = Choice(question=q, text='no', value=0)
+    c = Choice(question=q, text='maybe', value=0)
+    q.set_default(c.id)
     v = Validator(question=q, condition=yes)
     
     p = Page(branch=b, render=render, render_args=b.id)

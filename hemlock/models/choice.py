@@ -14,7 +14,7 @@ _order: order in which the choice appears in the question
 _text: choice text
 _value: encoded value of the choice
 _label: choice label, used to record order data
-_selected: indicator that this choice was selected
+_checked: indicator that this choice was checked
 '''
 class Choice(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
@@ -23,17 +23,16 @@ class Choice(db.Model, Base):
     _text = db.Column(db.Text)
     _value = db.Column(db.PickleType)
     _label = db.Column(db.String(16))
-    _selected = db.Column(db.Boolean)
+    _checked = db.Column(db.String(8))
     
     # Add choice to database and commit on initialization
     def __init__(self, question=None, order=None, text='', 
-        value=None, label=None, selected=False):
+        value=None, label=None):
         
         self.assign_question(question, order)
         self.set_text(text)
         self.set_value(value)
         self.set_label(label)
-        self.set_selected(selected)
         
         db.session.add(self)
         db.session.commit()
@@ -70,6 +69,6 @@ class Choice(db.Model, Base):
         else:
             self._label = label
             
-    # Set the choice as selected
-    def set_selected(self, selected=True):
-        self._selected = selected
+    # Set the choice as checked
+    def _set_checked(self, checked=True):
+        self._checked = 'checked' if checked else ''
