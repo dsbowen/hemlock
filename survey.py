@@ -12,15 +12,9 @@ import numpy as np
 #https://getbootstrap.com/docs/4.0/components/forms/
 
 def Start():
-    b = Branch()
+    b = Branch(randomize=True)
     
-    x = pd.read_csv('mycsv.csv')
-    hello = x['hello']
-    p = Page(branch=b)
-    for celestial_body in hello:
-        q = Question(page=p, text='Hello, {0}'.format(celestial_body))
-    
-    p = Page(branch=b)
+    p = Page(branch=b, randomize=True)
     q = Question(page=p, text='hello world')
     
     q = Question(page=p, qtype='single choice', var='yes', text='Please say yes', randomize=True)
@@ -82,7 +76,7 @@ def post(q):
         
 app = create_app(Config, 
     start=Start, 
-    block_duplicate_ips=True,
+    block_duplicate_ips=False,
     block_from_csv='block.csv')
 
 @app.shell_context_processor

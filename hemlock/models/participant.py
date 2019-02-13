@@ -10,6 +10,7 @@ from hemlock.models.page import Page
 from hemlock.models.question import Question
 from hemlock.models.variable import Variable
 from flask import request
+from sqlalchemy import and_
 import pandas as pd
 from datetime import datetime
 
@@ -91,13 +92,32 @@ class Participant(db.Model):
         #self.clear_memory()
         
     # Process question data
-    # if question belongs to a new variable, create a new variable
-    # add question data to variable
     def process_question(self, q):
-        var = Variable.query.filter_by(part_id=self.id, name=q._var).first()
-        if not var:
-            var = Variable(part=self, name=q._var, all_rows=q._all_rows)
-        var.add_data(q._data)
+        # get the question data
+        qdata = q._output_data()
+        
+        # create new variables if needed
+        [self.create_var(name,data,q._all_rows) 
+            for (name,data) in qdata.items()]
+            
+        # get list of relevant variables
+        vars = Variable.query.filter(
+            and_(Variable.part_id==self.id,
+                Variable.name.in_(qdata.keys())))
+        vars = vars.order_by('name').all()
+        
+        # pad existing variables so question writes to same row
+        max_rows = max(v.num_rows for v in vars)
+        [var.pad(max_rows) for var in vars]
+        
+        # write data to variables
+        [var.add_data(qdata[name]) for name,var in zip(sorted(qdata),vars)]
+        
+    # Create a new variable if needed
+    def create_var(self, name, data, all_rows):
+        if name in [var.name for var in self.variables]:
+            return
+        var = Variable(part=self, name=name, all_rows=all_rows)
         
     # Clear branches, pages, and questions from database
     def clear_memory(self):

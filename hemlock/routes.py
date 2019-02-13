@@ -87,8 +87,17 @@ write to csv and output
 '''
 @bp.route('/download')
 def download():
+    # get main dataframe
     data = pd.concat([pd.DataFrame(p.data) for p in Participant.query.all()],
-        sort=False) 
+        sort=False)
+        
+    # drop unnecessary order variables
+    drop_prefix = ['id_','ipv4_', 'start_time_']
+    columns = [pref+'{0}order'.format(pv) 
+        for pref in drop_prefix for pv in ['p','v']]
+    data = data.drop(columns=columns)
+    
+    # write to csv and output
     resp = make_response(data.to_csv())
     resp.headers['Content-Disposition'] = 'attachment; filename=data.csv'
     resp.headers['Content-Type'] = 'text/csv'

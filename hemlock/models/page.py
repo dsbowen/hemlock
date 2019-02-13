@@ -108,19 +108,27 @@ class Page(db.Model, Base):
     # adds a hidden tag and submit button
     def _render_html(self):
         self._first_render(self._questions.all())
-        Qhtml = [q._render_html() for q in self._questions.order_by('_order')]
+        Qhtml = [q._render_html(self._part_id) 
+            for q in self._questions.order_by('_order')]
         self._rendered = True
         db.session.commit()
         return ''.join([hidden_tag()]+Qhtml+[submit(self)])
         
     # Checks if questions have valid answers upon page submission
     def _validate_on_submit(self):
-        [q._record_entry(request.form.get(str(q.id))) for q in self._questions
-            if q._qtype != 'embedded']
+        # record participant's raw data entry
+        [q._record_entry(request.form.get(str(q.id))) 
+            for q in self._questions if q._qtype != 'embedded']
+        
+        # check if every response was valid
         valid = all([q._validate() for q in self._questions])
+        
+        # call post functions
         self._call_function(self, self._post_function, self._post_args)
         questions = self._questions.order_by('_order')
         [q._call_function(q, q._post_function, q._post_args) for q in questions]
+        
+        # assign questions to participant on validation and return
         if valid:
             [q._assign_participant(self._part) for q in self._questions]
         return valid

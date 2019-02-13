@@ -8,6 +8,7 @@ from hemlock import db
 from hemlock.models.choice import Choice
 from hemlock.models.validator import Validator
 from hemlock.models.base import Base
+from sqlalchemy import and_
 
 # Renders errors from previous submit
 def render_error(q):
@@ -72,6 +73,7 @@ _rendered: indicator that the question was previously rendered
 _error: stores an error message if response was invalid
 _entry: participant's raw data entry
 _data: response data (cleaned version of entry)
+_vorder: order in which this question appears in its variable
 '''
 class Question(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
@@ -95,6 +97,7 @@ class Question(db.Model, Base):
     _error = db.Column(db.PickleType)
     _entry = db.Column(db.Text)
     _data = db.Column(db.PickleType)
+    _vorder = db.Column(db.Integer)
     
     # Adds question to database and commits on initialization
     def __init__(self, branch=None, page=None, order=None, text='', 
@@ -199,8 +202,9 @@ class Question(db.Model, Base):
             [c.set_selected() for c in self._choices if entry==str(c._value)]
         
     # Render the question in html
-    def _render_html(self):
+    def _render_html(self, part_id):
         self._first_render(self._choices.all())
+        
         if self._qtype == 'embedded':
             html = ''
         else:
@@ -215,6 +219,13 @@ class Question(db.Model, Base):
         self._rendered = True
         return html
         
+    # Set the variable order
+    def _set_vorder(self):
+        if not self._var:
+            return
+        prev = Question.query.filter_by(_part_id=self._part_id, _var=self._var)
+        self._vorder = len(prev.all())
+        
     # Validate the participant's response
     def _validate(self):
         for v in self._validators:
@@ -222,3 +233,17 @@ class Question(db.Model, Base):
             if self._error is not None:
                 return False
         return True
+        
+    # Outputs the data (both question data and order data)
+    def _output_data(self):
+        # data, page order, and question order
+        data = {
+            self._var: self._data,
+            self._var+'_porder': self._order,
+            self._var+'_vorder': self._vorder}
+            
+        # choice order
+        for c in self._choices:
+            data['_'.join([self._var,c._label,'qorder'])] = c._order
+            
+        return data

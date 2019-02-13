@@ -29,6 +29,10 @@ class Base():
     def _assign_participant(self, part):
         self._part = part
         db.session.commit()
+        try:
+            self._set_vorder()
+        except:
+            pass
         
     '''
     Assign an object to its parent
@@ -115,18 +119,18 @@ class Base():
                 branch = self._next_function()
             else:
                 branch = self._next_function(self._next_args)
-            for e in branch._embedded:
-                e._assign_participant(self._part)
+            [e._assign_participant(self._part) for e in branch._embedded]
             if branch._randomize:
                 branch._randomize_children(branch._page_queue.all())
             return branch
         
     # Execute render function and randomization on first render
     def _first_render(self, children):
-        if not self._rendered:
-            self._call_function(self, self._render_function, self._render_args)
-            if self._randomize:
-                self._randomize_children(children)
+        if self._rendered:
+            return
+        self._call_function(self, self._render_function, self._render_args)
+        if self._randomize:
+            self._randomize_children(children)
             
     # Randomize order of children
     def _randomize_children(self, children):
