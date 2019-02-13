@@ -7,6 +7,9 @@
 from hemlock import create_app, db, query, Participant, Branch, Page, Question, Choice, Validator, Variable
 from config import Config
 import pandas as pd
+import numpy as np
+
+#https://getbootstrap.com/docs/4.0/components/forms/
 
 def Start():
     b = Branch()
@@ -84,4 +87,4 @@ app = create_app(Config,
 
 @app.shell_context_processor
 def make_shell_context():
-    return {'db':db, 'query':query, 'Participant':Participant, 'Branch':Branch, 'Page':Page, 'Question':Question, 'Choice':Choice, 'Validator':Validator, 'Variable':Variable}
+    return {'db':db, 'query':query, 'Participant':Participant, 'Branch':Branch, 'Page':Page, 'Question':Question, 'Choice':Choice, 'Validator':Validator, 'Variable':Variable, 'pd':pd, 'np':np}

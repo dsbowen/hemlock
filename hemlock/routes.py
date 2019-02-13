@@ -21,14 +21,14 @@ def before_first_app_request():
     db.create_all()
 
 # Create participant and root branch before beginning survey
-# (option) exlcude if duplicate ipv4
+# (option) exlcude if duplicate ipv4 from csv or current study
 @bp.route('/')
 def index():
     ipv4 = get_ipv4()
-    if ipv4 in current_app.ipv4:
+    if (ipv4 in current_app.ipv4_csv
+        or (current_app.block_dupips and ipv4 in current_app.ipv4_current)):
         return redirect(url_for('hemlock.duplicate'))
-    if current_app.block_duplicate_ips:
-        current_app.ipv4.append(ipv4)
+    current_app.ipv4_current.append(ipv4)
         
     part = Participant(ipv4)
     session['part_id'] = part.id
@@ -98,7 +98,8 @@ def download():
 # for blocking duplicates in subsequent studies
 @bp.route('/ipv4')
 def ipv4():
-    ipv4 = pd.DataFrame.from_dict({'ipv4':current_app.ipv4})
+    ipv4 = current_app.ipv4_csv = current_app.ipv4_current
+    ipv4 = pd.DataFrame.from_dict({'ipv4':ipv4})
     resp = make_response(ipv4.to_csv())
     resp.headers['Content-Disposition'] = 'attachment; filename=block.csv'
     resp.headers['Content-Type'] = 'text/csv'

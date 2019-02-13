@@ -12,10 +12,10 @@ def create_app(config_class, start,
     app.config.from_object(config_class)
     
     app.start = start
-    app.block_duplicate_ips = block_duplicate_ips
-    app.ipv4 = []
+    app.block_dupips = block_duplicate_ips
+    app.ipv4_csv, app.ipv4_current = [], []
     if block_from_csv is not None:
-        app.ipv4 = list(pd.read_csv(block_from_csv)['ipv4'])
+        app.ipv4_csv = list(pd.read_csv(block_from_csv)['ipv4'])
     
     db.init_app(app)
     
