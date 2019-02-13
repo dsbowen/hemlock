@@ -77,6 +77,7 @@ _error: stores an error message if response was invalid
 _entry: participant's raw data entry
 _data: response data (cleaned version of entry)
 _vorder: order in which this question appears in its variable
+_archive: copy of the question before it was rendered
 '''
 class Question(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
@@ -209,14 +210,20 @@ class Question(db.Model, Base):
         
     # Get the list of nonselected choices
     def get_nonselected(self):
-        return [c for c in self._choices if c._checked!='checked']
+        [print(c._checked) for c in self._choices]
+        return [c for c in self._choices if c._checked=='']
+        
+    # Clear the question entry, data, default, and returns render to 
+    def clear_data(self):
+        self._entry = self._data
         
     # Record the participant's entry
     def _record_entry(self, entry):
         if self._qtype == 'free':
             self._default = entry
         elif self._qtype == 'single choice':
-            checked = [c for c in self._choices if entry==str(c.id)]
+            [c._set_checked(entry==str(c.id)) for c in self._choices]
+            checked = self.get_selected()
             if checked:
                 self._default = checked[0].id
                 entry = checked[0]._value
@@ -255,6 +262,7 @@ class Question(db.Model, Base):
         for v in self._validators:
             self._error = v._get_error()
             if self._error is not None:
+                self.clear_data()
                 return False
         return True
         
@@ -271,3 +279,26 @@ class Question(db.Model, Base):
             data['_'.join([self._var,c._label,'qorder'])] = c._order
             
         return data
+
+    # Copies selected attributes of question q
+    def _copy(self, question_id):
+        q = Question.query.get(question.id)
+    
+        self.branch(q._branch)
+        self.page(q._page)
+        self._set_order(q._order)
+        self.text(q._text)
+        self.qtype(q._qtype)
+        self.var(q._var)
+        self.all_rows(q._all_rows)
+        self.render(q._render_function, q._render_args)
+        self.post(q._post_function, q._post_args)
+        self.randomize(q._randomize)
+        self._error = q._error
+        self.data(q._data)
+        self._vorder = q._vorder
+        
+        choices = [Choice(question=self)]*len(q._choices.all())
+        [new._copy(old) for (new,old) in zip(choices,q._choices)]
+        validators = [Validator(question=self)]*len(q._validators.all())
+        [new._copy(old) for (new,old) in zip(validators,q_validators)]

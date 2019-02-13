@@ -17,7 +17,7 @@ def Start():
     p = Page(branch=b, randomize=True)
     q = Question(page=p, text='hello world')
     
-    q = Question(page=p, qtype='single choice', var='yes', text='Please say yes', randomize=True)
+    q = Question(page=p, qtype='single choice', var='yes', text='Please say yes', randomize=True, clear_on=['invalid'])
     c = Choice(question=q, text='yes')
     c = Choice(question=q, text='no', value=0)
     c = Choice(question=q, text='maybe', value=0)
@@ -25,11 +25,11 @@ def Start():
     v = Validator(question=q, condition=yes)
     
     p = Page(branch=b, render=render, render_args=b.id)
-    q = Question(page=p, qtype='free', var='yes', text='Please say no', default='no')
+    q = Question(page=p, qtype='free', var='yes', text='Please say no', default='no', clear_on=['invalid'])
     v = Validator(question=q, condition=no)
     
     p = Page(branch=b, randomize=True)
-    q = Question(page=p, qtype='single choice', var='yes', text='Answer what you wish', randomize=True, post=post)
+    q = Question(page=p, qtype='single choice', var='yes', text='Answer what you wish', randomize=True, post=post, clear_on=['invalid'])
     c = Choice(question=q, text='yes')
     c = Choice(question=q, text='no')
     v = Validator(question=q, condition=force)

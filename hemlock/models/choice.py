@@ -84,3 +84,15 @@ class Choice(db.Model, Base):
     # Set the choice as checked
     def _set_checked(self, checked=True):
         self._checked = 'checked' if checked else ''
+        
+    # Copies selected attributes from another choice
+    def _copy(self, choice_id):
+        c = Choice.query.get(choice_id)
+    
+        self._set_order(c._order)
+        self.text(c._text)
+        self.value(c._value)
+        self._value_followstext = c._value_followstext
+        self.label(c._label)
+        self._label_followtext = c._label_followtext
+        self._set_checked(c._checked=='checked')

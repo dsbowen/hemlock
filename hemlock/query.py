@@ -10,10 +10,10 @@ from hemlock.models.question import Question
 # if id is an integer, return a single object
 # if id is a list, return a list of objects
 # if id is a dict, return a dict of objects with corresponding keys
-def query(ids, model_type=Question):
+def query(ids, table=Question):
     if type(ids) == int:
-        return model_type.query.get(ids)
+        return table.query.get(ids)
     if type(ids) == list:
-        return model_type.query.filter(model_type.id.in_(ids)).all()
+        return table.query.filter(table.id.in_(ids)).all()
     if type(ids) == dict:
-        return {key:model_type.query.get(value) for (key,value) in ids.items()}
+        return {key:table.query.get(value) for (key,value) in ids.items()}
