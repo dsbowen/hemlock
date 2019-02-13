@@ -86,7 +86,7 @@ get data from all participants
 write to csv and output
 '''
 @bp.route('/download')
-def download():
+def download():     
     # get main dataframe
     data = pd.concat([pd.DataFrame(p.data) for p in Participant.query.all()],
         sort=False)
@@ -98,7 +98,7 @@ def download():
     data = data.drop(columns=columns)
     
     # write to csv and output
-    resp = make_response(data.to_csv())
+    resp = make_response(data.to_csv(index_label='index'))
     resp.headers['Content-Disposition'] = 'attachment; filename=data.csv'
     resp.headers['Content-Type'] = 'text/csv'
     return resp
