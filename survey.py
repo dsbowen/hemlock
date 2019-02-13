@@ -6,9 +6,16 @@
 
 from hemlock import create_app, db, query, Participant, Branch, Page, Question, Choice, Validator, Variable
 from config import Config
+import pandas as pd
 
 def Start():
-    b = Branch(randomize=True)
+    b = Branch()
+    
+    x = pd.read_csv('mycsv.csv')
+    hello = x['hello']
+    p = Page(branch=b)
+    for celestial_body in hello:
+        q = Question(page=p, text='Hello, {0}'.format(celestial_body))
     
     p = Page(branch=b)
     q = Question(page=p, text='hello world')
@@ -74,4 +81,4 @@ app = create_app(Config, start=Start)
 
 @app.shell_context_processor
 def make_shell_context():
-	return {'db':db, 'query':query, 'Participant':Participant, 'Branch':Branch, 'Page':Page, 'Question':Question, 'Choice':Choice, 'Validator':Validator, 'Variable':Variable}
+    return {'db':db, 'query':query, 'Participant':Participant, 'Branch':Branch, 'Page':Page, 'Question':Question, 'Choice':Choice, 'Validator':Validator, 'Variable':Variable}
