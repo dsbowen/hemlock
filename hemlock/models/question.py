@@ -106,11 +106,11 @@ class Question(db.Model, Base):
         post=None, post_args=None,
         randomize=False, default=None, data=None):
         
+        self.set_var(var)
         self.assign_branch(branch)
         self.assign_page(page, order)
         self.set_text(text)
         self.set_qtype(qtype)
-        self.set_var(var)
         self.set_all_rows(all_rows)
         self.set_render(render, render_args)
         self.set_post(post, post_args)
@@ -125,9 +125,12 @@ class Question(db.Model, Base):
     def assign_branch(self, branch):
         if branch is not None:
             self._assign_parent('_branch', branch, branch._embedded.all())
+            if branch._part_id is not None:
+                self._assign_participant(branch._part)
             
     # Remove from branch
     def remove_branch(self):
+        self._part = None
         if self._branch is not None:
             self._remove_parent('_branch', self._branch._embedded.all())
     

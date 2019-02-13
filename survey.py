@@ -22,7 +22,7 @@ def Start():
     c = Choice(question=q, text='no')
     v = Validator(question=q, condition=yes)
     
-    p = Page(branch=b)
+    p = Page(branch=b, render=render, render_args=b.id)
     q = Question(page=p, qtype='free', var='yes', text='Please say no')
     v = Validator(question=q, condition=no)
     
@@ -50,6 +50,10 @@ def no(q):
 def force(q):
     if q.get_entry() is None:
         return "Please answer the question"
+        
+def render(page, branch_id):
+    b = query(branch_id, Branch)
+    q = Question(branch=b, var='test', data=1, all_rows=True)
         
 def Next(wish_id):
     b = Branch()
