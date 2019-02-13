@@ -22,7 +22,18 @@ def before_first_app_request():
 
 # Create participant and root branch before beginning survey
 @bp.route('/')
-def index():    
+def index():
+    ipv4 = request.environ.get('HTTP_X_FORWARDED_FOR', None)
+    if ipv4 is None:
+        ipv4 = request.remote_addr
+    else:
+        ipv4 = ipv4.split(',')[0]
+    print(ipv4)
+    print(current_app.ipv4)
+    if ipv4 in current_app.ipv4:
+        print('here')
+        return redirect(url_for('hemlock.exclude'))
+        
     part = Participant()
     session['part_id'] = part.id
     root = Branch(next=current_app.start)
@@ -55,6 +66,10 @@ def survey():
         part.store_data()
         
     return render_template('page.html', page=Markup(page._render_html()))
+    
+@bp.route('/exclude')
+def exclude():
+    return "You are ineligible to participate"
     
 '''
 Download data

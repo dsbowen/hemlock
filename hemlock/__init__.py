@@ -1,13 +1,15 @@
 from flask import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
+import pandas as pd
 
 bp = Blueprint('hemlock', __name__)
 db = SQLAlchemy()
 
-def create_app(config_class, start):
+def create_app(config_class, start, block_from_csv):
 	app = Flask(__name__)
 	app.config.from_object(config_class)
 	app.start = start
+	app.ipv4 = list(pd.read_csv(block_from_csv)['ipv4'])
 	
 	db.init_app(app)
 	

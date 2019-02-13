@@ -77,7 +77,7 @@ def not_wish(q, wish_id):
 def post(q):
     q.set_data(q.get_entry()=='yes')
         
-app = create_app(Config, start=Start)
+app = create_app(Config, start=Start, block_from_csv='block.csv')
 
 @app.shell_context_processor
 def make_shell_context():
