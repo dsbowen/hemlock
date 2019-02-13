@@ -33,14 +33,14 @@ class Participant(db.Model):
     
     # Add participant to database and commit on initialization
     # also initialize participant id and start time questions
-    def __init__(self): 
+    def __init__(self, ipv4): 
         db.session.add(self)
         db.session.commit()
         
         id = Question(var='id', data=self.id, all_rows=True)
         id._assign_participant(self)
-        
-        self.get_ip()
+        ipv4 = Question(var='ipv4', data=ipv4, all_rows=True)
+        ipv4._assign_participant(self)
         
         start = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
         start._assign_participant(self)
@@ -98,16 +98,6 @@ class Participant(db.Model):
         if not var:
             var = Variable(part=self, name=q._var, all_rows=q._all_rows)
         var.add_data(q._data)
-        
-    # Stores the participant IP address
-    def get_ip(self):
-        ip = request.environ.get('HTTP_X_FORWARDED_FOR', None)
-        if ip is None:
-            ip = request.remote_addr
-        else:
-            ip = ip.split(',')[0]
-        ip_var = Question(var='ip_address', data=ip, all_rows=True)
-        ip_var._assign_participant(self)
         
     # Clear branches, pages, and questions from database
     def clear_memory(self):

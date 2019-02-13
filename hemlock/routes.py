@@ -21,20 +21,16 @@ def before_first_app_request():
     db.create_all()
 
 # Create participant and root branch before beginning survey
+# (option) exlcude if duplicate ipv4
 @bp.route('/')
 def index():
-    ipv4 = request.environ.get('HTTP_X_FORWARDED_FOR', None)
-    if ipv4 is None:
-        ipv4 = request.remote_addr
-    else:
-        ipv4 = ipv4.split(',')[0]
-    print(ipv4)
-    print(current_app.ipv4)
+    ipv4 = get_ipv4()
     if ipv4 in current_app.ipv4:
-        print('here')
         return redirect(url_for('hemlock.exclude'))
+    if current_app.block_duplicate_ips:
+        current_app.ipv4.append(ipv4)
         
-    part = Participant()
+    part = Participant(ipv4)
     session['part_id'] = part.id
     root = Branch(next=current_app.start)
     root._assign_participant(part)
@@ -43,6 +39,23 @@ def index():
     
     return redirect(url_for('hemlock.survey'))
     
+# Get user IPv4
+def get_ipv4():
+    ipv4 = request.environ.get('HTTP_X_FORWARDED_FOR', None)
+    if ipv4 is None:
+        return request.remote_addr
+    return ipv4.split(',')[0]
+        
+# Exclude message
+@bp.route('/exclude')
+def exclude():
+    page = Page(terminal=True)
+    q = Question(page=page, text='''
+        <p>Our records indicate that you have already participated in this or similar surveys.</p>
+        <p>Thank you for your continuing interest in our research.</p>
+        ''')
+    return render_template('page.html', page=Markup(page._render_html()))
+        
 '''
 Main survey route
 alternate between GET and POST
@@ -66,10 +79,6 @@ def survey():
         part.store_data()
         
     return render_template('page.html', page=Markup(page._render_html()))
-    
-@bp.route('/exclude')
-def exclude():
-    return "You are ineligible to participate"
     
 '''
 Download data

@@ -5,17 +5,23 @@ import pandas as pd
 bp = Blueprint('hemlock', __name__)
 db = SQLAlchemy()
 
-def create_app(config_class, start, block_from_csv):
-	app = Flask(__name__)
-	app.config.from_object(config_class)
-	app.start = start
-	app.ipv4 = list(pd.read_csv(block_from_csv)['ipv4'])
-	
-	db.init_app(app)
-	
-	app.register_blueprint(bp)
-	
-	return app
+def create_app(config_class, start, 
+    block_duplicate_ips=True, block_from_csv=None):
+    
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+    
+    app.start = start
+    app.block_duplicate_ips = block_duplicate_ips
+    app.ipv4 = []
+    if block_from_csv is not None:
+        app.ipv4 = list(pd.read_csv(block_from_csv)['ipv4'])
+    
+    db.init_app(app)
+    
+    app.register_blueprint(bp)
+    
+    return app
 
 from hemlock import routes
 from hemlock.query import query
