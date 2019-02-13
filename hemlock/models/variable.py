@@ -6,13 +6,14 @@
 
 from hemlock import db
 
-# Data:
-# ID of participant to whom the variable belongs
-# Variable name
-# List of data
-# Number of rows
-# All_rows indicator
-#   i.e. whether the same data will appear in all rows of this variable
+'''
+Data:
+part_id: ID of participant to whom the variable belongs
+name: variable name
+data: list of variable data
+num_rows: number of rows of data (len of data list)
+all_rows: indicates that the variable has the same data for all dataset rows
+'''
 class Variable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
@@ -38,8 +39,8 @@ class Variable(db.Model):
             self.part.num_rows = self.num_rows
         
     # Pad
-    # fills in data if the number of rows is short of length
-    # padding is either the same data (for an all_rows variable) or empyty
+    # fill in data if the number of rows is short of length
+    # padding is either the same data (for an all_rows variable) or empty
     def pad(self, length):
         if length <= self.num_rows:
             return

@@ -1,10 +1,9 @@
 ###############################################################################
 # Participant model
 # by Dillon Bowen
-# last modified 01/21/2019
+# last modified 02/12/2019
 ###############################################################################
 
-from datetime import datetime
 from hemlock import db
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
@@ -12,18 +11,22 @@ from hemlock.models.question import Question
 from hemlock.models.variable import Variable
 from flask import request
 import pandas as pd
+from datetime import datetime
 
-# Data:
-# Stack of Branches
-# Current Page
-# List of Questions
-# List of Variables
-# Number of rows contributed to dataset
+'''
+Data:
+branch_stack: stack of branches
+curr_page: current page
+questions: question assigned to participant
+variables: variables the participant contributes to dataframe
+data: data dictionary contributed to dataframe
+num_rows: number of rows participant contributes to dataframe
+'''
 class Participant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    branch_stack = db.relationship('Branch', backref='part', lazy='dynamic')
-    curr_page = db.relationship('Page', uselist=False, backref='part')
-    questions = db.relationship('Question', backref='part', lazy='dynamic')
+    branch_stack = db.relationship('Branch', backref='_part', lazy='dynamic')
+    curr_page = db.relationship('Page', uselist=False, backref='_part')
+    questions = db.relationship('Question', backref='_part', lazy='dynamic')
     variables = db.relationship('Variable', backref='part', lazy='dynamic')
     data = db.Column(db.PickleType, default={})
     num_rows = db.Column(db.Integer, default=0)
@@ -35,12 +38,12 @@ class Participant(db.Model):
         db.session.commit()
         
         id = Question(var='id', data=self.id, all_rows=True)
-        id.part = self
+        id._assign_participant(self)
         
         self.get_ip()
         
         start = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
-        start.part = self
+        start._assign_participant(self)
         # self.end = Question(var='end_time', all_rows=True)
         # self.end.part = self
         # ADD IP ADDRESS, LOCATION, ETC, HERE
@@ -56,11 +59,11 @@ class Participant(db.Model):
     # dequeue the first page in that branch's queue
     # if there are no more pages in the queue, terminate the branch and advance
     def advance_page(self):
-        if self.curr_page is not None and self.curr_page.next is not None:
-            new_branch = self.curr_page.get_next()
-            new_branch.part = self
+        if self.curr_page is not None and self.curr_page._next_function is not None:
+            new_branch = self.curr_page._get_next()
+            new_branch._assign_participant(self)
         branch = self.branch_stack[-1]
-        self.curr_page = branch.dequeue()
+        self.curr_page = branch._dequeue()
         if self.curr_page is None:
             self.terminate_branch(branch)
             return self.advance_page()
@@ -68,10 +71,10 @@ class Participant(db.Model):
     # Terminate a branch
     # if current branch points to next branch, add next branch to branch stack
     def terminate_branch(self, branch):
-        new_branch = branch.get_next()
+        new_branch = branch._get_next()
         self.branch_stack.remove(branch)
         if new_branch is not None:
-            new_branch.part = self
+            new_branch._assign_participant(self)
             
     # Store participant data
     # add end time variable
@@ -81,19 +84,19 @@ class Participant(db.Model):
     def store_data(self):
         # end = Question.query.filter_by(part_id=self.id, var='end_time').first()
         # self.end.set_data(datetime.utcnow())
-        [self.process_question(q) for q in self.questions if q.var]
+        [self.process_question(q) for q in self.questions if q._var]
         [var.pad(self.num_rows) for var in self.variables]
         self.data = {var.name:var.data for var in self.variables}
-        self.clear_memory()
+        #self.clear_memory()
         
     # Process question data
     # if question belongs to a new variable, create a new variable
     # add question data to variable
-    def process_question(self, question):
-        var = Variable.query.filter_by(part_id=self.id, name=question.var).first()
+    def process_question(self, q):
+        var = Variable.query.filter_by(part_id=self.id, name=q._var).first()
         if not var:
-            var = Variable(part=self, name=question.var, all_rows=question.all_rows)
-        var.add_data(question.data)
+            var = Variable(part=self, name=q._var, all_rows=q._all_rows)
+        var.add_data(q._data)
         
     # Stores the participant IP address
     def get_ip(self):
@@ -103,7 +106,7 @@ class Participant(db.Model):
         else:
             ip = ip.split(',')[0]
         ip_var = Question(var='ip_address', data=ip, all_rows=True)
-        ip_var.part = self
+        ip_var._assign_participant(self)
         
     # Clear branches, pages, and questions from database
     def clear_memory(self):
