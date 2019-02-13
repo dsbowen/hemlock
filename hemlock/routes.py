@@ -1,7 +1,7 @@
 ###############################################################################
 # URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 02/12/2019
+# last modified 02/13/2019
 ###############################################################################
 
 from hemlock import db, bp
@@ -26,7 +26,7 @@ def before_first_app_request():
 def index():
     ipv4 = get_ipv4()
     if ipv4 in current_app.ipv4:
-        return redirect(url_for('hemlock.exclude'))
+        return redirect(url_for('hemlock.duplicate'))
     if current_app.block_duplicate_ips:
         current_app.ipv4.append(ipv4)
         
@@ -39,7 +39,7 @@ def index():
     
     return redirect(url_for('hemlock.survey'))
     
-# Get user IPv4
+# Get user ipv4
 def get_ipv4():
     ipv4 = request.environ.get('HTTP_X_FORWARDED_FOR', None)
     if ipv4 is None:
@@ -47,11 +47,11 @@ def get_ipv4():
     return ipv4.split(',')[0]
         
 # Exclude message
-@bp.route('/exclude')
-def exclude():
+@bp.route('/duplicate')
+def duplicate():
     page = Page(terminal=True)
     q = Question(page=page, text='''
-        <p>Our records indicate that you have already participated in this or similar surveys.</p>
+        <p>Our records indicate that you have already participated in this or similar studies.</p>
         <p>Thank you for your continuing interest in our research.</p>
         ''')
     return render_template('page.html', page=Markup(page._render_html()))
@@ -91,6 +91,16 @@ def download():
         sort=False) 
     resp = make_response(data.to_csv())
     resp.headers['Content-Disposition'] = 'attachment; filename=data.csv'
+    resp.headers['Content-Type'] = 'text/csv'
+    return resp
+    
+# Download list of ipv4 addresses
+# for blocking duplicates in subsequent studies
+@bp.route('/ipv4')
+def ipv4():
+    ipv4 = pd.DataFrame.from_dict({'ipv4':current_app.ipv4})
+    resp = make_response(ipv4.to_csv())
+    resp.headers['Content-Disposition'] = 'attachment; filename=block.csv'
     resp.headers['Content-Type'] = 'text/csv'
     return resp
     

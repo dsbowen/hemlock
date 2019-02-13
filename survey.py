@@ -79,8 +79,8 @@ def post(q):
         
 app = create_app(Config, 
     start=Start, 
-    block_duplicate_ips=True)#,
-    #block_from_csv='block.csv')
+    block_duplicate_ips=True,
+    block_from_csv='block.csv')
 
 @app.shell_context_processor
 def make_shell_context():
