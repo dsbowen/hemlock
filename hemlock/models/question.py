@@ -39,8 +39,8 @@ def render_body(q):
 # Renders free response question in html format
 def render_free(q):
     return '''
-        <input name='{0}' type='text' value=''>
-        '''.format(q.id)
+        <input name='{0}' type='text' value='{1}'>
+        '''.format(q.id, q._default)
     
 # Renders single choice question in html format
 def render_single_choice(q):
@@ -68,7 +68,8 @@ _render_args: arguments for the render function
 _post_function: function called after responses are submitted and validated
 _post_args: arguments for the post function
 _randomize: indicator of choice randomization
-_default: default option or entry
+_init_default: initial default option (before first post)
+_default: participant's response from last post or initial default
 _rendered: indicator that the question was previously rendered
 _error: stores an error message if response was invalid
 _entry: participant's raw data entry
@@ -92,7 +93,8 @@ class Question(db.Model, Base):
     _post_function = db.Column(db.PickleType)
     _post_args = db.Column(db.PickleType)
     _randomize = db.Column(db.Boolean)
-    _default = db.Column(db.Text)
+    _init_default = db.Column(db.PickleType)
+    _default = db.Column(db.PickleType)
     _rendered = db.Column(db.Boolean, default=False)
     _error = db.Column(db.PickleType)
     _entry = db.Column(db.Text)
@@ -175,6 +177,7 @@ class Question(db.Model, Base):
     
     # Set default answer
     def set_default(self, default):
+        self._init_default = default
         self._default = default
         
     # Set question data
@@ -201,7 +204,9 @@ class Question(db.Model, Base):
     def _record_entry(self, entry):
         self._entry = entry
         self.set_data(entry)
-        if self._qtype == 'single choice':
+        if self._qtype == 'free':
+            self._default = entry
+        elif self._qtype == 'single choice':
             [c.set_selected() for c in self._choices if entry==str(c._value)]
         
     # Render the question in html

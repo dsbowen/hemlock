@@ -23,7 +23,7 @@ def Start():
     v = Validator(question=q, condition=yes)
     
     p = Page(branch=b, render=render, render_args=b.id)
-    q = Question(page=p, qtype='free', var='yes', text='Please say no')
+    q = Question(page=p, qtype='free', var='yes', text='Please say no', default='no')
     v = Validator(question=q, condition=no)
     
     p = Page(branch=b, randomize=True)
