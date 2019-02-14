@@ -10,6 +10,7 @@ from hemlock.models.base import Base
 '''
 Data:
 _question_id: ID of the question to which the validator belongs
+_id_orig: id of the original validator (to identify copies)
 _order: order in which validation appears in question
 _condition_function: function which validates participant's response
 _condition_args: arguments for the condition function
@@ -23,11 +24,9 @@ class Validator(db.Model, Base):
     
     # Add to database and commit on initialize
     def __init__(self, question=None, order=None, condition=None, args=None):
+        self._add_commit()
         self.question(question, order)
         self.condition(condition, args)
-        
-        db.session.add(self)
-        db.session.commit()
         
     # Assign to question
     def question(self, question, order=None):

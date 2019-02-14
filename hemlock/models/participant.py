@@ -86,7 +86,7 @@ class Participant(db.Model):
         # end = Question.query.filter_by(part_id=self.id, var='end_time').first()
         # self.end.set_data(datetime.utcnow())
         [self.process_question(q) 
-			for q in self.questions.order_by('id') if q._var]
+			for q in self.questions.order_by('_id_orig') if q._var]
         [var.pad(self.num_rows) for var in self.variables]
         self.data = {var.name:var.data for var in self.variables}
         #self.clear_memory()

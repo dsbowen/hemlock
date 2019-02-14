@@ -8,8 +8,27 @@ from hemlock import db
 from sqlalchemy import inspect
 from random import shuffle
 
+# Intersection of two lists by attr key
+# return tuple (list 1 element, list 2 element)
+# key must be unique in each list
+def intersection_by_key(l1, l2, key):
+    key1, key2 = [[getattr(item,key) for item in l] for l in [l1,l2]]
+    common_keys = set(key1) & set(key2)
+    return [[item 
+        for item in l if getattr(item,key) in common_keys]
+        for l in [l1,l2]]
+
 # Base class for Hemlock models
 class Base():        
+    # Add the object to database and commit
+    def _add_commit(self):
+        db.session.add(self)
+        db.session.commit()
+        try:
+            self._id_orig = self.id
+        except:
+            pass
+
     # Set the object text
     def _set_text(self, text):
         self._text = text
@@ -167,18 +186,26 @@ class Base():
         mapper = inspect(orig).mapper
         keys = [r.key for r in mapper.relationships
             if r.direction.name=='ONETOMANY']
+           
+        for key in keys: 
+            # get all children
+            orig_children = getattr(orig, key).all()
+            self_children = getattr(self, key).all()
             
-        k = keys[0]
-        orig_children = getattr(orig,k).all()
-        if orig_children:
-            first = orig_children[0]
-            new = first__class__()
-            new._assign_parent(self)
-        
-        # for each child relationship
-        #  create children
-        #  copy children
-        # setattr(self, k, 
-            
-        return keys
+            # common children
+            self_common, orig_common = intersection_by_key(
+                self_children, orig_children,'_id_orig')
+            for i in range(len(self_common)):
+                self_common[i]._copy(orig_common[i])
+                
+            # children unique to self
+            for child in [c for c in self_children if c not in self_common]:
+                parent_key = self._relationship_key(child, self)
+                child._remove_parent(parent_key)
+                
+            # children unique to orig
+            for child in [c for c in orig_children if c not in orig_common]:
+                new_child = child.__class__()
+                new_child._copy(child)
+                new_child._assign_parent(self)
         

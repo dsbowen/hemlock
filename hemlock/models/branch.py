@@ -28,12 +28,10 @@ class Branch(db.Model, Base):
     _randomize = db.Column(db.Boolean)
     
     # Add to database and commit upon initialization
-    def __init__(self, next=None, next_args=None, randomize=False):        
+    def __init__(self, next=None, next_args=None, randomize=False):
+        self._add_commit()
         self.next(next, next_args)
         self.randomize(randomize)
-        
-        db.session.add(self)
-        db.session.commit()
         
     # Set the next navigation function and arguments
     def next(self, next=None, args=None):

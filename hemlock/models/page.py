@@ -62,15 +62,14 @@ class Page(db.Model, Base):
         next=None, next_args=None,
         terminal=False, randomize=False):
         
+        self._add_commit()
+        
         self.branch(branch, order)
         self.render(render, render_args)
         self.post(post, post_args)
         self.next(next, next_args)
         self.terminal(terminal)
         self.randomize(randomize)
-        
-        db.session.add(self)
-        db.session.commit()
     
     # Assign to branch
     def branch(self, branch, order=None):

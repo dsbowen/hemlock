@@ -60,6 +60,7 @@ _branch_id: ID of branch to which question belongs (embedded questions only)
 _page_id: ID of page to which question belongs
 _choices: list of choices (e.g. for single choice questions
 _validators: list of validators
+_id_orig: id of the original question (to identify copies)
 _order: order in which the question appears on the page
 _text: question text
 _qtype: question type
@@ -86,6 +87,7 @@ class Question(db.Model, Base):
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     _choices = db.relationship('Choice', backref='_question', lazy='dynamic')
     _validators = db.relationship('Validator', backref='_question', lazy='dynamic')
+    _id_orig = db.Column(db.Integer)
     _order = db.Column(db.Integer)
     _text = db.Column(db.Text)
     _qtype = db.Column(db.String(16))
@@ -111,6 +113,8 @@ class Question(db.Model, Base):
         post=None, post_args=None,
         randomize=False, default=None, clear_on=[], data=None):
         
+        self._add_commit()
+        
         self.var(var)
         self.branch(branch)
         self.page(page, order)
@@ -123,9 +127,6 @@ class Question(db.Model, Base):
         self.default(default)
         self.clear_on(clear_on)
         self.data(data)
-        
-        db.session.add(self)
-        db.session.commit()
         
     # Assign to branch
     def branch(self, branch):
@@ -149,6 +150,10 @@ class Question(db.Model, Base):
     # Sets the question text
     def text(self, text):
         self._set_text(text)
+        
+    # Gets the question text
+    def get_text(self):
+        return self._text
         
     # Set question type
     def qtype(self, qtype):
@@ -205,7 +210,6 @@ class Question(db.Model, Base):
         
     # Get the list of nonselected choices
     def get_nonselected(self):
-        [print(c._checked) for c in self._choices]
         return [c for c in self._choices if c._checked=='']
         
     # Render the question in html

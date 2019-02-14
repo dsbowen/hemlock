@@ -10,6 +10,7 @@ from hemlock.models.base import Base
 '''
 Data:
 _question_id: ID of the question to which the choice belongs
+_id_orig: id of the original choice (to identify copies)
 _order: order in which the choice appears in the question
 _text: choice text
 _value: encoded value of the choice
@@ -21,6 +22,7 @@ _checked: indicator that this choice was checked
 class Choice(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    _id_orig = db.Column(db.Integer)
     _order = db.Column(db.Integer)
     _text = db.Column(db.Text)
     _value = db.Column(db.PickleType)
@@ -33,13 +35,14 @@ class Choice(db.Model, Base):
     def __init__(self, question=None, order=None, text='', 
         value=None, label=None):
         
+        self._add_commit()
+        
         self.assign_question(question, order)
         self.text(text)
         self.value(value)
         self.label(label)
         
-        db.session.add(self)
-        db.session.commit()
+        
         
     # Assign to question
     def assign_question(self, question, order=None):
