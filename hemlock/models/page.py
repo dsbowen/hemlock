@@ -38,6 +38,12 @@ _next_args: arguments for the next navigation function
 _terminal: indicator that the page is the last in the survey
 _randomize: indicator of question randomization
 _rendered: indicator that the page was previously rendered
+_state: integer representing the current state
+    0 - before render functions
+    1 - after render functions, before response collection
+    2 - after response collection
+_state_copy_ids: list of state copy ids
+_restore_on: dictionary of restoration states
 '''
 class Page(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
@@ -54,6 +60,9 @@ class Page(db.Model, Base):
     _terminal = db.Column(db.Boolean)
     _randomize = db.Column(db.Boolean)
     _rendered = db.Column(db.Boolean, default=False)
+    _state = db.Column(db.Integer, default=0)
+    _state_copy_ids = db.Column(db.PickleType)
+    _restore_on = db.Column(db.PickleType)
     
     # Add to database and commit upon initialization
     def __init__(self, branch=None, order=None,
@@ -97,20 +106,28 @@ class Page(db.Model, Base):
             
     # Set question randomization on/off (True/False)
     def randomize(self, randomize=True):
-        self._randomize = randomize    
+        self._randomize = randomize
+
+    # Set directions for restoration
+    def restore_on(self, restore_on):
+        self._restore_on = restore_on
     
     # Render the html code for the form specified on this page
     # executes command on first rendering
     # renders html for each question in Qhtml
     # adds a hidden tag and submit button
-    def _render_html(self):
+    def _render_html(self, direction):
+        # create state copies, set rendered indicator, store s0
         if not self._rendered:
-            #self._rendered = True
-            # STORE S0 HERE
-            pass
+            state_copies = [Page(),Page(),Page()]
+            self._state_copy_ids = [p.id for p in state_copies]
+            self._rendered = True
+            self._state = 0
+            s0 = state_copies[0]
+            s0._copy(self)
             
         # render functions
-        if not self._rendered: # CHANGE TO IF SELF._STATE==0
+        if self._state==0:
             # page render function and question randomization
             self._first_rendition(self._questions.all())
             
@@ -118,7 +135,10 @@ class Page(db.Model, Base):
             [q._first_rendition(q._choices.all()) 
                 for q in self._questions.order_by('_order')]
                 
-            # STORE S1 HERE
+            # store s1
+            self._state = 1
+            s1 = Page.query.get(self._state_copy_ids[1])
+            s1._copy(self)
         
         # html
         Qhtml = [q._render_html() for q in self._questions.order_by('_order')]
@@ -141,10 +161,16 @@ class Page(db.Model, Base):
         # validate
         valid = all([q._validate() for q in self._questions])
         
-        # STORE S2 HERE
+        # store s2
+        self._state = 2
+        s2 = Page.query.get(self._state_copy_ids[2])
         
         # assign participant
         if valid:
             [q._assign_participant(self._part) for q in self._questions]
             
         return valid
+        
+    def _restore(self, state_num):
+        state = Page.query.get(self._state_copy_ids[state_num])
+        self._copy(state)

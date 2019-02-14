@@ -11,35 +11,6 @@ import numpy as np
 
 #https://getbootstrap.com/docs/4.0/components/forms/
 
-# _copy(object id)
-# get object by query
-# get column keys: inspect(Table).columns.keys()
-# copy all column keys except id
-# get relationship keys: inspect(Table).relationships.keys()
-# filter out parents and keep children:
-#  x = list(inspect(Table).relationships)
-#  keep relationship key i if x[i].direction.name == 'ONETOMANY'
-# create list of children and assign to self
-# _copy children
-# store copy id in self
-
-# _restore to s2:
-# store errors in ordered list
-# _copy(s2.id)
-# assign errors
-
-# _restore to s1:
-# create a copy
-# _copy(s1.id)
-# store s3 copy
-# can conditionally reference s3 during rendering
-
-# s0: when _render_html is first called
-# s1: after page and question render functions
-# s2: after _validate_on_submit
-# clear_on brings it back to s1
-# rerender_on forward brings it back to s0
-
 def Start():
     b = Branch(next=End)
     
