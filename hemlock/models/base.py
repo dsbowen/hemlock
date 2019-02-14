@@ -9,7 +9,7 @@ from sqlalchemy import inspect
 from random import shuffle
 
 # Intersection of two lists by attr key
-# return tuple (list 1 element, list 2 element)
+# return list of [l1 elements, l2 elements]
 # key must be unique in each list
 def intersection_by_key(l1, l2, key):
     key1, key2 = [[getattr(item,key) for item in l] for l in [l1,l2]]
