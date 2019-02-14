@@ -11,6 +11,30 @@ import numpy as np
 
 #https://getbootstrap.com/docs/4.0/components/forms/
 
+# _copy(object id)
+# get object by query
+# get column keys: inspect(Table).columns.keys()
+# copy all column keys except id
+# get relationship keys: inspect(Table).relationships.keys()
+# filter out parents and keep children:
+#  x = list(inspect(Table).relationships)
+#  keep relationship key i if x[i].direction.name == 'ONETOMANY'
+# create list of children and assign to self
+# _copy children
+# store copy id in self
+
+# _restore to s2:
+# store errors in ordered list
+# _copy(s2.id)
+# assign errors
+
+# _restore to s1:
+# create a copy
+# _copy(s1.id)
+# store s3 copy
+# can conditionally reference s3 during rendering
+
+
 def foo():
     return 10
     
@@ -39,13 +63,19 @@ def Start():
     print(c._text)
     print(d._text)
     
+    x = Question.__table__.columns
+    [print(i) for i in x]
+    x = Question.__table__.foreign_keys
+    print('foreign keys')
+    [print(i) for i in x]
+    
     q = Question()
     p = Question()
     q._copy(p.id)
     q.render(foo)
-    print(q._render_function)
     db.session.commit()
     p._copy(q.id)
+    x = q.__table
     # print(p._render_function)
     
     b = Branch()
