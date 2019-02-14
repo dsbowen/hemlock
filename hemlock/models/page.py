@@ -107,28 +107,46 @@ class Page(db.Model, Base):
     # renders html for each question in Qhtml
     # adds a hidden tag and submit button
     def _render_html(self):
-        self._first_render(self._questions.all())
-        Qhtml = [q._render_html(self._part_id) 
-            for q in self._questions.order_by('_order')]
-        self._rendered = True
+        if not self._rendered:
+            self._rendered = True
+            # STORE S0 HERE
+            
+        # render functions
+        if not self._rendered: # CHANGE TO IF SELF._STATE==0
+            # page render function and question randomization
+            self._first_rendition(self._questions)
+            
+            # question render functions and choice randomization
+            [q._first_rendition(q._choices) 
+                for q in self._questions.order_by('_order')]
+                
+            # STORE S1 HERE
+        
+        # html
+        Qhtml = [q._render_html() for q in self._questions.order_by('_order')]
         db.session.commit()
         return ''.join([hidden_tag()]+Qhtml+[submit(self)])
         
     # Checks if questions have valid answers upon page submission
     def _validate_on_submit(self):
-        # record participant's raw data entry
-        [q._record_entry(request.form.get(str(q.id))) 
+        # record responses
+        [q._record_response(request.form.get(str(q.id))) 
             for q in self._questions if q._qtype != 'embedded']
+            
+        # page post function
+        self._call_function(self, self._post_function, self._post_args)
         
-        # check if every response was valid
+        # question post functions
+        [q._call_function(q, q._post_function, q._post_args) 
+            for q in self._questions.order_by('_order')]
+            
+        # validate
         valid = all([q._validate() for q in self._questions])
         
-        # call post functions
-        self._call_function(self, self._post_function, self._post_args)
-        questions = self._questions.order_by('_order')
-        [q._call_function(q, q._post_function, q._post_args) for q in questions]
+        # STORE S2 HERE
         
-        # assign questions to participant on validation and return
+        # assign participant
         if valid:
             [q._assign_participant(self._part) for q in self._questions]
+            
         return valid

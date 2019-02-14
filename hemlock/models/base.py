@@ -129,9 +129,7 @@ class Base():
             return branch
         
     # Execute render function and randomization on first render
-    def _first_render(self, children):
-        if self._rendered:
-            return
+    def _first_rendition(self, children):
         self._call_function(self, self._render_function, self._render_args)
         if self._randomize:
             self._randomize_children(children)

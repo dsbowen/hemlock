@@ -72,10 +72,9 @@ _randomize: indicator of choice randomization
 _init_default: initial default option (before first post)
 _default: participant's response from last post or initial default
 _clear_on: list of situations in which question is cleared
-_rendered: indicator that the question was previously rendered
 _error: stores an error message if response was invalid
-_entry: participant's raw data entry
-_data: response data (cleaned version of entry)
+_response: participant's raw data response
+_data: response data (cleaned version of response)
 _vorder: order in which this question appears in its variable
 _archive: copy of the question before it was rendered
 '''
@@ -99,9 +98,8 @@ class Question(db.Model, Base):
     _init_default = db.Column(db.PickleType)
     _default = db.Column(db.PickleType)
     _clear_on = db.Column(db.PickleType)
-    _rendered = db.Column(db.Boolean, default=False)
     _error = db.Column(db.PickleType)
-    _entry = db.Column(db.Text)
+    _response = db.Column(db.Text)
     _data = db.Column(db.PickleType)
     _vorder = db.Column(db.Integer)
     
@@ -200,9 +198,9 @@ class Question(db.Model, Base):
     def get_data(self):
         return self._data
         
-    # Get question entry
-    def get_entry(self):
-        return self._entry
+    # Get question response
+    def get_response(self):
+        return self._response
         
     # Get the list of selected choices
     def get_selected(self):
@@ -213,33 +211,11 @@ class Question(db.Model, Base):
         [print(c._checked) for c in self._choices]
         return [c for c in self._choices if c._checked=='']
         
-    # Clear the question entry, data, default, and returns render to 
-    def clear_data(self):
-        self._entry = self._data
-        
-    # Record the participant's entry
-    def _record_entry(self, entry):
-        if self._qtype == 'free':
-            self._default = entry
-        elif self._qtype == 'single choice':
-            [c._set_checked(entry==str(c.id)) for c in self._choices]
-            checked = self.get_selected()
-            if checked:
-                self._default = checked[0].id
-                entry = checked[0]._value
-        self._entry = entry
-        self.data(entry)
-        
     # Render the question in html
-    def _render_html(self, part_id):
-        self._first_render(self._choices.all())
-        if not self._rendered:
-            self._default = self._init_default
-        
+    def _render_html(self):        
         if self._qtype == 'embedded':
-            html = ''
-        else:
-            html = '''
+            return ''
+        return '''
         <p>
             {0}
             {1}
@@ -247,8 +223,28 @@ class Question(db.Model, Base):
         </p>
         '''.format(render_error(self), render_text(self), render_body(self))
         
-        self._rendered = True
-        return html
+    # Record the participant's response
+    # collects response and updates default
+    def _record_response(self, response):
+        if self._qtype == 'free':
+            self._default = response
+        elif self._qtype == 'single choice':
+            [c._set_checked(response==str(c.id)) for c in self._choices]
+            checked = self.get_selected()
+            if checked:
+                self._default = checked[0].id
+                response = checked[0]._value
+        self._response = response
+        self.data(response)
+        
+    # Validate the participant's response
+    def _validate(self):
+        for v in self._validators:
+            self._error = v._get_error()
+            if self._error is not None:
+                # GIVE ERROR TO S1
+                return False
+        return True
         
     # Set the variable order
     def _set_vorder(self):
@@ -256,15 +252,6 @@ class Question(db.Model, Base):
             return
         prev = Question.query.filter_by(_part_id=self._part_id, _var=self._var)
         self._vorder = len(prev.all())
-        
-    # Validate the participant's response
-    def _validate(self):
-        for v in self._validators:
-            self._error = v._get_error()
-            if self._error is not None:
-                self.clear_data()
-                return False
-        return True
         
     # Outputs the data (both question data and order data)
     def _output_data(self):
@@ -281,30 +268,30 @@ class Question(db.Model, Base):
         return data
 
     # Copies selected attributes of question q
-    def _copy(self, question_id):
-        q = Question.query.get(question_id)
+    # def _copy(self, question_id):
+        # q = Question.query.get(question_id)
     
-        self.branch(q._branch)
-        self.page(q._page)
-        self._set_order(q._order)
-        self.text(q._text)
-        self.qtype(q._qtype)
-        self.var(q._var)
-        self.all_rows(q._all_rows)
-        self.render(q._render_function, q._render_args)
-        self.post(q._post_function, q._post_args)
-        self.randomize(q._randomize)
-        self.default(q._init_default)
-        self._default = q._default
-        self.clear_on(q._clear_on)
-        self.rendered = False
-        self._error = q._error
-        self._entry = q._entry
-        self.data(q._data)
-        self._vorder = q._vorder
+        # self.branch(q._branch)
+        # self.page(q._page)
+        # self._set_order(q._order)
+        # self.text(q._text)
+        # self.qtype(q._qtype)
+        # self.var(q._var)
+        # self.all_rows(q._all_rows)
+        # self.render(q._render_function, q._render_args)
+        # self.post(q._post_function, q._post_args)
+        # self.randomize(q._randomize)
+        # self.default(q._init_default)
+        # self._default = q._default
+        # self.clear_on(q._clear_on)
+        # self.rendered = False
+        # self._error = q._error
+        # self._response = q._response
+        # self.data(q._data)
+        # self._vorder = q._vorder
         
-        choices = [Choice(question=self)]*len(q._choices.all())
-        [new._copy(old.id) for (new,old) in zip(choices,q._choices)]
+        # choices = [Choice(question=self)]*len(q._choices.all())
+        # [new._copy(old.id) for (new,old) in zip(choices,q._choices)]
 
-        validators = [Validator(question=self)]*len(q._validators.all())
-        [new._copy(old.id) for (new,old) in zip(validators,q._validators)]
+        # validators = [Validator(question=self)]*len(q._validators.all())
+        # [new._copy(old.id) for (new,old) in zip(validators,q._validators)]
