@@ -1,7 +1,7 @@
 ###############################################################################
 # Example Hemlock survey
 # by Dillon Bowen
-# last modified 02/10/2019
+# last modified 02/14/2019
 ###############################################################################
 
 from hemlock import create_app, db, query, Participant, Branch, Page, Question, Choice, Validator, Variable
@@ -34,54 +34,105 @@ import numpy as np
 # store s3 copy
 # can conditionally reference s3 during rendering
 
-
-def foo():
-    return 10
-    
-def bar():
-    return 11
+# s0: when _render_html is first called
+# s1: after page and question render functions
+# s2: after _validate_on_submit
+# clear_on brings it back to s1
+# rerender_on forward brings it back to s0
 
 def Start():
-    v = Validator()
-    u = Validator()
-    u.condition(foo)
-    v._copy(u.id)
-    db.session.commit()
-    print(u._condition_function)
-    print(v._condition_function)
-    u.condition(bar)
-    print(u._condition_function)
-    print(v._condition_function)
+    b = Branch(next=End)
     
-    c = Choice()
-    d = Choice()
-    c.text('hello moon')
-    print(d._text)
-    d._copy(c.id)
-    print(d._text)
-    c.text('hello star')
-    print(c._text)
-    print(d._text)
+    p = Page(branch=b)
+    q = Question(page=p, text='Hello world')
     
-    x = Question.__table__.columns
-    [print(i) for i in x]
-    x = Question.__table__.foreign_keys
-    print('foreign keys')
-    [print(i) for i in x]
+    p = Page(branch=b, randomize=True)
+    q = Question(page=p, qtype='free', var='hello', text='Hello moon')
+    q = Question(page=p, qtype='free', var='hello', text='Hello star')
     
-    q = Question()
-    p = Question()
-    q._copy(p.id)
-    q.render(foo)
-    db.session.commit()
-    p._copy(q.id)
-    x = q.__table
-    # print(p._render_function)
+    p = Page(branch=b)
+    q = Question(page=p, qtype='single choice', var='hello', text='Pick one', randomize=True)
+    c = Choice(question=q, text='hello world')
+    c = Choice(question=q, text='hello moon')
+    c = Choice(question=q, text='hello star')
     
-    b = Branch()
-    p = Page(branch=b, terminal=True)
-    q = Question(page=p, text='hello world')
     return b
+    
+def End():
+    b = Branch()
+
+    p = Page(branch=b, randomize=True)
+    q = question(page=p, qtype='single choice', var='goodbye', all_rows=True, text='Goodbye', randomize=True)
+    c = Choice(question=q, text='Goodbye world')
+    c = Choice(question=q, text='Goodbye moon')
+    c = Choice(question=q, text='Goodbye star')
+    v = Validator(question=q, condition=force)
+    
+    q = Question(page=p, qtype='single choice', var='comp', all_rows=True, text='Comprehension check')
+    c = Choice(question=q, text='correct', value=1)
+    c = Choice(question=q, text='incorrect', value=0)
+    c = Choice(question=q, text='also incorrect', value=0)
+    v = Validator(question=q, condition=attn)
+    
+    p = Page(branch=b, terminal=True)
+    q = Question(page=p, text='Thank you for participating')
+    
+    return b
+    
+def force(q):
+    if q.get_response() is None:
+        return 'Please answer the question'
+        
+def attn(q):
+    if not q.get_data():
+        return 'Your response was incorrect'
+
+# def foo():
+    # return 10
+    
+# def bar():
+    # return 11
+
+# def Start():
+    # v = Validator()
+    # u = Validator()
+    # u.condition(foo)
+    # v._copy(u.id)
+    # db.session.commit()
+    # print(u._condition_function)
+    # print(v._condition_function)
+    # u.condition(bar)
+    # print(u._condition_function)
+    # print(v._condition_function)
+    
+    # c = Choice()
+    # d = Choice()
+    # c.text('hello moon')
+    # print(d._text)
+    # d._copy(c.id)
+    # print(d._text)
+    # c.text('hello star')
+    # print(c._text)
+    # print(d._text)
+    
+    # x = Question.__table__.columns
+    # [print(i) for i in x]
+    # x = Question.__table__.foreign_keys
+    # print('foreign keys')
+    # [print(i) for i in x]
+    
+    # q = Question()
+    # p = Question()
+    # q._copy(p.id)
+    # q.render(foo)
+    # db.session.commit()
+    # p._copy(q.id)
+    # x = q.__table
+    
+    # b = Branch()
+    # p = Page(branch=b, terminal=True)
+    # q = Question(page=p, text='hello world')
+    # return b
 
 # def Start():
     # b = Branch(randomize=True)
@@ -112,17 +163,17 @@ def Start():
     # return b
     
 # def yes(q):
-    # entry = q.get_entry()
-    # if entry is None or entry.lower() != 'yes':
+    # response = q.get_response()
+    # if response is None or response.lower() != 'yes':
         # return "Please say yes"
         
 # def no(q):
-    # entry = q.get_entry()
-    # if entry is None or entry.lower() != 'no':
+    # response = q.get_response()
+    # if response is None or response.lower() != 'no':
         # return "Please say no"
         
 # def force(q):
-    # if q.get_entry() is None:
+    # if q.get_response() is None:
         # return "Please answer the question"
         
 # def render(page, branch_id):
@@ -131,7 +182,7 @@ def Start():
         
 # def Next(wish_id):
     # b = Branch()
-    # YES = query(wish_id).get_entry().upper()
+    # YES = query(wish_id).get_response().upper()
     # q = Question(branch=b, var='YES', data=YES)
     # return b
         
@@ -142,7 +193,7 @@ def Start():
     # return b
     
 # def wish(page, wish_id):
-    # wish = query(wish_id).get_entry()
+    # wish = query(wish_id).get_response()
     # q = Question(page=page, text='You wished to answer {0}'.format(wish))
     
 # def not_wish(q, wish_id):
@@ -150,7 +201,7 @@ def Start():
     # q.text('You did not wish to answer {0}'.format(not_wish))
     
 # def post(q):
-    # q.data(q.get_entry()=='yes')
+    # q.data(q.get_response()=='yes')
         
 app = create_app(Config, 
     start=Start, 
