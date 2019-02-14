@@ -11,6 +11,8 @@ import numpy as np
 
 #https://getbootstrap.com/docs/4.0/components/forms/
 
+# NOTE: need to store errors if restoring to s1 on invalid
+
 def Start():
     b = Branch(next=End)
     

@@ -71,11 +71,13 @@ def survey():
     if request.method == 'POST':
         if page._validate_on_submit():
             part.advance_page()
+        else:
+            page._direction = 'invalid'
         db.session.commit()
         return redirect(url_for('hemlock.survey'))
         
     if page._terminal:
-        page._render_html() # might change this when I record partial responses
+        #page._render_html() # might change this when I record partial responses
         part.store_data()
         
     return render_template('page.html', page=Markup(page._render_html()))

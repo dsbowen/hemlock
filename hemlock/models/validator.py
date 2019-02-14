@@ -18,6 +18,7 @@ _condition_args: arguments for the condition function
 class Validator(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    _id_orig = db.Column(db.Integer)
     _order = db.Column(db.Integer)
     _condition_function = db.Column(db.PickleType)
     _condition_args = db.Column(db.PickleType)
