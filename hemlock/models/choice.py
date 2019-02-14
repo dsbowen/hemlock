@@ -43,13 +43,11 @@ class Choice(db.Model, Base):
         
     # Assign to question
     def assign_question(self, question, order=None):
-        if question is not None:
-            self._assign_parent('_question', question, question._choices.all(), order)
+        self._assign_parent(question, order)
         
     # Remove from question
     def remove_question(self):
-        if self._question is not None:
-            self._remove_parent('_question', self._question._choices.all())
+        self._remove_parent('_question')
         
     # Set the choice text
     def text(self, text):
@@ -86,13 +84,13 @@ class Choice(db.Model, Base):
         self._checked = 'checked' if checked else ''
         
     # Copies selected attributes from another choice
-    def _copy(self, choice_id):
-        c = Choice.query.get(choice_id)
+    # def _copy(self, choice_id):
+        # c = Choice.query.get(choice_id)
     
-        self._set_order(c._order)
-        self.text(c._text)
-        self.value(c._value)
-        self._value_followstext = c._value_followstext
-        self.label(c._label)
-        self._label_followtext = c._label_followtext
-        self._set_checked(c._checked=='checked')
+        # self._set_order(c._order)
+        # self.text(c._text)
+        # self.value(c._value)
+        # self._value_followstext = c._value_followstext
+        # self.label(c._label)
+        # self._label_followtext = c._label_followtext
+        # self._set_checked(c._checked=='checked')

@@ -129,26 +129,22 @@ class Question(db.Model, Base):
         
     # Assign to branch
     def branch(self, branch):
-        if branch is not None:
-            self._assign_parent('_branch', branch, branch._embedded.all())
-            if branch._part_id is not None:
-                self._assign_participant(branch._part)
+        self._assign_parent(branch)
+        if not (branch is None or branch._part is None):
+            self._assign_participant(branch._part)
             
     # Remove from branch
     def remove_branch(self):
         self._part = None
-        if self._branch is not None:
-            self._remove_parent('_branch', self._branch._embedded.all())
+        self._remove_parent('_branch')
     
     # Assign to page
     def page(self, page, order=None):
-        if page is not None:
-            self._assign_parent('_page', page, page._questions.all(), order)
+        self._assign_parent(page, order)
             
     # Remove from page
     def remove_page(self):
-        if self._page is not None:
-            self._remove_parent('_page', self._page._questions.all())
+        self._remove_parent('_page')
             
     # Sets the question text
     def text(self, text):

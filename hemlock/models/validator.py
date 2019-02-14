@@ -31,13 +31,11 @@ class Validator(db.Model, Base):
         
     # Assign to question
     def question(self, question, order=None):
-        if question is not None:
-            self._assign_parent('_question', question, question._validators.all(), order)
+        self._assign_parent(question, order)
         
     # Remove from question
     def remove_question(self):
-        if self._question is not None:
-            self._remove_parent('_question', self._question._validators.all())
+        self._remove_parent('_question')
         
     # Set the condition function and arguments
     def condition(self, condition=None, args=None):
@@ -50,8 +48,8 @@ class Validator(db.Model, Base):
             self._question, self._condition_function, self._condition_args)
             
     # Copies selected attributes from another validator
-    def _copy(self, validator_id):
-        v = Validator.query.get(validator_id)
+    # def _copy(self, validator_id):
+        # v = Validator.query.get(validator_id)
         
-        self._set_order(v._order)
-        self.condition(v._condition_function, v._condition_args)
+        # self._set_order(v._order)
+        # self.condition(v._condition_function, v._condition_args)

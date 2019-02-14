@@ -74,13 +74,11 @@ class Page(db.Model, Base):
     
     # Assign to branch
     def branch(self, branch, order=None):
-        if branch is not None:
-            self._assign_parent('_branch', branch, branch._page_queue.all(), order)
+        self._assign_parent(branch, order)
         
     # Remove from branch
     def remove_branch(self):
-        if self._branch is not None:
-            self._remove_parent('_branch', self._branch._page_queue.all())
+        self._remove_parent('_branch')
             
     # Sets the render function and arguments
     def render(self, render=None, args=None):
