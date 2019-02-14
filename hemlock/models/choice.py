@@ -75,10 +75,10 @@ class Choice(db.Model, Base):
     # Set the choice label
     def label(self, label=None):
         if label is None:
-            self._label = self._text
+            self._label = self._text.replace(' ', '_')
             self._label_followtext = True
         else:
-            self._label = label
+            self._label = label.replace(' ','_')
             self._label_followtext = False
             
     # Set the choice as checked

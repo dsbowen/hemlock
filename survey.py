@@ -62,16 +62,17 @@ def End():
     b = Branch()
 
     p = Page(branch=b, randomize=True)
-    q = question(page=p, qtype='single choice', var='goodbye', all_rows=True, text='Goodbye', randomize=True)
+    q = Question(page=p, qtype='single choice', var='goodbye', all_rows=True, text='Goodbye', randomize=True)
     c = Choice(question=q, text='Goodbye world')
     c = Choice(question=q, text='Goodbye moon')
     c = Choice(question=q, text='Goodbye star')
-    v = Validator(question=q, condition=force)
+    v = Validator(question=q, condition=required)
     
     q = Question(page=p, qtype='single choice', var='comp', all_rows=True, text='Comprehension check')
     c = Choice(question=q, text='correct', value=1)
     c = Choice(question=q, text='incorrect', value=0)
     c = Choice(question=q, text='also incorrect', value=0)
+    v = Validator(question=q, condition=required)
     v = Validator(question=q, condition=attn)
     
     p = Page(branch=b, terminal=True)
@@ -79,7 +80,7 @@ def End():
     
     return b
     
-def force(q):
+def required(q):
     if q.get_response() is None:
         return 'Please answer the question'
         

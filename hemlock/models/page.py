@@ -108,16 +108,17 @@ class Page(db.Model, Base):
     # adds a hidden tag and submit button
     def _render_html(self):
         if not self._rendered:
-            self._rendered = True
+            #self._rendered = True
             # STORE S0 HERE
+            pass
             
         # render functions
         if not self._rendered: # CHANGE TO IF SELF._STATE==0
             # page render function and question randomization
-            self._first_rendition(self._questions)
+            self._first_rendition(self._questions.all())
             
             # question render functions and choice randomization
-            [q._first_rendition(q._choices) 
+            [q._first_rendition(q._choices.all()) 
                 for q in self._questions.order_by('_order')]
                 
             # STORE S1 HERE

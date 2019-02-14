@@ -38,9 +38,10 @@ def render_body(q):
     
 # Renders free response question in html format
 def render_free(q):
+    default = q._default if q._default is not None else ''
     return '''
         <input name='{0}' type='text' value='{1}'>
-        '''.format(q.id, q._default)
+        '''.format(q.id, default)
     
 # Renders single choice question in html format
 def render_single_choice(q):
