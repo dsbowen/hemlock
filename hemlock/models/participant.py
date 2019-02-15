@@ -114,7 +114,7 @@ class Participant(db.Model):
         self.head -= 1
         
         while type(self.queue[self.head]) != int:
-            function, self.queue[self.head][0]
+            function = self.queue[self.head][0]
             if function is not None:
                 # find next navigator
                 # FIND A WAY TO DO THIS IN CONSTANT TIME
@@ -127,6 +127,9 @@ class Participant(db.Model):
                 
             # decrement head
             self.head -= 1
+
+        # set direction to back
+        self.get_page()._direction = 'back'
             
     # Store participant data
     # add end time variable

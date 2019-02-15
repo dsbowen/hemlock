@@ -20,9 +20,12 @@ def hidden_tag():
 def submit(page):
     if page._terminal:
         return ''
+    back = ''
     if page._back:
-        
-    return '''
+        back = '''
+        <p align=left><input type='submit' name='back' value='<<'></p>
+        '''
+    return back+'''
         <p align=right><input type='submit' name='submit' value='>>'></p>
         '''
 '''
@@ -173,6 +176,10 @@ class Page(db.Model, Base):
         [q._record_response(request.form.get(str(q.id))) 
             for q in self._questions if q._qtype != 'embedded']
             
+        # back
+        if request.form.get('back'):
+            return 'back'
+            
         # page post function
         self._call_function(self, self._post_function, self._post_args)
         
@@ -188,10 +195,10 @@ class Page(db.Model, Base):
         self._store_errors_in_s1()
         
         # assign participant
-        if valid:
-            [q._assign_participant(part_id) for q in self._questions]
-            
-        return valid
+        if not valid:
+            return 'invalid'
+        [q._assign_participant(part_id) for q in self._questions]
+        return 'forward'
         
     # Store the current state
     def _store_state(self, state_num):

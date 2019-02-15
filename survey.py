@@ -40,7 +40,7 @@ def Start():
     p = Page(b, next=Middle)
     q = Question(p, 'Hello world')
     
-    p = Page(b, randomize=True, restore_on={'invalid':2})
+    p = Page(b, randomize=True, restore_on={'invalid':2}, back=True)
     q = Question(p, 'Hello moon', 'free', 'hello', default='hello moon', post=post)
     Validator(q, required)
     q = Question(p, 'Hello star', 'free', 'hello', default='hello star')

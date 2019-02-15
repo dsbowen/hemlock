@@ -67,8 +67,11 @@ def survey():
     print(part.queue)
         
     if request.method == 'POST':
-        if page._validate_on_submit(part.id):
+        navigation = page._validate_on_submit(part.id)
+        if navigation == 'forward':
             part.forward()
+        elif navigation == 'back':
+            part.back()
         else:
             page._direction = 'invalid'
         db.session.commit()
