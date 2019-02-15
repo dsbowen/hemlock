@@ -27,6 +27,11 @@ participant head moves along queue
 first make it work for a single branch
 or maybe don't need to do this for monday
 
+TO SPEED UP RUNTIME:
+have option in page to pass in original and create copy
+don't call any of the init functions
+create state copies as you go through the rendition process
+add their ids to the other states as you go (e.g. add s1 id to s0)
 '''
 
 def Start():
@@ -36,17 +41,16 @@ def Start():
     Question(p, 'Hello world')
     
     p = Page(b, randomize=True)
-    q = Question(p, 'Hello moon', 'free', 'hello')
-    q.default('hello moon')
-    q = Question(p, 'Hello star', 'free', 'hello')
-    q.default('hello star')
+    q = Question(p, 'Hello moon', 'free', 'hello', default='hello moon')
+    Validator(q, required)
+    q = Question(p, 'Hello star', 'free', 'hello', default='hello star')
+    Validator(q, required)
     
     p = Page(b)
     q = Question(p, 'Pick one', 'single choice', 'hello', True)
     Choice(q, 'hello world')
     Choice(q, 'hello moon')
-    c = Choice(q, 'hello star')
-    q.default(c.id)
+    q.default(Choice(q, 'hello star'))
     
     return b
     
@@ -57,13 +61,11 @@ def End():
     q = Question(p, 'Goodbye', 'single choice', 'goodbye', True, all_rows=True)
     Choice(q, 'Goodbye world')
     Choice(q, 'Goodbye moon')
-    c = Choice(q, 'Goodbye star')
-    q.default(c.id)
+    Choice(q, 'Goodbye star')
     Validator(q, required)
     
     q = Question(p, 'Comprehension check', 'single choice', 'comp', all_rows=True)
-    c = Choice(q, 'correct', 1)
-    q.default(c.id)
+    q.default(Choice(q, 'correct', 1))
     Choice(q, 'incorrect', 0)
     Choice(q, 'also incorrect', 0)
     Validator(q, required)
@@ -75,7 +77,8 @@ def End():
     return b
     
 def required(q):
-    if q.get_response() is None:
+    response = q.get_response()
+    if response is None or response == '':
         return 'Please answer the question'
         
 def attn(q):

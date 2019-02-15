@@ -1,7 +1,7 @@
 ###############################################################################
 # Question model
 # by Dillon Bowen
-# last modified 02/12/2019
+# last modified 02/14/2019
 ###############################################################################
 
 from hemlock import db
@@ -182,6 +182,8 @@ class Question(db.Model, Base):
     # string for free response
     # choice id for multiple choice
     def default(self, default):
+        if type(default) == Choice:
+            default = default.id
         self._init_default = default
         self._default = default
         
@@ -236,7 +238,6 @@ class Question(db.Model, Base):
         for v in self._validators:
             self._error = v._get_error()
             if self._error is not None:
-                # GIVE ERROR TO S1
                 return False
         return True
         

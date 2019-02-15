@@ -6,7 +6,7 @@
 
 from hemlock import db
 from hemlock.models.question import Question
-from hemlock.models.base import Base
+from hemlock.models.base import Base, intersection_by_key
 from flask import request
 from random import choice
 from string import ascii_letters, digits
@@ -187,3 +187,16 @@ class Page(db.Model, Base):
         self._state_num = state_num
         state = Page.query.get(self._state_copy_ids[state_num])
         state._copy(self.id)
+        
+    # Store errors from s2 in s1
+    def _store_errors_in_s1(self):
+        # get states
+        s1, s2 = [Page.query.get(self._state_copy_ids[i]) for i in [1,2]]
+        
+        # get question lists for both states and pair them
+        q1, q2 = [state._questions for state in [s1, s2]]
+        q1, q2 = intersection_by_key(q1, q2, '_id_orig')
+        
+        # copy errors
+        for i in range(len(q1)):
+            q1[i]._error = q2[i]._error
