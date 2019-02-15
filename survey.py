@@ -38,26 +38,26 @@ def Start():
     b = Branch(next=End)
     
     p = Page(b)
-    Question(p, 'Hello world')
+    q = Question(p, 'Hello world')
     
-    p = Page(b, randomize=True)
+    p = Page(b, randomize=True, restore_on={'invalid':1})
     q = Question(p, 'Hello moon', 'free', 'hello', default='hello moon')
     Validator(q, required)
     q = Question(p, 'Hello star', 'free', 'hello', default='hello star')
     Validator(q, required)
     
-    p = Page(b)
-    q = Question(p, 'Pick one', 'single choice', 'hello', True)
-    Choice(q, 'hello world')
-    Choice(q, 'hello moon')
-    q.default(Choice(q, 'hello star'))
+    # p = Page(b)
+    # q = Question(p, 'Pick one', 'single choice', 'hello', True)
+    # Choice(q, 'hello world')
+    # Choice(q, 'hello moon')
+    # q.default(Choice(q, 'hello star'))
     
     return b
     
 def End():
     b = Branch()
 
-    p = Page(b, randomize=True)
+    p = Page(b, randomize=True, restore_on={'invalid':1})
     q = Question(p, 'Goodbye', 'single choice', 'goodbye', True, all_rows=True)
     Choice(q, 'Goodbye world')
     Choice(q, 'Goodbye moon')
