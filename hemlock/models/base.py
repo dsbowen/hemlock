@@ -48,15 +48,6 @@ class Base():
     # Set the conditions for clearing the object
     def _set_clear_on(self, clear_on=[]):
         self._clear_on = clear_on
-        
-    # Assign an object to a participant
-    def _assign_participant(self, part):
-        self._part = part
-        db.session.commit()
-        try:
-            self._set_vorder()
-        except:
-            pass
             
     # Get the relationship key mapping object obj1 to object obj2
     def _relationship_key(self, obj1, obj2):

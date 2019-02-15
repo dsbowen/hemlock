@@ -1,7 +1,7 @@
 ###############################################################################
 # Question model
 # by Dillon Bowen
-# last modified 02/14/2019
+# last modified 02/15/2019
 ###############################################################################
 
 from hemlock import db
@@ -241,11 +241,13 @@ class Question(db.Model, Base):
                 return False
         return True
         
-    # Set the variable order
-    def _set_vorder(self):
+    # Assign to participant
+    # set variable order
+    def _assign_participant(self, part_id):
+        self._part_id = part_id
         if not self._var:
             return
-        prev = Question.query.filter_by(_part_id=self._part_id, _var=self._var)
+        prev = Question.query.filter_by(_part_id=part_id, _var=self._var)
         self._vorder = len(prev.all())
         
     # Outputs the data (both question data and order data)

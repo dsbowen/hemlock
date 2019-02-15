@@ -1,7 +1,7 @@
 ###############################################################################
 # Branch model
 # by Dillon Bowen
-# last modified 02/12/2019
+# last modified 02/15/2019
 ###############################################################################
 
 from hemlock import db
@@ -16,15 +16,16 @@ _page_queue: Queue of pages to render
 _embedded: Set of embedded data questions
 _next_function: next navigation function
 _next_args: arguments for the next navigation function
+_id_next: ID of the next branch
 _randomize: indicator of page randomization
 '''
 class Branch(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
-    _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     _page_queue = db.relationship('Page', backref='_branch', lazy='dynamic')
     _embedded = db.relationship('Question', backref='_branch', lazy='dynamic')
     _next_function = db.Column(db.PickleType)
     _next_args = db.Column(db.PickleType)
+    _id_next = db.Column(db.Integer)
     _randomize = db.Column(db.Boolean)
     
     # Add to database and commit upon initialization
@@ -41,10 +42,6 @@ class Branch(db.Model, Base):
     def randomize(self, randomize=True):
         self._set_randomize(randomize)
         
-    # Dequeue a page
-    def _dequeue(self):
-        if not self._page_queue.all():
-            return None
-        page = self._page_queue.order_by('_order').first()
-        self._page_queue.remove(page)
-        return page
+    # Get page ids
+    def _get_page_ids(self):
+        return [page.id for page in self._page_queue]

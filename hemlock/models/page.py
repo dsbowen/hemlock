@@ -25,7 +25,6 @@ def submit(page):
         '''
 '''
 Data:
-_part_id: ID of participant to whom the page belongs
 _branch_id: ID of the branch to which the page belongs
 _questions: list of questions on this page
 _order: order in which the page appears in its branch
@@ -35,6 +34,7 @@ _post_function: function called after responses are submitted and validated
 _post_args: arguments for the post function
 _next_function: next navigation function
 _next_args: arguments for the next navigation function
+_id_next: ID of the next branch
 _terminal: indicator that the page is the last in the survey
 _randomize: indicator of question randomization
 _rendered: indicator that the page was previously rendered
@@ -51,7 +51,6 @@ _direction: direction of survey flow - forward, back, invalid
 '''
 class Page(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
-    _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _questions = db.relationship('Question', backref='_page', lazy='dynamic')
     _order = db.Column(db.Integer)
@@ -61,6 +60,7 @@ class Page(db.Model, Base):
     _post_args = db.Column(db.PickleType)
     _next_function = db.Column(db.PickleType)
     _next_args = db.Column(db.PickleType)
+    _id_next = db.Column(db.Integer)
     _terminal = db.Column(db.Boolean)
     _randomize = db.Column(db.Boolean)
     _restore_on = db.Column(db.PickleType)
@@ -159,7 +159,7 @@ class Page(db.Model, Base):
         return ''.join([hidden_tag()]+Qhtml+[submit(self)])
         
     # Checks if questions have valid answers upon page submission
-    def _validate_on_submit(self):
+    def _validate_on_submit(self, part_id):
         # record responses
         [q._record_response(request.form.get(str(q.id))) 
             for q in self._questions if q._qtype != 'embedded']
@@ -180,7 +180,7 @@ class Page(db.Model, Base):
         
         # assign participant
         if valid:
-            [q._assign_participant(self._part) for q in self._questions]
+            [q._assign_participant(part_id) for q in self._questions]
             
         return valid
         

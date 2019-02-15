@@ -1,7 +1,7 @@
 ###############################################################################
 # Participant model
 # by Dillon Bowen
-# last modified 02/12/2019
+# last modified 02/15/2019
 ###############################################################################
 
 from hemlock import db
@@ -25,57 +25,92 @@ num_rows: number of rows participant contributes to dataframe
 '''
 class Participant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    branch_stack = db.relationship('Branch', backref='_part', lazy='dynamic')
-    curr_page = db.relationship('Page', uselist=False, backref='_part')
+    queue = db.Column(db.PickleType) #
+    head = db.Column(db.Integer, default=0) #
+    
     questions = db.relationship('Question', backref='_part', lazy='dynamic')
     variables = db.relationship('Variable', backref='part', lazy='dynamic')
-    data = db.Column(db.PickleType, default={})
+    data = db.Column(db.PickleType)
     num_rows = db.Column(db.Integer, default=0)
     
     # Add participant to database and commit on initialization
     # also initialize participant id and start time questions
-    def __init__(self, ipv4): 
+    def __init__(self, ipv4, start): 
         db.session.add(self)
         db.session.commit()
         
         id = Question(var='id', data=self.id, all_rows=True)
-        id._assign_participant(self)
+        id._assign_participant(self.id)
         ipv4 = Question(var='ipv4', data=ipv4, all_rows=True)
-        ipv4._assign_participant(self)
+        ipv4._assign_participant(self.id)
         
-        start = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
-        start._assign_participant(self)
-        # self.end = Question(var='end_time', all_rows=True)
-        # self.end.part = self
-        # ADD IP ADDRESS, LOCATION, ETC, HERE
-        # ALSO HAVE SEPARATE IP ADDRESS TABLE
+        start_time = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
+        start_time._assign_participant(self.id)
+        
+        self.queue = [[start, None, None, None]]
+        # continue advancing until you hit a page
+        while type(self.queue[self.head]) != int:
+            self.process_next()
         
     # Return current page
     def get_page(self):
-        return self.curr_page
+        return Page.query.get(self.queue[self.head])
         
-    # Advance forward one page
-    # if current page branches off, push that branch
-    # inspect the branch on top of the stack
-    # dequeue the first page in that branch's queue
-    # if there are no more pages in the queue, terminate the branch and advance
-    def advance_page(self):
-        if self.curr_page is not None and self.curr_page._next_function is not None:
-            new_branch = self.curr_page._get_next()
-            new_branch._assign_participant(self)
-        branch = self.branch_stack[-1]
-        self.curr_page = branch._dequeue()
-        if self.curr_page is None:
-            self.terminate_branch(branch)
-            return self.advance_page()
+    # Get the next tuple (function, args, branch_id, page_id)
+    # orig: from which the next function originates (Branch or Page)
+    def next_tuple(self, orig):
+        print(orig)
+        return [orig._next_function, orig._next_args, orig.id, orig.__class__]
         
-    # Terminate a branch
-    # if current branch points to next branch, add next branch to branch stack
-    def terminate_branch(self, branch):
-        new_branch = branch._get_next()
-        self.branch_stack.remove(branch)
-        if new_branch is not None:
-            new_branch._assign_participant(self)
+    # Inserts a list into the queue split at head
+    def insert_list(self, insert):
+        self.queue = self.queue[:self.head]+insert+self.queue[self.head:]
+        
+    # Go forward
+    def forward(self):
+        # get current head and advance head pointer
+        head = self.get_page()
+        self.head += 1
+        
+        # process page branch
+        if head._next_function is not None:
+            self.insert_list([self.next_tuple(head)])
+            # self.insert_next_tuple()
+            # self.insert_list([[head._next_function, head._next_args, None]])
+            
+        # continue advancing until you hit a page
+        while type(self.queue[self.head]) != int:
+            self.process_next()
+            
+        # set page direction to forward
+        self.get_page()._direction = 'forward'
+        
+    # Process item on queue if it contains the next navigation function
+    def process_next(self):
+        print('head',self.head)
+        print('queue',self.queue)
+        # extract next function, args, and origin id and table from next tuple
+        function, args, origin_id, table = self.queue[self.head]
+        
+        if function is None:
+            self.head += 1
+            return
+            
+        # get next branch
+        if args is None:
+            next = function()
+        else:
+            next = function(args)
+            
+        # update branch id
+        if table is not None:
+            table.query.get(origin_id)._id_next = next.id
+        
+        # insert next branch pages and next tuple into queue
+        orig = Branch.query.get(origin_id)
+        insert = next._get_page_ids()+[self.next_tuple(orig)]
+        self.head += 1
+        self.insert_list(insert)
             
     # Store participant data
     # add end time variable
@@ -83,8 +118,6 @@ class Participant(db.Model):
     # pads variables so they are all of equal length
     # clears branches, pages, and questions from database
     def store_data(self):
-        # end = Question.query.filter_by(part_id=self.id, var='end_time').first()
-        # self.end.set_data(datetime.utcnow())
         [self.process_question(q) 
 			for q in self.questions.order_by('_id_orig') if q._var]
         [var.pad(self.num_rows) for var in self.variables]

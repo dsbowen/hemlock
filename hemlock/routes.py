@@ -1,7 +1,7 @@
 ###############################################################################
 # URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 02/13/2019
+# last modified 02/15/2019
 ###############################################################################
 
 from hemlock import db, bp
@@ -30,11 +30,8 @@ def index():
         return redirect(url_for('hemlock.duplicate'))
     current_app.ipv4_current.append(ipv4)
         
-    part = Participant(ipv4)
+    part = Participant(ipv4, current_app.start)
     session['part_id'] = part.id
-    root = Branch(next=current_app.start)
-    root._assign_participant(part)
-    part.advance_page()
     db.session.commit()
     
     return redirect(url_for('hemlock.survey'))
@@ -69,8 +66,8 @@ def survey():
     page = part.get_page()
         
     if request.method == 'POST':
-        if page._validate_on_submit():
-            part.advance_page()
+        if page._validate_on_submit(part.id):
+            part.forward()
         else:
             page._direction = 'invalid'
         db.session.commit()
@@ -78,6 +75,7 @@ def survey():
         
     if page._terminal:
         #page._render_html() # might change this when I record partial responses
+        # ASSIGN QUESTIONS TO PART HERE
         part.store_data()
         
     return render_template('page.html', page=Markup(page._render_html()))

@@ -1,7 +1,7 @@
 ###############################################################################
 # Example Hemlock survey
 # by Dillon Bowen
-# last modified 02/14/2019
+# last modified 02/15/2019
 ###############################################################################
 
 from hemlock import create_app, db, query, Participant, Branch, Page, Question, Choice, Validator, Variable
@@ -37,22 +37,25 @@ add their ids to the other states as you go (e.g. add s1 id to s0)
 def Start():
     b = Branch(next=End)
     
-    p = Page(b)
+    p = Page(b, next=Middle)
     q = Question(p, 'Hello world')
     
-    p = Page(b, randomize=True, restore_on={'invalid':1})
-    q = Question(p, 'Hello moon', 'free', 'hello', default='hello moon')
+    p = Page(b, randomize=True, restore_on={'invalid':2})
+    q = Question(p, 'Hello moon', 'free', 'hello', default='hello moon', post=post)
     Validator(q, required)
     q = Question(p, 'Hello star', 'free', 'hello', default='hello star')
     Validator(q, required)
     
-    # p = Page(b)
-    # q = Question(p, 'Pick one', 'single choice', 'hello', True)
-    # Choice(q, 'hello world')
-    # Choice(q, 'hello moon')
-    # q.default(Choice(q, 'hello star'))
-    
     return b
+    
+def Middle():
+    b = Branch()
+    # p = Page(b)
+    # Question(p, 'Middle')
+    return b
+    
+def post(q):
+    q.text('Goodbye moon')
     
 def End():
     b = Branch()
