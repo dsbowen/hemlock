@@ -63,7 +63,7 @@ class Page(db.Model, Base):
     _next_args = db.Column(db.PickleType)
     _terminal = db.Column(db.Boolean)
     _randomize = db.Column(db.Boolean)
-    _restore_on = db.Column(db.PickleType, default={})
+    _restore_on = db.Column(db.PickleType)
     _state_num= db.Column(db.Integer)
     _state_copy_ids = db.Column(db.PickleType)
     _direction = db.Column(db.String(8), default='forward')
@@ -118,10 +118,12 @@ class Page(db.Model, Base):
     # takes a dictionary with keys 'forward', 'back', 'invalid'
     # and values as state number (1-2 for back and invalid, 0-2 for forward)
     def restore_on(self, restore_on):
-        # populate restore_on with missing keys
-        {restore_on[k]:self._restore_on[k]
-            for k in self._restore_on.keys() if k not in restore_on.keys()}
-        self._restore_on = restore_on
+        if self._restore_on is None:
+            self._restore_on = {'forward':2,'back':2,'invalid':2}
+        temp = self._restore_on
+        for direction, state_num in restore_on.items():
+            temp[direction] = state_num
+        self._restore_on = temp
     
     # Render the html code for the form specified on this page
     # executes command on first rendering
