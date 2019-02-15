@@ -12,6 +12,7 @@ import numpy as np
 #https://getbootstrap.com/docs/4.0/components/forms/
 
 # NOTE: need to store errors if restoring to s1 on invalid
+# TO SPEED UP: HAVE ANOTHER OBJECT AS INPUT FOR __INIT__ AND COPY
 
 def Start():
     b = Branch(next=End)

@@ -213,7 +213,7 @@ class Question(db.Model, Base):
         return [c for c in self._choices if c._checked=='']
         
     # Render the question in html
-    def _render_html(self):        
+    def _render_html(self):
         if self._qtype == 'embedded':
             return ''
         return '''
@@ -267,32 +267,3 @@ class Question(db.Model, Base):
             data['_'.join([self._var,c._label,'qorder'])] = c._order
             
         return data
-
-    # Copies selected attributes of question q
-    # def _copy(self, question_id):
-        # q = Question.query.get(question_id)
-    
-        # self.branch(q._branch)
-        # self.page(q._page)
-        # self._set_order(q._order)
-        # self.text(q._text)
-        # self.qtype(q._qtype)
-        # self.var(q._var)
-        # self.all_rows(q._all_rows)
-        # self.render(q._render_function, q._render_args)
-        # self.post(q._post_function, q._post_args)
-        # self.randomize(q._randomize)
-        # self.default(q._init_default)
-        # self._default = q._default
-        # self.clear_on(q._clear_on)
-        # self.rendered = False
-        # self._error = q._error
-        # self._response = q._response
-        # self.data(q._data)
-        # self._vorder = q._vorder
-        
-        # choices = [Choice(question=self)]*len(q._choices.all())
-        # [new._copy(old.id) for (new,old) in zip(choices,q._choices)]
-
-        # validators = [Validator(question=self)]*len(q._validators.all())
-        # [new._copy(old.id) for (new,old) in zip(validators,q._validators)]

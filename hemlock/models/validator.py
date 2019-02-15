@@ -46,10 +46,3 @@ class Validator(db.Model, Base):
     def _get_error(self):
         return self._call_function(
             self._question, self._condition_function, self._condition_args)
-            
-    # Copies selected attributes from another validator
-    # def _copy(self, validator_id):
-        # v = Validator.query.get(validator_id)
-        
-        # self._set_order(v._order)
-        # self.condition(v._condition_function, v._condition_args)

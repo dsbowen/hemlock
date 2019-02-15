@@ -1,7 +1,7 @@
 ###############################################################################
 # Page model
 # by Dillon Bowen
-# last modified 02/12/2019
+# last modified 02/14/2019
 ###############################################################################
 
 from hemlock import db
@@ -126,18 +126,15 @@ class Page(db.Model, Base):
     def _render_html(self):
         # create state copies, store s0
         if self._state is None:
-            print('first render')
             state_copies = [Page(),Page(),Page()]
             self._state_copy_ids = [p.id for p in state_copies]
-            self._state = 0
-            s0 = state_copies[0]
-            s0._copy(self)
+            self._store_state(0)
         else:
-            self._restore(self._restore_on[self._direction])
+            state_num = self._restore_on[self._direction]
+            self._copy(self._state_copy_ids[state_num])
             
         # render functions
         if self._state==0:
-            print('render functions')
             # page render function and question randomization
             self._first_rendition(self._questions.all())
             
@@ -145,10 +142,9 @@ class Page(db.Model, Base):
             [q._first_rendition(q._choices.all()) 
                 for q in self._questions.order_by('_order')]
                 
-            # store s1
-            self._state = 1
-            s1 = Page.query.get(self._state_copy_ids[1])
-            s1._copy(self)
+            # store s1 and s2
+            self._store_state(1)
+            self._store_state(2)
         
         # html
         Qhtml = [q._render_html() for q in self._questions.order_by('_order')]
@@ -174,7 +170,7 @@ class Page(db.Model, Base):
         # store s2
         self._state = 2
         s2 = Page.query.get(self._state_copy_ids[2])
-        s2._copy(self)
+        s2._copy(self.id)
         
         # assign participant
         if valid:
@@ -182,6 +178,7 @@ class Page(db.Model, Base):
             
         return valid
         
-    def _restore(self, state_num):
+    def _store_state(self, state_num):
+        self._state = state_num
         state = Page.query.get(self._state_copy_ids[state_num])
-        self._copy(state)
+        state._copy(self.id)

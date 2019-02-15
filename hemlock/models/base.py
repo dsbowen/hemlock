@@ -175,7 +175,9 @@ class Base():
         
     # Copy data from orig object in self
     # data = columns - foreign keys - id (primary key)
-    def _copy(self, orig):
+    def _copy(self, orig_id):
+        orig = self.__class__.query.get(orig_id)
+    
         # copy data
         keys = [c.key for c in orig.__table__.c 
             if c.key!='id' and not c.key.endswith('_id')]
@@ -196,7 +198,7 @@ class Base():
             self_common, orig_common = intersection_by_key(
                 self_children, orig_children,'_id_orig')
             for i in range(len(self_common)):
-                self_common[i]._copy(orig_common[i])
+                self_common[i]._copy(orig_common[i].id)
                 
             # children unique to self
             for child in [c for c in self_children if c not in self_common]:
@@ -206,6 +208,6 @@ class Base():
             # children unique to orig
             for child in [c for c in orig_children if c not in orig_common]:
                 new_child = child.__class__()
-                new_child._copy(child)
                 new_child._assign_parent(self)
+                new_child._copy(child.id)
         
