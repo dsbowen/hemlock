@@ -64,6 +64,7 @@ store participant data on terminal page
 def survey():
     part = Participant.query.get(session['part_id'])
     page = part.get_page()
+    print(part.queue)
         
     if request.method == 'POST':
         if page._validate_on_submit(part.id):

@@ -47,7 +47,9 @@ class Participant(db.Model):
         start_time = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
         start_time._assign_participant(self.id)
         
-        self.queue = [[start, None, None, None]]
+        root = Branch(next=start)
+        self.queue = [self.next_tuple(root)]
+        
         # continue advancing until you hit a page
         while type(self.queue[self.head]) != int:
             self.process_next()
@@ -59,7 +61,6 @@ class Participant(db.Model):
     # Get the next tuple (function, args, branch_id, page_id)
     # orig: from which the next function originates (Branch or Page)
     def next_tuple(self, orig):
-        print(orig)
         return [orig._next_function, orig._next_args, orig.id, orig.__class__]
         
     # Inserts a list into the queue split at head
@@ -75,8 +76,6 @@ class Participant(db.Model):
         # process page branch
         if head._next_function is not None:
             self.insert_list([self.next_tuple(head)])
-            # self.insert_next_tuple()
-            # self.insert_list([[head._next_function, head._next_args, None]])
             
         # continue advancing until you hit a page
         while type(self.queue[self.head]) != int:
@@ -87,8 +86,6 @@ class Participant(db.Model):
         
     # Process item on queue if it contains the next navigation function
     def process_next(self):
-        print('head',self.head)
-        print('queue',self.queue)
         # extract next function, args, and origin id and table from next tuple
         function, args, origin_id, table = self.queue[self.head]
         
@@ -102,13 +99,12 @@ class Participant(db.Model):
         else:
             next = function(args)
             
-        # update branch id
+        # update origin next branch id
         if table is not None:
             table.query.get(origin_id)._id_next = next.id
         
         # insert next branch pages and next tuple into queue
-        orig = Branch.query.get(origin_id)
-        insert = next._get_page_ids()+[self.next_tuple(orig)]
+        insert = next._get_page_ids()+[self.next_tuple(next)]
         self.head += 1
         self.insert_list(insert)
             
