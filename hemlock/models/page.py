@@ -64,7 +64,7 @@ class Page(db.Model, Base):
     _terminal = db.Column(db.Boolean)
     _randomize = db.Column(db.Boolean)
     _restore_on = db.Column(db.PickleType)
-    _state = db.Column(db.Integer)
+    _state_num= db.Column(db.Integer)
     _state_copy_ids = db.Column(db.PickleType)
     _direction = db.Column(db.String(8), default='forward')
     
@@ -125,16 +125,17 @@ class Page(db.Model, Base):
     # adds a hidden tag and submit button
     def _render_html(self):
         # create state copies, store s0
-        if self._state is None:
+        if self._state_num is None:
             state_copies = [Page(),Page(),Page()]
             self._state_copy_ids = [p.id for p in state_copies]
             self._store_state(0)
         else:
             state_num = self._restore_on[self._direction]
-            self._copy(self._state_copy_ids[state_num])
+            if self._state_num != state_num:
+                self._copy(self._state_copy_ids[state_num])
             
         # render functions
-        if self._state==0:
+        if self._state_num==0:
             # page render function and question randomization
             self._first_rendition(self._questions.all())
             
@@ -168,9 +169,7 @@ class Page(db.Model, Base):
         valid = all([q._validate() for q in self._questions])
         
         # store s2
-        self._state = 2
-        s2 = Page.query.get(self._state_copy_ids[2])
-        s2._copy(self.id)
+        self._store_state(2)
         
         # assign participant
         if valid:
@@ -178,7 +177,8 @@ class Page(db.Model, Base):
             
         return valid
         
+    # Store the current state
     def _store_state(self, state_num):
-        self._state = state_num
+        self._state_num = state_num
         state = Page.query.get(self._state_copy_ids[state_num])
         state._copy(self.id)
