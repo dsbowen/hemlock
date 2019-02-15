@@ -10,9 +10,24 @@ import pandas as pd
 import numpy as np
 
 #https://getbootstrap.com/docs/4.0/components/forms/
+'''
+NOTE: need to store errors if restoring to s1 on invalid
+TO SPEED UP: HAVE ANOTHER OBJECT AS INPUT FOR __INIT__ AND COPY
+make sure order is being recorded correctly before moving on
+TODO
+store errors in s1
+test restore s1 on invalid
+add back button
+store state s2 on back
+restore previous page
+in participant have a single page queue - no branch stack per se
+need something like next functions in the queue
+keep track of when next function should be called in participant
+participant head moves along queue
+first make it work for a single branch
+or maybe don't need to do this for monday
 
-# NOTE: need to store errors if restoring to s1 on invalid
-# TO SPEED UP: HAVE ANOTHER OBJECT AS INPUT FOR __INIT__ AND COPY
+'''
 
 def Start():
     b = Branch(next=End)
