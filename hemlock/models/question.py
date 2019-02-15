@@ -100,18 +100,17 @@ class Question(db.Model, Base):
     _randomize = db.Column(db.Boolean)
     _init_default = db.Column(db.PickleType)
     _default = db.Column(db.PickleType)
-    _clear_on = db.Column(db.PickleType)
     _error = db.Column(db.PickleType)
     _response = db.Column(db.Text)
     _data = db.Column(db.PickleType)
     _vorder = db.Column(db.Integer)
     
     # Adds question to database and commits on initialization
-    def __init__(self, branch=None, page=None, order=None, text='', 
-        qtype='text', var=None, all_rows=False,
+    def __init__(self, page=None, text='', qtype='text', var=None,
+        randomize=False, default=None, data=None, all_rows=False,
+        branch=None, order=None,
         render=None, render_args=None,
-        post=None, post_args=None,
-        randomize=False, default=None, clear_on=[], data=None):
+        post=None, post_args=None):
         
         self._add_commit()
         
@@ -125,7 +124,6 @@ class Question(db.Model, Base):
         self.post(post, post_args)
         self.randomize(randomize)
         self.default(default)
-        self.clear_on(clear_on)
         self.data(data)
         
     # Assign to branch
@@ -186,11 +184,6 @@ class Question(db.Model, Base):
     def default(self, default):
         self._init_default = default
         self._default = default
-        
-    # Set conditions for clearing the question
-    # conditions are invalid, back, and forward
-    def clear_on(self, clear_on):
-        self._set_clear_on(clear_on)
         
     # Set question data
     def data(self, data):

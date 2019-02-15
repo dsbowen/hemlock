@@ -24,7 +24,7 @@ class Validator(db.Model, Base):
     _condition_args = db.Column(db.PickleType)
     
     # Add to database and commit on initialize
-    def __init__(self, question=None, order=None, condition=None, args=None):
+    def __init__(self, question=None, condition=None, args=None, order=None):
         self._add_commit()
         self.question(question, order)
         self.condition(condition, args)

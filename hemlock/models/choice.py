@@ -32,8 +32,8 @@ class Choice(db.Model, Base):
     _checked = db.Column(db.String(8))
     
     # Add choice to database and commit on initialization
-    def __init__(self, question=None, order=None, text='', 
-        value=None, label=None):
+    def __init__(self, question=None, text='', value=None, label=None,
+        order=None):
         
         self._add_commit()
         

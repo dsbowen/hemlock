@@ -63,7 +63,7 @@ class Page(db.Model, Base):
     _next_args = db.Column(db.PickleType)
     _terminal = db.Column(db.Boolean)
     _randomize = db.Column(db.Boolean)
-    _restore_on = db.Column(db.PickleType)
+    _restore_on = db.Column(db.PickleType, default={})
     _state_num= db.Column(db.Integer)
     _state_copy_ids = db.Column(db.PickleType)
     _direction = db.Column(db.String(8), default='forward')
@@ -73,7 +73,8 @@ class Page(db.Model, Base):
         render=None, render_args=None,
         post=None, post_args=None,
         next=None, next_args=None,
-        terminal=False, randomize=False, restore_on=None):
+        terminal=False, randomize=False, 
+        restore_on={'forward': 2, 'back': 2, 'invalid': 2}):
         
         self._add_commit()
         
@@ -114,9 +115,12 @@ class Page(db.Model, Base):
         self._randomize = randomize
 
     # Set directions for restoration
-    def restore_on(self, restore_on=None):
-        if restore_on is None:
-            restore_on = {'forward': 2, 'back': 2, 'invalid': 2}
+    # takes a dictionary with keys 'forward', 'back', 'invalid'
+    # and values as state number (1-2 for back and invalid, 0-2 for forward)
+    def restore_on(self, restore_on):
+        # populate restore_on with missing keys
+        {restore_on[k]:self._restore_on[k]
+            for k in self._restore_on.keys() if k not in restore_on.keys()}
         self._restore_on = restore_on
     
     # Render the html code for the form specified on this page
@@ -170,6 +174,7 @@ class Page(db.Model, Base):
         
         # store s2
         self._store_state(2)
+        self._store_errors_in_s1()
         
         # assign participant
         if valid:

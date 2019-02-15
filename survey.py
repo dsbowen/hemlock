@@ -32,40 +32,45 @@ or maybe don't need to do this for monday
 def Start():
     b = Branch(next=End)
     
-    p = Page(branch=b)
-    q = Question(page=p, text='Hello world')
+    p = Page(b)
+    Question(p, 'Hello world')
     
-    p = Page(branch=b, randomize=True)
-    q = Question(page=p, qtype='free', var='hello', text='Hello moon')
-    q = Question(page=p, qtype='free', var='hello', text='Hello star')
+    p = Page(b, randomize=True)
+    q = Question(p, 'Hello moon', 'free', 'hello')
+    q.default('hello moon')
+    q = Question(p, 'Hello star', 'free', 'hello')
+    q.default('hello star')
     
-    p = Page(branch=b)
-    q = Question(page=p, qtype='single choice', var='hello', text='Pick one', randomize=True)
-    c = Choice(question=q, text='hello world')
-    c = Choice(question=q, text='hello moon')
-    c = Choice(question=q, text='hello star')
+    p = Page(b)
+    q = Question(p, 'Pick one', 'single choice', 'hello', True)
+    Choice(q, 'hello world')
+    Choice(q, 'hello moon')
+    c = Choice(q, 'hello star')
+    q.default(c.id)
     
     return b
     
 def End():
     b = Branch()
 
-    p = Page(branch=b, randomize=True)
-    q = Question(page=p, qtype='single choice', var='goodbye', all_rows=True, text='Goodbye', randomize=True)
-    c = Choice(question=q, text='Goodbye world')
-    c = Choice(question=q, text='Goodbye moon')
-    c = Choice(question=q, text='Goodbye star')
-    v = Validator(question=q, condition=required)
+    p = Page(b, randomize=True)
+    q = Question(p, 'Goodbye', 'single choice', 'goodbye', True, all_rows=True)
+    Choice(q, 'Goodbye world')
+    Choice(q, 'Goodbye moon')
+    c = Choice(q, 'Goodbye star')
+    q.default(c.id)
+    Validator(q, required)
     
-    q = Question(page=p, qtype='single choice', var='comp', all_rows=True, text='Comprehension check')
-    c = Choice(question=q, text='correct', value=1)
-    c = Choice(question=q, text='incorrect', value=0)
-    c = Choice(question=q, text='also incorrect', value=0)
-    v = Validator(question=q, condition=required)
-    v = Validator(question=q, condition=attn)
+    q = Question(p, 'Comprehension check', 'single choice', 'comp', all_rows=True)
+    c = Choice(q, 'correct', 1)
+    q.default(c.id)
+    Choice(q, 'incorrect', 0)
+    Choice(q, 'also incorrect', 0)
+    Validator(q, required)
+    Validator(q, attn)
     
-    p = Page(branch=b, terminal=True)
-    q = Question(page=p, text='Thank you for participating')
+    p = Page(b, terminal=True)
+    Question(p, 'Thank you for participating!')
     
     return b
     
