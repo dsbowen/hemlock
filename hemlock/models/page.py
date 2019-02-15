@@ -20,6 +20,8 @@ def hidden_tag():
 def submit(page):
     if page._terminal:
         return ''
+    if page._back:
+        
     return '''
         <p align=right><input type='submit' name='submit' value='>>'></p>
         '''
@@ -34,6 +36,7 @@ _post_function: function called after responses are submitted and validated
 _post_args: arguments for the post function
 _next_function: next navigation function
 _next_args: arguments for the next navigation function
+_back: indicator for back button
 _id_next: ID of the next branch
 _terminal: indicator that the page is the last in the survey
 _randomize: indicator of question randomization
@@ -60,6 +63,7 @@ class Page(db.Model, Base):
     _post_args = db.Column(db.PickleType)
     _next_function = db.Column(db.PickleType)
     _next_args = db.Column(db.PickleType)
+    _back = db.Column(db.Boolean)
     _id_next = db.Column(db.Integer)
     _terminal = db.Column(db.Boolean)
     _randomize = db.Column(db.Boolean)
@@ -73,7 +77,7 @@ class Page(db.Model, Base):
         render=None, render_args=None,
         post=None, post_args=None,
         next=None, next_args=None,
-        terminal=False, randomize=False, 
+        back=False, terminal=False, randomize=False, 
         restore_on={'forward': 2, 'back': 2, 'invalid': 2}):
         
         self._add_commit()
@@ -82,6 +86,7 @@ class Page(db.Model, Base):
         self.render(render, render_args)
         self.post(post, post_args)
         self.next(next, next_args)
+        self.back(back)
         self.terminal(terminal)
         self.randomize(randomize)
         self.restore_on(restore_on)
@@ -105,6 +110,10 @@ class Page(db.Model, Base):
     # Sets the next navigation function and arguments
     def next(self, next=None, args=None):
         self._set_function('_next_function', next, '_next_args', args)
+        
+    # Set the back button
+    def back(self, back=True):
+        self._back = back
         
     # Sets the terminal status (i.e. whether this page ends the survey)
     def terminal(self, terminal=True):

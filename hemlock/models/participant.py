@@ -67,7 +67,7 @@ class Participant(db.Model):
     def insert_list(self, insert):
         self.queue = self.queue[:self.head]+insert+self.queue[self.head:]
         
-    # Go forward
+    # Go forward to next page
     def forward(self):
         # get current head and advance head pointer
         head = self.get_page()
@@ -107,6 +107,26 @@ class Participant(db.Model):
         insert = next._get_page_ids()+[self.next_tuple(next)]
         self.head += 1
         self.insert_list(insert)
+        
+    # Go backward to previous page
+    def back(self):
+        # decrement head
+        self.head -= 1
+        
+        while type(self.queue[self.head]) != int:
+            function, self.queue[self.head][0]
+            if function is not None:
+                # find next navigator
+                # FIND A WAY TO DO THIS IN CONSTANT TIME
+                temp = self.head+1
+                while type(self.queue[temp]) == int:
+                    temp += 1
+                    
+                # remove elements in between
+                self.queue = self.queue[:self.head+1] + self.queue[temp+1:]
+                
+            # decrement head
+            self.head -= 1
             
     # Store participant data
     # add end time variable
