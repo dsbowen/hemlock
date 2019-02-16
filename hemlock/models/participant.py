@@ -18,6 +18,13 @@ from datetime import datetime
 TODO
 have 'checkpoint' instead of those ugly tuples
 constant time find next checkpoint in back
+
+Give checkpoint the get_next responsibilities
+including randomizing pages and assigning embedded data to participant
+
+Things you can't do without checkpoint:
+    randomize pages within branch
+    unassign embedded data when going back over a branch
 '''
 
 '''
@@ -131,6 +138,8 @@ class Participant(db.Model):
                     
                 # remove elements in between
                 # NOTE: CHECKPOINT IS CREATED AFTER PAGE WITH PAGE BRANCH IS RENDERED. THEREFORE NEED TO DELETE THIS CHECKPOINT WHEN GOING BACK. HENCE, WHEN TABLE==PAGE, START INDEX IS 1 BEFORE START INDEX WHEN TABLE==BRANCH
+                # REMOVE BRANCH EMBEDDED DATA FROM PARTICIPANT HERE!!!
+                # this is another checkpoint responsibility
                 if table == Page:
                     index = self.head
                 elif table == Branch:
@@ -143,16 +152,25 @@ class Participant(db.Model):
         # set direction to back
         self.get_page()._set_direction('back')
             
+    # Clear participant data
+    def clear_data(self):
+        [db.session.delete(v) for v in self.variables.all()]
+        self.num_rows = 0
+        self.data = {}
+            
     # Store participant data
     # add end time variable
     # processes data from each question the participant answered
     # pads variables so they are all of equal length
     # clears branches, pages, and questions from database
     def store_data(self):
-        [db.session.delete(v) for v in self.variables.all()]
-        self.num_rows = 0
+        self.clear_data()
+        
+        # process data from questions
         [self.process_question(q) 
 			for q in self.questions.order_by('_id_orig') if q._var]
+            
+        # pad variables to even length and store in data dictionary
         [var.pad(self.num_rows) for var in self.variables]
         self.data = {var.name:var.data for var in self.variables}
         #self.clear_memory()

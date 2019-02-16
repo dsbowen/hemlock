@@ -139,6 +139,7 @@ class Base():
         return function(object, args)
 
     # Get the next branch
+    ### AM I EVEN USING THIS ANYMORE???
     def _get_next(self):
         if self._next_function is not None:
             if self._next_args is None:

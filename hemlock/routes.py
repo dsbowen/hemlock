@@ -79,6 +79,7 @@ def survey():
         return redirect(url_for('hemlock.survey'))
         
     if page._terminal:
+        [q._assign_participant(part.id) for q in page._questions]
         part.store_data()
         
     return render_template('page.html', page=Markup(page._render_html()))

@@ -194,7 +194,7 @@ class Page(db.Model, Base):
         [q._record_response(request.form.get(str(q.id))) 
             for q in self._questions if q._qtype != 'embedded']
             
-        # back
+        # back navigation
         if request.form.get('back'):
             [q._unassign_participant() for q in self._questions]
             self._store_state(2)
@@ -210,14 +210,16 @@ class Page(db.Model, Base):
         # validate
         valid = all([q._validate() for q in self._questions])
         
-        # store s2
+        # store s2 and record errors
         self._store_state(2)
         self._store_errors(0)
         self._store_errors(1)
         
-        # assign participant
+        # invalid navigation
         if not valid:
             return 'invalid'
+            
+        # forward navigation
         [q._assign_participant(part_id) for q in self._questions]
         return 'forward'
         

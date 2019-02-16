@@ -27,7 +27,8 @@ def Start():
     Question(p, 'free response 2', 'free', 'myvar')
     
     p = Page(b, terminal=True, back=True)
-    q = Question(p, render=disp, render_args=[disclosed, smart_anchor])
+    Question(p, 'Empty page')
+    Question(p, qtype='embedded', var='myvar2', data='this is the end', all_rows=True)
     
     return b
     
@@ -45,7 +46,7 @@ def disp(q, assignments):
         
 app = create_app(Config, 
     start=Start, 
-    record_incomplete=True,
+    record_incomplete=False,
     block_duplicate_ips=False,
     block_from_csv='block.csv')
 
