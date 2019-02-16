@@ -120,7 +120,7 @@ class Participant(db.Model):
         self.head -= 1
         
         while type(self.queue[self.head]) != int:
-            function = self.queue[self.head][0]
+            function, args, id, table = self.queue[self.head]
             if function is not None:
                 # find next navigator
                 # FIND A WAY TO DO THIS IN CONSTANT TIME
@@ -129,7 +129,12 @@ class Participant(db.Model):
                     temp += 1
                     
                 # remove elements in between
-                self.queue = self.queue[:self.head+1] + self.queue[temp+1:]
+                # NOTE: CHECKPOINT IS CREATED AFTER PAGE WITH PAGE BRANCH IS RENDERED. THEREFORE NEED TO DELETE THIS CHECKPOINT WHEN GOING BACK. HENCE, WHEN TABLE==PAGE, START INDEX IS 1 BEFORE START INDEX WHEN TABLE==BRANCH
+                if table == Page:
+                    index = self.head
+                elif table == Branch:
+                    index = self.head+1
+                self.queue = self.queue[:index] + self.queue[temp+1:]
                 
             # decrement head
             self.head -= 1

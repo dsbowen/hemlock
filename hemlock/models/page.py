@@ -211,7 +211,8 @@ class Page(db.Model, Base):
         
         # store s2
         self._store_state(2)
-        self._store_errors_in_s1()
+        self._store_errors(0)
+        self._store_errors(1)
         
         # assign participant
         if not valid:
@@ -225,13 +226,14 @@ class Page(db.Model, Base):
         state = Page.query.get(self._state_copy_ids[state_num])
         state._copy(self.id)
         
-    # Store errors from s2 in s1
-    def _store_errors_in_s1(self):
+    # Store errors from s2 in s0 and s1
+    def _store_errors(self, state_num):
         # get states
-        s1, s2 = [Page.query.get(self._state_copy_ids[i]) for i in [1,2]]
+        state, s2 = [Page.query.get(self._state_copy_ids[i]) 
+            for i in [state_num,2]]
         
         # get question lists for both states and pair them
-        q1, q2 = [state._questions for state in [s1, s2]]
+        q1, q2 = [state._questions for state in [state, s2]]
         q1, q2 = intersection_by_key(q1, q2, '_id_orig')
         
         # copy errors

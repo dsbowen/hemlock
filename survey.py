@@ -49,8 +49,18 @@ def Next2():
     
 def Next3():
     b = Branch()
-    p = Page(b, back=True)
+    p = Page(b, back=True, next=Next4)
+    p.next(args=p.id)
     Question(p, 'next 3')
+    return b
+    
+def Next4(prev_id):
+    branch = restore_branch(prev_id, Page)
+    if branch is not None:
+        return branch
+    b = Branch()
+    p = Page(b, back=True)
+    Question(p, 'free response', 'free', 'free', all_rows=True)
     return b
     
 def Next(prev_id):
@@ -71,31 +81,31 @@ def Next(prev_id):
     Validator(q, require)
     p.next(Next2)
     
-    # p = Page(b, restore_on={'back':1})
-    # p.back()
-    # q = Question(p, 'pick one', 'single choice', 'one')
-    # Choice(q, 'one', 1)
-    # q.randomize()
-    # q.default(Choice(q, 'two', 0))
-    # Choice(q, 'three', 0)
-    # Validator(q, one)
-    # q.post(add, ['four',0])
+    p = Page(b, restore_on={'back':1})
+    p.back()
+    q = Question(p, 'pick one', 'single choice', 'one')
+    Choice(q, 'one', 1)
+    q.randomize()
+    q.default(Choice(q, 'two', 0))
+    Choice(q, 'three', 0)
+    Validator(q, one)
+    q.post(add, ['four',0])
     
-    # p = Page(b, restore_on={'forward':1}, back=True)
-    # q = Question(p, 'pick one', 'single choice', 'one', randomize=True)
-    # q.default(Choice(q, 'one', 0))
-    # Choice(q, 'two', 1)
-    # Choice(q, 'three', 0)
-    # Validator(q, one, 'Just kidding, pick two')
-    # q.post(add, ['seven',0])
+    p = Page(b, restore_on={'forward':1}, back=True)
+    q = Question(p, 'pick one', 'single choice', 'one', randomize=True)
+    q.default(Choice(q, 'one', 0))
+    Choice(q, 'two', 1)
+    Choice(q, 'three', 0)
+    Validator(q, one, 'Just kidding, pick two')
+    q.post(add, ['seven',0])
     
-    # p = Page(b, restore_on={'forward':0,'invalid':0}, back=True)
-    # q = Question(p, 'pick three (no tricks this time!)', 'single choice', 'one', randomize=True)
-    # q.default(Choice(q, 'one', 0))
-    # Choice(q, 'two', 0)
-    # Choice(q, 'three', 1)
-    # Validator(q, one)
-    # q.render(add2, p.id)
+    p = Page(b, restore_on={'forward':0,'invalid':0}, back=True)
+    q = Question(p, 'pick three (no tricks this time!)', 'single choice', 'one', randomize=True)
+    q.default(Choice(q, 'one', 0))
+    Choice(q, 'two', 0)
+    Choice(q, 'three', 1)
+    Validator(q, one, "That's not what I said...")
+    q.render(add2, p.id)
     
     p = Page(b, back=True, terminal=True)
     Question(p, 'hello moon')
