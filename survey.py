@@ -9,7 +9,7 @@ syntax: x = even_randomize(tag, nested list or tuples, choose_num, combination)
 MIGHT HAVE TO DO DEEP COPIES TO CHANGE ARGS
 '''
 
-from hemlock import create_app, db, query, restore_branch, even_randomize, random_assignment, Participant, Branch, Page, Question, Choice, Validator, Variable
+from hemlock import create_app, db, query, restore_branch, even_randomize, random_assignment, Participant, Branch, Page, Question, Choice, Validator, Variable, Randomizer
 from config import Config
 import pandas as pd
 import numpy as np

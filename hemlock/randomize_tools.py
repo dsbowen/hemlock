@@ -55,9 +55,10 @@ class Randomizer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tag = db.Column(db.String, unique=True)
     combination = db.Column(db.Boolean)
-    stored = db.Column(db.PickleType)
+    orders = db.Column(db.PickleType)
+    head = db.Column(db.Integer, default=0)
     
-    # Create empy dictionary mapping randomization keys to number of presentations
+    # Create a list of 'orders' or combinations of the elements
     def __init__(self, tag, length, choose_num, combination=False):
         db.session.add(self)
         db.session.commit()
@@ -66,19 +67,15 @@ class Randomizer(db.Model):
         self.combination = combination
         
         if combination:
-            keys = combinations(range(length), choose_num)
+            self.orders = list(combinations(range(length), choose_num))
         else:
-            keys = permutations(range(length), choose_num)
-        self.stored = {key:0 for key in keys}
+            self.orders = list(permutations(range(length), choose_num))
         
     # Select a key from keys with minimum number of presentations
     def select(self):
-        key = min(self.stored, key=self.stored.get)
-        temp = deepcopy(self.stored)
-        temp[key] += 1
-        self.stored = deepcopy(temp)
-        db.session.commit()
-        return list(key)
+        order = self.orders[self.head]
+        self.head += 1
+        return order
         
     
 
