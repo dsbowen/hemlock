@@ -79,6 +79,7 @@ class Participant(db.Model):
         endtime = Question.query.filter_by(_part_id=self.id,_var='end_time')
         endtime = endtime.first()
         endtime.data(datetime.utcnow())
+        db.session.commit()
         
     def get_endtime(self):
         endtime = Question.query.filter_by(_part_id=self.id,_var='end_time')

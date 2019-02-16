@@ -24,15 +24,13 @@ def Start():
     # disclosed, smart_anchor = random_assignment(b,'condition',
         # ['disclosed', 'smart_anchor'], [disclosed, smart_anchor])
         
-    p1 = Page(b, back=True, timer='myvar_time')
+    p1 = Page(b, timer='myvar_time')
     Question(p1, 'free response 1', 'free', 'myvar')
     
-    p2 = Page(b, timer='myvar_time')
+    p2 = Page(b, back=True, timer='myvar_time')
     q =Question(p2, 'free response 2', 'free', 'myvar')
     Validator(q, world)
     Validator(q, require, order=0)
-    
-    p1.branch(b)
     
     p = Page(b, terminal=True, back=True)
     Question(p, 'Empty page')
