@@ -69,12 +69,8 @@ def survey():
     if request.method == 'POST':
         # record page time
         delta = (datetime.utcnow() - part.get_endtime()).total_seconds()
-        print('now',datetime.utcnow())
-        print('delta',delta)
         timer = Question.query.get(page._timer)
         timer.data(timer.get_data()+delta)
-        print(timer)
-        print(timer.get_data())
         timer._assign_participant(part.id)
         
         navigation = page._validate_on_submit(part.id)
@@ -96,7 +92,6 @@ def survey():
         
     rendered_html = page._render_html()
     part.endtime()
-    print('endtime', part.get_endtime())
         
     return render_template('page.html', page=Markup(rendered_html))
     
