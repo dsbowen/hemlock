@@ -4,11 +4,6 @@
 # last modified 02/15/2019
 ###############################################################################
 
-'''
-syntax: x = even_randomize(tag, nested list or tuples, choose_num, combination)
-MIGHT HAVE TO DO DEEP COPIES TO CHANGE ARGS
-'''
-
 from hemlock import create_app, db, query, restore_branch, even_randomize, random_assignment, Participant, Branch, Page, Question, Choice, Validator, Variable, Randomizer
 from config import Config
 import pandas as pd
@@ -22,10 +17,16 @@ def Start():
     
     disclosed = [0,1]
     smart_anchor = [0,1]
-    disclosed, smart_anchor = random_assignment(b,'condition',
-        ['disclosed', 'smart_anchor'], [disclosed, smart_anchor])
+    # disclosed, smart_anchor = random_assignment(b,'condition',
+        # ['disclosed', 'smart_anchor'], [disclosed, smart_anchor])
+        
+    p = Page(b)
+    Question(p, 'free response 1', 'free', 'myvar')
     
-    p = Page(b, terminal=True)
+    p = Page(b, back=True)
+    Question(p, 'free response 2', 'free', 'myvar')
+    
+    p = Page(b, terminal=True, back=True)
     q = Question(p, render=disp, render_args=[disclosed, smart_anchor])
     
     return b
@@ -44,6 +45,7 @@ def disp(q, assignments):
         
 app = create_app(Config, 
     start=Start, 
+    record_incomplete=True,
     block_duplicate_ips=False,
     block_from_csv='block.csv')
 

@@ -116,7 +116,7 @@ class Participant(db.Model):
         self.insert_list(insert)
         
     # Go backward to previous page
-    def back(self):
+    def back(self):    
         # decrement head
         self.head -= 1
         
@@ -149,6 +149,8 @@ class Participant(db.Model):
     # pads variables so they are all of equal length
     # clears branches, pages, and questions from database
     def store_data(self):
+        [db.session.delete(v) for v in self.variables.all()]
+        self.num_rows = 0
         [self.process_question(q) 
 			for q in self.questions.order_by('_id_orig') if q._var]
         [var.pad(self.num_rows) for var in self.variables]

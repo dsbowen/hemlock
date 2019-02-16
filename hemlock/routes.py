@@ -67,6 +67,8 @@ def survey():
         
     if request.method == 'POST':
         navigation = page._validate_on_submit(part.id)
+        if navigation != 'invalid' and current_app.record_incomplete:
+            part.store_data()
         if navigation == 'forward':
             part.forward()
         elif navigation == 'back':
@@ -77,9 +79,6 @@ def survey():
         return redirect(url_for('hemlock.survey'))
         
     if page._terminal:
-        page._render_html() # might change this when I record partial responses
-        # ASSIGN QUESTIONS TO PART HERE
-        # PARTICIPANTS MAY GO BACK AND FORTH FROM THE TERMINAL PAGE, RECORDS DATA MULTIPLE TIMES
         part.store_data()
         
     return render_template('page.html', page=Markup(page._render_html()))

@@ -196,6 +196,7 @@ class Page(db.Model, Base):
             
         # back
         if request.form.get('back'):
+            [q._unassign_participant() for q in self._questions]
             self._store_state(2)
             return 'back'
             

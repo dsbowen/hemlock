@@ -248,6 +248,10 @@ class Question(db.Model, Base):
         prev = Question.query.filter_by(_part_id=part_id, _var=self._var)
         self._vorder = len(prev.all())
         
+    # Unassign from participant
+    def _unassign_participant(self):
+        self._part_id = None
+        
     # Outputs the data (both question data and order data)
     def _output_data(self):
         # data, page order, and question order

@@ -5,13 +5,14 @@ import pandas as pd
 bp = Blueprint('hemlock', __name__)
 db = SQLAlchemy()
 
-def create_app(config_class, start, 
+def create_app(config_class, start, record_incomplete=False,
     block_duplicate_ips=True, block_from_csv=None):
     
     app = Flask(__name__)
     app.config.from_object(config_class)
     
     app.start = start
+    app.record_incomplete = record_incomplete
     app.block_dupips = block_duplicate_ips
     app.ipv4_csv, app.ipv4_current = [], []
     if block_from_csv is not None:
