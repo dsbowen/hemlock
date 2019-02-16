@@ -17,28 +17,26 @@ from random import choice
 
 #https://getbootstrap.com/docs/4.0/components/forms/
 
-
-
 def Start():
     b = Branch()
     
     disclosed = [0,1]
     smart_anchor = [0,1]
-    knowledge, anchor = random_assignment(b,'condition',
-        ['disclosed', 'smart_anchor'],[disclosed, smart_anchor])
+    disclosed, smart_anchor = random_assignment(b,'condition',
+        ['disclosed', 'smart_anchor'], [disclosed, smart_anchor])
     
     p = Page(b, terminal=True)
-    q = Question(p, render=disp, render_args=[knowledge.id,anchor.id])
+    q = Question(p, render=disp, render_args=[disclosed, smart_anchor])
     
     return b
     
-def disp(q, condition_ids):
-    knowledge, anchor = query(condition_ids)
-    if knowledge.get_data():
+def disp(q, assignments):
+    disclosed, smart_anchor = assignments
+    if disclosed:
         knowledge = 'disclosed'
     else:
         knowledge = 'surprise'
-    if anchor.get_data():
+    if smart_anchor:
         anchor = 'smart anchor'
     else:
         anchor = 'no anchor'

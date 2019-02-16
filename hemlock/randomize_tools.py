@@ -17,6 +17,7 @@ input:
     elements - sorted list of elements
     choose_num - number of elements chosen
     combination - randomization over combiantions (as opposed to permutations)
+returns: randomized list of elements
 '''
 def even_randomize(tag, elements, choose_num=None, combination=False):
     randomizer = Randomizer.query.filter_by(tag=tag).first()
@@ -34,16 +35,14 @@ input:
     tag - randomization identifier
     vars - list of variables to which conditions are assigned
     condition_vals - sorted list of condition values
+returns: list of assigned condition values
 '''
 def random_assignment(b, tag, vars, condition_vals):
     condition_vals = list(product(*condition_vals))
-    embedded_data = []
     assignments = even_randomize(tag, condition_vals, 1)
-    for var, assignment in zip(vars, assignments):
-        q = Question(branch=b, qtype='embedded', var=var, all_rows=True)
-        q.data(assignment)
-        embedded_data.append(q)
-    return embedded_data
+    [Question(branch=b, qtype='embedded', var=var, all_rows=True, data=data)
+        for (var,data) in zip(vars,assignments)]
+    return assignments
 
 '''
 Data:
