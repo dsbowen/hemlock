@@ -74,7 +74,7 @@ class Randomizer(db.Model):
     # Select a key from keys with minimum number of presentations
     def select(self):
         order = self.orders[self.head]
-        self.head += 1
+        self.head = (self.head + 1) % len(self.orders)
         return order
         
     

@@ -77,7 +77,7 @@ def survey():
         return redirect(url_for('hemlock.survey'))
         
     if page._terminal:
-        #page._render_html() # might change this when I record partial responses
+        page._render_html() # might change this when I record partial responses
         # ASSIGN QUESTIONS TO PART HERE
         # PARTICIPANTS MAY GO BACK AND FORTH FROM THE TERMINAL PAGE, RECORDS DATA MULTIPLE TIMES
         part.store_data()
