@@ -1,8 +1,10 @@
 ###############################################################################
 # Page model
 # by Dillon Bowen
-# last modified 02/14/2019
+# last modified 02/15/2019
 ###############################################################################
+
+# HAVE PUBLIC METHOD TO RESTORE ERROR MESSAGES FROM S2 TO S1/S0
 
 from hemlock import db
 from hemlock.models.question import Question
@@ -18,16 +20,17 @@ def hidden_tag():
     
 # Submit button
 def submit(page):
-    if page._terminal:
-        return ''
-    back = ''
+    html = ''
     if page._back:
-        back = '''
+        html += '''
         <p align=left><input type='submit' name='back' value='<<'></p>
         '''
-    return back+'''
+    if page._terminal:
+        return html
+    return html + '''
         <p align=right><input type='submit' name='submit' value='>>'></p>
         '''
+        
 '''
 Data:
 _branch_id: ID of the branch to which the page belongs
@@ -136,6 +139,21 @@ class Page(db.Model, Base):
         for direction, state_num in restore_on.items():
             temp[direction] = state_num
         self._restore_on = temp
+        
+    def get_direction(self):
+        return self._direction
+        
+    def _set_direction(self, direction):
+        self._direction = direction
+        if self._state_copy_ids is None:
+            return
+        state_copies = [Page.query.get(i) for i in self._state_copy_ids]
+        for copy in state_copies:
+            copy._direction = direction
+            
+    # Return the id of the next branch
+    def get_next_branch_id(self):
+        return self._id_next
     
     # Render the html code for the form specified on this page
     # executes command on first rendering
@@ -178,6 +196,7 @@ class Page(db.Model, Base):
             
         # back
         if request.form.get('back'):
+            self._store_state(2)
             return 'back'
             
         # page post function

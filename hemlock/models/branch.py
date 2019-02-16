@@ -42,6 +42,10 @@ class Branch(db.Model, Base):
     def randomize(self, randomize=True):
         self._set_randomize(randomize)
         
+    # Return the id of the next branch
+    def get_next_branch_id(self):
+        return self._id_next
+        
     # Get page ids
     def _get_page_ids(self):
         return [page.id for page in self._page_queue]

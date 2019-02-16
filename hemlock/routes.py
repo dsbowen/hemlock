@@ -64,16 +64,24 @@ store participant data on terminal page
 def survey():
     part = Participant.query.get(session['part_id'])
     page = part.get_page()
-    print(part.queue)
+    print('printing queue')
+    for i in range(len(part.queue)):
+        if i == part.head:
+            print('***',part.queue[i])
+        else:
+            print(part.queue[i])
         
     if request.method == 'POST':
         navigation = page._validate_on_submit(part.id)
         if navigation == 'forward':
+            print('forward')
             part.forward()
         elif navigation == 'back':
+            print('back')
             part.back()
         else:
-            page._direction = 'invalid'
+            print('invalid')
+            page._set_direction('invalid')
         db.session.commit()
         return redirect(url_for('hemlock.survey'))
         

@@ -15,6 +15,12 @@ import pandas as pd
 from datetime import datetime
 
 '''
+TODO
+have 'checkpoint' instead of those ugly tuples
+constant time find next checkpoint in back
+'''
+
+'''
 Data:
 branch_stack: stack of branches
 curr_page: current page
@@ -25,8 +31,8 @@ num_rows: number of rows participant contributes to dataframe
 '''
 class Participant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    queue = db.Column(db.PickleType) #
-    head = db.Column(db.Integer, default=0) #
+    queue = db.Column(db.PickleType)
+    head = db.Column(db.Integer, default=0)
     
     questions = db.relationship('Question', backref='_part', lazy='dynamic')
     variables = db.relationship('Variable', backref='part', lazy='dynamic')
@@ -82,7 +88,7 @@ class Participant(db.Model):
             self.process_next()
             
         # set page direction to forward
-        self.get_page()._direction = 'forward'
+        self.get_page()._set_direction('forward')
         
     # Process item on queue if it contains the next navigation function
     def process_next(self):
@@ -129,7 +135,7 @@ class Participant(db.Model):
             self.head -= 1
 
         # set direction to back
-        self.get_page()._direction = 'back'
+        self.get_page()._set_direction('back')
             
     # Store participant data
     # add end time variable

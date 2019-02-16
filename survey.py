@@ -4,95 +4,177 @@
 # last modified 02/15/2019
 ###############################################################################
 
-from hemlock import create_app, db, query, Participant, Branch, Page, Question, Choice, Validator, Variable
+'''
+TODO
+CHECKPOINTS TO FIX THIS BUG
+'''
+
+from hemlock import create_app, db, query, restore_branch, Participant, Branch, Page, Question, Choice, Validator, Variable
 from config import Config
 import pandas as pd
 import numpy as np
+from random import choice
 
 #https://getbootstrap.com/docs/4.0/components/forms/
-'''
-NOTE: need to store errors if restoring to s1 on invalid
-TO SPEED UP: HAVE ANOTHER OBJECT AS INPUT FOR __INIT__ AND COPY
-make sure order is being recorded correctly before moving on
-TODO
-store errors in s1
-test restore s1 on invalid
-add back button
-store state s2 on back
-restore previous page
-in participant have a single page queue - no branch stack per se
-need something like next functions in the queue
-keep track of when next function should be called in participant
-participant head moves along queue
-first make it work for a single branch
-or maybe don't need to do this for monday
 
-TO SPEED UP RUNTIME:
-have option in page to pass in original and create copy
-don't call any of the init functions
-create state copies as you go through the rendition process
-add their ids to the other states as you go (e.g. add s1 id to s0)
+'''
+Cases:
+    crossing:
+        pages within a branch
+        branch with next function
+        branch without next function
+        page branch with next function
+        page branch without next function
+    restore:
+        0, 1 and 2 on back
+        0, 1 and 2 on invalid
+        0, 1, 2 on forward
+        with and without post and render functions
 '''
 
 def Start():
-    b = Branch(next=End)
+    b = Branch(next=Next)
+    b.next(args=b.id)
     
-    p = Page(b, next=Middle)
-    q = Question(p, 'Hello world')
-    
-    p = Page(b, randomize=True, restore_on={'invalid':2}, back=True)
-    q = Question(p, 'Hello moon', 'free', 'hello', default='hello moon', post=post)
-    Validator(q, required)
-    q = Question(p, 'Hello star', 'free', 'hello', default='hello star')
-    Validator(q, required)
+    p = Page(b)
+    Question(p, 'hello world')
     
     return b
     
-def Middle():
+def Next1():
+    return Branch()
+    
+def Next2():
+    return Branch(next=Next3)
+    
+def Next3():
     b = Branch()
-    # p = Page(b)
-    # Question(p, 'Middle')
+    p = Page(b, back=True)
+    Question(p, 'next 3')
     return b
     
-def post(q):
-    q.text('Goodbye moon')
-    
-def End():
-    b = Branch()
+def Next(prev_id):
+    branch = restore_branch(prev_id)
+    if branch is not None:
+        return branch
 
-    p = Page(b, randomize=True, restore_on={'invalid':1})
-    q = Question(p, 'Goodbye', 'single choice', 'goodbye', True, all_rows=True)
-    Choice(q, 'Goodbye world')
-    Choice(q, 'Goodbye moon')
-    Choice(q, 'Goodbye star')
-    Validator(q, required)
+    b=Branch()
     
-    q = Question(p, 'Comprehension check', 'single choice', 'comp', all_rows=True)
-    q.default(Choice(q, 'correct', 1))
-    Choice(q, 'incorrect', 0)
-    Choice(q, 'also incorrect', 0)
-    Validator(q, required)
-    Validator(q, attn)
+    p = Page(b, back=True)
+    q = Question(p, 'yes or no?', 'free', 'yes_no', default='yes', all_rows=True)
+    Validator(q, require)
+    p.next(Next1)
     
-    p = Page(b, terminal=True)
-    Question(p, 'Thank you for participating!')
+    p = Page(b, back=True)
+    p.restore_on({'invalid':1})
+    q = Question(p, 'high or low?', 'free', 'high_low', default='high', all_rows=True)
+    Validator(q, require)
+    p.next(Next2)
+    
+    # p = Page(b, restore_on={'back':1})
+    # p.back()
+    # q = Question(p, 'pick one', 'single choice', 'one')
+    # Choice(q, 'one', 1)
+    # q.randomize()
+    # q.default(Choice(q, 'two', 0))
+    # Choice(q, 'three', 0)
+    # Validator(q, one)
+    # q.post(add, ['four',0])
+    
+    # p = Page(b, restore_on={'forward':1}, back=True)
+    # q = Question(p, 'pick one', 'single choice', 'one', randomize=True)
+    # q.default(Choice(q, 'one', 0))
+    # Choice(q, 'two', 1)
+    # Choice(q, 'three', 0)
+    # Validator(q, one, 'Just kidding, pick two')
+    # q.post(add, ['seven',0])
+    
+    # p = Page(b, restore_on={'forward':0,'invalid':0}, back=True)
+    # q = Question(p, 'pick three (no tricks this time!)', 'single choice', 'one', randomize=True)
+    # q.default(Choice(q, 'one', 0))
+    # Choice(q, 'two', 0)
+    # Choice(q, 'three', 1)
+    # Validator(q, one)
+    # q.render(add2, p.id)
+    
+    p = Page(b, back=True, terminal=True)
+    Question(p, 'hello moon')
     
     return b
     
-def required(q):
+def add2(q, p_id):
+    p = query(p_id, Page)
+    if query(p_id, Page).get_direction()=='invalid':
+        q.default(Choice(q, choice(['buttercups', 'cherry blossoms']), 1))
+        q.text(q.get_text()+' Buttercups and cherry blossoms will also do :)')
+
+def add(q, args):
+    num, val = args
+    order = choice([0,1,2,3])
+    q.default(Choice(q, num, val, order=order))
+    
+def require(q):
     response = q.get_response()
     if response is None or response == '':
         return 'Please answer the question'
         
-def attn(q):
+def one(q, message=None):
     if not q.get_data():
-        return 'Your response was incorrect'
+        if message is None:
+            return 'I said pick one!'
+        return message
 
-# def foo():
-    # return 10
+# def Start():
+    # b = Branch(next=End)
     
-# def bar():
-    # return 11
+    # p = Page(b, next=Middle)
+    # q = Question(p, 'Hello world')
+    
+    # p = Page(b, randomize=True, restore_on={'invalid':2}, back=True)
+    # q = Question(p, 'Hello moon', 'free', 'hello', default='hello moon', post=post)
+    # Validator(q, required)
+    # q = Question(p, 'Hello star', 'free', 'hello', default='hello star')
+    # Validator(q, required)
+    
+    # return b
+    
+# def Middle():
+    # b = Branch()
+    # p = Page(b)
+    # Question(p, 'Middle')
+    # return b
+    
+# def post(q):
+    # q.text('Goodbye moon')
+    
+# def End():
+    # b = Branch()
+
+    # p = Page(b, randomize=True, restore_on={'invalid':1})
+    # q = Question(p, 'Goodbye', 'single choice', 'goodbye', True, all_rows=True)
+    # Choice(q, 'Goodbye world')
+    # Choice(q, 'Goodbye moon')
+    # Choice(q, 'Goodbye star')
+    # Validator(q, required)
+    
+    # q = Question(p, 'Comprehension check', 'single choice', 'comp', all_rows=True)
+    # q.default(Choice(q, 'correct', 1))
+    # Choice(q, 'incorrect', 0)
+    # Choice(q, 'also incorrect', 0)
+    # Validator(q, required)
+    # Validator(q, attn)
+    
+    # p = Page(b, terminal=True)
+    # Question(p, 'Thank you for participating!')
+    
+    # return b
+    
+
+        
+# def attn(q):
+    # if not q.get_data():
+        # return 'Your response was incorrect'
+
 
 # def Start():
     # v = Validator()
