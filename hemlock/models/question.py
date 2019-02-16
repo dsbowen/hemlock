@@ -233,7 +233,7 @@ class Question(db.Model, Base):
         
     # Validate the participant's response
     def _validate(self):
-        for v in self._validators:
+        for v in self._validators.order_by('_order'):
             self._error = v._get_error()
             if self._error is not None:
                 return False

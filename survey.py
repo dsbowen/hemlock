@@ -4,6 +4,10 @@
 # last modified 02/15/2019
 ###############################################################################
 
+'''
+RECORD EMPY DATAFRAME
+'''
+
 from hemlock import create_app, db, query, restore_branch, even_randomize, random_assignment, Participant, Branch, Page, Question, Choice, Validator, Variable, Randomizer
 from config import Config
 import pandas as pd
@@ -20,17 +24,29 @@ def Start():
     # disclosed, smart_anchor = random_assignment(b,'condition',
         # ['disclosed', 'smart_anchor'], [disclosed, smart_anchor])
         
-    p = Page(b)
-    Question(p, 'free response 1', 'free', 'myvar')
+    p1 = Page(b, back=True)
+    Question(p1, 'free response 1', 'free', 'myvar')
     
-    p = Page(b, back=True)
-    Question(p, 'free response 2', 'free', 'myvar')
+    p2 = Page(b)
+    q =Question(p2, 'free response 2', 'free', 'myvar')
+    Validator(q, world)
+    Validator(q, require, order=0)
+    
+    p1.branch(b)
     
     p = Page(b, terminal=True, back=True)
     Question(p, 'Empty page')
     Question(p, qtype='embedded', var='myvar2', data='this is the end', all_rows=True)
     
     return b
+    
+def world(q):
+    if q.get_response() != 'world':
+        return 'world'
+        
+def require(q):
+    if q.get_response() is None or q.get_response() == '':
+        return 'Please respond'
     
 def disp(q, assignments):
     disclosed, smart_anchor = assignments
@@ -46,7 +62,7 @@ def disp(q, assignments):
         
 app = create_app(Config, 
     start=Start, 
-    record_incomplete=False,
+    record_incomplete=True,
     block_duplicate_ips=False,
     block_from_csv='block.csv')
 

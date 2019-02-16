@@ -52,13 +52,7 @@ class Participant(db.Model):
         db.session.add(self)
         db.session.commit()
         
-        id = Question(var='id', data=self.id, all_rows=True)
-        id._assign_participant(self.id)
-        ipv4 = Question(var='ipv4', data=ipv4, all_rows=True)
-        ipv4._assign_participant(self.id)
-        
-        start_time = Question(var='start_time', data=datetime.utcnow(), all_rows=True)
-        start_time._assign_participant(self.id)
+        self.record_metadata(ipv4)
         
         root = Branch(next=start)
         self.queue = [self.next_tuple(root)]
@@ -66,6 +60,25 @@ class Participant(db.Model):
         # continue advancing until you hit a page
         while type(self.queue[self.head]) != int:
             self.process_next()
+            
+    # Record participant metadata
+    def record_metadata(self, ipv4):
+        metadata = [
+            Question(var='id', data=self.id),
+            Question(var='ipv4', data=ipv4),
+            Question(var='start_time', data=datetime.utcnow()),
+            Question(var='end_time', data=datetime.utcnow()),
+            Question(var='completed', data=0)
+            ]
+        [q.all_rows() for q in metadata]
+        [q._assign_participant(self.id) for q in metadata]
+        self.store_data()
+        
+    # Update the end time
+    def endtime(self):
+        endtime = Question.query.filter_by(_part_id=self.id,_var='end_time')
+        endtime = endtime.first()
+        endtime.data(datetime.utcnow())
         
     # Return current page
     def get_page(self):
@@ -163,8 +176,12 @@ class Participant(db.Model):
     # processes data from each question the participant answered
     # pads variables so they are all of equal length
     # clears branches, pages, and questions from database
-    def store_data(self):
+    def store_data(self, completed_indicator=False):
         self.clear_data()
+        
+        completed = Question.query.filter_by(_part_id=self.id,_var='completed')
+        completed = completed.first()
+        completed.data(completed_indicator)
         
         # process data from questions
         [self.process_question(q) 

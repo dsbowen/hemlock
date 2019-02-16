@@ -67,7 +67,7 @@ def survey():
         
     if request.method == 'POST':
         navigation = page._validate_on_submit(part.id)
-        if navigation != 'invalid' and current_app.record_incomplete:
+        if current_app.record_incomplete:
             part.store_data()
         if navigation == 'forward':
             part.forward()
@@ -80,7 +80,9 @@ def survey():
         
     if page._terminal:
         [q._assign_participant(part.id) for q in page._questions]
-        part.store_data()
+        part.store_data(completed_indicator=True)
+        
+    part.endtime()
         
     return render_template('page.html', page=Markup(page._render_html()))
     
@@ -96,7 +98,7 @@ def download():
         sort=False)
         
     # drop unnecessary order variables
-    drop_prefix = ['id_','ipv4_', 'start_time_']
+    drop_prefix = ['id_','ipv4_', 'start_time_', 'end_time_', 'completed_']
     columns = [pref+'{0}order'.format(pv) 
         for pref in drop_prefix for pv in ['p','v']]
     data = data.drop(columns=columns)

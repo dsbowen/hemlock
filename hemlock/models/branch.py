@@ -48,4 +48,4 @@ class Branch(db.Model, Base):
         
     # Get page ids
     def _get_page_ids(self):
-        return [page.id for page in self._page_queue]
+        return [page.id for page in self._page_queue.order_by('_order')]
