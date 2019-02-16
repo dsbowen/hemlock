@@ -145,7 +145,7 @@ class Base():
                 branch = self._next_function()
             else:
                 branch = self._next_function(self._next_args)
-            [e._assign_participant(self._part) for e in branch._embedded]
+            # [e._assign_participant(self._part) for e in branch._embedded]
             if branch._randomize:
                 branch._randomize_children(branch._page_queue.all())
             return branch

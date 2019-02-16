@@ -99,11 +99,12 @@ class Participant(db.Model):
             self.head += 1
             return
             
-        # get next branch
+        # get next branch and assign embedded data to participant
         if args is None:
             next = function()
         else:
             next = function(args)
+        [e._assign_participant(self.id) for e in next._embedded]
             
         # update origin next branch id
         if table is not None:

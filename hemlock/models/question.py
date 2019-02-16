@@ -129,8 +129,6 @@ class Question(db.Model, Base):
     # Assign to branch
     def branch(self, branch):
         self._assign_parent(branch)
-        if not (branch is None or branch._part is None):
-            self._assign_participant(branch._part)
             
     # Remove from branch
     def remove_branch(self):
