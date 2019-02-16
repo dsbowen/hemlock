@@ -11,6 +11,7 @@ from hemlock.models.page import Page
 from hemlock.models.question import Question
 from hemlock.models.variable import Variable
 from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request
+from datetime import datetime
 import io
 import csv
 import pandas as pd
@@ -66,12 +67,23 @@ def survey():
     page = part.get_page()
         
     if request.method == 'POST':
+        # record page time
+        delta = (datetime.utcnow() - part.get_endtime()).total_seconds()
+        print('now',datetime.utcnow())
+        print('delta',delta)
+        timer = Question.query.get(page._timer)
+        timer.data(timer.get_data()+delta)
+        print(timer)
+        print(timer.get_data())
+        timer._assign_participant(part.id)
+        
         navigation = page._validate_on_submit(part.id)
         if current_app.record_incomplete:
             part.store_data()
         if navigation == 'forward':
             part.forward()
         elif navigation == 'back':
+            timer._unassign_participant()
             part.back()
         else:
             page._set_direction('invalid')
@@ -82,9 +94,11 @@ def survey():
         [q._assign_participant(part.id) for q in page._questions]
         part.store_data(completed_indicator=True)
         
+    rendered_html = page._render_html()
     part.endtime()
+    print('endtime', part.get_endtime())
         
-    return render_template('page.html', page=Markup(page._render_html()))
+    return render_template('page.html', page=Markup(rendered_html))
     
 '''
 Download data

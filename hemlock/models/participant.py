@@ -80,6 +80,11 @@ class Participant(db.Model):
         endtime = endtime.first()
         endtime.data(datetime.utcnow())
         
+    def get_endtime(self):
+        endtime = Question.query.filter_by(_part_id=self.id,_var='end_time')
+        endtime = endtime.first()
+        return endtime.get_data()
+        
     # Return current page
     def get_page(self):
         return Page.query.get(self.queue[self.head])

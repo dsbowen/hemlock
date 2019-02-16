@@ -10,6 +10,7 @@ from hemlock import db
 from hemlock.models.question import Question
 from hemlock.models.base import Base, intersection_by_key
 from flask import request
+from datetime import datetime
 from random import choice
 from string import ascii_letters, digits
 
@@ -62,6 +63,8 @@ class Page(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _questions = db.relationship('Question', backref='_page', lazy='dynamic')
+    _timer = db.Column(db.Integer)
+    # _start_time = db.Column(db.DateTime)
     _order = db.Column(db.Integer)
     _render_function = db.Column(db.PickleType)
     _render_args = db.Column(db.PickleType)
@@ -79,7 +82,7 @@ class Page(db.Model, Base):
     _direction = db.Column(db.String(8), default='forward')
     
     # Add to database and commit upon initialization
-    def __init__(self, branch=None, order=None,
+    def __init__(self, branch=None, timer=None, order=None,
         render=None, render_args=None,
         post=None, post_args=None,
         next=None, next_args=None,
@@ -96,6 +99,9 @@ class Page(db.Model, Base):
         self.terminal(terminal)
         self.randomize(randomize)
         self.restore_on(restore_on)
+
+        timer = Question(var=timer, data=0)
+        self._timer = timer.id
     
     # Assign to branch
     def branch(self, branch, order=None):
@@ -185,11 +191,19 @@ class Page(db.Model, Base):
         
         # html
         Qhtml = [q._render_html() for q in self._questions.order_by('_order')]
+        # self._start_time = datetime.utcnow()
+        # self._synch_time()
         db.session.commit()
         return ''.join([hidden_tag()]+Qhtml+[submit(self)])
         
     # Checks if questions have valid answers upon page submission
     def _validate_on_submit(self, part_id):
+        # end time
+        # delta = (datetime.utcnow() - self._start_time).total_seconds()
+        # timer = Question.query.get(self._timer)
+        # timer.data(timer.get_data() + delta)
+        # questions = self._questions.all() + [timer]
+    
         # record responses
         [q._record_response(request.form.get(str(q.id))) 
             for q in self._questions if q._qtype != 'embedded']
@@ -217,6 +231,7 @@ class Page(db.Model, Base):
         
         # invalid navigation
         if not valid:
+            # timer._assign_participant(part_id)
             return 'invalid'
             
         # forward navigation
