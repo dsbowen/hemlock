@@ -4,20 +4,8 @@
 # last modified 02/15/2019
 ###############################################################################
 
-'''
-MAKE RANDOM_ASSIGNMNET MORE ELEGANT
-    b = Branch()
-    
-    disclosed = [0,1]
-    smart_anchor = [0,1]
-    ALL OF THE FOLLOWING SHOULD BE ONE LINE
-    DISCLOSED, SMART_ANCHOR = RANDOM_ASSIGNMNET('CONDITION'[DISLCOSED,SMART_ANCHOR])
-    knowledge, anchor = random_assignment('condition',[disclosed,smart_anchor])
-    disclosed = Question(branch=b, qtype='embedded', var='disclosed', data=knowledge, all_rows=True)
-    smart_anchor = Question(branch=b, qtype='embedded', var='smart_anchor', data=anchor, all_rows=True)
-'''
-
 from hemlock import db
+from hemlock.models.question import Question
 from itertools import permutations, combinations, product
 from operator import itemgetter
 from copy import deepcopy
@@ -42,12 +30,20 @@ def even_randomize(tag, elements, choose_num=None, combination=False):
 '''
 Randomly assign participant to condition
 input:
+    b - branch for the embedded data
     tag - randomization identifier
-    conditions - sorted list of conditions
+    vars - list of variables to which conditions are assigned
+    condition_vals - sorted list of condition values
 '''
-def random_assignment(tag, conditions):
-    conditions = list(product(*conditions))
-    return even_randomize(tag, conditions, 1)
+def random_assignment(b, tag, vars, condition_vals):
+    condition_vals = list(product(*condition_vals))
+    embedded_data = []
+    assignments = even_randomize(tag, condition_vals, 1)
+    for var, assignment in zip(vars, assignments):
+        q = Question(branch=b, qtype='embedded', var=var, all_rows=True)
+        q.data(assignment)
+        embedded_data.append(q)
+    return embedded_data
 
 '''
 Data:

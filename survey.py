@@ -24,22 +24,21 @@ def Start():
     
     disclosed = [0,1]
     smart_anchor = [0,1]
-    knowledge, anchor = random_assignment('condition',[disclosed,smart_anchor])
-    disclosed = Question(branch=b, qtype='embedded', var='disclosed', data=knowledge, all_rows=True)
-    smart_anchor = Question(branch=b, qtype='embedded', var='smart_anchor', data=anchor, all_rows=True)
+    knowledge, anchor = random_assignment(b,'condition',
+        ['disclosed', 'smart_anchor'],[disclosed, smart_anchor])
     
     p = Page(b, terminal=True)
-    q = Question(p, render=disp_condition, render_args=[disclosed.id,smart_anchor.id])
+    q = Question(p, render=disp, render_args=[knowledge.id,anchor.id])
     
     return b
     
-def disp_condition(q, condition_ids):
-    disclosed, smart_anchor = query(condition_ids)
-    if disclosed.get_data():
+def disp(q, condition_ids):
+    knowledge, anchor = query(condition_ids)
+    if knowledge.get_data():
         knowledge = 'disclosed'
     else:
         knowledge = 'surprise'
-    if smart_anchor.get_data():
+    if anchor.get_data():
         anchor = 'smart anchor'
     else:
         anchor = 'no anchor'
