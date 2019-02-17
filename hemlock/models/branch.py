@@ -13,34 +13,35 @@ from hemlock.models.base import Base
 Data:
 _part_id: ID of participant to whom the branch belongs
 _page_queue: Queue of pages to render
-_embedded: Set of embedded data questions
+_embedded: List of embedded data questions
 _next_function: next navigation function
 _next_args: arguments for the next navigation function
 _id_next: ID of the next branch
-_randomize: indicator of page randomization
 '''
 class Branch(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
-    _page_queue = db.relationship('Page', backref='_branch', lazy='dynamic')
-    _embedded = db.relationship('Question', backref='_branch', lazy='dynamic')
+    _page_queue = db.relationship('Page', backref='_branch', lazy='dynamic',
+        order_by='Page._order')
+    _embedded = db.relationship('Question', backref='_branch', lazy='dynamic',
+        order_by='Question._order')
     _next_function = db.Column(db.PickleType)
     _next_args = db.Column(db.PickleType)
-    _id_next = db.Column(db.Integer)
-    _randomize = db.Column(db.Boolean)
+    _id_next = db.Column(db.Integer) # SHOULD HAVE 1:1 RELATIONSHIP
     
     # Add to database and commit upon initialization
     def __init__(self, next=None, next_args=None, randomize=False):
-        self._add_commit()
+        db.session.add(self)
+        db.session.commit()
+        
         self.next(next, next_args)
-        self.randomize(randomize)
         
     # Set the next navigation function and arguments
     def next(self, next=None, args=None):
         self._set_function('_next_function', next, '_next_args', args)
         
-    # Set page randomization on/off (True/False)
-    def randomize(self, randomize=True):
-        self._set_randomize(randomize)
+    # Randomize page order
+    def randomize(self):
+        self._randomize_children(self._page_queue.all())
         
     # Return the id of the next branch
     def get_next_branch_id(self):
@@ -48,4 +49,4 @@ class Branch(db.Model, Base):
         
     # Get page ids
     def _get_page_ids(self):
-        return [page.id for page in self._page_queue.order_by('_order')]
+        return [page.id for page in self._page_queue]

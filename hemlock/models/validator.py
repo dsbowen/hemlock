@@ -1,7 +1,7 @@
 ###############################################################################
 # Validator model
 # by Dillon Bowen
-# last modified 02/14/2019
+# last modified 02/15/2019
 ###############################################################################
 
 from hemlock import db
@@ -10,7 +10,6 @@ from hemlock.models.base import Base
 '''
 Data:
 _question_id: ID of the question to which the validator belongs
-_id_orig: id of the original validator (to identify copies)
 _order: order in which validation appears in question
 _condition_function: function which validates participant's response
 _condition_args: arguments for the condition function
@@ -18,14 +17,15 @@ _condition_args: arguments for the condition function
 class Validator(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-    _id_orig = db.Column(db.Integer)
     _order = db.Column(db.Integer)
     _condition_function = db.Column(db.PickleType)
     _condition_args = db.Column(db.PickleType)
     
     # Add to database and commit on initialize
     def __init__(self, question=None, condition=None, args=None, order=None):
-        self._add_commit()
+        db.session.add(self)
+        db.session.commit()
+        
         self.question(question, order)
         self.condition(condition, args)
         

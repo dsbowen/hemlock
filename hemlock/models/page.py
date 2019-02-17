@@ -4,11 +4,10 @@
 # last modified 02/15/2019
 ###############################################################################
 
-# HAVE PUBLIC METHOD TO RESTORE ERROR MESSAGES FROM S2 TO S1/S0
-
 from hemlock import db
 from hemlock.models.question import Question
-from hemlock.models.base import Base, intersection_by_key
+from hemlock.models.checkpoint import Checkpoint
+from hemlock.models.base import Base
 from flask import request
 from datetime import datetime
 from random import choice
@@ -58,13 +57,17 @@ _state: integer representing the current state
     2 - after response collection
 _state_copy_ids: list of state copy ids
 _direction: direction of survey flow - forward, back, invalid
+_rendered: indicator that the page was previously rendered
+_checkpoint: indicates that the page is a checkpoint
 '''
-class Page(db.Model, Base):
+class Page(db.Model, Checkpoint, Base):
     id = db.Column(db.Integer, primary_key=True)
+    _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
+    _queue_order = db.Column(db.Integer)
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
-    _questions = db.relationship('Question', backref='_page', lazy='dynamic')
-    _timer = db.Column(db.Integer)
-    # _start_time = db.Column(db.DateTime)
+    _questions = db.relationship('Question', backref='_page', lazy='dynamic',
+        order_by='Question._order')
+    _timer = db.Column(db.Integer) # SHOULD HAVE A 1:1 RELATIONSHIP
     _order = db.Column(db.Integer)
     _render_function = db.Column(db.PickleType)
     _render_args = db.Column(db.PickleType)
@@ -73,23 +76,26 @@ class Page(db.Model, Base):
     _next_function = db.Column(db.PickleType)
     _next_args = db.Column(db.PickleType)
     _back = db.Column(db.Boolean)
-    _id_next = db.Column(db.Integer)
+    _id_next = db.Column(db.Integer) # SHOULD HAVE 1:1 RELATIONSHIP
     _terminal = db.Column(db.Boolean)
-    _randomize = db.Column(db.Boolean)
-    _restore_on = db.Column(db.PickleType)
-    _state_num= db.Column(db.Integer)
-    _state_copy_ids = db.Column(db.PickleType)
     _direction = db.Column(db.String(8), default='forward')
+    _rendered = db.Column(db.Boolean)
+    
+    # For use by checkpoints
+    _checkpoint = db.Column(db.Boolean, default=False)
+    _origin_id = db.Column(db.Integer)
+    _origin_table = db.Column(db.PickleType)
+    _next_len = db.Column(db.Integer, default=0)
     
     # Add to database and commit upon initialization
     def __init__(self, branch=None, timer=None, order=None,
         render=None, render_args=None,
         post=None, post_args=None,
         next=None, next_args=None,
-        back=False, terminal=False, randomize=False, 
-        restore_on={'forward': 2, 'back': 2, 'invalid': 2}):
+        back=False, terminal=False):
         
-        self._add_commit()
+        db.session.add(self)
+        db.session.commit()
         
         self.branch(branch, order)
         self.render(render, render_args)
@@ -97,8 +103,6 @@ class Page(db.Model, Base):
         self.next(next, next_args)
         self.back(back)
         self.terminal(terminal)
-        self.randomize(randomize)
-        self.restore_on(restore_on)
 
         timer = Question(var=timer, data=0)
         self._timer = timer.id
@@ -111,15 +115,15 @@ class Page(db.Model, Base):
     def remove_branch(self):
         self._remove_parent('_branch')
             
-    # Sets the render function and arguments
+    # Set the render function and arguments
     def render(self, render=None, args=None):
         self._set_function('_render_function', render, '_render_args', args)
         
-    # Sets the post function and arguments
+    # Set the post function and arguments
     def post(self, post=None, args=None):
         self._set_function('_post_function', post, '_post_args', args)
         
-    # Sets the next navigation function and arguments
+    # Set the next navigation function and arguments
     def next(self, next=None, args=None):
         self._set_function('_next_function', next, '_next_args', args)
         
@@ -127,83 +131,48 @@ class Page(db.Model, Base):
     def back(self, back=True):
         self._back = back
         
-    # Sets the terminal status (i.e. whether this page ends the survey)
+    # Set the terminal status (i.e. whether this page ends the survey)
     def terminal(self, terminal=True):
         self._terminal = terminal
             
-    # Set question randomization on/off (True/False)
-    def randomize(self, randomize=True):
-        self._randomize = randomize
-
-    # Set directions for restoration
-    # takes a dictionary with keys 'forward', 'back', 'invalid'
-    # and values as state number (1-2 for back and invalid, 0-2 for forward)
-    def restore_on(self, restore_on):
-        if self._restore_on is None:
-            self._restore_on = {'forward':2,'back':2,'invalid':2}
-        temp = self._restore_on
-        for direction, state_num in restore_on.items():
-            temp[direction] = state_num
-        self._restore_on = temp
+    # Randomize question order
+    def randomize(self):
+        self._randomize_children(self._questions.all())
         
-    def get_direction(self):
-        return self._direction
-        
-    def _set_direction(self, direction):
-        self._direction = direction
-        if self._state_copy_ids is None:
-            return
-        state_copies = [Page.query.get(i) for i in self._state_copy_ids]
-        for copy in state_copies:
-            copy._direction = direction
-            
     # Return the id of the next branch
     def get_next_branch_id(self):
         return self._id_next
+        
+    # Get the direction (forward, back, or invalid)
+    # from which this page was arrived at
+    def get_direction(self):
+        return self._direction
+        
+    # Set the navigation direction (forward, back, or invalid)
+    # from which this page is arrived at
+    def _set_direction(self, direction):
+        self._direction = direction
     
     # Render the html code for the form specified on this page
-    # executes command on first rendering
-    # renders html for each question in Qhtml
-    # adds a hidden tag and submit button
+    # executes render functions for page and questions
+    # returns compiled html with hidden tag and submit button
     def _render_html(self):
-        # create state copies, store s0
-        if self._state_num is None:
-            state_copies = [Page(),Page(),Page()]
-            self._state_copy_ids = [p.id for p in state_copies]
-            self._store_state(0)
-        else:
-            state_num = self._restore_on[self._direction]
-            if self._state_num != state_num:
-                self._copy(self._state_copy_ids[state_num])
-            
-        # render functions
-        if self._state_num==0:
-            # page render function and question randomization
-            self._first_rendition(self._questions.all())
-            
-            # question render functions and choice randomization
-            [q._first_rendition(q._choices.all()) 
-                for q in self._questions.order_by('_order')]
-                
-            # store s1 and s2
-            self._store_state(1)
-            self._store_state(2)
+        self._rendered = True
+    
+        # page render function
+        self._call_function(self, self._render_function, self._render_args)
         
-        # html
-        Qhtml = [q._render_html() for q in self._questions.order_by('_order')]
-        # self._start_time = datetime.utcnow()
-        # self._synch_time()
+        # question render functions
+        [q._call_function(q, q._render_function, q._render_args)
+            for q in self._questions]
+        
+        # compile html
+        Qhtml = [q._render_html() for q in self._questions]
         db.session.commit()
         return ''.join([hidden_tag()]+Qhtml+[submit(self)])
         
     # Checks if questions have valid answers upon page submission
-    def _validate_on_submit(self, part_id):
-        # end time
-        # delta = (datetime.utcnow() - self._start_time).total_seconds()
-        # timer = Question.query.get(self._timer)
-        # timer.data(timer.get_data() + delta)
-        # questions = self._questions.all() + [timer]
-    
+    def _validate_on_submit(self, part_id):    
         # record responses
         [q._record_response(request.form.get(str(q.id))) 
             for q in self._questions if q._qtype != 'embedded']
@@ -211,7 +180,6 @@ class Page(db.Model, Base):
         # back navigation
         if request.form.get('back'):
             [q._unassign_participant() for q in self._questions]
-            self._store_state(2)
             return 'back'
             
         # page post function
@@ -219,41 +187,15 @@ class Page(db.Model, Base):
         
         # question post functions
         [q._call_function(q, q._post_function, q._post_args) 
-            for q in self._questions.order_by('_order')]
+            for q in self._questions]
             
         # validate
         valid = all([q._validate() for q in self._questions])
         
-        # store s2 and record errors
-        self._store_state(2)
-        self._store_errors(0)
-        self._store_errors(1)
-        
         # invalid navigation
         if not valid:
-            # timer._assign_participant(part_id)
             return 'invalid'
             
         # forward navigation
         [q._assign_participant(part_id) for q in self._questions]
         return 'forward'
-        
-    # Store the current state
-    def _store_state(self, state_num):
-        self._state_num = state_num
-        state = Page.query.get(self._state_copy_ids[state_num])
-        state._copy(self.id)
-        
-    # Store errors from s2 in s0 and s1
-    def _store_errors(self, state_num):
-        # get states
-        state, s2 = [Page.query.get(self._state_copy_ids[i]) 
-            for i in [state_num,2]]
-        
-        # get question lists for both states and pair them
-        q1, q2 = [state._questions for state in [state, s2]]
-        q1, q2 = intersection_by_key(q1, q2, '_id_orig')
-        
-        # copy errors
-        for i in range(len(q1)):
-            q1[i]._error = q2[i]._error

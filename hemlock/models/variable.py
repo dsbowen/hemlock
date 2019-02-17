@@ -23,16 +23,19 @@ class Variable(db.Model):
     all_rows = db.Column(db.Boolean, default=False)
     
     # Add variable to database and commit upon initialization
-    def __init__(self, part, name, all_rows):
+    def __init__(self, part, name, all_rows, data=None):
+        db.session.add(self)
+        db.session.commit()
         self.part = part
         self.name = name
         self.all_rows = all_rows
-        db.session.add(self)
-        db.session.commit()
+        self.add_data(data)
         
     # Add data to the variable
     # update number of rows for variable and participant
     def add_data(self, data):
+        if data is None:
+            return
         self.data = self.data + [data]
         self.num_rows += 1
         if self.num_rows > self.part.num_rows:
@@ -49,3 +52,6 @@ class Variable(db.Model):
         else:
             self.data = self.data + ['']*(length-self.num_rows)
         self.num_rows = length
+        
+    def set_num_rows(self, num_rows):
+        self.num_rows = num_rows

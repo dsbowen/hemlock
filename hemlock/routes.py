@@ -68,7 +68,7 @@ def survey():
         
     if request.method == 'POST':
         # record page time
-        delta = (datetime.utcnow() - part.get_endtime()).total_seconds()
+        delta = (datetime.utcnow() - part.endtime).total_seconds()
         timer = Question.query.get(page._timer)
         timer.data(timer.get_data()+delta)
         timer._assign_participant(part.id)
@@ -86,12 +86,14 @@ def survey():
         db.session.commit()
         return redirect(url_for('hemlock.survey'))
         
+    rendered_html = page._render_html()
+    part.endtime = datetime.utcnow()
+    db.session.commit()
+    print(part.endtime)
+    
     if page._terminal:
         [q._assign_participant(part.id) for q in page._questions]
         part.store_data(completed_indicator=True)
-        
-    rendered_html = page._render_html()
-    part.endtime()
         
     return render_template('page.html', page=Markup(rendered_html))
     
@@ -103,14 +105,14 @@ write to csv and output
 @bp.route('/download')
 def download():     
     # get main dataframe
-    data = pd.concat([pd.DataFrame(p.data) for p in Participant.query.all()],
-        sort=False)
+    data = pd.concat([pd.DataFrame(p.get_data()) 
+        for p in Participant.query.all()], sort=False)
         
     # drop unnecessary order variables
-    drop_prefix = ['id_','ipv4_', 'start_time_', 'end_time_', 'completed_']
-    columns = [pref+'{0}order'.format(pv) 
-        for pref in drop_prefix for pv in ['p','v']]
-    data = data.drop(columns=columns)
+    #drop_prefix = ['id_','ipv4_', 'start_time_', 'end_time_', 'completed_']
+    # columns = [pref+'{0}order'.format(pv) 
+        # for pref in drop_prefix for pv in ['p','v']]
+    # data = data.drop(columns=columns)
     
     # write to csv and output
     resp = make_response(data.to_csv(index_label='index'))

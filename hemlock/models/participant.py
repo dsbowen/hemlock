@@ -10,7 +10,7 @@ from hemlock.models.page import Page
 from hemlock.models.question import Question
 from hemlock.models.variable import Variable
 from flask import request
-from sqlalchemy import and_
+from sqlalchemy.ext.orderinglist import ordering_list
 import pandas as pd
 from datetime import datetime
 
@@ -29,75 +29,76 @@ Things you can't do without checkpoint:
 
 '''
 Data:
-branch_stack: stack of branches
-curr_page: current page
+page_queue: queue of pages to be displayed
 questions: question assigned to participant
 variables: variables the participant contributes to dataframe
-data: data dictionary contributed to dataframe
 num_rows: number of rows participant contributes to dataframe
 '''
 class Participant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    queue = db.Column(db.PickleType)
     head = db.Column(db.Integer, default=0)
-    
-    questions = db.relationship('Question', backref='_part', lazy='dynamic')
-    variables = db.relationship('Variable', backref='part', lazy='dynamic')
     data = db.Column(db.PickleType)
-    num_rows = db.Column(db.Integer, default=0)
     
-    # Add participant to database and commit on initialization
-    # also initialize participant id and start time questions
+    page_queue = db.relationship('Page', backref='_part', lazy='dynamic',
+        order_by='Page._queue_order', collection_class=ordering_list('_queue_order'))
+    questions = db.relationship('Question', backref='_part', lazy='dynamic',
+        order_by='Question.id')
+    variables = db.relationship('Variable', backref='part', lazy='dynamic')
+    num_rows = db.Column(db.Integer, default=0)
+    endtime = db.Column(db.DateTime, default=datetime.utcnow())
+    __metadata = db.Column(db.PickleType, 
+        default=['id','ipv4','start_time','end_time','completed']) # HAVE SEPARATE VARLIST FOR METADATA
+    
     def __init__(self, ipv4, start): 
         db.session.add(self)
         db.session.commit()
         
         self.record_metadata(ipv4)
         
-        root = Branch(next=start)
-        self.queue = [self.next_tuple(root)]
+        root = Page(next=start)
+        root._initialize()
+        self.page_queue = [root]
+        '''        
+        # root = Branch(next=start)
+        # self.queue = [self.next_tuple(root)]
+        '''
         
-        # continue advancing until you hit a page
+        # continue advancing past checkpoints until you hit a regular page
+        while self.get_page()._checkpoint:
+            self.process_checkpoint()
+        '''
         while type(self.queue[self.head]) != int:
             self.process_next()
+        '''
             
     # Record participant metadata
     def record_metadata(self, ipv4):
-        metadata = [
-            Question(var='id', data=self.id),
-            Question(var='ipv4', data=ipv4),
-            Question(var='start_time', data=datetime.utcnow()),
-            Question(var='end_time', data=datetime.utcnow()),
-            Question(var='completed', data=0)
-            ]
-        [q.all_rows() for q in metadata]
-        [q._assign_participant(self.id) for q in metadata]
+        Variable(self, 'id', True, self.id)
+        Variable(self, 'ipv4', True, ipv4)
+        Variable(self, 'start_time', True, datetime.utcnow())
+        Variable(self, 'end_time', True, datetime.utcnow())
+        Variable(self, 'completed', True, 0)
         self.store_data()
-        
-    # Update the end time
-    def endtime(self):
-        endtime = Question.query.filter_by(_part_id=self.id,_var='end_time')
-        endtime = endtime.first()
-        endtime.data(datetime.utcnow())
-        db.session.commit()
-        
-    def get_endtime(self):
-        endtime = Question.query.filter_by(_part_id=self.id,_var='end_time')
-        endtime = endtime.first()
-        return endtime.get_data()
         
     # Return current page
     def get_page(self):
-        return Page.query.get(self.queue[self.head])
-        
+        return self.page_queue[self.head]
+     
+    '''
     # Get the next tuple (function, args, branch_id, page_id)
     # orig: from which the next function originates (Branch or Page)
     def next_tuple(self, orig):
         return [orig._next_function, orig._next_args, orig.id, orig.__class__]
+    '''
         
     # Inserts a list into the queue split at head
-    def insert_list(self, insert):
-        self.queue = self.queue[:self.head]+insert+self.queue[self.head:]
+    def insert_to_queue(self, insert):
+        if insert is None:
+            return
+        self.page_queue = (
+            self.page_queue[:self.head]
+            +insert
+            +self.page_queue[self.head:])
         
     # Go forward to next page
     def forward(self):
@@ -105,19 +106,33 @@ class Participant(db.Model):
         head = self.get_page()
         self.head += 1
         
-        # process page branch
+        # create a checkpoint for the current page's branch
         if head._next_function is not None:
-            self.insert_list([self.next_tuple(head)])
+            checkpoint = Page()
+            self.insert_to_queue([checkpoint.__(head)])
             
-        # continue advancing until you hit a page
-        while type(self.queue[self.head]) != int:
-            self.process_next()
+        # continue processing checkpoints until you hit a regular page
+        while self.get_page()._checkpoint:
+            self.process_checkpoint()
             
         # set page direction to forward
         self.get_page()._set_direction('forward')
         
-    # Process item on queue if it contains the next navigation function
-    def process_next(self):
+    # Process checkpoint
+    def process_checkpoint(self):
+        # get the current checkpoint and increment head
+        checkpoint = self.get_page()
+        self.head += 1
+        
+        # create the next branch and checkpoint
+        next_branch = checkpoint._get_next()
+        next_checkpoint = Page()
+        next_checkpoint._initialize(next_branch)
+        to_insert = next_branch._page_queue.all() + [next_checkpoint]
+        
+        # insert next branch's page queue and next checkpoint to queue
+        self.insert_to_queue(to_insert)
+        '''
         # extract next function, args, and origin id and table from next tuple
         function, args, origin_id, table = self.queue[self.head]
         
@@ -140,12 +155,27 @@ class Participant(db.Model):
         insert = next._get_page_ids()+[self.next_tuple(next)]
         self.head += 1
         self.insert_list(insert)
+        '''
         
     # Go backward to previous page
     def back(self):    
         # decrement head
         self.head -= 1
         
+        # continue backward until you hit a regular page
+        while self.get_page()._checkpoint:
+            checkpoint = self.get_page()
+            if checkpoint._next_function is not None:
+                start = checkpoint._queue_order
+                if checkpoint._origin_table == Branch:
+                    start += 1
+                end = checkpoint._get_branch_end()
+                self.page_queue = (
+                    self.page_queue[:start] + self.page_queue[end+1:])
+                    
+            self.head -= 1
+        
+        '''
         while type(self.queue[self.head]) != int:
             function, args, id, table = self.queue[self.head]
             if function is not None:
@@ -167,70 +197,69 @@ class Participant(db.Model):
                 
             # decrement head
             self.head -= 1
+        '''
 
         # set direction to back
         self.get_page()._set_direction('back')
+        
+    # Return a dictionary of participant data
+    def get_data(self):
+        return self.data
             
     # Clear participant data
     def clear_data(self):
-        [db.session.delete(v) for v in self.variables.all()]
+        [db.session.delete(v) 
+            for v in self.variables.all() if v.name not in self.__metadata]
+        [v.set_num_rows(0) for v in self.variables]
         self.num_rows = 0
-        self.data = {}
             
     # Store participant data
-    # add end time variable
-    # processes data from each question the participant answered
-    # pads variables so they are all of equal length
-    # clears branches, pages, and questions from database
     def store_data(self, completed_indicator=False):
+        # clear data from previous store
         self.clear_data()
-        
-        completed = Question.query.filter_by(_part_id=self.id,_var='completed')
-        completed = completed.first()
-        completed.data(completed_indicator)
-        
+
         # process data from questions
         [self.process_question(q) 
-			for q in self.questions.order_by('_id_orig') if q._var]
+			for q in self.questions if q._var]
+            
+        # update end time and completed status
+        self.update_metadata(completed_indicator)
             
         # pad variables to even length and store in data dictionary
         [var.pad(self.num_rows) for var in self.variables]
         self.data = {var.name:var.data for var in self.variables}
-        #self.clear_memory()
+        
+    # Get variable associated with variable name
+    # create new variable if needed
+    def get_var(self, name, all_rows):
+        var = [v for v in self.variables if v.name == name]
+        if not var:
+            return Variable(self, name, all_rows)
+        return var[0]
         
     # Process question data
     def process_question(self, q):
-        # get the question data
         qdata = q._output_data()
         
-        # create new variables if needed
-        [self.create_var(name,data,q._all_rows) 
-            for (name,data) in qdata.items()]
-            
-        # get list of relevant variables
-        vars = Variable.query.filter(
-            and_(Variable.part_id==self.id,
-                Variable.name.in_(qdata.keys())))
-        vars = vars.order_by('name').all()
+        # get variables associated with question data
+        vars = [self.get_var(name, q._all_rows) 
+            for name in qdata.keys()]
         
-        # pad existing variables so question writes to same row
+        # pad variables
         max_rows = max(v.num_rows for v in vars)
         [var.pad(max_rows) for var in vars]
         
         # write data to variables
-        [var.add_data(qdata[name]) for name,var in zip(sorted(qdata),vars)]
+        vars.sort(key=lambda x: x.name)
+        [var.add_data(qdata[name]) for (name,var) in zip(sorted(qdata),vars)]
         
-    # Create a new variable if needed
-    def create_var(self, name, data, all_rows):
-        if name in [var.name for var in self.variables]:
-            return
-        var = Variable(part=self, name=name, all_rows=all_rows)
+    # Update metadata (end time and completed indicator)
+    def update_metadata(self, completed_indicator):
+        metadata = [v for v in self.variables 
+            if v.name in ['end_time','completed']]
+        metadata.sort(key=lambda x: x.name)
+        completed, endtime = metadata
+        endtime.data = [self.endtime]
+        completed.data = [int(completed_indicator)]
         
-    # Clear branches, pages, and questions from database
-    def clear_memory(self):
-        [db.session.delete(b) for b in Branch.query.filter_by(part_id=self.id).all()]
-        [db.session.delete(p) for p in Page.query.filter_by(part_id=self.id).all()
-            if p != self.curr_page]
-        [db.session.delete(q) for q in Question.query.filter_by(part_id=self.id).all() 
-            if q not in self.curr_page.questions]
-        db.session.commit()
+        

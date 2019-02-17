@@ -45,8 +45,7 @@ def render_free(q):
     
 # Renders single choice question in html format
 def render_single_choice(q):
-    choices = q._choices.order_by('_order').all()
-    [c._set_checked(c.id==q._default) for c in choices]
+    [c._set_checked(c.id==q._default) for c in q._choices]
     choice_html = ['''
         <input name='{0}' type='radio' value='{1}' {2}>{3}
         <br></br>
@@ -60,7 +59,6 @@ _branch_id: ID of branch to which question belongs (embedded questions only)
 _page_id: ID of page to which question belongs
 _choices: list of choices (e.g. for single choice questions
 _validators: list of validators
-_id_orig: id of the original question (to identify copies)
 _order: order in which the question appears on the page
 _text: question text
 _qtype: question type
@@ -70,24 +68,22 @@ _render_function: function called before redering the page
 _render_args: arguments for the render function
 _post_function: function called after responses are submitted and validated
 _post_args: arguments for the post function
-_randomize: indicator of choice randomization
 _init_default: initial default option (before first post)
 _default: participant's response from last post or initial default
-_clear_on: list of situations in which question is cleared
 _error: stores an error message if response was invalid
 _response: participant's raw data response
 _data: response data (cleaned version of response)
 _vorder: order in which this question appears in its variable
-_archive: copy of the question before it was rendered
 '''
 class Question(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    _choices = db.relationship('Choice', backref='_question', lazy='dynamic')
-    _validators = db.relationship('Validator', backref='_question', lazy='dynamic')
-    _id_orig = db.Column(db.Integer)
+    _choices = db.relationship('Choice', backref='_question', lazy='dynamic',
+        order_by='Choice._order')
+    _validators = db.relationship('Validator', backref='_question', lazy='dynamic',
+        order_by='Validator._order')
     _order = db.Column(db.Integer)
     _text = db.Column(db.Text)
     _qtype = db.Column(db.String(16))
@@ -97,7 +93,6 @@ class Question(db.Model, Base):
     _render_args = db.Column(db.PickleType)
     _post_function = db.Column(db.PickleType)
     _post_args = db.Column(db.PickleType)
-    _randomize = db.Column(db.Boolean)
     _init_default = db.Column(db.PickleType)
     _default = db.Column(db.PickleType)
     _error = db.Column(db.PickleType)
@@ -107,12 +102,13 @@ class Question(db.Model, Base):
     
     # Adds question to database and commits on initialization
     def __init__(self, page=None, text='', qtype='text', var=None,
-        randomize=False, default=None, data=None, all_rows=False,
+        default=None, data=None, all_rows=False,
         branch=None, order=None,
         render=None, render_args=None,
         post=None, post_args=None):
         
-        self._add_commit()
+        db.session.add(self)
+        db.session.commit()
         
         self.var(var)
         self.branch(branch)
@@ -122,7 +118,6 @@ class Question(db.Model, Base):
         self.all_rows(all_rows)
         self.render(render, render_args)
         self.post(post, post_args)
-        self.randomize(randomize)
         self.default(default)
         self.data(data)
         
@@ -172,9 +167,9 @@ class Question(db.Model, Base):
     def post(self, post=None, args=None):
         self._set_function('_post_function', post, '_post_args', args)
         
-    # Turn randomization on/off (True/False)
+    # Randomize choice order
     def randomize(self, randomize=True):
-        self._set_randomize(randomize)
+        self._randomize_children(self._choices.all())
     
     # Set default answer
     # string for free response
@@ -184,6 +179,10 @@ class Question(db.Model, Base):
             default = default.id
         self._init_default = default
         self._default = default
+        
+    # Reset default to initial default
+    def reset_default(self):
+        self._default = self._init_default
         
     # Set question data
     def data(self, data):
@@ -226,14 +225,14 @@ class Question(db.Model, Base):
             [c._set_checked(response==str(c.id)) for c in self._choices]
             checked = self.get_selected()
             if checked:
+                response = checked[0].get_value()
                 self._default = checked[0].id
-                response = checked[0]._value
         self._response = response
         self.data(response)
         
     # Validate the participant's response
     def _validate(self):
-        for v in self._validators.order_by('_order'):
+        for v in self._validators:
             self._error = v._get_error()
             if self._error is not None:
                 return False
@@ -250,11 +249,14 @@ class Question(db.Model, Base):
         
     # Unassign from participant
     def _unassign_participant(self):
-        self._part_id = None
+        self._part = None
         
-    # Outputs the data (both question data and order data)
+    # Output the data (both question data and order data)
     def _output_data(self):
-        # data, page order, and question order
+        if self._part is None or self._var is None:
+            return {}
+    
+        # data, page order, and variable order
         data = {
             self._var: self._data,
             self._var+'_porder': self._order,
@@ -262,6 +264,6 @@ class Question(db.Model, Base):
             
         # choice order
         for c in self._choices:
-            data['_'.join([self._var,c._label,'qorder'])] = c._order
+            data['_'.join([self._var,c.get_label(),'qorder'])] = c._order
             
         return data
