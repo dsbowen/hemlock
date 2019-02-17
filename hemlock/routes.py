@@ -74,8 +74,10 @@ def survey():
         timer._assign_participant(part.id)
         
         navigation = page._validate_on_submit(part.id)
-        if current_app.record_incomplete:
+        if navigation != 'invalid' and current_app.record_incomplete:
             part.store_data()
+        else:
+            part.update_metadata()
         if navigation == 'forward':
             part.forward()
         elif navigation == 'back':
@@ -89,7 +91,6 @@ def survey():
     rendered_html = page._render_html()
     part.endtime = datetime.utcnow()
     db.session.commit()
-    print(part.endtime)
     
     if page._terminal:
         [q._assign_participant(part.id) for q in page._questions]

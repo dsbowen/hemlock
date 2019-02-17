@@ -16,15 +16,9 @@ from datetime import datetime
 
 '''
 TODO
-have 'checkpoint' instead of those ugly tuples
-constant time find next checkpoint in back
-
-Give checkpoint the get_next responsibilities
-including randomizing pages and assigning embedded data to participant
-
-Things you can't do without checkpoint:
-    randomize pages within branch
-    unassign embedded data when going back over a branch
+Test and debug back button
+security
+format
 '''
 
 '''
@@ -229,6 +223,8 @@ class Participant(db.Model):
         [var.pad(self.num_rows) for var in self.variables]
         self.data = {var.name:var.data for var in self.variables}
         
+        db.session.commit()
+        
     # Get variable associated with variable name
     # create new variable if needed
     def get_var(self, name, all_rows):
@@ -261,5 +257,6 @@ class Participant(db.Model):
         completed, endtime = metadata
         endtime.data = [self.endtime]
         completed.data = [int(completed_indicator)]
+        print('completed indicator',completed.data)
         
         
