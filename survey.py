@@ -18,9 +18,13 @@ from random import choice
 
 def Start():
     b = Branch(next=Next)
+    
+    p = Page(b)
+    Question(p, 'just text')
         
     p1 = Page(b, timer='myvar_time')
-    Question(p1, 'free response 1', 'free', 'myvar')
+    Question(p1, 'free response 1', 'free', 'myvar', default='hello world')
+    Question(p1, 'free response 2', 'free', 'myvar', default='hello moon')
     
     p2 = Page(b, back=True, timer='myvar_time')
     q =Question(p2, 'free response 2', 'free', 'myvar')

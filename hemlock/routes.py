@@ -128,7 +128,7 @@ def download():
     
     password = ''
     if request.method == 'POST':
-        password = request.form.get(list(request.form)[1])
+        password = request.form.get(list(request.form)[0])
     if not check_password_hash(current_app.password_hash, password):
         return render_template('page.html', page=Markup(p._render_html()))
     
@@ -148,10 +148,10 @@ def download():
 def ipv4():
     p = Page()
     q = Question(p, 'Password', 'free')
-    
+
     password = ''
     if request.method == 'POST':
-        password = request.form.get(list(request.form)[1])
+        password = request.form.get(list(request.form)[0])
     if not check_password_hash(current_app.password_hash, password):
         return render_template('page.html', page=Markup(p._render_html()))
         
