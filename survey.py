@@ -17,46 +17,48 @@ from random import choice
 #https://getbootstrap.com/docs/4.0/components/forms/
 
 def Start():
-    b = Branch()
-    
-    disclosed = [0,1]
-    smart_anchor = [0,1]
-    # disclosed, smart_anchor = random_assignment(b,'condition',
-        # ['disclosed', 'smart_anchor'], [disclosed, smart_anchor])
+    b = Branch(next=Next)
         
     p1 = Page(b, timer='myvar_time')
     Question(p1, 'free response 1', 'free', 'myvar')
     
     p2 = Page(b, back=True, timer='myvar_time')
     q =Question(p2, 'free response 2', 'free', 'myvar')
-    Validator(q, world)
-    Validator(q, require, order=0)
+    Validator(q, require)
     
-    p = Page(b, terminal=True, back=True)
+    p = Page(b, back=True)
     Question(p, 'Empty page')
-    Question(p, qtype='embedded', var='myvar2', data='this is the end', all_rows=True)
+    Question(p, qtype='embedded', var='myvar2', data='this is not the end', all_rows=True)
+    
+    return b
+        
+def Next():
+    b = Branch()
+    p = Page(b, timer='myvar2_time', back=True)
+    q = Question(p, 'mc', 'single choice', 'myvar2')
+    q.default(Choice(q, 'choice 1'))
+    Choice(q, 'choice 2')
+    p.next(Next2)
+    
+    p = Page(b, back=True, terminal=True)
+    Question(p, 'Thank you')
     
     return b
     
-def world(q):
-    if q.get_response() != 'world':
-        return 'world'
+def Next2():
+    b = Branch(next=Next3)
+    p = Page(b, back=True)
+    Question(p, 'next2')
+    return b
+    
+def Next3():
+    b = Branch()
+    return b
         
 def require(q):
     if q.get_response() is None or q.get_response() == '':
         return 'Please respond'
     
-def disp(q, assignments):
-    disclosed, smart_anchor = assignments
-    if disclosed:
-        knowledge = 'disclosed'
-    else:
-        knowledge = 'surprise'
-    if smart_anchor:
-        anchor = 'smart anchor'
-    else:
-        anchor = 'no anchor'
-    q.text('You are in the {0} {1} condition'.format(knowledge, anchor))
         
 app = create_app(Config, 
     start=Start, 

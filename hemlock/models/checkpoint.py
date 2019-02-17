@@ -49,4 +49,4 @@ class Checkpoint():
       
     # Return the index of the next checkpoint
     def _get_branch_end(self):
-        return self._queue_order + self._next_len
+        return self._queue_order + self._next_len + 1

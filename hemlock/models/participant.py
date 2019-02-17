@@ -10,7 +10,6 @@ from hemlock.models.page import Page
 from hemlock.models.question import Question
 from hemlock.models.variable import Variable
 from flask import request
-from sqlalchemy.ext.orderinglist import ordering_list
 import pandas as pd
 from datetime import datetime
 
@@ -19,6 +18,7 @@ TODO
 Test and debug back button
 security
 format
+CLEAR EMBEDDED DATA FROM PARTICIPANT ON BACK FROM BRANCH
 '''
 
 '''
@@ -34,7 +34,7 @@ class Participant(db.Model):
     data = db.Column(db.PickleType)
     
     page_queue = db.relationship('Page', backref='_part', lazy='dynamic',
-        order_by='Page._queue_order', collection_class=ordering_list('_queue_order'))
+        order_by='Page._queue_order')
     questions = db.relationship('Question', backref='_part', lazy='dynamic',
         order_by='Question.id')
     variables = db.relationship('Variable', backref='part', lazy='dynamic')
@@ -51,20 +51,13 @@ class Participant(db.Model):
         
         root = Page(next=start)
         root._initialize()
+        root._queue_order = 0
         self.page_queue = [root]
-        '''        
-        # root = Branch(next=start)
-        # self.queue = [self.next_tuple(root)]
-        '''
         
         # continue advancing past checkpoints until you hit a regular page
         while self.get_page()._checkpoint:
             self.process_checkpoint()
-        '''
-        while type(self.queue[self.head]) != int:
-            self.process_next()
-        '''
-            
+                
     # Record participant metadata
     def record_metadata(self, ipv4):
         Variable(self, 'id', True, self.id)
@@ -77,22 +70,17 @@ class Participant(db.Model):
     # Return current page
     def get_page(self):
         return self.page_queue[self.head]
-     
-    '''
-    # Get the next tuple (function, args, branch_id, page_id)
-    # orig: from which the next function originates (Branch or Page)
-    def next_tuple(self, orig):
-        return [orig._next_function, orig._next_args, orig.id, orig.__class__]
-    '''
         
     # Inserts a list into the queue split at head
     def insert_to_queue(self, insert):
         if insert is None:
             return
-        self.page_queue = (
-            self.page_queue[:self.head]
-            +insert
-            +self.page_queue[self.head:])
+        after_head = self.page_queue[self.head:]
+        for i in range(len(after_head)):
+            after_head[i]._queue_order += len(insert)
+        for i in range(len(insert)):
+            insert[i]._part = self
+            insert[i]._queue_order = self.head + i
         
     # Go forward to next page
     def forward(self):
@@ -103,7 +91,7 @@ class Participant(db.Model):
         # create a checkpoint for the current page's branch
         if head._next_function is not None:
             checkpoint = Page()
-            self.insert_to_queue([checkpoint.__(head)])
+            self.insert_to_queue([checkpoint._initialize(head)])
             
         # continue processing checkpoints until you hit a regular page
         while self.get_page()._checkpoint:
@@ -120,36 +108,14 @@ class Participant(db.Model):
         
         # create the next branch and checkpoint
         next_branch = checkpoint._get_next()
+        if next_branch is None:
+            return
         next_checkpoint = Page()
         next_checkpoint._initialize(next_branch)
         to_insert = next_branch._page_queue.all() + [next_checkpoint]
         
         # insert next branch's page queue and next checkpoint to queue
         self.insert_to_queue(to_insert)
-        '''
-        # extract next function, args, and origin id and table from next tuple
-        function, args, origin_id, table = self.queue[self.head]
-        
-        if function is None:
-            self.head += 1
-            return
-            
-        # get next branch and assign embedded data to participant
-        if args is None:
-            next = function()
-        else:
-            next = function(args)
-        [e._assign_participant(self.id) for e in next._embedded]
-            
-        # update origin next branch id
-        if table is not None:
-            table.query.get(origin_id)._id_next = next.id
-        
-        # insert next branch pages and next tuple into queue
-        insert = next._get_page_ids()+[self.next_tuple(next)]
-        self.head += 1
-        self.insert_list(insert)
-        '''
         
     # Go backward to previous page
     def back(self):    
@@ -164,34 +130,15 @@ class Participant(db.Model):
                 if checkpoint._origin_table == Branch:
                     start += 1
                 end = checkpoint._get_branch_end()
-                self.page_queue = (
-                    self.page_queue[:start] + self.page_queue[end+1:])
+                after_end = self.page_queue[end+1:]
+                to_delete = self.page_queue[start:end+1]
+                for d in to_delete:
+                    d._part = None
+                    d._queue_order = None
+                for page in after_end:
+                    page._queue_order -= len(to_delete)
                     
             self.head -= 1
-        
-        '''
-        while type(self.queue[self.head]) != int:
-            function, args, id, table = self.queue[self.head]
-            if function is not None:
-                # find next navigator
-                # FIND A WAY TO DO THIS IN CONSTANT TIME
-                temp = self.head+1
-                while type(self.queue[temp]) == int:
-                    temp += 1
-                    
-                # remove elements in between
-                # NOTE: CHECKPOINT IS CREATED AFTER PAGE WITH PAGE BRANCH IS RENDERED. THEREFORE NEED TO DELETE THIS CHECKPOINT WHEN GOING BACK. HENCE, WHEN TABLE==PAGE, START INDEX IS 1 BEFORE START INDEX WHEN TABLE==BRANCH
-                # REMOVE BRANCH EMBEDDED DATA FROM PARTICIPANT HERE!!!
-                # this is another checkpoint responsibility
-                if table == Page:
-                    index = self.head
-                elif table == Branch:
-                    index = self.head+1
-                self.queue = self.queue[:index] + self.queue[temp+1:]
-                
-            # decrement head
-            self.head -= 1
-        '''
 
         # set direction to back
         self.get_page()._set_direction('back')
@@ -250,13 +197,12 @@ class Participant(db.Model):
         [var.add_data(qdata[name]) for (name,var) in zip(sorted(qdata),vars)]
         
     # Update metadata (end time and completed indicator)
-    def update_metadata(self, completed_indicator):
+    def update_metadata(self, completed_indicator=False):
         metadata = [v for v in self.variables 
             if v.name in ['end_time','completed']]
         metadata.sort(key=lambda x: x.name)
         completed, endtime = metadata
         endtime.data = [self.endtime]
         completed.data = [int(completed_indicator)]
-        print('completed indicator',completed.data)
         
         

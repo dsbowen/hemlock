@@ -48,7 +48,7 @@ class Variable(db.Model):
         if length <= self.num_rows:
             return
         if self.all_rows and self.data:
-            self.data = [self.data[0]]*length
+            self.data = [self.data[-1]]*length
         else:
             self.data = self.data + ['']*(length-self.num_rows)
         self.num_rows = length

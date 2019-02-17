@@ -49,7 +49,7 @@ def render_single_choice(q):
     choice_html = ['''
         <input name='{0}' type='radio' value='{1}' {2}>{3}
         <br></br>
-        '''.format(q.id, c.id, c._checked, c._text) for c in choices]
+        '''.format(q.id, c.id, c._checked, c._text) for c in q._choices]
     return ''.join(choice_html)
 
 '''
