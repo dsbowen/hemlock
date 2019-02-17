@@ -15,21 +15,24 @@ from string import ascii_letters, digits
 
 # Create a hidden tag for form (for security purposes)
 def hidden_tag():
-    tag = ''.join([choice(ascii_letters + digits) for i in range(90)])
-    return "<input name='crsf_token' type='hidden' value='{0}'>".format(tag)
+    return '''
+    <div class='form-group'
+        <input name='crsf_token' type='hidden' value='{0}'>
+    </div>
+    '''.format(''.join([choice(ascii_letters + digits) for i in range(90)]))
     
 # Submit button
 def submit(page):
     html = ''
     if page._back:
         html += '''
-        <p align=left><input type='submit' name='back' value='<<'></p>
-        '''
+    <button name='back' type='submit' class='btn btn-primary' style='float: left;' value='True'> << </button>
+    '''
     if page._terminal:
         return html
     return html + '''
-        <p align=right><input type='submit' name='submit' value='>>'></p>
-        '''
+    <button type='submit' class='btn btn-primary' style='float: right;'> >> </button>
+    '''
         
 '''
 Data:
@@ -194,7 +197,7 @@ class Page(db.Model, Checkpoint, Base):
             for q in self._questions if q._qtype != 'embedded']
             
         # back navigation
-        if request.form.get('back'):
+        if request.form.get('back')=='True':
             [q._unassign_participant() for q in self._questions]
             return 'back'
             

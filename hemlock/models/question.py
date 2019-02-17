@@ -23,9 +23,10 @@ def render_error(q):
 # Renders question text in html format
 def render_text(q):
     return '''
-        {0}
-        <br></br>
-        '''.format(q._text)
+    <div class='form-group'>
+        <label for='{0}'>{1}</label>
+    </div>    
+    '''.format(q.id, q._text)
         
 # Renders the question body in html format
 def render_body(q):
@@ -40,17 +41,29 @@ def render_body(q):
 def render_free(q):
     default = q._default if q._default is not None else ''
     return '''
-        <input name='{0}' type='text' value='{1}'>
-        '''.format(q.id, default)
+    <div class='form-group'>
+        <label for='{0}'>{1}</label>
+        <input name='{0}' type='text' class='form-control' value='{2}'>
+    </div>
+    '''.format(q.id, q._text, default)
     
 # Renders single choice question in html format
 def render_single_choice(q):
     [c._set_checked(c.id==q._default) for c in q._choices]
+    text_html = '''
+    <div class='form-group'>
+        <label for='{0}'>{1}</label>
+    </div>
+    '''.format(q.id, q._text)
     choice_html = ['''
-        <input name='{0}' type='radio' value='{1}' {2}>{3}
-        <br></br>
-        '''.format(q.id, c.id, c._checked, c._text) for c in q._choices]
-    return ''.join(choice_html)
+    <div class='form-check'>
+        <input name='{0}' id='{0}' class='form-check-input' type='radio' value='{1}' {2}>
+        <label class='form-check-label' for='{0}'>
+            {3}
+        </label>
+    </div>
+    '''.format(q.id, c.id, c._checked, c._text) for c in q._choices]
+    return ''.join([text_html]+choice_html+['<br></br>'])
 
 '''
 Data:
@@ -208,13 +221,12 @@ class Question(db.Model, Base):
     def _render_html(self):
         if self._qtype == 'embedded':
             return ''
-        return '''
-        <p>
-            {0}
-            {1}
-            {2}
-        </p>
-        '''.format(render_error(self), render_text(self), render_body(self))
+        elif self._qtype == 'text':
+            return render_text(self)
+        elif self._qtype == 'free':
+            return render_free(self)
+        elif self._qtype == 'single choice':
+            return render_single_choice(self)
         
     # Record the participant's response
     # collects response and updates default
