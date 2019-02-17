@@ -28,7 +28,7 @@ def Start():
     
     p = Page(b, back=True)
     Question(p, 'Empty page')
-    Question(p, qtype='embedded', var='myvar2', data='this is not the end', all_rows=True)
+    Question(p, qtype='embedded', var='embedded', data='this is not the end', all_rows=True)
     
     return b
         

@@ -15,7 +15,6 @@ from datetime import datetime
 
 '''
 TODO
-Test and debug back button
 security
 format
 CLEAR EMBEDDED DATA FROM PARTICIPANT ON BACK FROM BRANCH
@@ -51,12 +50,19 @@ class Participant(db.Model):
         
         root = Page(next=start)
         root._initialize()
+        root._part_id = self.id
         root._queue_order = 0
-        self.page_queue = [root]
+        self.print_queue()
         
         # continue advancing past checkpoints until you hit a regular page
         while self.get_page()._checkpoint:
             self.process_checkpoint()
+                
+    def print_queue(self):
+        print('queue')
+        for p in self.page_queue:
+            star = '***' if p == self.get_page() else ''
+            print(p, p._checkpoint, p._queue_order, star)
                 
     # Record participant metadata
     def record_metadata(self, ipv4):
@@ -71,16 +77,16 @@ class Participant(db.Model):
     def get_page(self):
         return self.page_queue[self.head]
         
-    # Inserts a list into the queue split at head
+    # Insert a list into the queue split at head
     def insert_to_queue(self, insert):
         if insert is None:
             return
-        after_head = self.page_queue[self.head:]
-        for i in range(len(after_head)):
-            after_head[i]._queue_order += len(insert)
-        for i in range(len(insert)):
-            insert[i]._part = self
-            insert[i]._queue_order = self.head + i
+            
+        # push pages after head down in the queue
+        [p._modify_queue_order(len(insert)) for p in self.page_queue[self.head:]]
+        
+        # insert new pages
+        [insert[i]._insert_to_queue(self.id, self.head+i) for i in range(len(insert))]
         
     # Go forward to next page
     def forward(self):
@@ -113,7 +119,7 @@ class Participant(db.Model):
         next_checkpoint = Page()
         next_checkpoint._initialize(next_branch)
         to_insert = next_branch._page_queue.all() + [next_checkpoint]
-        
+
         # insert next branch's page queue and next checkpoint to queue
         self.insert_to_queue(to_insert)
         
@@ -130,13 +136,12 @@ class Participant(db.Model):
                 if checkpoint._origin_table == Branch:
                     start += 1
                 end = checkpoint._get_branch_end()
-                after_end = self.page_queue[end+1:]
-                to_delete = self.page_queue[start:end+1]
-                for d in to_delete:
-                    d._part = None
-                    d._queue_order = None
-                for page in after_end:
-                    page._queue_order -= len(to_delete)
+                
+                # remove branch from queue
+                [p._remove_from_queue() for p in self.page_queue[start:end+1]]
+                
+                # push back pages after branch
+                [p._modify_queue_order(start-end-1) for p in self.page_queue[start:]]
                     
             self.head -= 1
 

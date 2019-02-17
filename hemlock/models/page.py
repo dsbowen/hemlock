@@ -152,6 +152,22 @@ class Page(db.Model, Checkpoint, Base):
     # from which this page is arrived at
     def _set_direction(self, direction):
         self._direction = direction
+        
+    # Set the order in participant's page queue
+    def _set_queue_order(self, order):
+        self._queue_order = order
+        
+    # Modify the order in participant's page queue
+    def _modify_queue_order(self, modify):
+        self._queue_order += modify
+        
+    # Assign participant
+    def _insert_to_queue(self, part_id, queue_order):
+        self._part_id, self._queue_order = part_id, queue_order
+        
+    # Remove participant
+    def _remove_from_queue(self):
+        self._part_id, self._queue_order = None, None
     
     # Render the html code for the form specified on this page
     # executes render functions for page and questions
