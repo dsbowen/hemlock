@@ -4,12 +4,13 @@
 # last modified 02/15/2019
 ###############################################################################
 
-from hemlock import db
+from hemlock import db, login
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 from hemlock.models.question import Question
 from hemlock.models.variable import Variable
 from flask import request
+from flask_login import UserMixin
 import pandas as pd
 from datetime import datetime
 
@@ -20,6 +21,10 @@ format
 CLEAR EMBEDDED DATA FROM PARTICIPANT ON BACK FROM BRANCH
 '''
 
+@login.user_loader
+def load_user(id):
+    return Participant.query.get(int(id))
+
 '''
 Data:
 page_queue: queue of pages to be displayed
@@ -27,7 +32,7 @@ questions: question assigned to participant
 variables: variables the participant contributes to dataframe
 num_rows: number of rows participant contributes to dataframe
 '''
-class Participant(db.Model):
+class Participant(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     head = db.Column(db.Integer, default=0)
     data = db.Column(db.PickleType)
@@ -52,11 +57,12 @@ class Participant(db.Model):
         root._initialize()
         root._part_id = self.id
         root._queue_order = 0
-        self.print_queue()
         
         # continue advancing past checkpoints until you hit a regular page
         while self.get_page()._checkpoint:
             self.process_checkpoint()
+            
+        db.session.commit()
                 
     def print_queue(self):
         print('queue')

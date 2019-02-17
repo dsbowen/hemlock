@@ -11,6 +11,8 @@ from hemlock.models.page import Page
 from hemlock.models.question import Question
 from hemlock.models.variable import Variable
 from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request
+from flask_login import login_required, current_user, login_user
+from werkzeug.security import check_password_hash
 from datetime import datetime
 import io
 import csv
@@ -32,8 +34,7 @@ def index():
     current_app.ipv4_current.append(ipv4)
         
     part = Participant(ipv4, current_app.start)
-    session['part_id'] = part.id
-    db.session.commit()
+    login_user(part)
     
     return redirect(url_for('hemlock.survey'))
     
@@ -62,8 +63,9 @@ alternate between GET and POST
 store participant data on terminal page
 '''
 @bp.route('/survey', methods=['GET','POST'])
+@login_required
 def survey():
-    part = Participant.query.get(session['part_id'])
+    part = current_user
     page = part.get_page()
         
     if request.method == 'POST':
@@ -97,23 +99,42 @@ def survey():
         part.store_data(completed_indicator=True)
         
     return render_template('page.html', page=Markup(rendered_html))
+  
+'''
+@bp.route('/login', methods=['GET','POST'])
+def login():
+    p = Page()
+    q = Question(p, 'Password', 'free')
     
+    if request.method == 'POST':
+        password = request.form.get(list(request.form)[1])
+        if not check_password_hash(current_app.password_hash, password):
+            return redirect(url_for('hemlock.login'))
+        next = request.args.get('next')
+        return redirect(request.args.get('next'))
+    
+    return render_template('page.html', page=Markup(p._render_html()))
+'''
+
 '''
 Download data
 get data from all participants
 write to csv and output
 '''
-@bp.route('/download')
-def download():     
+@bp.route('/download', methods=['GET','POST'])
+def download():
+    p = Page()
+    q = Question(p, 'Password', 'free')
+    
+    password = ''
+    if request.method == 'POST':
+        password = request.form.get(list(request.form)[1])
+    if not check_password_hash(current_app.password_hash, password):
+        return render_template('page.html', page=Markup(p._render_html()))
+    
     # get main dataframe
     data = pd.concat([pd.DataFrame(p.get_data()) 
         for p in Participant.query.all()], sort=False)
-        
-    # drop unnecessary order variables
-    #drop_prefix = ['id_','ipv4_', 'start_time_', 'end_time_', 'completed_']
-    # columns = [pref+'{0}order'.format(pv) 
-        # for pref in drop_prefix for pv in ['p','v']]
-    # data = data.drop(columns=columns)
     
     # write to csv and output
     resp = make_response(data.to_csv(index_label='index'))
@@ -125,6 +146,15 @@ def download():
 # for blocking duplicates in subsequent studies
 @bp.route('/ipv4')
 def ipv4():
+    p = Page()
+    q = Question(p, 'Password', 'free')
+    
+    password = ''
+    if request.method == 'POST':
+        password = request.form.get(list(request.form)[1])
+    if not check_password_hash(current_app.password_hash, password):
+        return render_template('page.html', page=Markup(p._render_html()))
+        
     ipv4 = current_app.ipv4_csv = current_app.ipv4_current
     ipv4 = pd.DataFrame.from_dict({'ipv4':ipv4})
     resp = make_response(ipv4.to_csv())

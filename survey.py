@@ -62,6 +62,7 @@ def require(q):
         
 app = create_app(Config, 
     start=Start, 
+    password='123',
     record_incomplete=True,
     block_duplicate_ips=False,
     block_from_csv='block.csv')
