@@ -1,68 +1,37 @@
 ###############################################################################
 # Example Hemlock survey
 # by Dillon Bowen
-# last modified 02/15/2019
+# last modified 02/17/2019
 ###############################################################################
 
 '''
-RECORD EMPY DATAFRAME
+TODO:
+record empty dataframe
+back for branch embedded dataframe
+relationships instead of queries
+routes folder and submodules
+general cleaning
+vaidation bank
 '''
 
 from hemlock import create_app, db, query, restore_branch, even_randomize, random_assignment, Participant, Branch, Page, Question, Choice, Validator, Variable, Randomizer
+from hemlock.validation_bank import *
 from config import Config
 import pandas as pd
 import numpy as np
 from random import choice
 
-#https://getbootstrap.com/docs/4.0/components/forms/
-
 def Start():
-    b = Branch(next=Next)
+    b = Branch()
     
     p = Page(b)
-    Question(p, 'just text')
-        
-    p1 = Page(b, timer='myvar_time')
-    Question(p1, 'free response 1', 'free', 'myvar', default='hello world')
-    Question(p1, 'free response 2', 'free', 'myvar', default='hello moon')
+    Question(p, '''
+        Survey instructions
+    '''
     
-    p2 = Page(b, back=True, timer='myvar_time')
-    q =Question(p2, 'free response 2', 'free', 'myvar')
-    Validator(q, require)
     
-    p = Page(b, back=True)
-    Question(p, 'Empty page')
-    Question(p, qtype='embedded', var='embedded', data='this is not the end', all_rows=True)
     
     return b
-        
-def Next():
-    b = Branch()
-    p = Page(b, timer='myvar2_time', back=True)
-    q = Question(p, 'mc', 'single choice', 'myvar2')
-    q.default(Choice(q, 'choice 1'))
-    Choice(q, 'choice 2')
-    p.next(Next2)
-    
-    p = Page(b, back=True, terminal=True)
-    Question(p, 'Thank you')
-    
-    return b
-    
-def Next2():
-    b = Branch(next=Next3)
-    p = Page(b, back=True)
-    Question(p, 'next2')
-    return b
-    
-def Next3():
-    b = Branch()
-    return b
-        
-def require(q):
-    if q.get_response() is None or q.get_response() == '':
-        return 'Please respond'
-    
         
 app = create_app(Config, 
     start=Start, 

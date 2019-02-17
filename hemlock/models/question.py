@@ -10,51 +10,47 @@ from hemlock.models.validator import Validator
 from hemlock.models.base import Base
 from sqlalchemy import and_
 
-# Renders errors from previous submit
-def render_error(q):
-    if q._error is None:
-        return ''
-    return '''
-        <div style='color: #ff0000;'>
-        {0}
-        </div>
+# Render errors and text as question label
+def render_label(q):
+    error = ''
+    if q._error:
+        error = '''
+            <div style='color: #ff0000;'>
+            {0}
+            </div>
         '''.format(q._error)
-
+    return '''
+            <label for='{0}'>
+            {1}
+            </label>
+    '''.format(q.id, error+q._text)
+    
 # Renders question text in html format
 def render_text(q):
     return '''
     <div class='form-group'>
-        <label for='{0}'>{1}</label>
+        {0}
     </div>    
-    '''.format(q.id, q._text)
-        
-# Renders the question body in html format
-def render_body(q):
-    if q._qtype == 'text':
-        return ''
-    if q._qtype == 'free':
-        return render_free(q)
-    if q._qtype == 'single choice':
-        return render_single_choice(q)
+    '''.format(render_label(q))
     
 # Renders free response question in html format
 def render_free(q):
     default = q._default if q._default is not None else ''
     return '''
     <div class='form-group'>
-        <label for='{0}'>{1}</label>
-        <input name='{0}' type='text' class='form-control' value='{2}'>
+        {0}
+        <input name='{1}' type='text' class='form-control' value='{2}'>
     </div>
-    '''.format(q.id, q._text, default)
+    '''.format(render_label(q), q.id, default)
     
 # Renders single choice question in html format
 def render_single_choice(q):
     [c._set_checked(c.id==q._default) for c in q._choices]
     text_html = '''
     <div class='form-group'>
-        <label for='{0}'>{1}</label>
+        {0}
     </div>
-    '''.format(q.id, q._text)
+    '''.format(render_label(q))
     choice_html = ['''
     <div class='form-check'>
         <input name='{0}' id='{0}' class='form-check-input' type='radio' value='{1}' {2}>
