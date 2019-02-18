@@ -144,7 +144,7 @@ def download():
     
 # Download list of ipv4 addresses
 # for blocking duplicates in subsequent studies
-@bp.route('/ipv4')
+@bp.route('/ipv4', methods=['GET','POST'])
 def ipv4():
     p = Page()
     q = Question(p, 'Password', 'free')
@@ -155,9 +155,9 @@ def ipv4():
     if not check_password_hash(current_app.password_hash, password):
         return render_template('page.html', page=Markup(p._render_html()))
         
-    ipv4 = current_app.ipv4_csv = current_app.ipv4_current
+    ipv4 = current_app.ipv4_csv + current_app.ipv4_current
     ipv4 = pd.DataFrame.from_dict({'ipv4':ipv4})
-    resp = make_response(ipv4.to_csv())
+    resp = make_response(ipv4.to_csv(index_label='index'))
     resp.headers['Content-Disposition'] = 'attachment; filename=block.csv'
     resp.headers['Content-Type'] = 'text/csv'
     return resp
