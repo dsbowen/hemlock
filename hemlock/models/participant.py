@@ -10,9 +10,10 @@ from hemlock.models.page import Page
 from hemlock.models.question import Question
 from hemlock.models.variable import Variable
 from flask import request
-from flask_login import UserMixin
+from flask_login import UserMixin, login_user
 import pandas as pd
 from datetime import datetime
+from copy import deepcopy
 
 '''
 TODO
@@ -36,6 +37,7 @@ class Participant(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     head = db.Column(db.Integer, default=0)
     data = db.Column(db.PickleType)
+    g = db.Column(db.PickleType)
     
     page_queue = db.relationship('Page', backref='_part', lazy='dynamic',
         order_by='Page._queue_order')
@@ -50,6 +52,7 @@ class Participant(db.Model, UserMixin):
     def __init__(self, ipv4, start): 
         db.session.add(self)
         db.session.commit()
+        login_user(self)
         
         self.record_metadata(ipv4)
         
@@ -63,6 +66,15 @@ class Participant(db.Model, UserMixin):
             self.process_checkpoint()
             
         db.session.commit()
+        
+    def set_g(self, g):
+        self.g = deepcopy(g)
+        
+    def add_g(self, g):
+        temp = deepcopy(self.g)
+        for key,value in g.items():
+            temp[key]=value
+        self.g = deepcopy(temp)
                 
     def print_queue(self):
         print('queue')

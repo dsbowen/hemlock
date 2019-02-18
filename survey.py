@@ -18,15 +18,18 @@ css - larger margins
 
 from hemlock import create_app, db, query, restore_branch, even_randomize, random_assignment, Participant, Branch, Page, Question, Choice, Validator, Variable, Randomizer
 from hemlock.validation_bank import *
+from flask_login import current_user
 from config import Config
 import pandas as pd
 import numpy as np
 from random import choice, shuffle
+from copy import deepcopy
 
 def Start():
-    b = Branch()
+    b = Branch(next=PreferenceQuestions)
     
-    disclosed = random_assignment(b, 'condition', ['disclosed'], [[0,1]])
+    disclosed = random_assignment(b, 'condition', ['disclosed'], [[0,1,]])
+    current_user.set_g({'disclosed':disclosed})
     
     p = Page(b)
     q = Question(p, '''
@@ -43,6 +46,11 @@ def Start():
     q = Question(p, 'Enter your MTurk ID', 'free', 'workerId', all_rows=True)
     Validator(q, require)
     
+    return b
+    
+def PreferenceQuestions():
+    b = Branch()
+    
     p = Page(b)
     q = Question(p, '''
     On the next page, we will ask you some questions about your behaviors and preferences. Please answer them honestly. Your responses will be confidential.
@@ -54,22 +62,22 @@ def Start():
     preference_question(p.id, 'Which sport do you prefer: basketball or football?', 'Basketball', 'Football')
     p.randomize()
     
-    if disclosed:
-        b.next(DisclosedInstructions, 1)
+    if current_user.g['disclosed']:
+        b.next(DisclosedInstructions)
     else:
-        b.next(Estimates, 0)
+        b.next(Estimates)
 
     return b
     
 preference_question_texts = [
-    'Did you attend a music concert this year?',
-    'Have you ever been to New York City?',
-    'Do you enjoy swimming in the ocean?',
-    'Have you ever spent the night outdoors in a tent?',
-    'Did you read a book this summer?',
-    'Do you typically go to bed before 11pm?',
-    'Have you watched at least one episode of Stranger Things on Netflix?',
-    'Have you ever seen the movie The Shining?']
+    'Did you attend a music concert this year?']
+    # 'Have you ever been to New York City?',
+    # 'Do you enjoy swimming in the ocean?',
+    # 'Have you ever spent the night outdoors in a tent?',
+    # 'Did you read a book this summer?',
+    # 'Do you typically go to bed before 11pm?',
+    # 'Have you watched at least one episode of Stranger Things on Netflix?',
+    # 'Have you ever seen the movie The Shining?']
     
 def preference_question(p_id, text, choice1='Yes', choice2='No'):
     q = Question(query(p_id,Page), text, 'single choice', 'preference')
@@ -78,7 +86,11 @@ def preference_question(p_id, text, choice1='Yes', choice2='No'):
     q.randomize()
     Validator(q, require)
     
-def DisclosedInstructions(attempt):
+def DisclosedInstructions():
+    if 'attempt' not in current_user.g.keys():
+        current_user.add_g({'attempt':0})
+    current_user.add_g({'attempt':current_user.g['attempt']+1})
+
     b = Branch()
     
     p = Page(b)
@@ -96,44 +108,46 @@ def DisclosedInstructions(attempt):
     
     p = Page(b)
     q = Question(p, 'To be sure you read and understood the instructions, please indicate how your bonus will be determined:', 'single choice', all_rows=True)
-    q.var('comprehension{0}'.format(attempt))
+    q.var('comprehension{0}'.format(current_user.g['attempt']))
     Choice(q, 'I will be asked to make one estimate for each question and this estimate will determine my bonus.', 0, label='incorrect1')
     Choice(q, 'I will be asked to make two estimates for each question, but only the first will determine my bonus', 0, label='incorrect2')
     Choice(q, 'I will be asked to make two estimates for each question, but only the second estimate will determine my bonus.', 0, label='incorrect3')
     Choice(q, 'I will be asked to make two estimates for each question and the better fo these two estimates will determine my bonus.', 1, label='correct')
     q.randomize()
     
-    b.next(CheckComprehension, [q.id, attempt, 1])
+    current_user.add_g({'comp_check':q.id})
+    
+    b.next(CheckComprehension)
     
     return b
     
-def CheckComprehension(args):
-    q_id, attempt, disclosed = args
-    correct = query(q_id).get_data()
-    if correct or attempt>=3:
+def CheckComprehension():
+    disclosed = current_user.g['disclosed']
+    correct = query(current_user.g['comp_check']).get_data()
+    if correct or current_user.g['attempt']>3:
         if disclosed:
-            return Estimates(1)
+            return Estimates()
         return Branch()
     if disclosed:
-        b = Branch(next=DisclosedInstructions, next_args=attempt+1)
+        b = Branch(next=DisclosedInstructions)
     else:
-        b = Branch(next=SurpriseInstructions, next_args=attempt+1)
+        b = Branch(next=SurpriseInstructions)
     p = Page(b)
     Question(p, 'Your response to the previous question was incorrect. Click >> to see the instructions again.')
     return b
     
 est_texts = [
-    'attended a music concert this year',
-    'have been to New York City',
-    'enjoy swimming in the ocean',
-    'have spent the night outdoors in a tent',
-    'read a book this summer',
-    'typically go to bed before 11pm',
-    'have watched at least one episode of Stranger Things on Netflix',
-    'have seen the movie The Shining',
-    'prefer tea over coffee',
-    'prefer basketball over football'
-    ]
+    'attended a music concert this year']
+    # 'have been to New York City',
+    # 'enjoy swimming in the ocean',
+    # 'have spent the night outdoors in a tent',
+    # 'read a book this summer',
+    # 'typically go to bed before 11pm',
+    # 'have watched at least one episode of Stranger Things on Netflix',
+    # 'have seen the movie The Shining',
+    # 'prefer tea over coffee',
+    # 'prefer basketball over football'
+    # ]
     
 def est_page(p_id, text, first_est_id=None):
     p = query(p_id, Page)
@@ -162,31 +176,38 @@ def different_second_est(second_est, first_est_id):
     if second_est.get_data() == first_est.get_data():
         return 'Your second estimate should be different from your first'
     
-def Estimates(disclosed):
+def Estimates():
     b = Branch(next=Exit)
     
-    firstest_pages = [Page() for i in range(10)]
+    [Question(branch=b, qtype='embedded', var='preference_label', data=text)
+        for text in est_texts]
+    
+    firstest_pages = [Page() for i in range(len(est_texts))]
     firstest_questions = [est_page(p.id,t) 
         for (p,t)in zip(firstest_pages, est_texts)]
-    secondest_pages = [Page() for i in range(10)]
+    secondest_pages = [Page() for i in range(len(est_texts))]
     [est_page(p.id,t,q_id) 
         for (p,t,q_id) in zip(secondest_pages, est_texts, firstest_questions)]
     
-    order = list(range(10))
+    order = list(range(len(est_texts)))
     shuffle(order)
     
-    if disclosed:
+    if current_user.g['disclosed']:
         for i in order:
             firstest_pages[i].branch(b)
             secondest_pages[i].branch(b)
     else:
         [firstest_pages[i].branch(b) for i in order]
-        firstest_pages[order[-1]].next(SurpriseInstructions, 1)
+        firstest_pages[order[-1]].next(SurpriseInstructions)
         [secondest_pages[i].branch(b) for i in order]
     
     return b
     
-def SurpriseInstructions(attempt):
+def SurpriseInstructions():
+    if 'attempt' not in current_user.g.keys():
+        current_user.add_g({'attempt':0})
+    current_user.add_g({'attempt':current_user.g['attempt']+1})
+
     b = Branch()
     
     p = Page(b)
@@ -202,13 +223,14 @@ def SurpriseInstructions(attempt):
     
     p = Page(b)
     q = Question(p, 'To be sure that you read and understood the instructions, please indicate how your bonus will be determined:', 'single choice', all_rows=True)
-    q.var('comprehension{0}'.format(attempt))
+    q.var('comprehension{0}'.format(current_user.g['attempt']))
     Choice(q, 'Only the estimates I previously gave (i.e. my first estimates) will be used to determine my bonus.', 0, label='incorrect1')
     Choice(q, 'Only the estimates I am about to give (i.e. my second estimates) will be used to determine my bonus.', 0, label='incorrect2')
     Choice(q, 'The better of my first and second estimates will be used to determine my bonus', 1, label='correct')
     q.randomize()
     
-    b.next(CheckComprehension, [q.id, attempt, 0])
+    current_user.add_g({'comp_check':q.id})
+    b.next(CheckComprehension)
     
     return b
     
@@ -248,7 +270,7 @@ app = create_app(Config,
     start=Start, 
     password='123',
     record_incomplete=False,
-    block_duplicate_ips=True,
+    block_duplicate_ips=False,
     block_from_csv='block.csv')
 
 @app.shell_context_processor

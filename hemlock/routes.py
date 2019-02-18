@@ -34,7 +34,6 @@ def index():
     current_app.ipv4_current.append(ipv4)
         
     part = Participant(ipv4, current_app.start)
-    login_user(part)
     
     return redirect(url_for('hemlock.survey'))
     
