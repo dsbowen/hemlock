@@ -35,7 +35,7 @@ class Checkpoint():
             next = self._next_function(self._next_args)
             
         # assign embedded data to participants
-        [e._assign_participant(self.part_id) for e in next._embedded]
+        [e._assign_participant(self._part_id) for e in next._embedded]
         
         # let the origin of the checkpoint point to the next branch
         table = self._origin_table
