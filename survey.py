@@ -8,6 +8,7 @@
 TODO:
 general cleaning, incl routes folder and relationships (as opposed to queries)
 global variables
+for debugging, pass args to start function
 comprehension check
 back for branch embedded dataframe
 record empty dataframe
@@ -134,14 +135,12 @@ est_texts = [
     'prefer basketball over football'
     ]
     
-est_texts = ['What percent of survey respondents {0}?'.format(t) for t in est_texts]
-    
 def est_page(p_id, text, first_est_id=None):
     p = query(p_id, Page)
     if first_est_id is not None:
         q = Question(p)
         q.render(estimate_reminder, [first_est_id,text])
-    q = Question(p, text, 'free', 'FirstEst')
+    q = Question(p, 'What percent of survey respondents {0}?'.format(text), 'free', 'FirstEst')
     Validator(q, require)
     Validator(q, integer)
     Validator(q, in_range, [0,100])
@@ -167,7 +166,8 @@ def Estimates(disclosed):
     b = Branch(next=Exit)
     
     firstest_pages = [Page() for i in range(10)]
-    firstest_questions = [est_page(p.id,t) for (p,t)in zip(firstest_pages, est_texts)]
+    firstest_questions = [est_page(p.id,t) 
+        for (p,t)in zip(firstest_pages, est_texts)]
     secondest_pages = [Page() for i in range(10)]
     [est_page(p.id,t,q_id) 
         for (p,t,q_id) in zip(secondest_pages, est_texts, firstest_questions)]
