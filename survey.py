@@ -6,12 +6,13 @@
 
 '''
 TODO:
-record empty dataframe
+general cleaning, incl routes folder and relationships (as opposed to queries)
+global variables
+comprehension check
 back for branch embedded dataframe
-relationships instead of queries
-routes folder and submodules
-general cleaning
+record empty dataframe
 vaidation bank
+css - larger margins
 '''
 
 from hemlock import create_app, db, query, restore_branch, even_randomize, random_assignment, Participant, Branch, Page, Question, Choice, Validator, Variable, Randomizer
@@ -24,7 +25,7 @@ from random import choice, shuffle
 def Start():
     b = Branch()
     
-    disclosed = random_assignment(b, 'condition', ['disclosed'], [[0,1]])[0]
+    disclosed = random_assignment(b, 'condition', ['disclosed'], [[0,1]])
     
     p = Page(b)
     q = Question(p, '''
@@ -108,11 +109,14 @@ def DisclosedInstructions(attempt):
 def CheckComprehension(args):
     q_id, attempt, disclosed = args
     correct = query(q_id).get_data()
-    if correct or attempt>3:
+    if correct or attempt>=3:
         if disclosed:
             return Estimates(1)
         return Branch()
-    b = Branch(next=DisclosedInstructions, next_args=attempt)
+    if disclosed:
+        b = Branch(next=DisclosedInstructions, next_args=attempt+1)
+    else:
+        b = Branch(next=SurpriseInstructions, next_args=attempt+1)
     p = Page(b)
     Question(p, 'Your response to the previous question was incorrect. Click >> to see the instructions again.')
     return b
@@ -244,7 +248,7 @@ app = create_app(Config,
     start=Start, 
     password='123',
     record_incomplete=False,
-    block_duplicate_ips=False,
+    block_duplicate_ips=True,
     block_from_csv='block.csv')
 
 @app.shell_context_processor

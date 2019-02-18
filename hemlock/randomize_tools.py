@@ -42,6 +42,8 @@ def random_assignment(b, tag, vars, condition_vals):
     assignments = even_randomize(tag, condition_vals, 1)
     [Question(branch=b, qtype='embedded', var=var, all_rows=True, data=data)
         for (var,data) in zip(vars,assignments)]
+    if len(assignments)==1:
+        return assignments[0]
     return assignments
 
 '''
