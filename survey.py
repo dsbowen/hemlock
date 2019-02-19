@@ -124,8 +124,8 @@ def MakeEstimates():
     
     # initialize estimate pages
     num_estimates = len(preference_estimate_texts)
-    first_est_pages = [Page(b) for i in range(num_estimates)]
-    second_est_pages = [Page(b) for i in range(num_estimates)]
+    first_est_pages = [Page(b, timer='FirstEstTime') for i in range(num_estimates)]
+    second_est_pages = [Page(b, timer='SecondEstTime') for i in range(num_estimates)]
     
     # populate pages with questions
     first_est_question_ids = [preference_estimate(first_est_pages[i].id, i) 
