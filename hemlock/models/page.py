@@ -31,7 +31,9 @@ def submit(page):
     if page._terminal:
         return html
     return html + '''
+    <br></br>
     <button type='submit' class='btn btn-primary' style='float: right;'> >> </button>
+    <br style = 'line-height:3;'></br>
     '''
         
 '''
@@ -219,6 +221,7 @@ class Page(db.Model, Checkpoint, Base):
         
         # invalid navigation
         if not valid:
+            self._direction_to = 'invalid'
             self._direction_from = 'invalid'
             return 'invalid'
             

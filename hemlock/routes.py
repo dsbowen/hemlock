@@ -84,8 +84,6 @@ def survey():
         elif navigation == 'back':
             timer._unassign_participant()
             part.back()
-        else:
-            page._set_direction('invalid')
         db.session.commit()
         return redirect(url_for('hemlock.survey'))
         

@@ -5,6 +5,15 @@
 ###############################################################################
 
 '''
+TODO
+Make this more flexible:
+    multiple instruction pages
+    multiple comprehension check pages
+    record how many attempts they took to get correct
+    may need a separate class
+'''
+
+'''
 Inputs:
     instructions_id: ID of instructions page
     check_id: ID of comprehension check page
@@ -37,6 +46,8 @@ def comprehension_check(instructions_id, check_id,
 # if not, check goes back to instructions
 # instructions page includes an error message
 def condition_is_met(check, instructions_id):
+    if not all([q._validate() for q in check._questions.all()]):
+        return
     passed = all([q.get_data() for q in check._questions.all()])
     limit_reached = g('_attempt') == g('_max_attempts')
     if passed or limit_reached:

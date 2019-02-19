@@ -17,8 +17,6 @@ from copy import deepcopy
 
 '''
 TODO
-security
-format
 CLEAR EMBEDDED DATA FROM PARTICIPANT ON BACK FROM BRANCH
 '''
 
@@ -91,7 +89,6 @@ class Participant(db.Model, UserMixin):
         Variable(self, 'start_time', True, datetime.utcnow())
         Variable(self, 'end_time', True, datetime.utcnow())
         Variable(self, 'completed', True, 0)
-        self.store_data()
         
     # Return current page
     def get_page(self):

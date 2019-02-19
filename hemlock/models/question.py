@@ -43,7 +43,6 @@ def render_free(q):
     </div>
     '''.format(render_label(q), q.id, default)
     
-# Renders single choice question in html format
 def render_single_choice(q):
     [c._set_checked(c.id==q._default) for c in q._choices]
     text_html = '''
@@ -53,9 +52,8 @@ def render_single_choice(q):
     '''.format(render_label(q))
     choice_html = ['''
     <div class='form-check'>
-        <input name='{0}' id='{0}' class='form-check-input' type='radio' value='{1}' {2}>
-        <label class='form-check-label' for='{0}'>
-            {3}
+        <label><input type='radio' name='{0}' value='{1}' {2}>
+        {3}
         </label>
     </div>
     '''.format(q.id, c.id, c._checked, c._text) for c in q._choices]
@@ -217,9 +215,13 @@ class Question(db.Model, Base):
     def error(self, error):
         self._error = error
         
-    # Clears choices
+    # Clear choices
     def clear_choices(self):
         self._choices = []
+        
+    # Clear error
+    def clear_error(self):
+        self._error = None
         
     # Render the question in html
     def _render_html(self):
