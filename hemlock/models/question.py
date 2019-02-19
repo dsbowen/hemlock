@@ -213,6 +213,14 @@ class Question(db.Model, Base):
     def get_nonselected(self):
         return [c for c in self._choices if c._checked=='']
         
+    # Set the question error
+    def error(self, error):
+        self._error = error
+        
+    # Clears choices
+    def clear_choices(self):
+        self._choices = []
+        
     # Render the question in html
     def _render_html(self):
         if self._qtype == 'embedded':

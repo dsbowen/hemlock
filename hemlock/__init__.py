@@ -37,6 +37,8 @@ from hemlock import routes
 from hemlock.query import query
 from hemlock.restore_branch import restore_branch
 from hemlock.randomize_tools import even_randomize, random_assignment, Randomizer
+from hemlock.g import modg, g
+from hemlock.comprehension_check import comprehension_check
 from hemlock.models.participant import Participant
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page

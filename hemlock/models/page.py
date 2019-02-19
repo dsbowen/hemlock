@@ -81,7 +81,8 @@ class Page(db.Model, Checkpoint, Base):
     _back = db.Column(db.Boolean)
     _id_next = db.Column(db.Integer) # SHOULD HAVE 1:1 RELATIONSHIP
     _terminal = db.Column(db.Boolean)
-    _direction = db.Column(db.String(8), default='forward')
+    _direction_to = db.Column(db.String(8), default='forward')
+    _direction_from = db.Column(db.String(8), default='forward')
     _rendered = db.Column(db.Boolean)
     
     # For use by checkpoints
@@ -148,13 +149,13 @@ class Page(db.Model, Checkpoint, Base):
         
     # Get the direction (forward, back, or invalid)
     # from which this page was arrived at
-    def get_direction(self):
-        return self._direction
+    def get_direction_to(self):
+        return self._direction_to
         
     # Set the navigation direction (forward, back, or invalid)
     # from which this page is arrived at
-    def _set_direction(self, direction):
-        self._direction = direction
+    def _set_direction_to(self, direction):
+        self._direction_to = direction
         
     # Set the order in participant's page queue
     def _set_queue_order(self, order):
@@ -191,28 +192,34 @@ class Page(db.Model, Checkpoint, Base):
         return ''.join([hidden_tag()]+Qhtml+[submit(self)])
         
     # Checks if questions have valid answers upon page submission
-    def _validate_on_submit(self, part_id):    
+    def _validate_on_submit(self, part_id):
+        # set direction from
+        self._direction_from = 'forward'
+        if request.form.get('back')=='True':
+            self._direction_from = 'back'
+        
         # record responses
         [q._record_response(request.form.get(str(q.id))) 
             for q in self._questions if q._qtype != 'embedded']
             
-        # back navigation
-        if request.form.get('back')=='True':
-            [q._unassign_participant() for q in self._questions]
-            return 'back'
-            
-        # page post function
-        self._call_function(self, self._post_function, self._post_args)
-        
         # question post functions
         [q._call_function(q, q._post_function, q._post_args) 
             for q in self._questions]
+            
+        # page post function
+        self._call_function(self, self._post_function, self._post_args)
+            
+        # back navigation
+        if self._direction_from == 'back':
+            [q._unassign_participant() for q in self._questions]
+            return 'back'
             
         # validate
         valid = all([q._validate() for q in self._questions])
         
         # invalid navigation
         if not valid:
+            self._direction_from = 'invalid'
             return 'invalid'
             
         # forward navigation

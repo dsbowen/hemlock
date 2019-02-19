@@ -37,7 +37,7 @@ class Participant(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     head = db.Column(db.Integer, default=0)
     data = db.Column(db.PickleType)
-    g = db.Column(db.PickleType)
+    g = db.Column(db.PickleType, default={})
     
     page_queue = db.relationship('Page', backref='_part', lazy='dynamic',
         order_by='Page._queue_order')
@@ -67,14 +67,16 @@ class Participant(db.Model, UserMixin):
             
         db.session.commit()
         
-    def set_g(self, g):
-        self.g = deepcopy(g)
-        
-    def add_g(self, g):
+    def modg(self, modification):
         temp = deepcopy(self.g)
-        for key,value in g.items():
+        for key,value in modification.items():
             temp[key]=value
         self.g = deepcopy(temp)
+        
+    def get_g(self, key):
+        if key not in self.g.keys():
+            return None
+        return self.g[key]
                 
     def print_queue(self):
         print('queue')
@@ -122,7 +124,7 @@ class Participant(db.Model, UserMixin):
             self.process_checkpoint()
             
         # set page direction to forward
-        self.get_page()._set_direction('forward')
+        self.get_page()._set_direction_to('forward')
         
     # Process checkpoint
     def process_checkpoint(self):
@@ -164,7 +166,7 @@ class Participant(db.Model, UserMixin):
             self.head -= 1
 
         # set direction to back
-        self.get_page()._set_direction('back')
+        self.get_page()._set_direction_to('back')
         
     # Return a dictionary of participant data
     def get_data(self):
