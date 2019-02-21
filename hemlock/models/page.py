@@ -26,13 +26,18 @@ def submit(page):
     html = ''
     if page._back:
         html += '''
-    <button name='back' type='submit' class='btn btn-primary' style='float: left;' value='True'> << </button>
+    <button name='back' type='submit' class='btn btn-primary' style='float: left;' onclick='this.disabled=true; this.form.submit();' value='True'> 
+    << 
+    </button>
     '''
     if page._terminal:
         return html
     return html + '''
     <br></br>
-    <button type='submit' class='btn btn-primary' style='float: right;'> >> </button>
+    <button type='submit' class='btn btn-primary' style='float: right;' 
+    onclick='this.disabled=true; this.form.submit();'>
+    >> 
+    </button>
     <br style = 'line-height:3;'></br>
     '''
         

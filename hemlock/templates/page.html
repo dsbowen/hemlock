@@ -1,20 +1,20 @@
 <!--
 Page template
 by Dillon Bowen
-last modified 02/17/2019
+last modified 02/21/2019
 -->
 
 {% extends 'bootstrap/base.html' %}
 
-<!-- {% block content %} -->
-	<!-- <form action='' method='post' novalidate> -->
-	<!-- {{ page }} -->
-	<!-- </form> -->
-<!-- {% endblock %} -->
 {% block body %}
+{% block content %}
 <div class='container'>
     <form action='' method='post' novalidate>
         {{ page }}
     </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
 {% endblock %}

@@ -96,22 +96,6 @@ def survey():
         part.store_data(completed_indicator=True)
         
     return render_template('page.html', page=Markup(rendered_html))
-  
-'''
-@bp.route('/login', methods=['GET','POST'])
-def login():
-    p = Page()
-    q = Question(p, 'Password', 'free')
-    
-    if request.method == 'POST':
-        password = request.form.get(list(request.form)[1])
-        if not check_password_hash(current_app.password_hash, password):
-            return redirect(url_for('hemlock.login'))
-        next = request.args.get('next')
-        return redirect(request.args.get('next'))
-    
-    return render_template('page.html', page=Markup(p._render_html()))
-'''
 
 '''
 Download data
