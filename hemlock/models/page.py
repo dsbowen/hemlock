@@ -31,7 +31,7 @@ def submit(page):
     </button>
     '''
     if page._terminal:
-        return html
+        return html+"<br style = 'line-height:3;'></br>"
     return html + '''
     <br></br>
     <button type='submit' class='btn btn-primary' style='float: right;' 
