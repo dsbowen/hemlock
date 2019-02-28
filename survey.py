@@ -1,7 +1,7 @@
 ###############################################################################
 # Example Hemlock survey
 # by Dillon Bowen
-# last modified 02/19/2019
+# last modified 02/27/2019
 ###############################################################################
 
 '''
@@ -12,6 +12,9 @@ back for branch embedded dataframe
 record empty dataframe
 vaidation bank
 css - larger margins
+page needs all_rows
+also timer function
+next branch id stuff not working
 '''
 
 from hemlock import create_app, db, query, restore_branch, even_randomize, random_assignment, modg, g, comprehension_check, Participant, Branch, Page, Question, Choice, Validator, Variable, Randomizer
@@ -26,198 +29,184 @@ from flask_login import current_user
 from texts import *
 
 def Consent():
-    b = Branch(next=IntroPreferences)
+    b = Branch(Free)
     p = Page(b)
-    q = Question(p, consent)
-    q = Question(p, 'Enter your MTurk ID:', 'free', 'workerId', all_rows=True)
-    Validator(q, require)
+    Question(p, consent)
     return b
     
-def IntroPreferences():
-    b = Branch()
+def Free():
+    b = Branch(FreeNextArgs)
+    next_args = {}
     
-    [Question(branch=b, qtype='embedded', var='preference_label', data=text)
-        for text in preference_estimate_texts]
+    p = Page(b, timer='free_response_timer')
     
-    disclosed = random_assignment(b, 'condition', ['disclosed'], [[0,1]])
-    modg({'disclosed':disclosed})
+    Question(p, 'For testing purposes, please leave this blank.', 'free', 'free response')
     
-    p = Page(b)
-    q = Question(p, intro_preferences)
-    
-    p = Page(b)
-    [create_preference_question(p.id, i) 
-        for i in range(len(preference_question_texts))]
-    p.randomize()
-    
-    if g('disclosed'):
-        b.next(DisclosedComprehension)
-    else:
-        b.next(SurpriseIntro)
-    
-    return b
-        
-def create_preference_question(page_id, i):
-    page = query(page_id, Page)
-    q = Question(page, preference_question_texts[i], 'single choice', var='preference')
-    Choice(q, preference_options[i][1], 1, 'yes')
-    Choice(q, preference_options[i][0], 0, 'no')
-    Validator(q, require)
-    q.randomize()
-    
-def DisclosedComprehension():        
-    instructions = Page()
-    Question(instructions, first_est_intro_disclosed)
-    
-    check = Page()
-    q = Question(check, qtype='single choice', var='Comprehension', all_rows=True)
-    q.render(reset, check.id)
-    q.text('''
-        To be sure you have read and understood the instructions, please indicate how your bonus will be determined''')
-    Choice(q, '''
-        I will make one estimate for each question. I will receive a bonus if this estimate is correct.''', 0, 'incorrect1')
-    Choice(q, '''
-        I will make two estimates for each question. I will receive a bonus only if the first estimate is correct.''', 0, 'incorrect2')
-    Choice(q, '''
-        I will make two estimates for each question. I will receive a bonus only if the second estimate is correct''', 0, 'incorrect3')
-    Choice(q, '''
-        I will make two estimates for each question. I will receive a bonus if either estimate is correct''', 1, 'correct')
+    q = Question(p)
+    q.text('Please enter anything you like in the box')
+    q.var('free response')
+    q.qtype('free')
     Validator(q, require)
     
-    return comprehension_check(instructions.id, check.id, MakeEstimates, max_attempts=3)
+    next_args['anything'] = q.id
     
-def SurpriseIntro():
-    b = Branch(next=MakeEstimates)
-    p = Page(b)
-    Question(p, first_est_intro_surprise)
-    return b
-    
-def SurpriseComprehension():
-    instructions = Page()
-    Question(instructions, second_est_intro_surprise)
-    
-    check = Page()
-    q = Question(check, qtype='single choice', var='Comprehension', all_rows=True)
-    q.render(reset, check.id)
-    q.text('''
-        To be sure you have read and understood the instructions, please indicate how your bonus will be determined''')
-    Choice(q, '''
-        For each question, I will receive a bonus only if my first estimate (the estimate I just gave) was correct.''', 0, 'incorrect1')
-    Choice(q, '''
-        For each question, I will receive a bonus only if my second estimate (the estimate I am about to give) is correct''', 0, 'incorrect2')
-    Choice(q, '''
-        For each question, I will receive a a bonus if either my first or second estimate is correct''', 1, 'correct')
-    Validator(q, require)
-    
-    return comprehension_check(instructions.id, check.id, max_attempts=3)
-    
-def reset(q, check_id):
-    check = query(check_id, Page)
-    if check._direction_to == 'invalid':
-        return
-    q.reset_default()
-    q.clear_error()
-    q.randomize()
-    
-def MakeEstimates():
-    b = Branch(Exit)
-    
-    # initialize estimate pages
-    num_estimates = len(preference_estimate_texts)
-    first_est_pages = [Page(b, timer='FirstEstTime') for i in range(num_estimates)]
-    second_est_pages = [Page(b, timer='SecondEstTime') for i in range(num_estimates)]
-    
-    # populate pages with questions
-    first_est_question_ids = [preference_estimate(first_est_pages[i].id, i) 
-        for i in range(num_estimates)]
-    [preference_estimate(second_est_pages[i].id, i, first_est_question_ids[i])
-        for i in range(num_estimates)]
-    
-    # randomize order in which questions appear
-    order = list(range(num_estimates))
-    shuffle(order)
-    
-    if g('disclosed'):
-        for i in order:
-            first_est_pages[i].branch(b)
-            second_est_pages[i].branch(b)
-    else:
-        [first_est_pages[i].branch(b) for i in order]
-        first_est_pages[order[-1]].next(SurpriseComprehension)
-        [second_est_pages[i].branch(b) for i in order]
-        
-    return b
-    
-def preference_estimate(page_id, i, first_est_id=None):
-    page = query(page_id, Page)
-
-    q = Question(page,
-        'What percent of survey responders {0}?'.format(preference_estimate_texts[i]),
-        'free', 'FirstEst')
+    q = Question(p)
+    q.text('What is your favorite number?')
+    q.var('free response')
+    q.qtype('free')
     Validator(q, require)
     Validator(q, integer)
-    Validator(q, in_range, [0,100])
     
-    # page changes for second estimate
-    if first_est_id is not None:
-        Question(page, order=0,
-            render=remind_first_est, render_args=[i, first_est_id])
-        q.var('SecondEst')
-        Validator(q, different_second_estimate, first_est_id)
+    next_args['favorite_number'] = q.id
     
-    return q.id
+    q = Question(p)
+    q.text('What is your favorite number between 1000 and 2000?')
+    q.var('free response')
+    q.qtype('free')
+    Validator(q, require)
+    Validator(q, integer)
+    Validator(q, in_range, [1000,2000])
     
-def remind_first_est(reminder, args):
-    i, first_est_id = args
-    first_est = query(first_est_id)
-    first_est_response = first_est.get_response()
-    reminder.text('''
-        <p>You estimated that {0} percent of survey participants {1}.</p>
-        <p>We would now like you to guess the answer to this question again, this time giving a different answer than you gave before.</p>
-        '''.format(first_est_response, preference_estimate_texts[i]))
+    next_args['favorite_number_inrange'] = q.id
+    
+    p.randomize()
+    
+    b.next(args=next_args)
+    
+    return b
+    
+def FreeNextArgs(free_responses):
+    free_responses = query(free_responses)
+    
+    b = Branch(SingleChoice)
+    p = Page(b, timer='free_next_args_timer')
+    Question(p, '''
+    You entered {0} in the free response textbox, your favorite number is {1}, and your favorite number between 1000 and 2000 is {2}
+    '''.format(
+        free_responses['anything'].get_response(),
+        free_responses['favorite_number'].get_response(),
+        free_responses['favorite_number_inrange'].get_response()))
         
-def different_second_estimate(second_est, first_est_id):
-    first_est = query(first_est_id)
-    if second_est.get_response() == first_est.get_response():
-        return 'Your second estimate should be different from your first'
-        
-def Exit():
+    return b
+    
+def SingleChoice():
+    b = Branch(Condition)
+    
+    args = {}
+    
+    p = Page(b, timer='single_choice_timer')
+    q = Question(p, 'To be, or not to be?', 'single choice', 'single_choice')
+    Choice(q, 'To be', 1)
+    Choice(q, 'Not to be', 0)
+    Validator(q, require)
+    q.randomize()
+    
+    args['to_be'] = q.id
+    
+    q = Question(p, '''
+    Imagine you were suddenly transported to Provence, France, and found yourself in front of a gelateria which sold three flavors gelato. If you could only pick one flavor, what would it be?
+    ''')
+    q.qtype('single choice')
+    q.var('single_choice')
+    Choice(q, 'Chocolate')
+    Choice(q, 'Lavender')
+    Choice(q, 'Orange')
+    q.randomize()
+    Choice(q, 'I hate ice cream', 'na', label='na')
+    Validator(q, require)
+    
+    args['ice_cream'] = q.id
+    
+    p = Page(b, render=display_choices, render_args=args, timer='sc_render_args_timer')
+    
+    return b
+    
+def display_choices(page, args):
+    args = query(args)
+    to_be = 'not to be'
+    if args['to_be'].get_data():
+        to_be = 'to be'
+    if args['ice_cream'].get_data() == 'na':
+        text = '''
+        You chose {0}, and for some strange reason you hate ice cream :(
+        '''.format(to_be)
+    else:
+        text = '''
+        You chose {0}, and your preferred flavor of ice cream is {1}
+        '''.format(to_be, args['ice_cream'].get_response().lower())
+    Question(page, text)
+    
+def Condition():
+    b = Branch(DispCondition)
+    
+    c1, c2, c3 = random_assignment(b, 'condition', ['c1','c2','c3'], 
+        [[0,1],['low','middle','high'],['up','down','sideways']])
+    modg({'c1':c1, 'c2':c2, 'c3':c3})
+    
+    return b
+    
+def DispCondition():
     b = Branch()
     
-    p = Page(b)
-    q = Question(p, 'If you had to bet, which set of your estimates do you think is more accurate on average?', 'single choice', 'MoreAccurate', all_rows=True)
-    Choice(q, 'The first set', 1, 'first')
-    Choice(q, 'The second set', 2, 'second')
-    q.randomize()
-    Validator(q, require)
+    p = Page(b, timer='disp_condition_timer')
+    Question(p, '''
+    <p>We have just randomly assigned you to the conditions {0}, {1}, and {2}.</p>
+    <p>(This is completely meaningless, just continue to the next page!)</p>
+    '''.format(g('c1'), g('c2'), g('c3')))
     
-    q = Question(p, 'Did you try harder to be accurate when making your first or second set of estimates?', 'single choice', 'TryHarder', all_rows=True)
-    Choice(q, 'The first set', 1, 'first')
-    Choice(q, 'The second set', 2, 'second')
-    Choice(q, 'I tried equally hard on the first and second set', 0, 'equal')
-    q.randomize()
-    Validator(q, require)
+    p.next(Back1)
     
-    p = Page(b)
-    q = Question(p, 'Please indicate your gender', 'single choice', 'Gender', all_rows=True)
-    Choice(q, 'Male', 1)
-    Choice(q, 'Female', 0)
-    Choice(q, 'Other', 99)
-    Validator(q, require)
+    return b
+
+def Back1():
+    b = Branch(Back2)
     
-    q = Question(p, 'How old are you?', 'free', 'Age', all_rows=True)
-    Validator(q, require)
+    p = Page(b, timer='back')
+    Question(p, '''
+    <p>These next pages are designed to test the back button</p>
+    <p>Feel free to click back and forward as you like to see if anything breaks :)</p>
+    ''')
+    p.back()
     
-    p = Page(b, terminal=True)
-    Question(p, 'Thank you for your participation! Your completion code is xxxx')
+    return b
+    
+def Back2():        
+    b = Branch()
+    
+    p = Page(b, timer='back', back=True)
+    q = Question(p, '''
+    Who is your favorite character from Fyodor Dostoevsky's The Brothers Karamazov?
+    ''')
+    q.qtype('free')
+    q.var('favorite_character')
+    q.all_rows()
+    Validator(q, require, '''
+    That's okay, I have no idea who the characters are either. Just make something up. This isn't English class.
+    ''')
+    
+    p.next(Back3, q.id)
+    
+    return b
+    
+def Back3(character):
+    character = query(character).get_response()
+    b = Branch()
+    
+    p = Page(b, back=True, terminal=True)
+    Question(p, '''
+    I see you like {0}. Personally liked the older brother. {0} was my least favorite character.
+    '''.format(character))
+    Question(p, '''
+    Thank you for taking this survey. If you have any feedback, please email me at dsbowen@wharton.upenn.edu. Your completion code is 'hemlock-test'
+    ''')
     
     return b
         
 app = create_app(Config, 
     start=Consent, 
-    password='123',
+    password='hemlock-test235711',
     record_incomplete=False,
-    block_duplicate_ips=False,
+    block_duplicate_ips=True,
     block_from_csv='block.csv')
 
 @app.shell_context_processor
