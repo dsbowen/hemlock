@@ -26,7 +26,7 @@ def submit(page):
     html = ''
     if page._back:
         html += '''
-    <button name='back' type='submit' class='btn btn-primary' style='float: left;' onclick='this.disabled=true; this.form.submit();' value='True'> 
+    <button name='direction' type='submit' class='btn btn-primary' style='float: left;' value='back'> 
     << 
     </button>
     '''
@@ -34,8 +34,7 @@ def submit(page):
         return html+"<br style = 'line-height:3;'></br>"
     return html + '''
     <br></br>
-    <button type='submit' class='btn btn-primary' style='float: right;' 
-    onclick='this.disabled=true; this.form.submit();'>
+    <button name='direction' type='submit' class='btn btn-primary' style='float: right;' value='forward'>
     >> 
     </button>
     <br style = 'line-height:3;'></br>
@@ -201,9 +200,7 @@ class Page(db.Model, Checkpoint, Base):
     # Checks if questions have valid answers upon page submission
     def _validate_on_submit(self, part_id):
         # set direction from
-        self._direction_from = 'forward'
-        if request.form.get('back')=='True':
-            self._direction_from = 'back'
+        self._direction_from = request.form.get('direction')
         
         # record responses
         [q._record_response(request.form.get(str(q.id))) 

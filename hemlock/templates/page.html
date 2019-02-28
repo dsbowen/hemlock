@@ -1,18 +1,34 @@
 <!--
 Page template
 by Dillon Bowen
-last modified 02/21/2019
+last modified 02/27/2019
 -->
 
 {% extends 'bootstrap/base.html' %}
 
-{% block body %}
+<!--
+Credit to rybo111 for this script
+https://stackoverflow.com/questions/5445431/jquery-disable-submit-button-on-form-submission
+Prevents multiple form submissions
+-->
+{% block scripts %}
+{{ super() }}
+<script>
+$('form.submit-once').submit(function(e){
+  if( $(this).hasClass('form-submitted') ){
+    e.preventDefault();
+    return;
+  }
+  $(this).addClass('form-submitted');
+  $("[name='direction']").html('Loading');
+});
+</script>
+{% endblock %}
+
 {% block content %}
 <div class='container'>
-    <form action='' method='post' novalidate>
+    <form method="post" class="submit-once" novalidate>
         {{ page }}
     </form>
 </div>
-{% endblock %}
-
 {% endblock %}
