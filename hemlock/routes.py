@@ -104,24 +104,27 @@ write to csv and output
 '''
 @bp.route('/download', methods=['GET','POST'])
 def download():
-    p = Page()
-    q = Question(p, 'Password', 'free')
+    x = len(Participant.query.all())
+    return 'there are {} participants'.format(x)
+
+    # p = Page()
+    # q = Question(p, 'Password', 'free')
     
-    password = ''
-    if request.method == 'POST':
-        password = request.form.get(list(request.form)[0])
-    if not check_password_hash(current_app.password_hash, password):
-        return render_template('page.html', page=Markup(p._render_html()))
+    # password = ''
+    # if request.method == 'POST':
+        # password = request.form.get(list(request.form)[0])
+    # if not check_password_hash(current_app.password_hash, password):
+        # return render_template('page.html', page=Markup(p._render_html()))
     
-    # get main dataframe
-    data = pd.concat([pd.DataFrame(p.get_data()) 
-        for p in Participant.query.all()], sort=False)
+    ##get main dataframe
+    # data = pd.concat([pd.DataFrame(p.get_data()) 
+        # for p in Participant.query.all()], sort=False)
     
-    # write to csv and output
-    resp = make_response(data.to_csv(index_label='index'))
-    resp.headers['Content-Disposition'] = 'attachment; filename=data.csv'
-    resp.headers['Content-Type'] = 'text/csv'
-    return resp
+    write to csv and output
+    # resp = make_response(data.to_csv(index_label='index'))
+    # resp.headers['Content-Disposition'] = 'attachment; filename=data.csv'
+    # resp.headers['Content-Type'] = 'text/csv'
+    # return resp
     
 # Download list of ipv4 addresses
 # for blocking duplicates in subsequent studies

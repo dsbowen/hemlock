@@ -58,6 +58,27 @@ def render_single_choice(q):
     </div>
     '''.format(q.id, c.id, c._checked, c._text) for c in q._choices]
     return ''.join([text_html]+choice_html+['<br></br>'])
+    
+def render_dropdown(q):
+    text_html = '''
+    <div class='form-group'>
+        {0}
+    </div>
+    '''.format(render_label(q))
+    choice_html = ['''
+            <a class='dropdown-item' href='#'>{0}</a>
+    '''.format(c._text) for c in q._choices]
+    dropdown_html = '''
+    <div class='dropdown'>
+        <button class='btn btn-primary dropdown-toggle' type='button' data-toggle='dropdown'>
+        Dropdown Example
+        </button>
+        <div class='dropdown-menu'>
+        {0}
+        </div>
+    </div>
+    '''.format(''.join(choice_html))
+    return text_html + dropdown_html
 
 '''
 Data:
@@ -233,6 +254,8 @@ class Question(db.Model, Base):
             return render_free(self)
         elif self._qtype == 'single choice':
             return render_single_choice(self)
+        elif self._qtype == 'dropdown':
+            return render_dropdown(self)
         
     # Record the participant's response
     # collects response and updates default

@@ -28,6 +28,16 @@ from flask_login import current_user
 
 from texts import *
 
+def Dropdown():
+    b = Branch()
+    p = Page(b)
+    q = Question(p, 'hello world')
+    q.qtype('dropdown')
+    Choice(q, 'hello world')
+    Choice(q, 'hello moon')
+    Choice(q, 'hello star')
+    return b
+
 def Consent():
     b = Branch(Free)
     p = Page(b)
@@ -203,10 +213,10 @@ def Back3(character):
     return b
         
 app = create_app(Config, 
-    start=Consent, 
+    start=Dropdown, 
     password='hemlock-test235711',
     record_incomplete=False,
-    block_duplicate_ips=True,
+    block_duplicate_ips=False,
     block_from_csv='block.csv')
 
 @app.shell_context_processor
