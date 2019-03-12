@@ -1,7 +1,7 @@
 ###############################################################################
 # Global dictionary handling
 # by Dillon Bowen
-# last modified 02/19/2019
+# last modified 03/12/2019
 ###############################################################################
 
 from flask_login import current_user
@@ -10,7 +10,7 @@ from flask_login import current_user
 def modg(modification):
     current_user.modg(modification)
     
-# Return a value of the global dictionary for a given key
-# return None if key is not in dictionary 
-def g(key):
-    return current_user.get_g(key)
+# Return a value of the global dictionary for a given set of keys
+# return None for keys not in dictionary
+def g(keys):
+    return current_user.g(keys)

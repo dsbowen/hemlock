@@ -27,6 +27,17 @@ from hemlock import *
 from config import Config
 from texts import *
 
+def G():
+    modg({'hello':'world','goodbye':'moon'})
+    print(g('hello'))
+    print(g('goodbye'))
+    print(g(['hello','goodbye']))
+    print(g({'hola':'hello','adios':'goodbye'}))
+    b = Branch()
+    p = Page(b, terminal=True)
+    Question(p, 'test')
+    return b
+
 def Dropdown():
     b = Branch()
     p = Page(b)
@@ -215,7 +226,7 @@ def Back3(character):
       
 # create the application (survey)
 app = create_app(Config,
-    start=SingleChoice, 
+    start=G, 
     password='123',
     record_incomplete=False,
     block_duplicate_ips=False,

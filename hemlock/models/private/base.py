@@ -1,7 +1,7 @@
 ###############################################################################
 # Base class
 # by Dillon Bowen
-# last modified 02/15/2019
+# last modified 03/12/2019
 ###############################################################################
 
 from hemlock.factory import db
@@ -35,19 +35,14 @@ class Base():
     def _assign_parent(self, parent, order=None):
         if parent is None:
             return
-            
+          
+        # remove from old parent; assign to new parent
         parent_key = self._relationship_key(self, parent)
-    
-        # remove current parent
         self._remove_parent(parent_key)
-            
-        # assign parent
         setattr(self, parent_key, parent)
         
-        # get children
-        children = self._get_children(parent)
-
         # set the order
+        children = self._get_children(parent)
         if order is None:
             self._set_order(len(children))
             return
@@ -82,23 +77,23 @@ class Base():
     '''
     Set an object's function and arguments
     inputs:
-        curr_function - name of the current function as string
-        new_function - callable or None
-        curr_args - name of current arguments as string
-        new_args - may be None
+        func_name: name of the function (object attribute) as string
+        func: callable or None
+        args_name: name of function arguments as string
+        args: may be None
     '''
-    def _set_function(self, curr_func, new_func, curr_args, new_args):
-        if new_func is not None:
-            setattr(self, curr_func, new_func)
-        if new_args is not None:
-            setattr(self, curr_args, new_args)
+    def _set_function(self, func_name, func, args_name, args):
+        if func is not None:
+            setattr(self, func_name, func)
+        if args is not None:
+            setattr(self, args_name, args)
             
     '''
     Call a function
     inputs:
-        object - main object passed to function
-        function - the called function
-        args - additional arguments
+        object: main object passed to function
+        function: the called function
+        args: additional arguments
     '''
     def _call_function(self, object, function, args):
         if function is None:

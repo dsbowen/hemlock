@@ -5,7 +5,7 @@
 ###############################################################################
 
 from hemlock.factory import db
-from hemlock.models.base import Base
+from hemlock.models.private.base import Base
 
 '''
 Data:

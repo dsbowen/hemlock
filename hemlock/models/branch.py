@@ -7,7 +7,7 @@
 from hemlock.factory import db
 from hemlock.models.page import Page
 from hemlock.models.question import Question
-from hemlock.models.base import Base
+from hemlock.models.private.base import Base
 
 '''
 Data:

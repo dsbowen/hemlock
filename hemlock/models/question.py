@@ -7,7 +7,7 @@
 from hemlock.factory import db
 from hemlock.models.choice import Choice
 from hemlock.models.validator import Validator
-from hemlock.models.base import Base
+from hemlock.models.private.base import Base
 from sqlalchemy import and_
 
 # Render errors and text as question label
