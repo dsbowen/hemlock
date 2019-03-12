@@ -1,16 +1,15 @@
 ###############################################################################
 # Hemlock survey template
 # by Dillon Bowen
-# last modified 02/27/2019
+# last modified 03/12/2019
 ###############################################################################
 
 '''
 TODO:
-shell
 archive example surveys
 check timer is working
 make __init__ for sub-modules for easier importing
-on routes.py
+add questions to participant upon creation/assignment to page/return of branch
 
 general cleaning, incl routes folder and relationships (as opposed to queries)
 for debugging, pass args to start function
@@ -221,3 +220,6 @@ app = create_app(Config,
     record_incomplete=False,
     block_duplicate_ips=False,
     block_from_csv='block.csv')
+    
+# hemlock shell
+import hemlock_shell

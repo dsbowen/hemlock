@@ -14,10 +14,6 @@ class Base():
     def _set_text(self, text):
         self._text = text
         
-    # Set the variable to which the object contributes
-    def _set_var(self, var):
-        self._var = var
-        
     # Set the all_rows indicator
     def _set_all_rows(self, all_rows=True):
         self._all_rows = all_rows

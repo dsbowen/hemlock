@@ -24,7 +24,7 @@ Application factory
 Arguments:
     config_class: configures application by object
     start: starting navigation function in survey
-    password: password for downloading data/IP addresses
+    password: password for accessing researcher urls
     record_incomplete: indicates incomplete responses should be recorded
     block_duplicates: indicates duplicate IP addresses should be blocked
     block_from_csv: csv file containing IP addresses to block

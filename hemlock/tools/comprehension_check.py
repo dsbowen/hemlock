@@ -24,8 +24,8 @@ Requirements:
     comprehension check page must not have post function
 '''
 
-from hemlock.tools.query import query
 from hemlock.tools.global_vars import modg, g
+from hemlock.tools.query import query
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 
@@ -43,7 +43,7 @@ def comprehension_check(instructions_id, check_id,
     return b
     
 # Check if the condition for determining correct responses was met
-# if not, check goes back to instructions
+# if not, go back to instructions
 # instructions page includes an error message
 def condition_is_met(check, instructions_id):
     if not all([q._validate() for q in check._questions.all()]):

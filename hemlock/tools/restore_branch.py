@@ -1,6 +1,6 @@
 
 
-from hemlock import query
+from hemlock.tools.query import query
 from hemlock.models.branch import Branch
 
 def restore_branch(prev_id, table=Branch):

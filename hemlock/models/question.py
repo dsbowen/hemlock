@@ -180,7 +180,7 @@ class Question(db.Model, Base):
         
     # Set the variable in which question data will be stored
     def var(self, var):
-        self._set_var(var)
+        self._var = var
         
     # Set the all_rows indicator
     # i.e. the data will appear in all of the participant's dataframe rows
