@@ -24,8 +24,8 @@ Requirements:
     comprehension check page must not have post function
 '''
 
-from hemlock.query import query
-from hemlock.g import modg, g
+from hemlock.tools.query import query
+from hemlock.tools.global_vars import modg, g
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 

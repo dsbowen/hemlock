@@ -1,4 +1,8 @@
-
+###############################################################################
+# Survey texts template
+# by Dillon Bowen
+# last modified 03/11/2019
+###############################################################################
 
 consent = '''
 <p>We are researchers at the University of Pennsylvania and we are studying decision making.</p>

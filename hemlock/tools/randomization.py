@@ -4,7 +4,7 @@
 # last modified 02/15/2019
 ###############################################################################
 
-from hemlock import db
+from hemlock.factory import db
 from hemlock.models.question import Question
 from itertools import permutations, combinations, product
 from operator import itemgetter

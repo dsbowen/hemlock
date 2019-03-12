@@ -1,7 +1,7 @@
 
 
 
-from hemlock import db
+from hemlock.factory import db
 
 '''
 HAS TO DO

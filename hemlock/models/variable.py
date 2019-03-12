@@ -4,7 +4,7 @@
 # last modified 01/21/2019
 ###############################################################################
 
-from hemlock import db
+from hemlock.factory import db
 
 '''
 Data:

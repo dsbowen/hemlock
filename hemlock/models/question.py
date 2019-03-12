@@ -4,7 +4,7 @@
 # last modified 02/15/2019
 ###############################################################################
 
-from hemlock import db
+from hemlock.factory import db
 from hemlock.models.choice import Choice
 from hemlock.models.validator import Validator
 from hemlock.models.base import Base

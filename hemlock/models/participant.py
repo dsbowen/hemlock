@@ -4,7 +4,7 @@
 # last modified 02/15/2019
 ###############################################################################
 
-from hemlock import db, login
+from hemlock.factory import db, login
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 from hemlock.models.question import Question

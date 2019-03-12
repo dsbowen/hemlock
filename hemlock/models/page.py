@@ -4,7 +4,7 @@
 # last modified 02/15/2019
 ###############################################################################
 
-from hemlock import db
+from hemlock.factory import db
 from hemlock.models.question import Question
 from hemlock.models.checkpoint import Checkpoint
 from hemlock.models.base import Base
@@ -23,7 +23,7 @@ def hidden_tag():
     
 # Submit button
 def submit(page):
-    html = ''
+    html = '<br></br>'
     if page._back:
         html += '''
     <button name='direction' type='submit' class='btn btn-primary' style='float: left;' value='back'> 
@@ -33,7 +33,6 @@ def submit(page):
     if page._terminal:
         return html+"<br style = 'line-height:3;'></br>"
     return html + '''
-    <br></br>
     <button name='direction' type='submit' class='btn btn-primary' style='float: right;' value='forward'>
     >> 
     </button>
@@ -45,8 +44,8 @@ Data:
 _branch_id: ID of the branch to which the page belongs
 _questions: list of questions on this page
 _order: order in which the page appears in its branch
-_render_function: function called before redering the page
-_render_args: arguments for the render function
+_compile_function: function called before redering the page
+_compile_args: arguments for the compile function
 _post_function: function called after responses are submitted and validated
 _post_args: arguments for the post function
 _next_function: next navigation function
@@ -55,43 +54,58 @@ _back: indicator for back button
 _id_next: ID of the next branch
 _terminal: indicator that the page is the last in the survey
 _randomize: indicator of question randomization
-_rendered: indicator that the page was previously rendered
+_compileed: indicator that the page was previously compileed
 _restore_on: dictionary of restoration states
     'forward': 0, 1, or 2
     'back': 1 or 2
     'invalid'; 1 or 2
 _state: integer representing the current state
-    0 - before render functions
-    1 - after render functions, before response collection
+    0 - before compile functions
+    1 - after compile functions, before response collection
     2 - after response collection
 _state_copy_ids: list of state copy ids
 _direction: direction of survey flow - forward, back, invalid
-_rendered: indicator that the page was previously rendered
+_compiled: indicator that the page was previously compiled
 _checkpoint: indicates that the page is a checkpoint
 '''
 class Page(db.Model, Checkpoint, Base):
+    # primary key
     id = db.Column(db.Integer, primary_key=True)
+    
+    # parent foreign keys and order
     _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     _queue_order = db.Column(db.Integer)
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    _order = db.Column(db.Integer)
+    
+    # children
     _questions = db.relationship('Question', backref='_page', lazy='dynamic',
         order_by='Question._order')
+        
+    # timing variables
     _timer = db.Column(db.Integer) # SHOULD HAVE A 1:1 RELATIONSHIP
-    _order = db.Column(db.Integer)
-    _render_function = db.Column(db.PickleType)
-    _render_args = db.Column(db.PickleType)
+    _start_time = db.Column(db.DateTime)
+    _total_time = db.Column(db.Integer, default=0)
+    
+    # functions and arguments
+    _compile_function = db.Column(db.PickleType)
+    _compile_args = db.Column(db.PickleType)
     _post_function = db.Column(db.PickleType)
     _post_args = db.Column(db.PickleType)
     _next_function = db.Column(db.PickleType)
     _next_args = db.Column(db.PickleType)
-    _back = db.Column(db.Boolean)
     _id_next = db.Column(db.Integer) # SHOULD HAVE 1:1 RELATIONSHIP
+    
+    # indicator variables
+    _back = db.Column(db.Boolean)
     _terminal = db.Column(db.Boolean)
+    _compiled = db.Column(db.Boolean)
+    
+    # direction
     _direction_to = db.Column(db.String(8), default='forward')
     _direction_from = db.Column(db.String(8), default='forward')
-    _rendered = db.Column(db.Boolean)
     
-    # For use by checkpoints
+    # for use by checkpoints
     _checkpoint = db.Column(db.Boolean, default=False)
     _origin_id = db.Column(db.Integer)
     _origin_table = db.Column(db.PickleType)
@@ -99,7 +113,7 @@ class Page(db.Model, Checkpoint, Base):
     
     # Add to database and commit upon initialization
     def __init__(self, branch=None, timer=None, order=None,
-        render=None, render_args=None,
+        compile=None, compile_args=None,
         post=None, post_args=None,
         next=None, next_args=None,
         back=False, terminal=False):
@@ -108,7 +122,7 @@ class Page(db.Model, Checkpoint, Base):
         db.session.commit()
         
         self.branch(branch, order)
-        self.render(render, render_args)
+        self.compile(compile, compile_args)
         self.post(post, post_args)
         self.next(next, next_args)
         self.back(back)
@@ -125,9 +139,9 @@ class Page(db.Model, Checkpoint, Base):
     def remove_branch(self):
         self._remove_parent('_branch')
             
-    # Set the render function and arguments
-    def render(self, render=None, args=None):
-        self._set_function('_render_function', render, '_render_args', args)
+    # Set the compile function and arguments
+    def compile(self, compile=None, args=None):
+        self._set_function('_compile_function', compile, '_compile_args', args)
         
     # Set the post function and arguments
     def post(self, post=None, args=None):
@@ -179,26 +193,28 @@ class Page(db.Model, Checkpoint, Base):
     def _remove_from_queue(self):
         self._part_id, self._queue_order = None, None
     
-    # Render the html code for the form specified on this page
-    # executes render functions for page and questions
+    # Compile the html code for the form specified on this page
+    # executes compile functions for page and questions
     # returns compiled html with hidden tag and submit button
-    def _render_html(self):
-        self._rendered = True
-    
-        # page render function
-        self._call_function(self, self._render_function, self._render_args)
+    def _compile_html(self):
+        # page compile function
+        self._call_function(self, self._compile_function, self._compile_args)
         
-        # question render functions
+        # question compile functions
         [q._call_function(q, q._render_function, q._render_args)
             for q in self._questions]
         
         # compile html
         Qhtml = [q._render_html() for q in self._questions]
+        self._compiled = True
+        self._start_time = datetime.utcnow()
         db.session.commit()
         return ''.join([hidden_tag()]+Qhtml+[submit(self)])
         
     # Checks if questions have valid answers upon page submission
     def _validate_on_submit(self, part_id):
+        self._update_timer(part_id)
+
         # set direction from
         self._direction_from = request.form.get('direction')
         
@@ -215,6 +231,9 @@ class Page(db.Model, Checkpoint, Base):
             
         # back navigation
         if self._direction_from == 'back':
+            if self._timer is not None:
+                timer = Question.query.get(self._timer)
+                timer._unassign_participant()
             [q._unassign_participant() for q in self._questions]
             return 'back'
             
@@ -230,3 +249,13 @@ class Page(db.Model, Checkpoint, Base):
         # forward navigation
         [q._assign_participant(part_id) for q in self._questions]
         return 'forward'
+        
+    # FIX THIS
+    def _update_timer(self, part_id):
+        delta = (datetime.utcnow() - self._start_time).total_seconds()
+        self._total_time += delta
+        if self._timer is None:
+            return
+        timer = Question.query.get(self._timer)
+        timer.data(self._total_time)
+        timer._assign_participant(part_id)
