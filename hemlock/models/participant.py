@@ -11,24 +11,33 @@ from hemlock.models.question import Question
 from hemlock.models.variable import Variable
 from flask import request
 from flask_login import UserMixin, login_user
-import pandas as pd
 from datetime import datetime
 from copy import deepcopy
 
 '''
 TODO
 CLEAR EMBEDDED DATA FROM PARTICIPANT ON BACK FROM BRANCH
+workerId in metadata
+clean up page navigation
+distinguish private from public functions
+will eventually need to be able to communicate with participants from other sessions
 '''
+
+###############################################################################
+# Login participant
+###############################################################################
 
 @login.user_loader
 def load_user(id):
     return Participant.query.get(int(id))
 
+
+
 '''
 Data:
     data: dictionary of data participant contributes to dataset
     end_time: last recorded activity on survey
-    g: participant-specific global dictionary
+    _g: participant-specific global dictionary
     head: index of current page in page queue
     num_rows: number of rows participant contributes to dataframe
     
@@ -83,33 +92,6 @@ class Participant(db.Model, UserMixin):
     # Global dictionary
     ###########################################################################
     
-    # Inspect participant's global dictionary by keys
-    # keys may be a list of keys, a dictionary of keys, or a single key
-    def g(self, keys):
-        # return a list if keys are stored in a list
-        if type(keys) is list:
-            to_return = []
-            for key in keys:
-                if key in self._g.keys():
-                    to_return.append(self._g[key])
-                else:
-                    to_return.append(None)
-            return to_return
-            
-        # return a dict if keys are stored in dict
-        if type(keys) is dict:
-            to_return = {}
-            for key, value in keys.items():
-                if value in self._g.keys():
-                    to_return[key] = self._g[value]
-                else:
-                    to_return[key] = None
-            return to_return
-            
-        # return a value if keys is a single value
-        if keys in self._g.keys():
-            return self._g[keys]
-        
     # Modify participant's global dictionary
     # modification is a dictionary
     def modg(self, modification):
@@ -117,6 +99,17 @@ class Participant(db.Model, UserMixin):
         for key,value in modification.items():
             temp[key]=value
         self._g = deepcopy(temp)
+    
+    # Inspect participant's global dictionary
+    # to_get may be list, dictionary, or key
+    # nested lists and dictionaries are allowed
+    def g(self, to_get):
+        if type(to_get) is list:
+            return [self.g(x) for x in to_get]
+        if type(to_get) is dict:
+            return {key:self.g(val) for (key,val) in to_get.items()}
+        if to_get in self._g.keys():
+            return self._g[to_get]
 
 
     
@@ -151,13 +144,6 @@ class Participant(db.Model, UserMixin):
     def get_data(self):
         return self.data
             
-    # Clear participant data
-    def clear_data(self):
-        [db.session.delete(v) 
-            for v in self.variables.all() if v.name not in self.__metadata]
-        [v.set_num_rows(0) for v in self.variables]
-        self.num_rows = 0
-            
     # Store participant data
     # update current data
     # pad variables to even length and store
@@ -171,14 +157,12 @@ class Participant(db.Model, UserMixin):
         self.data = {var.name:var.data for var in self.variables}
         db.session.commit()
         
-    # Get variable associated with variable name
-    # create new variable if needed
-    # all_rows: indicates the variable should contain the same data in all rows
-    def get_var(self, name, all_rows):
-        var = [v for v in self.variables if v.name == name]
-        if not var:
-            return Variable(self, name, all_rows)
-        return var[0]
+    # Clear participant data
+    def clear_data(self):
+        [db.session.delete(v) 
+            for v in self.variables.all() if v.name not in self.__metadata]
+        [v.set_num_rows(0) for v in self.variables]
+        self.num_rows = 0
         
     # Process question data
     # get variables associated with question data
@@ -195,6 +179,15 @@ class Participant(db.Model, UserMixin):
 
         vars.sort(key=lambda x: x.name)
         [var.add_data(qdata[name]) for (name,var) in zip(sorted(qdata),vars)]
+        
+    # Get variable associated with variable name
+    # create new variable if needed
+    # all_rows: indicates the variable should contain the same data in all rows
+    def get_var(self, name, all_rows):
+        var = [v for v in self.variables if v.name == name]
+        if not var:
+            return Variable(self, name, all_rows)
+        return var[0]
         
         
         

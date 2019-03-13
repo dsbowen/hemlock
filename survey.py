@@ -33,9 +33,24 @@ def G():
     print(g('goodbye'))
     print(g(['hello','goodbye']))
     print(g({'hola':'hello','adios':'goodbye'}))
+    print(g(['hello',['hello','goodbye']]))
+    print(g({'hola':'hello','adios':['hello','goodbye']}))
     b = Branch()
     p = Page(b, terminal=True)
     Question(p, 'test')
+    return b
+    
+def Query():
+    b = Branch()
+    p = Page(b, terminal=True)
+    q1 = Question(p, 'q1')
+    q2 = Question(p, 'q2')
+    print(query(q1.id))
+    print(query(q2.id))
+    print(query([q1.id,q2.id]))
+    print(query({'hello':q1.id,'goodbye':q2.id}))
+    print(query([q1.id,[q1.id,q2.id]]))
+    print(query({'hello':[q1.id,q2.id],'goodbye':{'hola':q1.id,'adios':q2.id}}))
     return b
 
 def Dropdown():
@@ -226,7 +241,7 @@ def Back3(character):
       
 # create the application (survey)
 app = create_app(Config,
-    start=G, 
+    start=Query, 
     password='123',
     record_incomplete=False,
     block_duplicate_ips=False,
