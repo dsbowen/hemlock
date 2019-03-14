@@ -241,7 +241,7 @@ def Back3(character):
       
 # create the application (survey)
 app = create_app(Config,
-    start=Consent, 
+    start=Condition, 
     password='123',
     record_incomplete=False,
     block_duplicate_ips=False,

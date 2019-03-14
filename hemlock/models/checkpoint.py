@@ -1,12 +1,10 @@
-
-
+###############################################################################
+# Checkpoint sub-class for Page model
+# by Dillon Bowen
+# last modified 03/14/2019
+###############################################################################
 
 from hemlock.factory import db
-
-'''
-HAS TO DO
-return index of end of branch
-'''
 
 # contains origin id and table (branch or page)
 # contains pointer to checkpoint created by self
@@ -46,7 +44,16 @@ class Checkpoint():
         self._next_len = len(next._page_queue.all())
         
         return next
-      
-    # Return the index of the next checkpoint
-    def _get_branch_end(self):
-        return self._queue_order + self._next_len + 1
+        
+    # Returns the indicies of the start and end of the checkpoint's branch
+    # retain checkpoint if originated by Branch (start after self._queue_order)
+    # remove checkpoint if originated by Page (start at self._queue_order)
+    def _get_branch_endpoints(self):
+        from hemlock.models import Branch
+        start = self._queue_order
+        if self._origin_table == Branch:
+            start += 1
+            
+        end = self._queue_order + self._next_len + 1
+        
+        return (start, end+1)

@@ -1,7 +1,7 @@
 ###############################################################################
 # Base class
 # by Dillon Bowen
-# last modified 03/13/2019
+# last modified 03/14/2019
 ###############################################################################
 
 from hemlock.factory import db
@@ -68,19 +68,16 @@ class Base():
     # inputs:
         # to_insert: list of children to be inserted
         # start: index at which insertion should start
-    # set new children's parent to self
     # increment order of current children who appear after new children
     # set order for new children
+    # set new children's parent to self
     def _insert_children(self, to_insert, start=None):
         if to_insert is None:
             return
             
-        parent_key = self._relationship_key(to_insert[0], self)
-        [setattr(x, parent_key, self) for x in to_insert]
-            
         children_key = self._relationship_key(self, to_insert[0])
         children = getattr(self, children_key).all()
-        order_by_key = self._order_by_key(children[0])
+        order_by_key = self._order_by_key(to_insert[0])
         if start is None:
             start = len(children)
         [c._modify_order(len(to_insert), order_by_key) 
@@ -88,41 +85,43 @@ class Base():
         [to_insert[i]._set_order(start+i, order_by_key)
             for i in range(len(to_insert))]
             
+        parent_key = self._relationship_key(to_insert[0], self)
+        [setattr(x, parent_key, self) for x in to_insert]
+            
     # Remove a child from its parent
     def _remove_parent(self, parent):
         if parent is None:
             return
         children_key = self._relationship_key(parent, self)
         order = getattr(self, parent._order_by_key(self))
-        parent._remove_children(children_key, order-1, order)
+        parent._remove_children(children_key, order, order+1)
            
     # Remove list of children
     # inputs:
         # children_key: name of children key/attribute (str)
         # start: starting index of removal (int)
         # end: ending index of removal (int)
-    # isolate children being removed 
+    # decrement order for children after end of removed children 
     # set order and parent to None for removed children
-    # decrement order for remaining children after end
-    def _remove_children(self, children_key, start=None, end=None):
-        children = getattr(self, children_key)
+    def _remove_children(self, children_key, start=0, end=None):
+        children = getattr(self, children_key).all()
         if not children:
             return
             
-        if start is None:
-            start = 0
         if end is None:
             end = len(children)
-        to_remove = children[start:end]
-            
-        parent_key = self._relationship_key(children[0], self)
+
         order_by_key = self._order_by_key(children[0])
+        [c._modify_order(start-end, order_by_key) for c in children[end:]]
+        
+        parent_key = self._relationship_key(children[0], self)
+        to_remove = children[start:end]
         [setattr(c, parent_key, None) for c in to_remove]
         [setattr(c, order_by_key, None) for c in to_remove]
-        [c._modify_order(start-end, order_by_key) for c in children[end-1:]]
+        
     
     # Modify the order in which a child appears among its siblings
-    def _modify_order(self, amount=1, order_by_key=None):
+    def _modify_order(self, amount, order_by_key=None):
         if order_by_key is None:
             return
         setattr(self, order_by_key, getattr(self, order_by_key)+amount)
@@ -163,6 +162,6 @@ class Base():
         if not children:
             return
         order_by_key = self._order_by_key(children[0])
-        order = list(range(1,len(children)+1))
+        order = list(range(len(children)))
         shuffle(order)
         [c._set_order(i, order_by_key) for (c,i) in zip(children, order)]

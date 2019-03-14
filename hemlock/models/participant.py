@@ -1,7 +1,7 @@
 ###############################################################################
 # Participant model
 # by Dillon Bowen
-# last modified 03/12/2019
+# last modified 03/14/2019
 ###############################################################################
 
 from hemlock.factory import db, login
@@ -9,6 +9,7 @@ from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 from hemlock.models.question import Question
 from hemlock.models.variable import Variable
+from hemlock.models.private.base import Base
 from flask import request
 from flask_login import UserMixin, login_user
 from datetime import datetime
@@ -18,9 +19,7 @@ from copy import deepcopy
 TODO
 CLEAR EMBEDDED DATA FROM PARTICIPANT ON BACK FROM BRANCH
 workerId in metadata
-clean up page navigation
 distinguish private from public functions
-will eventually need to be able to communicate with participants from other sessions
 '''
 
 ###############################################################################
@@ -46,7 +45,7 @@ Data:
     num_rows: number of rows participant contributes to dataframe
     metadata: list of participant metadata variables
 '''
-class Participant(db.Model, UserMixin):
+class Participant(db.Model, UserMixin, Base):
     id = db.Column(db.Integer, primary_key=True)
     
     _page_queue = db.relationship('Page', backref='_part', lazy='dynamic',
@@ -192,7 +191,7 @@ class Participant(db.Model, UserMixin):
         
     ###########################################################################
     # Navigation
-    ###########################################################################  
+    ###########################################################################
 
     # Return current page
     def get_page(self):
@@ -202,39 +201,28 @@ class Participant(db.Model, UserMixin):
     # get current head and advance head pointer
     # create a checkpoint for the page's branch (if applicable)
     # process checkpoints until head points to a non-checkpoint page
-    # set next page direction to forward
+    # set next page direction_to to forward
     def forward(self):
         head = self.get_page()
         self._head += 1
         
         if head._next_function is not None:
-            self.insert_to_queue([Page()._initialize_as_checkpoint(head)])
+            checkpoint = Page()._initialize_as_checkpoint(head)
+            self._insert_children([checkpoint], self._head)
             
         while self.get_page()._checkpoint:
             self.process_checkpoint()
             
         self.get_page()._set_direction_to('forward')
         
-    # Insert a list into the page queue split at head
-    # push pages after head down in the queue
-    # insert new pages
-    def insert_to_queue(self, insert):
-        if insert is None:
-            return
-            
-        [p._modify_queue_order(len(insert)) 
-            for p in self._page_queue[self._head:]]
-            
-        [insert[i]._insert_to_queue(self.id, self._head+i) 
-            for i in range(len(insert))]
-        
     # Process checkpoint
+    # get current checkpoint and advance head pointer
+    # create the next branch and set up corresponding checkpoint
+    # insert the next branch's pages to page queue
     def process_checkpoint(self):
-        # get the current checkpoint and increment head
         checkpoint = self.get_page()
         self._head += 1
-        
-        # create the next branch and checkpoint
+
         next_branch = checkpoint._get_next()
         if next_branch is None:
             return
@@ -242,30 +230,32 @@ class Participant(db.Model, UserMixin):
         next_checkpoint._initialize_as_checkpoint(next_branch)
         to_insert = next_branch._page_queue.all() + [next_checkpoint]
 
-        # insert next branch's page queue and next checkpoint to queue
-        self.insert_to_queue(to_insert)
+        self._insert_children(to_insert, self._head)
         
     # Go backward to previous page
-    def back(self):    
-        # decrement head
+    # decrement head
+    # go back across checkpoints until head points to a non-checkpoint page
+    # set next page direction_to to back
+    def back(self):     
         self._head -= 1
         
-        # continue backward until you hit a regular page
         while self.get_page()._checkpoint:
             checkpoint = self.get_page()
             if checkpoint._next_function is not None:
-                start = checkpoint._queue_order
-                if checkpoint._origin_table == Branch:
-                    start += 1
-                end = checkpoint._get_branch_end()
-                
-                # remove branch from queue
-                [p._remove_from_queue() for p in self._page_queue[start:end+1]]
-                
-                # push back pages after branch
-                [p._modify_queue_order(start-end-1) for p in self._page_queue[start:]]
-                    
+                start, end = checkpoint._get_branch_endpoints()
+                self._remove_children('_page_queue', start, end)
             self._head -= 1
-
-        # set direction to back
+        
         self.get_page()._set_direction_to('back')
+        
+    # Print the page queue
+    # for debugging purposes
+    def print_queue(self):
+        print(self._head)
+        for p in self._page_queue:
+            di = str(p._queue_order)
+            if p._checkpoint:
+                di += 'c'
+            if p == self.get_page():
+                di += '***'
+            print(p, di)
