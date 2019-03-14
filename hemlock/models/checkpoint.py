@@ -14,7 +14,7 @@ class Checkpoint():
     # Initialize a checkpoint from origin
     # origin is a branch or a regular page with next function
     # return self
-    def _initialize(self, origin=None):
+    def _initialize_as_checkpoint(self, origin=None):
         self._checkpoint = True
         if origin is None:
             return self

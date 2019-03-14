@@ -1,12 +1,13 @@
 ###############################################################################
 # Researcher URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 03/12/2019
+# last modified 03/13/2019
 ###############################################################################
 
 # hemlock database, application blueprint, and models
 from hemlock.factory import db, bp
 from hemlock.models import Participant, Page, Question
+from hemlock.models.private import Visitors
 from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request, flash
 from flask_login import login_required, current_user, login_user
 from werkzeug.security import check_password_hash
@@ -43,7 +44,7 @@ def ipv4():
     if not valid_password():
         return redirect(url_for('hemlock.password', requested_url='ipv4'))
         
-    ipv4 = current_app.ipv4_csv + current_app.ipv4_current
+    ipv4 = current_app.ipv4_csv + Visitors.query.first().ipv4
     ipv4 = pd.DataFrame.from_dict({'ipv4':ipv4}).drop_duplicates()
     resp = make_response(ipv4.to_csv(index=False))
     resp.headers['Content-Disposition'] = 'attachment; filename=block.csv'

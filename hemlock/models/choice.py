@@ -45,7 +45,7 @@ class Choice(db.Model, Base):
         
     # Remove from question
     def remove_question(self):
-        self._remove_parent('_question')
+        self._remove_parent(self._question)
         
     # Set the choice text
     def text(self, text):

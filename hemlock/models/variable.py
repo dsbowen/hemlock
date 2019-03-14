@@ -38,8 +38,8 @@ class Variable(db.Model):
             return
         self.data = self.data + [data]
         self.num_rows += 1
-        if self.num_rows > self.part.num_rows:
-            self.part.num_rows = self.num_rows
+        if self.num_rows > self.part._num_rows:
+            self.part._num_rows = self.num_rows
         
     # Pad
     # fill in data if the number of rows is short of length

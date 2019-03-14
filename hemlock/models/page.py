@@ -137,7 +137,7 @@ class Page(db.Model, Checkpoint, Base):
         
     # Remove from branch
     def remove_branch(self):
-        self._remove_parent('_branch')
+        self._remove_parent(self._branch)
             
     # Set the compile function and arguments
     def compile(self, compile=None, args=None):

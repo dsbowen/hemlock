@@ -35,7 +35,7 @@ class Validator(db.Model, Base):
         
     # Remove from question
     def remove_question(self):
-        self._remove_parent('_question')
+        self._remove_parent(self._question)
         
     # Set the condition function and arguments
     def condition(self, condition=None, args=None):

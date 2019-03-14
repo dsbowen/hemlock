@@ -150,13 +150,13 @@ class Question(db.Model, Base):
         self.data(data)
         
     # Assign to branch
-    def branch(self, branch):
-        self._assign_parent(branch)
+    def branch(self, branch, order=None):
+        self._assign_parent(branch, order)
             
     # Remove from branch
     def remove_branch(self):
         self._part = None
-        self._remove_parent('_branch')
+        self._remove_parent(self._branch)
     
     # Assign to page
     def page(self, page, order=None):
@@ -164,7 +164,7 @@ class Question(db.Model, Base):
             
     # Remove from page
     def remove_page(self):
-        self._remove_parent('_page')
+        self._remove_parent(self._page)
             
     # Sets the question text
     def text(self, text):

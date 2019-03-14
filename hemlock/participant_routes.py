@@ -7,6 +7,7 @@
 # hemlock database, application blueprint, and models
 from hemlock.factory import db, bp
 from hemlock.models import Participant, Page, Question
+from hemlock.models.private import Visitors
 from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request
 from flask_login import login_required, current_user, login_user
 from datetime import datetime
@@ -18,9 +19,11 @@ from datetime import datetime
 ###############################################################################
 
 # Initialize database tables upon survey launch
+# create a Visitors model to track survey visitors
 @bp.before_app_first_request
 def before_first_app_request():
     db.create_all()
+    Visitors()
 
 # Participant initialization
 # record ipv4 and exclude as specified
@@ -28,10 +31,11 @@ def before_first_app_request():
 @bp.route('/')
 def index():
     ipv4 = get_ipv4()
+    duplicate_ipv4 = ipv4 in Visitors.query.first().ipv4
     if (ipv4 in current_app.ipv4_csv
-        or (current_app.block_dupips and ipv4 in current_app.ipv4_current)):
+        or (current_app.block_dupips and duplicate_ipv4)):
         return redirect(url_for('hemlock.duplicate'))
-    current_app.ipv4_current.append(ipv4)
+    Visitors.query.first().append(ipv4)
         
     part = Participant(ipv4, current_app.start)
     return redirect(url_for('hemlock.survey'))
