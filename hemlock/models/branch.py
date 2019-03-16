@@ -22,18 +22,31 @@ class Branch(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     
     _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
+    _part_head_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     _index = db.Column(db.Integer)
     
-    _page_queue = db.relationship('Page', backref='_branch', lazy='dynamic',
-        order_by='Page._index')
-    _head_id = db.Column(db.Integer)
+    _page_queue = db.relationship(
+        'Page', 
+        backref='_branch', 
+        lazy='dynamic',
+        order_by='Page._index',
+        foreign_keys='Page._branch_id')
+        
+    _current_page = db.relationship(
+        'Page', 
+        uselist=False,
+        foreign_keys='Page._branch_head_id')
+        
+    _next_branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    _next_branch = db.relationship(
+        'Branch', 
+        uselist=False,
+        foreign_keys=[_next_branch_id])
         
     _embedded = db.relationship('Question', backref='_branch', lazy='dynamic',
         order_by='Question._order')
     _next_function = db.Column(db.PickleType)
     _next_args = db.Column(db.PickleType)
-    _next_branch_id = db.Column(db.Integer, ForeignKey('branch.id'))
-    _next_branch = db.relationship('Branch', backref=backref('branch', uselist=False))
     
     # Add to database and commit upon initialization
     def __init__(self, next=None, next_args=None, randomize=False):
@@ -66,29 +79,25 @@ class Branch(db.Model, Base):
     def _get_page_ids(self):
         return [page.id for page in self._page_queue]
         
+        
+        
     ###########################################################################
     # Navigation
     ###########################################################################
-    
-    # Return the current page (head of the page queue)
-    def _get_page(self):
-        if self._head_id is None:
-            return
-        return Page.query.get(self._head_id)
         
     # Advance to the next page
-    def _forward(self, head=self._get_page()):
-        if head is None:
+    def _forward(self):
+        if self._current_page is None:
             return
-        self._advance_head(head._index)
+        self._advance_head()
         
     # Advances head pointer to next page in queue
-    def _advance_head(self, old_head_index=self._get_page()._index):
-        new_head_index = old_head_index + 1
+    def _advance_head(self):
+        new_head_index = self._current_page._index + 1
         if new_head_index == len(self._page_queue.all()):
-            self._head_id = None
+            self._current_page = None
             return
-        self._head_id = self._page_queue[new_head_index].id
+        self._current_page = self._page_queue[new_head_index]
         
     # Grow and return a new branch
     def _grow_branch(self):
@@ -104,7 +113,9 @@ class Branch(db.Model, Base):
         
     # Initialize head pointer to first page in queue
     def _initialize_head_pointer(self):
-        if self._page_queue:
-            self._head_id = self._page_queue[0].id
+        print(self)
+        print(self._page_queue.all())
+        if self._page_queue.all():
+            self._current_page = self._page_queue.first()
             return
-        self._head_id = None
+        self._current_page = None

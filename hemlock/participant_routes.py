@@ -84,7 +84,7 @@ def survey():
 # Validate and record responses on post request (form submission)
 def post():
     part = current_user
-    page = part.get_page()
+    page = part._get_current_page()
     direction = page._validate_on_submit(part.id)
     
     # record incomplete data, or update metadata (end time and completed)
@@ -95,9 +95,9 @@ def post():
         
     # navigate in the specified direction
     if direction == 'forward':
-        part.forward()
+        part._forward()
     elif direction == 'back':
-        part.back()
+        part._back()
         
     db.session.commit()
     return redirect(url_for('hemlock.survey'))

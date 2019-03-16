@@ -27,32 +27,6 @@ from hemlock import *
 from config import Config
 from texts import *
 
-def G():
-    modg({'hello':'world','goodbye':'moon'})
-    print(g('hello'))
-    print(g('goodbye'))
-    print(g(['hello','goodbye']))
-    print(g({'hola':'hello','adios':'goodbye'}))
-    print(g(['hello',['hello','goodbye']]))
-    print(g({'hola':'hello','adios':['hello','goodbye']}))
-    b = Branch()
-    p = Page(b, terminal=True)
-    Question(p, 'test')
-    return b
-    
-def Query():
-    b = Branch()
-    p = Page(b, terminal=True)
-    q1 = Question(p, 'q1')
-    q2 = Question(p, 'q2')
-    print(query(q1.id))
-    print(query(q2.id))
-    print(query([q1.id,q2.id]))
-    print(query({'hello':q1.id,'goodbye':q2.id}))
-    print(query([q1.id,[q1.id,q2.id]]))
-    print(query({'hello':[q1.id,q2.id],'goodbye':{'hola':q1.id,'adios':q2.id}}))
-    return b
-
 def Dropdown():
     b = Branch()
     p = Page(b)
@@ -240,16 +214,17 @@ def Back3(character):
     
     return b
     
-# def Assign_and_Remove_Participant():
-    # b = Branch()
-    # p = Page()
-    # q = Question()
-    # q.participant()
-    # q.remove_participant()
+def Start():
+    b = Branch()
+    p = Page(b, terminal=True)
+    q = Question(p, 'Hello world')
+    print(b)
+    print(b._page_queue.all())
+    return b
       
 # create the application (survey)
 app = create_app(Config,
-    start=Consent, 
+    start=Start,
     password='123',
     record_incomplete=False,
     block_duplicate_ips=False,

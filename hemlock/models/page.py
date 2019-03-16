@@ -74,10 +74,15 @@ class Page(db.Model, Checkpoint, Base):
     id = db.Column(db.Integer, primary_key=True)
     
     # parent foreign keys and order
-    _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
-    _queue_order = db.Column(db.Integer)
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    _branch_head_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _index = db.Column(db.Integer)
+
+    _next_branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    _next_branch = db.relationship(
+        'Branch', 
+        uselist=False,
+        foreign_keys=[_next_branch_id])
     
     # children
     _questions = db.relationship('Question', backref='_page', lazy='dynamic',
@@ -148,12 +153,12 @@ class Page(db.Model, Checkpoint, Base):
         timer.remove_participant()
     
     # Assign to branch
-    def branch(self, branch, order=None):
-        self._assign_parent(branch, order)
+    def branch(self, branch, index=None):
+        self._assign_parent(branch, '_branch', '_page_queue', index)
         
     # Remove from branch
     def remove_branch(self):
-        self._remove_parent(self._branch)
+        self._remove_parent('_branch', '_page_queue')
             
     # Set the compile function and arguments
     def compile(self, compile=None, args=None):

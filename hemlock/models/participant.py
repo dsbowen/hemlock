@@ -47,13 +47,29 @@ Data:
 class Participant(db.Model, UserMixin, Base):
     id = db.Column(db.Integer, primary_key=True)
     
-    _branch_stack = db.relationship('Branch', backref='_part', lazy='dynamic',
-        order_by='Branch._index')
-    _head_id = db.Column(db.Integer)
+    _branch_stack = db.relationship(
+        'Branch',
+        backref='_part',
+        lazy='dynamic',
+        order_by='Branch._index',
+        foreign_keys='Branch._part_id')
+        
+    _current_branch = db.relationship(
+        'Branch',
+        backref='_part_head',
+        uselist=False,
+        foreign_keys='Branch._part_head_id')
     
-    _questions = db.relationship('Question', backref='_part', lazy='dynamic',
+    _questions = db.relationship(
+        'Question', 
+        backref='_part', 
+        lazy='dynamic',
         order_by='Question.id')
-    _variables = db.relationship('Variable', backref='part', lazy='dynamic')
+        
+    _variables = db.relationship(
+        'Variable', 
+        backref='part', 
+        lazy='dynamic')
     
     _data = db.Column(db.PickleType)
     _g = db.Column(db.PickleType, default={})
@@ -74,13 +90,10 @@ class Participant(db.Model, UserMixin, Base):
         
         self.record_metadata(ipv4)
         
-        root = Page(next=start)
-        root._initialize_as_checkpoint()
-        root._part_id = self.id
-        root._queue_order = 0
-
-        while self.get_page()._checkpoint:
-            self.process_checkpoint()
+        root = Branch(next=start)
+        self._insert_children([root])
+        self._current_branch = root
+        self._forward()
             
         db.session.commit()
         
@@ -192,147 +205,64 @@ class Participant(db.Model, UserMixin, Base):
     ###########################################################################
     # Navigation
     ###########################################################################
-
-    # Return the head page of the branch
-    # default is current branch => return current page
-    def _get_page(self, branch=self._get_branch()):
-        return branch._get_page()
         
-    # Return the current branch (head of the branch stack)
-    def _get_branch(self):
-        return Branch.query.get(self._head_id)
+    # Return the current page
+    def _get_current_page(self):
+        return self._current_branch._current_page
         
     # Advance to the next page
     def _forward(self):
-        current_branch = self.get_branch()
-        current_page = self._get_page(current_branch)
-
+        current_page = self._get_current_page()
+    
         if current_page is None:
-            return self._terminate_branch(current_branch)
+            return self._terminate_branch()
             
         current_page.participant()
 
         if current_page._next_function is not None:
             return self._insert_branch(current_page)
             
-        current_branch._forward(current_page)
-        self._continue_forward_to_page(current_page)
+        self._current_branch._forward()
+        self._continue_forward_to_page()
         
-        new_page = self._get_page():
-        if new_page._terminal:
-            new_page.participant()
+        new_current_page = self._get_current_page()
+        if new_current_page._terminal:
+            new_current_page.participant()
         
     # Terminate a branch when the end of the page queue is reached
-    def _terminate_branch(self, branch=self._get_branch()):
-        if branch._next_function is not None and branch._next_branch is None:
-            return self._insert_branch(branch)
-        self._decrement_head(branch._index)
-        branch._forward()
-        return self._continue_forward_to_page()
+    def _terminate_branch(self):
+        if (self._current_branch._next_function is not None 
+            and self._current_branch._next_branch is None):
+            return self._insert_branch(self._current_branch)
+        self._decrement_head()
+        self._current_branch._forward()
+        self._continue_forward_to_page()
 
     # Inserts a branch created by the origin
     # origin may be a page or branch
     def _insert_branch(self, origin):
         new_branch = origin._grow_branch()
         new_branch.participant()
-        self._insert_children([new_branch], self._get_branch()._index+1)
+        self._insert_children([new_branch], self._current_branch._index+1)
         self._advance_head()
         self._continue_forward_to_page()
         
     # Continue advancing forward until participant reaches a page
-    def _continue_forward_to_page(self, page=self._get_page()):
-        if page is not None:
+    def _continue_forward_to_page(self):
+        if self._get_current_page() is not None:
             return
         self._forward()
         
     # Advance head pointer to next branch in stack
-    def _advance_head(self, old_head_index=self._get_branch()._index):
-        new_head_index = old_head_index + 1
-        self._head_id = self._branch_stack[new_head_index].id
+    def _advance_head(self):
+        new_head_index = self._current_branch._index + 1
+        self._current_branch = self._branch_stack[new_head_index]
             
     # Decrements head pointer to previous branch in stack
-    def _decrement_head(self, old_head_index=self._get_branch()._index):
-        new_head_index = old_head_index - 1
-        self._head_id = self._branch_stack[new_head_index].id    
+    def _decrement_head(self):
+        new_head_index = self._current_branch._index - 1
+        self._current_branch = self._branch_stack[new_head_index]    
         
     # Return to the previous page
     def _back(self):
         pass
-
-    '''
-    # Return current page
-    def get_page(self):
-        return self._page_queue[self._head]
-        
-    # Go forward to next page
-    # get current head, assign to participant, and advance head pointer
-    # create a checkpoint for the page's branch (if applicable)
-    # process checkpoints until head points to a non-checkpoint page
-    # set next page direction_to to forward
-    # assign embedded data to participant and record responses on terminal page
-    def forward(self):
-        head = self.get_page()
-        head.participant()
-        self._head += 1
-        
-        if head._next_function is not None:
-            checkpoint = Page()._initialize_as_checkpoint(head)
-            self._insert_children([checkpoint], self._head)
-            
-        while self.get_page()._checkpoint:
-            self.process_checkpoint()
-            
-        self.get_page()._set_direction_to('forward')
-            
-        if self.get_page()._terminal:
-            self.get_page().participant()
-            self.store_data(completed_indicator=True)
-        
-    # Process checkpoint
-    # get current checkpoint and advance head pointer
-    # create the next branch and assign embedded data to participant
-    # set up corresponding checkpoint
-    # insert the next branch's pages to page queue
-    def process_checkpoint(self):
-        checkpoint = self.get_page()
-        self._head += 1
-
-        next_branch = checkpoint._get_next()
-        if next_branch is None:
-            return
-        next_branch.participant()
-        
-        next_checkpoint = Page()._initialize_as_checkpoint(next_branch)
-        to_insert = next_branch._page_queue.all() + [next_checkpoint]
-
-        self._insert_children(to_insert, self._head)
-        
-    # Go backward to previous page
-    # remove head from participant and decrement head
-    # go back across checkpoints until head points to a non-checkpoint page
-    # set next page direction_to to back
-    def back(self):
-        self.get_page().remove_participant()
-        self._head -= 1
-        
-        while self.get_page()._checkpoint:
-            checkpoint = self.get_page()
-            if checkpoint._next_function is not None:
-                start, end = checkpoint._get_branch_endpoints()
-                self._remove_children('_page_queue', start, end)
-            self._head -= 1
-        
-        self.get_page()._set_direction_to('back')
-        
-    # Print the page queue
-    # for debugging purposes
-    def print_queue(self):
-        print(self._head)
-        for p in self._page_queue:
-            di = str(p._queue_order)
-            if p._checkpoint:
-                di += 'c'
-            if p == self.get_page():
-                di += '***'
-            print(p, di)
-    '''
