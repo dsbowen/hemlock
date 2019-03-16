@@ -1,7 +1,7 @@
 ###############################################################################
 # Participant model
 # by Dillon Bowen
-# last modified 03/15/2019
+# last modified 03/16/2019
 ###############################################################################
 
 from hemlock.factory import db, login
@@ -47,8 +47,10 @@ Data:
 class Participant(db.Model, UserMixin, Base):
     id = db.Column(db.Integer, primary_key=True)
     
-    _page_queue = db.relationship('Page', backref='_part', lazy='dynamic',
-        order_by='Page._queue_order')
+    _branch_stack = db.relationship('Branch', backref='_part', lazy='dynamic',
+        order_by='Branch._index')
+    _head_id = db.Column(db.Integer)
+    
     _questions = db.relationship('Question', backref='_part', lazy='dynamic',
         order_by='Question.id')
     _variables = db.relationship('Variable', backref='part', lazy='dynamic')
@@ -191,6 +193,73 @@ class Participant(db.Model, UserMixin, Base):
     # Navigation
     ###########################################################################
 
+    # Return the head page of the branch
+    # default is current branch => return current page
+    def _get_page(self, branch=self._get_branch()):
+        return branch._get_page()
+        
+    # Return the current branch (head of the branch stack)
+    def _get_branch(self):
+        return Branch.query.get(self._head_id)
+        
+    # Advance to the next page
+    def _forward(self):
+        current_branch = self.get_branch()
+        current_page = self._get_page(current_branch)
+
+        if current_page is None:
+            return self._terminate_branch(current_branch)
+            
+        current_page.participant()
+
+        if current_page._next_function is not None:
+            return self._insert_branch(current_page)
+            
+        current_branch._forward(current_page)
+        self._continue_forward_to_page(current_page)
+        
+        new_page = self._get_page():
+        if new_page._terminal:
+            new_page.participant()
+        
+    # Terminate a branch when the end of the page queue is reached
+    def _terminate_branch(self, branch=self._get_branch()):
+        if branch._next_function is not None and branch._next_branch is None:
+            return self._insert_branch(branch)
+        self._decrement_head(branch._index)
+        branch._forward()
+        return self._continue_forward_to_page()
+
+    # Inserts a branch created by the origin
+    # origin may be a page or branch
+    def _insert_branch(self, origin):
+        new_branch = origin._grow_branch()
+        new_branch.participant()
+        self._insert_children([new_branch], self._get_branch()._index+1)
+        self._advance_head()
+        self._continue_forward_to_page()
+        
+    # Continue advancing forward until participant reaches a page
+    def _continue_forward_to_page(self, page=self._get_page()):
+        if page is not None:
+            return
+        self._forward()
+        
+    # Advance head pointer to next branch in stack
+    def _advance_head(self, old_head_index=self._get_branch()._index):
+        new_head_index = old_head_index + 1
+        self._head_id = self._branch_stack[new_head_index].id
+            
+    # Decrements head pointer to previous branch in stack
+    def _decrement_head(self, old_head_index=self._get_branch()._index):
+        new_head_index = old_head_index - 1
+        self._head_id = self._branch_stack[new_head_index].id    
+        
+    # Return to the previous page
+    def _back(self):
+        pass
+
+    '''
     # Return current page
     def get_page(self):
         return self._page_queue[self._head]
@@ -266,3 +335,4 @@ class Participant(db.Model, UserMixin, Base):
             if p == self.get_page():
                 di += '***'
             print(p, di)
+    '''

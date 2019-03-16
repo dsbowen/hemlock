@@ -77,7 +77,7 @@ class Page(db.Model, Checkpoint, Base):
     _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     _queue_order = db.Column(db.Integer)
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
-    _order = db.Column(db.Integer)
+    _index = db.Column(db.Integer)
     
     # children
     _questions = db.relationship('Question', backref='_page', lazy='dynamic',

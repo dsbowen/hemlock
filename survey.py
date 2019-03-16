@@ -252,7 +252,7 @@ app = create_app(Config,
     start=Consent, 
     password='123',
     record_incomplete=False,
-    block_duplicate_ips=True,
+    block_duplicate_ips=False,
     block_from_csv='block.csv')
     
 # hemlock shell

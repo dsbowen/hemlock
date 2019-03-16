@@ -39,10 +39,14 @@ class Base():
         # object: main object passed to function
         # function: the called function
         # args: additional arguments
-    def _call_function(self, object, function, args):
+    def _call_function(self, object=None, function=None, args=None):
         if function is None:
             return
-        if args is None:
+        if object is None and args is None:
+            return function()
+        if object is None and args is not None:
+            return function(args)
+        if object is not None and args is None:
             return function(object)
         return function(object, args)
         
