@@ -1,7 +1,7 @@
 ###############################################################################
 # Participant model
 # by Dillon Bowen
-# last modified 03/14/2019
+# last modified 03/15/2019
 ###############################################################################
 
 from hemlock.factory import db, login
@@ -39,7 +39,6 @@ Data:
     variables: variables the participant contributes to dataframe
     
     data: dictionary of data participant contributes to dataset
-    end_time: last recorded activity on survey
     g: participant-specific global dictionary
     head: index of current page in page queue
     num_rows: number of rows participant contributes to dataframe
@@ -55,7 +54,6 @@ class Participant(db.Model, UserMixin, Base):
     _variables = db.relationship('Variable', backref='part', lazy='dynamic')
     
     _data = db.Column(db.PickleType)
-    _endtime = db.Column(db.DateTime, default=datetime.utcnow())
     _g = db.Column(db.PickleType, default={})
     _head = db.Column(db.Integer, default=0)
     _num_rows = db.Column(db.Integer, default=0)
@@ -129,7 +127,7 @@ class Participant(db.Model, UserMixin, Base):
             if v.name in ['end_time','completed']]
         metadata.sort(key=lambda x: x.name)
         completed, endtime = metadata
-        endtime.data = [self._endtime]
+        endtime.data = [datetime.utcnow()]
         completed.data = [int(completed_indicator)]
         
         
@@ -198,12 +196,14 @@ class Participant(db.Model, UserMixin, Base):
         return self._page_queue[self._head]
         
     # Go forward to next page
-    # get current head and advance head pointer
+    # get current head, assign to participant, and advance head pointer
     # create a checkpoint for the page's branch (if applicable)
     # process checkpoints until head points to a non-checkpoint page
     # set next page direction_to to forward
+    # assign embedded data to participant and record responses on terminal page
     def forward(self):
         head = self.get_page()
+        head.participant()
         self._head += 1
         
         if head._next_function is not None:
@@ -214,10 +214,15 @@ class Participant(db.Model, UserMixin, Base):
             self.process_checkpoint()
             
         self.get_page()._set_direction_to('forward')
+            
+        if self.get_page()._terminal:
+            self.get_page().participant()
+            self.store_data(completed_indicator=True)
         
     # Process checkpoint
     # get current checkpoint and advance head pointer
-    # create the next branch and set up corresponding checkpoint
+    # create the next branch and assign embedded data to participant
+    # set up corresponding checkpoint
     # insert the next branch's pages to page queue
     def process_checkpoint(self):
         checkpoint = self.get_page()
@@ -226,17 +231,19 @@ class Participant(db.Model, UserMixin, Base):
         next_branch = checkpoint._get_next()
         if next_branch is None:
             return
-        next_checkpoint = Page()
-        next_checkpoint._initialize_as_checkpoint(next_branch)
+        next_branch.participant()
+        
+        next_checkpoint = Page()._initialize_as_checkpoint(next_branch)
         to_insert = next_branch._page_queue.all() + [next_checkpoint]
 
         self._insert_children(to_insert, self._head)
         
     # Go backward to previous page
-    # decrement head
+    # remove head from participant and decrement head
     # go back across checkpoints until head points to a non-checkpoint page
     # set next page direction_to to back
-    def back(self):     
+    def back(self):
+        self.get_page().remove_participant()
         self._head -= 1
         
         while self.get_page()._checkpoint:

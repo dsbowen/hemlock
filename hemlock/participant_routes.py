@@ -55,7 +55,7 @@ def duplicate():
         <p>Our records indicate that you have already participated in this or similar studies.</p>
         <p>Thank you for your continuing interest in our research.</p>
         ''')
-    return render_template('page.html', page=Markup(page._compile_html()))
+    return render_template('page.html', page=Markup(p._compile_html()))
         
         
 
@@ -70,18 +70,14 @@ def duplicate():
 @bp.route('/survey', methods=['GET','POST'])
 @login_required
 def survey():
+    current_user.print_queue()
     if request.method == 'POST':
         return post()
         
     part = current_user
     page = part.get_page()
     compiled_html = page._compile_html()
-    part.endtime = datetime.utcnow()
     db.session.commit()
-    
-    if page._terminal:
-        [q._assign_participant(part.id) for q in page._questions]
-        part.store_data(completed_indicator=True)
         
     return render_template('page.html', page=Markup(compiled_html))
     

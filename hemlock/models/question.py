@@ -1,13 +1,14 @@
 ###############################################################################
 # Question model
 # by Dillon Bowen
-# last modified 02/15/2019
+# last modified 03/15/2019
 ###############################################################################
 
 from hemlock.factory import db
 from hemlock.models.choice import Choice
 from hemlock.models.validator import Validator
 from hemlock.models.private.base import Base
+from flask_login import current_user
 from sqlalchemy import and_
 
 # Render errors and text as question label
@@ -149,6 +150,27 @@ class Question(db.Model, Base):
         self.default(default)
         self.data(data)
         
+    # Assign to participant
+    # set variable order
+    def participant(self, participant=current_user):
+        self._part = participant
+        if not self._var:
+            return
+        prev = Question.query.filter_by(_part=participant, _var=self._var)
+        self._vorder = len(prev.all())
+        
+    # Remove from participant
+    # update order variable for other questions belonging to the same variable
+    # set participant and variable order to None
+    def remove_participant(self):
+        # if self._var:
+        # same_var = Question.query.filter_by(_part=self._part, _var=self._var)
+        # same_var = same_var.order_by('_vorder').all()
+        # for q in same_var[self._vorder:]:
+            # q._vorder -= 1
+        self._part = None
+        self._vorder = None
+        
     # Assign to branch
     def branch(self, branch, order=None):
         self._assign_parent(branch, order)
@@ -278,19 +300,6 @@ class Question(db.Model, Base):
             if self._error is not None:
                 return False
         return True
-        
-    # Assign to participant
-    # set variable order
-    def _assign_participant(self, part_id):
-        self._part_id = part_id
-        if not self._var:
-            return
-        prev = Question.query.filter_by(_part_id=part_id, _var=self._var)
-        self._vorder = len(prev.all())
-        
-    # Unassign from participant
-    def _unassign_participant(self):
-        self._part = None
         
     # Output the data (both question data and order data)
     def _output_data(self):

@@ -9,6 +9,7 @@ from hemlock.models.question import Question
 from hemlock.models.checkpoint import Checkpoint
 from hemlock.models.private.base import Base
 from flask import request
+from flask_login import current_user
 from datetime import datetime
 from random import choice
 from string import ascii_letters, digits
@@ -100,6 +101,7 @@ class Page(db.Model, Checkpoint, Base):
     _back = db.Column(db.Boolean)
     _terminal = db.Column(db.Boolean)
     _compiled = db.Column(db.Boolean)
+    _assigned_to_participant = db.Column(db.Boolean)
     
     # direction
     _direction_to = db.Column(db.String(8), default='forward')
@@ -130,6 +132,20 @@ class Page(db.Model, Checkpoint, Base):
 
         timer = Question(var=timer, data=0)
         self._timer = timer.id
+        
+    # Assign to participant
+    def participant(self, participant=current_user):
+        self._assigned_to_participant = True
+        [q.participant(participant) for q in self._questions.all()]
+        timer = Question.query.get(self._timer)
+        timer.participant(participant)
+        
+    # Remove from participant
+    def remove_participant(self):
+        self._assigned_to_participant = False
+        [q.remove_participant() for q in self._questions.all()]
+        timer = Question.query.get(self._timer)
+        timer.remove_participant()
     
     # Assign to branch
     def branch(self, branch, order=None):
@@ -233,8 +249,8 @@ class Page(db.Model, Checkpoint, Base):
         if self._direction_from == 'back':
             if self._timer is not None:
                 timer = Question.query.get(self._timer)
-                timer._unassign_participant()
-            [q._unassign_participant() for q in self._questions]
+                timer.remove_participant()
+            [q.remove_participant() for q in self._questions]
             return 'back'
             
         # validate
@@ -247,7 +263,6 @@ class Page(db.Model, Checkpoint, Base):
             return 'invalid'
             
         # forward navigation
-        [q._assign_participant(part_id) for q in self._questions]
         return 'forward'
         
     # FIX THIS
@@ -258,4 +273,3 @@ class Page(db.Model, Checkpoint, Base):
             return
         timer = Question.query.get(self._timer)
         timer.data(self._total_time)
-        timer._assign_participant(part_id)

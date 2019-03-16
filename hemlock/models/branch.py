@@ -8,10 +8,10 @@ from hemlock.factory import db
 from hemlock.models.page import Page
 from hemlock.models.question import Question
 from hemlock.models.private.base import Base
+from flask_login import current_user
 
 '''
 Data:
-_part_id: ID of participant to whom the branch belongs
 _page_queue: Queue of pages to render
 _embedded: List of embedded data questions
 _next_function: next navigation function
@@ -34,6 +34,14 @@ class Branch(db.Model, Base):
         db.session.commit()
         
         self.next(next, next_args)
+        
+    # Assign embedded data to participant
+    def participant(self, participant=current_user):
+        [q.participant(participant) for q in self._embedded]
+        
+    # Remove embedded data from participant
+    def remove_participant(self):
+        [q.remove_participant() for q in self._embedded]
         
     # Set the next navigation function and arguments
     def next(self, next=None, args=None):

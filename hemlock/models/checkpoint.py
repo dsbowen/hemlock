@@ -1,7 +1,7 @@
 ###############################################################################
 # Checkpoint sub-class for Page model
 # by Dillon Bowen
-# last modified 03/14/2019
+# last modified 03/15/2019
 ###############################################################################
 
 from hemlock.factory import db
@@ -31,9 +31,6 @@ class Checkpoint():
             next = self._next_function()
         else:
             next = self._next_function(self._next_args)
-            
-        # assign embedded data to participants
-        [e._assign_participant(self._part_id) for e in next._embedded]
         
         # let the origin of the checkpoint point to the next branch
         table = self._origin_table

@@ -73,7 +73,7 @@ def Free():
     b = Branch(FreeNextArgs)
     next_args = {}
     
-    p = Page(b, timer='free_response_timer')
+    p = Page(b, timer='free_response_timer', back=True)
     
     Question(p, 'For testing purposes, please leave this blank.', 'free', 'free response')
     
@@ -114,7 +114,10 @@ def FreeNextArgs(free_responses):
     free_responses = query(free_responses)
     
     b = Branch(SingleChoice)
-    p = Page(b, timer='free_next_args_timer')
+    Question(branch=b, var='embedded_data_test', data=free_responses['anything'].get_response())
+    print('the branch I am interested in is ', b)
+
+    p = Page(b, timer='free_next_args_timer', back=True)
     Question(p, '''
     You entered {0} in the free response textbox, your favorite number is {1}, and your favorite number between 1000 and 2000 is {2}
     '''.format(
@@ -129,7 +132,7 @@ def SingleChoice():
     
     args = {}
     
-    p = Page(b, timer='single_choice_timer')
+    p = Page(b, timer='single_choice_timer', back=True)
     q = Question(p, 'To be, or not to be?', 'single choice', 'single_choice')
     Choice(q, 'To be', 1)
     Choice(q, 'Not to be', 0)
@@ -152,13 +155,11 @@ def SingleChoice():
     
     args['ice_cream'] = q.id
     
-    p = Page(b, compile=display_choices, compile_args=args, timer='sc_compile_args_timer')
+    p = Page(b, compile=display_choices, compile_args=args, timer='sc_compile_args_timer', back=True)
     
     return b
     
 def display_choices(page, args):
-    if page._compiled:
-        return
     args = query(args)
     to_be = 'not to be'
     if args['to_be'].get_data():
@@ -185,7 +186,7 @@ def Condition():
 def DispCondition():
     b = Branch()
     
-    p = Page(b, timer='disp_condition_timer')
+    p = Page(b, timer='disp_condition_timer', back=True)
     Question(p, '''
     <p>We have just randomly assigned you to the conditions {0}, {1}, and {2}.</p>
     <p>(This is completely meaningless, just continue to the next page!)</p>
@@ -238,13 +239,20 @@ def Back3(character):
     ''')
     
     return b
+    
+# def Assign_and_Remove_Participant():
+    # b = Branch()
+    # p = Page()
+    # q = Question()
+    # q.participant()
+    # q.remove_participant()
       
 # create the application (survey)
 app = create_app(Config,
-    start=Condition, 
+    start=Consent, 
     password='123',
     record_incomplete=False,
-    block_duplicate_ips=False,
+    block_duplicate_ips=True,
     block_from_csv='block.csv')
     
 # hemlock shell
