@@ -1,12 +1,11 @@
 ###############################################################################
 # Page model
 # by Dillon Bowen
-# last modified 02/15/2019
+# last modified 03/17/2019
 ###############################################################################
 
 from hemlock.factory import db
 from hemlock.models.question import Question
-from hemlock.models.checkpoint import Checkpoint
 from hemlock.models.private.base import Base
 from flask import request
 from flask_login import current_user
@@ -69,54 +68,48 @@ _direction: direction of survey flow - forward, back, invalid
 _compiled: indicator that the page was previously compiled
 _checkpoint: indicates that the page is a checkpoint
 '''
-class Page(db.Model, Checkpoint, Base):
-    # primary key
+class Page(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     
-    # parent foreign keys and order
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _branch_head_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _index = db.Column(db.Integer)
 
-    _next_branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _next_branch = db.relationship(
-        'Branch', 
+        'Branch',
+        back_populates='_origin_page',
         uselist=False,
-        foreign_keys=[_next_branch_id])
+        foreign_keys='Branch._origin_page_id')
     
-    # children
-    _questions = db.relationship('Question', backref='_page', lazy='dynamic',
-        order_by='Question._order')
+    _questions = db.relationship(
+        'Question', 
+        backref='_page', 
+        lazy='dynamic',
+        order_by='Question._index',
+        foreign_keys='Question._page_id')
         
-    # timing variables
-    _timer = db.Column(db.Integer) # SHOULD HAVE A 1:1 RELATIONSHIP
     _start_time = db.Column(db.DateTime)
-    _total_time = db.Column(db.Integer, default=0)
+    _timer = db.relationship(
+        'Question',
+        uselist=False,
+        foreign_keys='Question._page_timer_id')
     
-    # functions and arguments
     _compile_function = db.Column(db.PickleType)
     _compile_args = db.Column(db.PickleType)
     _post_function = db.Column(db.PickleType)
     _post_args = db.Column(db.PickleType)
     _next_function = db.Column(db.PickleType)
     _next_args = db.Column(db.PickleType)
-    _id_next = db.Column(db.Integer) # SHOULD HAVE 1:1 RELATIONSHIP
     
-    # indicator variables
     _back = db.Column(db.Boolean)
     _terminal = db.Column(db.Boolean)
     _compiled = db.Column(db.Boolean)
     _assigned_to_participant = db.Column(db.Boolean)
     
-    # direction
     _direction_to = db.Column(db.String(8), default='forward')
     _direction_from = db.Column(db.String(8), default='forward')
     
-    # for use by checkpoints
-    _checkpoint = db.Column(db.Boolean, default=False)
-    _origin_id = db.Column(db.Integer)
-    _origin_table = db.Column(db.PickleType)
-    _next_len = db.Column(db.Integer, default=0)
+    
     
     # Add to database and commit upon initialization
     def __init__(self, branch=None, timer=None, order=None,
@@ -135,30 +128,27 @@ class Page(db.Model, Checkpoint, Base):
         self.back(back)
         self.terminal(terminal)
 
-        timer = Question(var=timer, data=0)
-        self._timer = timer.id
+        self._timer = Question(var=timer, data=0)
         
     # Assign to participant
     def participant(self, participant=current_user):
         self._assigned_to_participant = True
         [q.participant(participant) for q in self._questions.all()]
-        timer = Question.query.get(self._timer)
-        timer.participant(participant)
+        self._timer.participant(participant)
         
     # Remove from participant
     def remove_participant(self):
         self._assigned_to_participant = False
         [q.remove_participant() for q in self._questions.all()]
-        timer = Question.query.get(self._timer)
-        timer.remove_participant()
+        self._timer.remove_participant()
     
     # Assign to branch
     def branch(self, branch, index=None):
-        self._assign_parent(branch, '_branch', '_page_queue', index)
+        self._assign_parent(branch, '_branch', index)
         
     # Remove from branch
     def remove_branch(self):
-        self._remove_parent('_branch', '_page_queue')
+        self._remove_parent('_branch')
             
     # Set the compile function and arguments
     def compile(self, compile=None, args=None):
@@ -184,10 +174,6 @@ class Page(db.Model, Checkpoint, Base):
     def randomize(self):
         self._randomize_children(self._questions.all())
         
-    # Return the id of the next branch
-    def get_next_branch_id(self):
-        return self._id_next
-        
     # Get the direction (forward, back, or invalid)
     # from which this page was arrived at
     def get_direction_to(self):
@@ -197,22 +183,6 @@ class Page(db.Model, Checkpoint, Base):
     # from which this page is arrived at
     def _set_direction_to(self, direction):
         self._direction_to = direction
-        
-    # Set the order in participant's page queue
-    def _set_queue_order(self, order):
-        self._queue_order = order
-        
-    # Modify the order in participant's page queue
-    def _modify_queue_order(self, modify):
-        self._queue_order += modify
-        
-    # Assign participant
-    def _insert_to_queue(self, part_id, queue_order):
-        self._part_id, self._queue_order = part_id, queue_order
-        
-    # Remove participant
-    def _remove_from_queue(self):
-        self._part_id, self._queue_order = None, None
     
     # Compile the html code for the form specified on this page
     # executes compile functions for page and questions
@@ -233,8 +203,8 @@ class Page(db.Model, Checkpoint, Base):
         return ''.join([hidden_tag()]+Qhtml+[submit(self)])
         
     # Checks if questions have valid answers upon page submission
-    def _validate_on_submit(self, part_id):
-        self._update_timer(part_id)
+    def _validate_on_submit(self):
+        self._update_timer()
 
         # set direction from
         self._direction_from = request.form.get('direction')
@@ -252,10 +222,6 @@ class Page(db.Model, Checkpoint, Base):
             
         # back navigation
         if self._direction_from == 'back':
-            if self._timer is not None:
-                timer = Question.query.get(self._timer)
-                timer.remove_participant()
-            [q.remove_participant() for q in self._questions]
             return 'back'
             
         # validate
@@ -263,18 +229,13 @@ class Page(db.Model, Checkpoint, Base):
         
         # invalid navigation
         if not valid:
-            self._direction_to = 'invalid'
-            self._direction_from = 'invalid'
+            self._direction_to = self._direction_from = 'invalid'
             return 'invalid'
             
         # forward navigation
         return 'forward'
         
-    # FIX THIS
-    def _update_timer(self, part_id):
+    # Update the page timer
+    def _update_timer(self):
         delta = (datetime.utcnow() - self._start_time).total_seconds()
-        self._total_time += delta
-        if self._timer is None:
-            return
-        timer = Question.query.get(self._timer)
-        timer.data(self._total_time)
+        self._timer.data(self._timer.get_data() + delta)

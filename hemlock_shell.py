@@ -6,6 +6,8 @@
 
 from survey import app
 from hemlock import *
+from hemlock.models.private import *
+from hemlock.factory import db
 import pandas as pd
 import numpy as np
 import random
@@ -20,6 +22,7 @@ def make_shell_context():
     'Question':Question, 
     'Choice':Choice, 
     'Validator':Validator,
+    'Visitors': Visitors,
     
     # hemlock tools
     'comprehension_check':comprehension_check,
@@ -36,4 +39,10 @@ def make_shell_context():
     # additional tools
     'pd':pd, 
     'np':np,
-    'random':random}
+    'random':random,
+
+    # database
+    'db':db,
+    
+    # private models
+    'Visitors':Visitors}

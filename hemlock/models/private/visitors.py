@@ -2,7 +2,7 @@
 # Visitors table
 # tracks visitors to the survey (not only participants)
 # by Dillon Bowen
-# last modified 03/13/2019
+# last modified 03/17/2019
 ###############################################################################
 
 from hemlock.factory import db

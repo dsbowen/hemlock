@@ -1,7 +1,7 @@
 ###############################################################################
 # Participant model
 # by Dillon Bowen
-# last modified 03/16/2019
+# last modified 03/17/2019
 ###############################################################################
 
 from hemlock.factory import db, login
@@ -15,12 +15,7 @@ from flask_login import UserMixin, login_user
 from datetime import datetime
 from copy import deepcopy
 
-'''
-TODO
-CLEAR EMBEDDED DATA FROM PARTICIPANT ON BACK FROM BRANCH
-workerId in metadata
-distinguish private from public functions
-'''
+
 
 ###############################################################################
 # Login participant
@@ -33,16 +28,17 @@ def load_user(id):
 
 
 '''
-Data:
-    page_queue: queue of pages to be displayed
-    questions: questions assigned to participant
-    variables: variables the participant contributes to dataframe
+Relationships:
+    branch_stack: stack of branches to be displayed
+    current_branch: head of the branch stack
+    questions: set of questions belonging to the participant
+    variables: set of variables participant contributes to dataset
     
+Columns:
     data: dictionary of data participant contributes to dataset
-    g: participant-specific global dictionary
-    head: index of current page in page queue
-    num_rows: number of rows participant contributes to dataframe
-    metadata: list of participant metadata variables
+    g: global dictionary, accessible from navigation functions
+    num_rows: number of rows participant contributes to dataset
+    metadata: participant metadata (e.g. start and end time)
 '''
 class Participant(db.Model, UserMixin, Base):
     id = db.Column(db.Integer, primary_key=True)
@@ -56,7 +52,6 @@ class Participant(db.Model, UserMixin, Base):
         
     _current_branch = db.relationship(
         'Branch',
-        backref='_part_head',
         uselist=False,
         foreign_keys='Branch._part_head_id')
     
@@ -73,7 +68,6 @@ class Participant(db.Model, UserMixin, Base):
     
     _data = db.Column(db.PickleType)
     _g = db.Column(db.PickleType, default={})
-    _head = db.Column(db.Integer, default=0)
     _num_rows = db.Column(db.Integer, default=0)
     _metadata = db.Column(db.PickleType, 
         default=['id','ipv4','start_time','end_time','completed'])
@@ -81,17 +75,17 @@ class Participant(db.Model, UserMixin, Base):
     # Initialize participant
     # login user
     # record metadata
-    # create an initial checkpoint (root)
+    # initialize branch stack with root branch
     # advance to first page
     def __init__(self, ipv4, start): 
         db.session.add(self)
         db.session.commit()
         login_user(self)
         
-        self.record_metadata(ipv4)
+        self._record_metadata(ipv4)
         
         root = Branch(next=start)
-        self._insert_children([root])
+        root.participant()
         self._current_branch = root
         self._forward()
             
@@ -129,7 +123,7 @@ class Participant(db.Model, UserMixin, Base):
     ###########################################################################
     
     # Record participant metadata
-    def record_metadata(self, ipv4):
+    def _record_metadata(self, ipv4):
         Variable(self, 'id', True, self.id)
         Variable(self, 'ipv4', True, ipv4)
         Variable(self, 'start_time', True, datetime.utcnow())
@@ -137,7 +131,7 @@ class Participant(db.Model, UserMixin, Base):
         Variable(self, 'completed', True, 0)
         
     # Update metadata (end time and completed indicator)
-    def update_metadata(self, completed_indicator=False):
+    def _update_metadata(self, completed_indicator=False):
         metadata = [v for v in self._variables 
             if v.name in ['end_time','completed']]
         metadata.sort(key=lambda x: x.name)
@@ -152,24 +146,24 @@ class Participant(db.Model, UserMixin, Base):
     ###########################################################################
     
     # Return a dictionary of participant data
-    def get_data(self):
+    def _get_data(self):
         return self._data
             
     # Store participant data
     # update current data
     # pad variables to even length and store
-    def store_data(self, completed_indicator=False): 
-        self.clear_data()
-        [self.process_question(q) 
+    def _store_data(self, completed_indicator=False): 
+        self._clear_data()
+        [self._process_question(q) 
 			for q in self._questions if q._var]
-        self.update_metadata(completed_indicator)
+        self._update_metadata(completed_indicator)
         
         [var.pad(self._num_rows) for var in self._variables]
         self._data = {var.name:var.data for var in self._variables}
         db.session.commit()
         
     # Clear participant data
-    def clear_data(self):
+    def _clear_data(self):
         [db.session.delete(v) 
             for v in self._variables.all() if v.name not in self._metadata]
         [v.set_num_rows(0) for v in self._variables]
@@ -179,10 +173,10 @@ class Participant(db.Model, UserMixin, Base):
     # get variables associated with question data
     # pad variables to even length
     # write question data to these variables
-    def process_question(self, q):
+    def _process_question(self, q):
         qdata = q._output_data()
         
-        vars = [self.get_var(name, q._all_rows) 
+        vars = [self._get_var(name, q._all_rows) 
             for name in qdata.keys()]
         
         max_rows = max(v.num_rows for v in vars)
@@ -194,7 +188,7 @@ class Participant(db.Model, UserMixin, Base):
     # Get variable associated with variable name
     # create new variable if needed
     # all_rows: indicates the variable should contain the same data in all rows
-    def get_var(self, name, all_rows):
+    def _get_var(self, name, all_rows):
         var = [v for v in self._variables if v.name == name]
         if not var:
             return Variable(self, name, all_rows)
@@ -203,7 +197,7 @@ class Participant(db.Model, UserMixin, Base):
         
         
     ###########################################################################
-    # Navigation
+    # Forward navigation
     ###########################################################################
         
     # Return the current page
@@ -211,6 +205,7 @@ class Participant(db.Model, UserMixin, Base):
         return self._current_branch._current_page
         
     # Advance to the next page
+    # assign new page to participant if terminal
     def _forward(self):
         current_page = self._get_current_page()
     
@@ -223,7 +218,7 @@ class Participant(db.Model, UserMixin, Base):
             return self._insert_branch(current_page)
             
         self._current_branch._forward()
-        self._continue_forward_to_page()
+        self._continue_forward_to_next_page()
         
         new_current_page = self._get_current_page()
         if new_current_page._terminal:
@@ -231,10 +226,9 @@ class Participant(db.Model, UserMixin, Base):
         
     # Terminate a branch when the end of the page queue is reached
     def _terminate_branch(self):
-        if (self._current_branch._next_function is not None 
-            and self._current_branch._next_branch is None):
+        if self._current_branch._eligible_to_insert_next():
             return self._insert_branch(self._current_branch)
-        self._decrement_head()
+        self._current_head = self._decrement_head()
         self._current_branch._forward()
         self._continue_forward_to_page()
 
@@ -242,27 +236,128 @@ class Participant(db.Model, UserMixin, Base):
     # origin may be a page or branch
     def _insert_branch(self, origin):
         new_branch = origin._grow_branch()
-        new_branch.participant()
-        self._insert_children([new_branch], self._current_branch._index+1)
-        self._advance_head()
-        self._continue_forward_to_page()
+        new_branch.participant(index=self._current_branch._index+1)
+        self._current_branch = self._advance_head()
+        self._continue_forward_to_next_page()
         
-    # Continue advancing forward until participant reaches a page
-    def _continue_forward_to_page(self):
+    # Continue advancing forward until participant reaches the next page
+    def _continue_forward_to_next_page(self):
         if self._get_current_page() is not None:
             return
         self._forward()
         
     # Advance head pointer to next branch in stack
-    def _advance_head(self):
-        new_head_index = self._current_branch._index + 1
-        self._current_branch = self._branch_stack[new_head_index]
+    def _advance_head(self, head=None):
+        if head is None:
+            head = self._current_branch
+        new_head_index = head._index + 1
+        return self._branch_stack[new_head_index]
             
     # Decrements head pointer to previous branch in stack
-    def _decrement_head(self):
-        new_head_index = self._current_branch._index - 1
-        self._current_branch = self._branch_stack[new_head_index]    
+    def _decrement_head(self, head_index=None):
+        if head_index is None:
+            head_index = self._current_branch._index
+        new_head_index = head_index - 1
+        return self._branch_stack[new_head_index]    
         
+        
+        
+    ###########################################################################
+    # Backward navigation
+    ###########################################################################
+    
     # Return to the previous page
     def _back(self):
-        pass
+        current_page = self._get_current_page()
+        
+        if current_page is None:
+            self._current_branch._back()
+            return
+            
+        current_page.remove_participant()
+        if self._current_branch._back():
+            self._continue_forward_to_last_page(current_page)
+            return
+            
+        self._remove_current_branch()
+        self._continue_back_to_previous_page()
+        
+    # Remove the current branch
+    def _remove_current_branch(self):
+        current_head_index = self._current_branch._index
+        self._current_branch.remove_participant()
+        self._current_branch = self._decrement_head(current_head_index)
+        
+    # Continue regressing backward until participant reaches a page
+    def _continue_back_to_previous_page(self):
+        if self._get_current_page() is not None:
+            return
+        self._back()
+        
+    # mock go forward
+    # if the next page is the end page, stop
+    # otherwise, actually go forward and recurse
+    def _continue_forward_to_last_page(self, end_page):
+        return
+        current_page = self._get_current_page()
+        if self._get_next_page(self._current_branch, current_page) == end_page:
+            return
+        self._forward(grow_branches=False)
+        self._continue_forward_to_last_page(end_page)
+        
+    '''
+    def _get_next_page(self, curr_temp_branch, curr_temp_page, explored=[]):
+        if curr_temp_branch not in explored:
+            explored.append(curr_temp_branch)
+        # current_page = self._get_current_page()
+    
+        if curr_temp_page is None:
+            return self._terminate_temp_branch(curr_temp_branch, explored)
+        # if current_page is None:
+            # return self._terminate_branch()
+            
+        # current_page.participant()
+
+        next_branch = curr_temp_page._next_branch
+        if next_branch is not None and next_branch not in explored:
+            return self._explore_next_branch(curr_temp_branch, explored)
+        # if current_page._next_function is not None:
+            # return self._insert_branch(current_page)
+            
+        next_page = curr_temp_branch._get_next_page(curr_temp_page)
+        if next_page is None:
+            return self._get_next_page(curr_temp_branch, None, explored)
+        return next_page
+        # self._current_branch._forward()
+        # self._continue_forward_to_page()
+        
+    # Terminate a branch when the end of the page queue is reached
+    def _terminate_temp_branch(self, curr_temp_branch, explored):
+        next_branch = curr_temp_branch._next_branch
+        if next_branch is not None and next_branch not in explored:
+            return self._explore_next_branch(curr_temp_branch, explored)
+        new_temp_branch = self._decrement_head(curr_temp_branch._index)
+        new_temp_page = new_temp_branch._page_queue.first()
+    
+        if self._current_branch._eligible_to_insert_next():
+            return self._insert_branch(self._current_branch)
+        self._current_head = self._decrement_head()
+        self._current_branch._forward()
+        self._continue_forward_to_page()
+        
+    def _explore_next_branch(self, curr_temp_branch, explored):
+        new_temp_branch = self._advance_head(curr_temp_branch)
+        new_temp_page = new_curr_branch._page_queue.first()
+        if new_temp_page is not None:
+            return new_temp_page
+        return self._get_next_page(new_curr_branch, None, explored)
+    '''
+        
+    # Print branch stack
+    def _print_branch_stack(self):
+        for b in self._branch_stack.all():
+            if b == self._current_branch:
+                print(b, '***')
+            else:
+                print(b)
+            b._print_page_queue()

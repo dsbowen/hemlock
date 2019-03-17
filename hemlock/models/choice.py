@@ -1,7 +1,7 @@
 ###############################################################################
 # Choice model
 # by Dillon Bowen
-# last modified 02/15/2019
+# last modified 03/17/2019
 ###############################################################################
 
 from hemlock.factory import db
@@ -18,8 +18,10 @@ _checked: indicator that this choice was checked
 '''
 class Choice(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
+    
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-    _order = db.Column(db.Integer)
+    _index = db.Column(db.Integer)
+    
     _text = db.Column(db.Text)
     _value = db.Column(db.PickleType)
     _value_followstext = db.Column(db.Boolean, default=True)
@@ -29,23 +31,23 @@ class Choice(db.Model, Base):
     
     # Add choice to database and commit on initialization
     def __init__(self, question=None, text='', value=None, label=None,
-        order=None):
+        index=None):
         
         db.session.add(self)
         db.session.commit()
         
-        self.assign_question(question, order)
+        self.assign_question(question, index)
         self.text(text)
         self.value(value)
         self.label(label)
 
     # Assign to question
-    def assign_question(self, question, order=None):
-        self._assign_parent(question, order)
+    def assign_question(self, question, index=None):
+        self._assign_parent(question, '_question', index)
         
     # Remove from question
     def remove_question(self):
-        self._remove_parent(self._question)
+        self._remove_parent('_question')
         
     # Set the choice text
     def text(self, text):

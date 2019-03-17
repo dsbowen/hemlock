@@ -1,7 +1,7 @@
 ###############################################################################
 # Participant URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 03/13/2019
+# last modified 03/17/2019
 ###############################################################################
 
 # hemlock database, application blueprint, and models
@@ -52,9 +52,8 @@ def get_ipv4():
 def duplicate():
     p = Page(terminal=True)
     q = Question(page=p, text='''
-        <p>Our records indicate that you have already participated in this or similar studies.</p>
-        <p>Thank you for your continuing interest in our research.</p>
-        ''')
+    <p>Our records indicate that you have already participated in this or similar studies.</p>
+    <p>Thank you for your continuing interest in our research.</p>''')
     return render_template('page.html', page=Markup(p._compile_html()))
         
         
@@ -70,30 +69,31 @@ def duplicate():
 @bp.route('/survey', methods=['GET','POST'])
 @login_required
 def survey():
-    current_user.print_queue()
     if request.method == 'POST':
         return post()
         
     part = current_user
-    page = part.get_page()
+    page = part._get_current_page()
     compiled_html = page._compile_html()
     db.session.commit()
+    
+    part._print_branch_stack()
         
     return render_template('page.html', page=Markup(compiled_html))
     
 # Validate and record responses on post request (form submission)
+# record incomplete data, or update metadata (end time and completed)
+# navigate in the specified direction
 def post():
     part = current_user
     page = part._get_current_page()
-    direction = page._validate_on_submit(part.id)
+    direction = page._validate_on_submit()
     
-    # record incomplete data, or update metadata (end time and completed)
     if direction != 'invalid' and current_app.record_incomplete:
-        part.store_data()
+        part._store_data()
     else:
-        part.update_metadata()
+        part._update_metadata()
         
-    # navigate in the specified direction
     if direction == 'forward':
         part._forward()
     elif direction == 'back':

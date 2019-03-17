@@ -1,7 +1,7 @@
 ###############################################################################
 # Question model
 # by Dillon Bowen
-# last modified 03/15/2019
+# last modified 03/17/2019
 ###############################################################################
 
 from hemlock.factory import db
@@ -106,24 +106,38 @@ _vorder: order in which this question appears in its variable
 '''
 class Question(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
+    
     _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    _choices = db.relationship('Choice', backref='_question', lazy='dynamic',
-        order_by='Choice._order')
-    _validators = db.relationship('Validator', backref='_question', lazy='dynamic',
-        order_by='Validator._order')
-    _order = db.Column(db.Integer)
+    _page_timer_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+    _index = db.Column(db.Integer)
+    
+    _choices = db.relationship(
+        'Choice', 
+        backref='_question', 
+        lazy='dynamic',
+        order_by='Choice._index')
+        
+    _validators = db.relationship(
+        'Validator', 
+        backref='_question', 
+        lazy='dynamic',
+        order_by='Validator._index')
+        
     _text = db.Column(db.Text)
     _qtype = db.Column(db.String(16))
     _var = db.Column(db.Text)
     _all_rows = db.Column(db.Boolean)
+    
     _render_function = db.Column(db.PickleType)
     _render_args = db.Column(db.PickleType)
     _post_function = db.Column(db.PickleType)
     _post_args = db.Column(db.PickleType)
+    
     _init_default = db.Column(db.PickleType)
     _default = db.Column(db.PickleType)
+    
     _error = db.Column(db.PickleType)
     _response = db.Column(db.Text)
     _data = db.Column(db.PickleType)
@@ -131,8 +145,8 @@ class Question(db.Model, Base):
     
     # Adds question to database and commits on initialization
     def __init__(self, page=None, text='', qtype='text', var=None,
-        default=None, data=None, all_rows=False,
-        branch=None, order=None,
+        default=None, data=None, all_rows=False, index=None,
+        branch=None, branch_index=None,
         render=None, render_args=None,
         post=None, post_args=None):
         
@@ -140,8 +154,8 @@ class Question(db.Model, Base):
         db.session.commit()
         
         self.var(var)
-        self.branch(branch)
-        self.page(page, order)
+        self.branch(branch, branch_index)
+        self.page(page, index)
         self.text(text)
         self.qtype(qtype)
         self.all_rows(all_rows)
@@ -172,21 +186,20 @@ class Question(db.Model, Base):
         self._vorder = None
         
     # Assign to branch
-    def branch(self, branch, order=None):
-        self._assign_parent(branch, order)
+    def branch(self, branch, index=None):
+        self._assign_parent(branch, '_branch', index)
             
     # Remove from branch
     def remove_branch(self):
-        self._part = None
-        self._remove_parent(self._branch)
+        self._remove_parent('_branch')
     
     # Assign to page
-    def page(self, page, order=None):
-        self._assign_parent(page, order)
+    def page(self, page, index=None):
+        self._assign_parent(page, '_page', index)
             
     # Remove from page
     def remove_page(self):
-        self._remove_parent(self._page)
+        self._remove_parent('_page')
             
     # Sets the question text
     def text(self, text):
@@ -309,11 +322,11 @@ class Question(db.Model, Base):
         # data, page order, and variable order
         data = {
             self._var: self._data,
-            self._var+'_porder': self._order,
+            self._var+'_porder': self._index,
             self._var+'_vorder': self._vorder}
             
         # choice order
         for c in self._choices:
-            data['_'.join([self._var,c.get_label(),'qorder'])] = c._order
+            data['_'.join([self._var,c.get_label(),'qorder'])] = c._index
             
         return data

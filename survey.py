@@ -215,11 +215,15 @@ def Back3(character):
     return b
     
 def Start():
+    b = Branch(next=Two)
+    p = Page(b)
+    q = Question(p, 'Hello world')    
+    return b
+    
+def Two():
     b = Branch()
-    p = Page(b, terminal=True)
-    q = Question(p, 'Hello world')
-    print(b)
-    print(b._page_queue.all())
+    p = Page(b, terminal=True, back=True)
+    q = Question(p, 'Hello moon')
     return b
       
 # create the application (survey)

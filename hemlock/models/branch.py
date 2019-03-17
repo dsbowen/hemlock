@@ -37,14 +37,32 @@ class Branch(db.Model, Base):
         uselist=False,
         foreign_keys='Page._branch_head_id')
         
-    _next_branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
-    _next_branch = db.relationship(
-        'Branch', 
+    _origin_branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    _origin_branch = db.relationship(
+        'Branch',
+        back_populates='_next_branch',
         uselist=False,
-        foreign_keys=[_next_branch_id])
+        foreign_keys=_origin_branch_id)
         
-    _embedded = db.relationship('Question', backref='_branch', lazy='dynamic',
-        order_by='Question._order')
+    _next_branch = db.relationship(
+        'Branch',
+        back_populates='_origin_branch',
+        uselist=False,
+        remote_side=id,
+        foreign_keys=_origin_branch_id)
+        
+    _origin_page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+    _origin_page = db.relationship(
+        'Page', 
+        back_populates='_next_branch',
+        foreign_keys=_origin_page_id)
+        
+    _embedded = db.relationship(
+        'Question', 
+        backref='_branch', 
+        lazy='dynamic',
+        order_by='Question._index')
+        
     _next_function = db.Column(db.PickleType)
     _next_args = db.Column(db.PickleType)
     
@@ -55,12 +73,16 @@ class Branch(db.Model, Base):
         
         self.next(next, next_args)
         
-    # Assign embedded data to participant
-    def participant(self, participant=current_user):
+    # Assign branch to participant
+    # also assign embedded data
+    def participant(self, participant=current_user, index=None):
+        self._assign_parent(participant, '_part', index)
         [q.participant(participant) for q in self._embedded]
         
-    # Remove embedded data from participant
+    # Remove branch from participant
+    # als remove embedded data
     def remove_participant(self):
+        self._remove_parent('_part')
         [q.remove_participant() for q in self._embedded]
         
     # Set the next navigation function and arguments
@@ -99,23 +121,41 @@ class Branch(db.Model, Base):
             return
         self._current_page = self._page_queue[new_head_index]
         
-    # Grow and return a new branch
-    def _grow_branch(self):
-        next_branch = self._call_function(
-            function=self._next_function, 
-            args=self._next_args)
-
-        if next_branch is None:
-            return
-        
-        next_branch._initialize_head_pointer()
-        return next_branch
-        
-    # Initialize head pointer to first page in queue
-    def _initialize_head_pointer(self):
-        print(self)
-        print(self._page_queue.all())
+    # Initialize head pointer to page in queue at given index
+    def _initialize_head_pointer(self, index=0):
         if self._page_queue.all():
-            self._current_page = self._page_queue.first()
-            return
+            self._current_page = self._page_queue.all()[index]
+            return True
         self._current_page = None
+        return False
+        
+    # Return to previous page
+    def _back(self):
+        if self._current_page == self._page_queue.first():
+            return False
+        if self._current_page is None:
+            return self._initialize_head_pointer(-1)
+        self._decrement_head()
+        return True
+        
+    # Decrements the head pointer to previous page in queue
+    def _decrement_head(self):
+        new_head_index = self._current_page._index - 1
+        self._current_page = self._page_queue[new_head_index]
+        
+    # Indicates whether the branch is eligible to grow and insert next branch
+    # next function must not be None
+    # and the next branch must not already be in the participant's branch stack
+    def _eligible_to_insert_next(self):
+        return (self._next_function is not None
+            and self._next_branch not in self._part._branch_stack)
+        
+    # Print page queue
+    def _print_page_queue(self):
+        for p in self._page_queue.all():
+            if p == self._current_page:
+                print(p, '***')
+            else:
+                print(p)
+        if self._current_page is None:
+            print(None, '***')
