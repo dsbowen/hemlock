@@ -289,7 +289,7 @@ class Participant(db.Model, UserMixin, Base):
         
     
     ###########################################################################
-    # General navigation and debugging functions
+    # General navigation and debugging
     ###########################################################################
     
     # Return the current page

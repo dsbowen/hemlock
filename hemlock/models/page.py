@@ -107,15 +107,12 @@ class Page(db.Model, Base):
     
     
     # Initialize page
-    def __init__(self, 
-        branch=None, index=None,
-        timer=None,
-        compile=None, compile_args=None,
-        post=None, post_args=None,
-        next=None, next_args=None
-        back=False,
-        terminal=False,
-        timer=None,):
+    def __init__(
+            self, branch=None, index=None, 
+            back=False, terminal=False, timer=None,
+            compile=None, compile_args=None,
+            post=None, post_args=None,
+            next=None, next_args=None):
         
         db.session.add(self)
         db.session.commit()
