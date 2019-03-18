@@ -1,7 +1,7 @@
 ###############################################################################
 # Participant model
 # by Dillon Bowen
-# last modified 03/17/2019
+# last modified 03/18/2019
 ###############################################################################
 
 from hemlock.factory import db, login
@@ -72,11 +72,12 @@ class Participant(db.Model, UserMixin, Base):
     _metadata = db.Column(db.PickleType, 
         default=['id','ipv4','start_time','end_time','completed'])
     
+    
+    
     # Initialize participant
     # login user
     # record metadata
     # initialize branch stack with root branch
-    # advance to first page
     def __init__(self, ipv4, start): 
         db.session.add(self)
         db.session.commit()
@@ -200,10 +201,6 @@ class Participant(db.Model, UserMixin, Base):
     # Forward navigation
     ###########################################################################
         
-    # Return the current page
-    def _get_current_page(self):
-        return self._current_branch._current_page
-        
     # Advance to the next page
     # assign new page to participant if terminal
     def _forward(self):
@@ -218,7 +215,7 @@ class Participant(db.Model, UserMixin, Base):
             return self._insert_branch(current_page)
             
         self._current_branch._forward()
-        self._continue_forward_to_next_page()
+        self._continue_forward_to_page()
         
         new_current_page = self._get_current_page()
         if new_current_page._terminal:
@@ -228,7 +225,7 @@ class Participant(db.Model, UserMixin, Base):
     def _terminate_branch(self):
         if self._current_branch._eligible_to_insert_next():
             return self._insert_branch(self._current_branch)
-        self._current_head = self._decrement_head()
+        self._decrement_head()
         self._current_branch._forward()
         self._continue_forward_to_page()
 
@@ -237,121 +234,79 @@ class Participant(db.Model, UserMixin, Base):
     def _insert_branch(self, origin):
         new_branch = origin._grow_branch()
         new_branch.participant(index=self._current_branch._index+1)
-        self._current_branch = self._advance_head()
-        self._continue_forward_to_next_page()
+        self._increment_head()
+        self._continue_forward_to_page()
         
     # Continue advancing forward until participant reaches the next page
-    def _continue_forward_to_next_page(self):
+    def _continue_forward_to_page(self):
         if self._get_current_page() is not None:
             return
         self._forward()
-        
-    # Advance head pointer to next branch in stack
-    def _advance_head(self, head=None):
-        if head is None:
-            head = self._current_branch
-        new_head_index = head._index + 1
-        return self._branch_stack[new_head_index]
-            
-    # Decrements head pointer to previous branch in stack
-    def _decrement_head(self, head_index=None):
-        if head_index is None:
-            head_index = self._current_branch._index
-        new_head_index = head_index - 1
-        return self._branch_stack[new_head_index]    
         
         
         
     ###########################################################################
     # Backward navigation
     ###########################################################################
-    
+            
     # Return to the previous page
     def _back(self):
         current_page = self._get_current_page()
-        
-        if current_page is None:
-            self._current_branch._back()
-            return
-            
         current_page.remove_participant()
-        if self._current_branch._back():
-            self._continue_forward_to_last_page(current_page)
-            return
-            
-        self._remove_current_branch()
-        self._continue_back_to_previous_page()
         
-    # Remove the current branch
+        if current_page == self._current_branch._page_queue.first():
+            return self._remove_current_branch()
+            
+        self._current_branch._back()
+        self._back_recurse()
+        
+    # Remove the current branch from stack
     def _remove_current_branch(self):
         current_head_index = self._current_branch._index
         self._current_branch.remove_participant()
-        self._current_branch = self._decrement_head(current_head_index)
+        self._decrement_head(current_head_index)
+        self._back_recurse()
         
-    # Continue regressing backward until participant reaches a page
-    def _continue_back_to_previous_page(self):
-        if self._get_current_page() is not None:
-            return
-        self._back()
-        
-    # mock go forward
-    # if the next page is the end page, stop
-    # otherwise, actually go forward and recurse
-    def _continue_forward_to_last_page(self, end_page):
-        return
+    # Recursive back function
+    # move through survey pages until it finds the previous page
+    def _back_recurse(self):
         current_page = self._get_current_page()
-        if self._get_next_page(self._current_branch, current_page) == end_page:
+        
+        if current_page is None:
+            if self._current_branch._next_branch in self._branch_stack.all():
+                self._increment_head()
+            elif self._current_branch._page_queue.all():
+                self._current_branch._back()
+            else:
+                return self._remove_current_branch()
+            return self._back_recurse()
+            
+        if current_page._next_branch not in self._branch_stack.all():
             return
-        self._forward(grow_branches=False)
-        self._continue_forward_to_last_page(end_page)
+        self._increment_head()
+        self._back_recurse()
         
-    '''
-    def _get_next_page(self, curr_temp_branch, curr_temp_page, explored=[]):
-        if curr_temp_branch not in explored:
-            explored.append(curr_temp_branch)
-        # current_page = self._get_current_page()
+        
     
-        if curr_temp_page is None:
-            return self._terminate_temp_branch(curr_temp_branch, explored)
-        # if current_page is None:
-            # return self._terminate_branch()
-            
-        # current_page.participant()
+    ###########################################################################
+    # General navigation and debugging functions
+    ###########################################################################
+    
+    # Return the current page
+    def _get_current_page(self):
+        return self._current_branch._current_page
 
-        next_branch = curr_temp_page._next_branch
-        if next_branch is not None and next_branch not in explored:
-            return self._explore_next_branch(curr_temp_branch, explored)
-        # if current_page._next_function is not None:
-            # return self._insert_branch(current_page)
+    # Advance head pointer to next branch in stack
+    def _increment_head(self):
+        new_head_index = self._current_branch._index + 1
+        self._current_branch = self._branch_stack[new_head_index]
             
-        next_page = curr_temp_branch._get_next_page(curr_temp_page)
-        if next_page is None:
-            return self._get_next_page(curr_temp_branch, None, explored)
-        return next_page
-        # self._current_branch._forward()
-        # self._continue_forward_to_page()
-        
-    # Terminate a branch when the end of the page queue is reached
-    def _terminate_temp_branch(self, curr_temp_branch, explored):
-        next_branch = curr_temp_branch._next_branch
-        if next_branch is not None and next_branch not in explored:
-            return self._explore_next_branch(curr_temp_branch, explored)
-        new_temp_branch = self._decrement_head(curr_temp_branch._index)
-        new_temp_page = new_temp_branch._page_queue.first()
-    
-        if self._current_branch._eligible_to_insert_next():
-            return self._insert_branch(self._current_branch)
-        self._current_head = self._decrement_head()
-        self._current_branch._forward()
-        self._continue_forward_to_page()
-        
-    def _explore_next_branch(self, curr_temp_branch, explored):
-        new_temp_branch = self._advance_head(curr_temp_branch)
-        new_temp_page = new_curr_branch._page_queue.first()
-        if new_temp_page is not None:
-            return new_temp_page
-        return self._get_next_page(new_curr_branch, None, explored)
-    '''
+    # Decrements head pointer to previous branch in stack
+    def _decrement_head(self, head_index=None):
+        if head_index is None:
+            head_index = self._current_branch._index
+        new_head_index = head_index - 1
+        self._current_branch = self._branch_stack[new_head_index] 
         
     # Print branch stack
     def _print_branch_stack(self):

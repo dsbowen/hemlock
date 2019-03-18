@@ -1,7 +1,7 @@
 ###############################################################################
 # Page model
 # by Dillon Bowen
-# last modified 03/17/2019
+# last modified 03/18/2019
 ###############################################################################
 
 from hemlock.factory import db
@@ -40,33 +40,28 @@ def submit(page):
     '''
         
 '''
-Data:
-_branch_id: ID of the branch to which the page belongs
-_questions: list of questions on this page
-_order: order in which the page appears in its branch
-_compile_function: function called before redering the page
-_compile_args: arguments for the compile function
-_post_function: function called after responses are submitted and validated
-_post_args: arguments for the post function
-_next_function: next navigation function
-_next_args: arguments for the next navigation function
-_back: indicator for back button
-_id_next: ID of the next branch
-_terminal: indicator that the page is the last in the survey
-_randomize: indicator of question randomization
-_compileed: indicator that the page was previously compileed
-_restore_on: dictionary of restoration states
-    'forward': 0, 1, or 2
-    'back': 1 or 2
-    'invalid'; 1 or 2
-_state: integer representing the current state
-    0 - before compile functions
-    1 - after compile functions, before response collection
-    2 - after response collection
-_state_copy_ids: list of state copy ids
-_direction: direction of survey flow - forward, back, invalid
-_compiled: indicator that the page was previously compiled
-_checkpoint: indicates that the page is a checkpoint
+Relationships:
+    branch: branch to whose queue this page belongs
+    next_branch: child branch which originated from this page
+    questions: list of questions
+    timer: question to track time spent on this page
+
+Columns:
+    start_time: time at which this page was rendered (used by timer)
+    compile_function: function called when page html is compiled
+    compile_args: arguments for compile function
+    post_function: function called after page is submitted (posted)
+    post_args: arguments for post function
+    next_function: navigation function which grows the next branch
+    next_args: arguments for next function
+
+    back: indicates that page has back button
+    terminal: indicates that page is terminal (last in the survey)
+    compiled: indicates that the page has been compiled
+    assigned_to_participant: indicates that page has been assigned to part
+    
+    direction_to: direction to which this page is arrived at
+    direction_from: direction from which the page navigates
 '''
 class Page(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
@@ -85,7 +80,7 @@ class Page(db.Model, Base):
         'Question', 
         backref='_page', 
         lazy='dynamic',
-        order_by='Question._index',
+        index_by='Question._index',
         foreign_keys='Question._page_id')
         
     _start_time = db.Column(db.DateTime)
@@ -103,25 +98,29 @@ class Page(db.Model, Base):
     
     _back = db.Column(db.Boolean)
     _terminal = db.Column(db.Boolean)
-    _compiled = db.Column(db.Boolean)
-    _assigned_to_participant = db.Column(db.Boolean)
+    _compiled = db.Column(db.Boolean, default=False)
+    _assigned_to_participant = db.Column(db.Boolean, default=False)
     
-    _direction_to = db.Column(db.String(8), default='forward')
-    _direction_from = db.Column(db.String(8), default='forward')
+    _direction_to = db.Column(db.String(8))
+    _direction_from = db.Column(db.String(8))
     
     
     
-    # Add to database and commit upon initialization
-    def __init__(self, branch=None, timer=None, order=None,
+    # Initialize page
+    def __init__(self, 
+        branch=None, index=None,
+        timer=None,
         compile=None, compile_args=None,
         post=None, post_args=None,
-        next=None, next_args=None,
-        back=False, terminal=False):
+        next=None, next_args=None
+        back=False,
+        terminal=False,
+        timer=None,):
         
         db.session.add(self)
         db.session.commit()
         
-        self.branch(branch, order)
+        self.branch(branch, index)
         self.compile(compile, compile_args)
         self.post(post, post_args)
         self.next(next, next_args)
@@ -170,7 +169,7 @@ class Page(db.Model, Base):
     def terminal(self, terminal=True):
         self._terminal = terminal
             
-    # Randomize question order
+    # Randomize question index
     def randomize(self):
         self._randomize_children(self._questions.all())
         

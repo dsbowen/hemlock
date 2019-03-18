@@ -215,15 +215,46 @@ def Back3(character):
     return b
     
 def Start():
-    b = Branch(next=Two)
-    p = Page(b)
-    q = Question(p, 'Hello world')    
+    b = Branch()
+    p = Page(b, next=Two)
+    q = Question(p, 'Hello world')
+    
+    p = Page(b, back=True, next=Six)
+    q = Question(p, 'Hello star')
+    
+    p = Page(b, back=True, terminal=True)
+    q = Question(p, 'Hello galaxy')
+
     return b
     
 def Two():
+    b = Branch(next=Three)
+    return b
+    
+def Three():
+    b = Branch(next=Four)
+    p = Page(b, back=True, next=Five)
+    q = Question(p, 'Goodbye world')
+    return b
+    
+def Four():
     b = Branch()
-    p = Page(b, terminal=True, back=True)
+    p = Page(b, back=True)
     q = Question(p, 'Hello moon')
+    
+    p = Page(b, back=True)
+    q = Question(p, 'Goodbye moon')
+    
+    return b
+    
+def Five():
+    b = Branch()
+    return b
+    
+def Six():
+    b = Branch()
+    p = Page(b, back=True)
+    q = Question(p, 'Goodbye star')
     return b
       
 # create the application (survey)

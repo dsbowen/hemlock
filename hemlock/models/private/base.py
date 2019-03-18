@@ -28,10 +28,8 @@ class Base():
         # args_name: name of function arguments as string
         # args: may be None
     def _set_function(self, func_name, func, args_name, args):
-        if func is not None:
-            setattr(self, func_name, func)
-        if args is not None:
-            setattr(self, args_name, args)
+        setattr(self, func_name, func)
+        setattr(self, args_name, args)
             
     # Call a function
     # inputs:

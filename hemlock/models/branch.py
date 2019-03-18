@@ -1,22 +1,28 @@
 ###############################################################################
 # Branch model
 # by Dillon Bowen
-# last modified 03/16/2019
+# last modified 03/18/2019
 ###############################################################################
 
 from hemlock.factory import db
-from hemlock.models.page import Page
-from hemlock.models.question import Question
 from hemlock.models.private.base import Base
 from flask_login import current_user
 
+
+
 '''
-Data:
-_page_queue: Queue of pages to render
-_embedded: List of embedded data questions
-_next_function: next navigation function
-_next_args: arguments for the next navigation function
-_id_next: ID of the next branch
+Relationships:
+    part: participant to whose branch stack this branch belongs
+    page_queue: queue of pages to be displayed
+    current_page: head of page queue
+    origin_branch: parent branch from which this branch originated
+    next_branch: child branch which originated from this branch
+    origin_page: parent page from which this branch originated
+    embedded: set of embedded data questions
+
+Columns:
+    next_function: navigation function which grows the next branch
+    next_args: arguments for next function
 '''
 class Branch(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
@@ -66,12 +72,22 @@ class Branch(db.Model, Base):
     _next_function = db.Column(db.PickleType)
     _next_args = db.Column(db.PickleType)
     
-    # Add to database and commit upon initialization
-    def __init__(self, next=None, next_args=None, randomize=False):
+    
+    
+    # Initialize branch
+    def __init__(self, next=None, next_args=None):
         db.session.add(self)
         db.session.commit()
         
         self.next(next, next_args)
+        
+        
+        
+    ###########################################################################
+    # Public functions
+    ###########################################################################
+        
+    '''Participant'''
         
     # Assign branch to participant
     # also assign embedded data
@@ -79,69 +95,99 @@ class Branch(db.Model, Base):
         self._assign_parent(participant, '_part', index)
         [q.participant(participant) for q in self._embedded]
         
+    # Get participant
+    def get_participant(self):
+        return self._part
+        
     # Remove branch from participant
-    # als remove embedded data
+    # also remove embedded data
     def remove_participant(self):
         self._remove_parent('_part')
         [q.remove_participant() for q in self._embedded]
         
+    '''Page queue'''
+    
+    # Get the page queue
+    def get_page_queue(self):
+        return self._page_queue
+        
+    # Clear the page queue
+    def clear_page_queue(self):
+        self._current_page = None
+        self._remove_children('_page_queue')
+        
+    '''Origin and next branch'''
+        
+    # Return the branch origin (may be branch or page)
+    def get_origin(self):
+        if self._origin_branch is not None:
+            return self._origin_branch
+        return self._origin_page
+        
+    # Return the next branch
+    def get_next_branch(self):
+        return self._next_branch
+        
+    '''Embedded questions (data)'''
+        
+    # Return embedded questions (data)
+    def get_embedded(self):
+        return self._embedded
+        
+    # Clear embedded questions (data)
+    def clear_embedded(self):
+        self._remove_children('_embedded')
+        
+    '''Next function and arguments'''
+        
     # Set the next navigation function and arguments
+    # to clear next function and args: next()
     def next(self, next=None, args=None):
         self._set_function('_next_function', next, '_next_args', args)
         
-    # Randomize page order
+    # Get the next function
+    def get_next(self):
+        return self._next_function
+        
+    # Get the next function arguments
+    def get_next_args(self):
+        return self._next_args
+        
+    '''Randomization'''
+        
+    # Randomize order of pages in queue
     def randomize(self):
-        self._randomize_children(self._page_queue.all())
-        
-    # Return the id of the next branch
-    def get_next_branch_id(self):
-        return self._id_next
-        
-    # Get page ids
-    def _get_page_ids(self):
-        return [page.id for page in self._page_queue]
+        self._randomize_children('_page_queue')
         
         
         
     ###########################################################################
-    # Navigation
+    # Navigation functions
     ###########################################################################
         
-    # Advance to the next page
+    # Advance to the next page in queue
     def _forward(self):
         if self._current_page is None:
             return
-        self._advance_head()
-        
-    # Advances head pointer to next page in queue
-    def _advance_head(self):
         new_head_index = self._current_page._index + 1
         if new_head_index == len(self._page_queue.all()):
             self._current_page = None
             return
         self._current_page = self._page_queue[new_head_index]
         
-    # Initialize head pointer to page in queue at given index
-    def _initialize_head_pointer(self, index=0):
-        if self._page_queue.all():
-            self._current_page = self._page_queue.all()[index]
-            return True
-        self._current_page = None
-        return False
-        
-    # Return to previous page
+    # Return to previous page in queue
     def _back(self):
-        if self._current_page == self._page_queue.first():
-            return False
+        if not self._page_queue:
+            return
         if self._current_page is None:
-            return self._initialize_head_pointer(-1)
-        self._decrement_head()
-        return True
-        
-    # Decrements the head pointer to previous page in queue
-    def _decrement_head(self):
+            self._current_page = self._page_queue.all()[-1]
+            return
         new_head_index = self._current_page._index - 1
         self._current_page = self._page_queue[new_head_index]
+        
+    # Initialize head pointer to first page in queue
+    def _initialize_head_pointer(self):
+        self._current_page = self._page_queue.first()
         
     # Indicates whether the branch is eligible to grow and insert next branch
     # next function must not be None
@@ -151,6 +197,7 @@ class Branch(db.Model, Base):
             and self._next_branch not in self._part._branch_stack)
         
     # Print page queue
+    # for debugging purposes only
     def _print_page_queue(self):
         for p in self._page_queue.all():
             if p == self._current_page:
