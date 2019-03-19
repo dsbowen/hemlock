@@ -138,6 +138,10 @@ class Page(db.Model, Base):
     def get_branch(self):
         return self._branch
         
+    # Get index (position within branch)
+    def get_index(self):
+        return self._index
+        
     # Remove from branch
     def remove_branch(self):
         self._remove_parent('_branch')

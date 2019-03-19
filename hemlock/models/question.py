@@ -167,6 +167,10 @@ class Question(db.Model, Base):
     def get_page(self):
         return self._page
         
+    # Get position within page (or less commonly, within branch)
+    def get_index(self):
+        return self._index
+        
     # Remove from page
     def remove_page(self):
         self._remove_parent('_page')

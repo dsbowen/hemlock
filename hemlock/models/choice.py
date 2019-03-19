@@ -62,7 +62,7 @@ class Choice(db.Model, Base):
     def get_question(self):
         return self._question
         
-    # Get index
+    # Get index (position within question)
     def get_index(self):
         return self._index
         
