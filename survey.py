@@ -217,7 +217,8 @@ def Back3(character):
 def Start():
     b = Branch()
     p = Page(b, next=Two)
-    q = Question(p, 'Hello world')
+    q = Question(p)
+    hello_world(q)
     
     p = Page(b, back=True, next=Six)
     q = Question(p, 'Hello star')
@@ -227,6 +228,9 @@ def Start():
 
     return b
     
+def hello_world(q):
+    q.text('Hello world')
+    
 def Two():
     b = Branch(next=Three)
     return b
@@ -234,8 +238,11 @@ def Two():
 def Three():
     b = Branch(next=Four)
     p = Page(b, back=True, next=Five)
-    q = Question(p, 'Goodbye world')
+    goodbye_world(p)
     return b
+    
+def goodbye_world(p):
+    q = Question(p, 'Goodbye world')
     
 def Four():
     b = Branch()

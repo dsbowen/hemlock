@@ -1,7 +1,7 @@
 ###############################################################################
 # Branch model
 # by Dillon Bowen
-# last modified 03/18/2019
+# last modified 03/19/2019
 ###############################################################################
 
 from hemlock.factory import db
@@ -87,8 +87,7 @@ class Branch(db.Model, Base):
     # Public functions
     ###########################################################################
         
-    '''Participant'''
-        
+    # PARTICIPANT
     # Assign branch to participant
     # also assign embedded data
     def participant(self, participant=current_user, index=None):
@@ -105,8 +104,8 @@ class Branch(db.Model, Base):
         self._remove_parent('_part')
         [q.remove_participant() for q in self._embedded]
         
-    '''Page queue'''
-    
+        
+    # PAGE QUEUE
     # Get the page queue
     def get_page_queue(self):
         return self._page_queue
@@ -116,8 +115,8 @@ class Branch(db.Model, Base):
         self._current_page = None
         self._remove_children('_page_queue')
         
-    '''Origin and next branch'''
         
+    # ORIGIN AND NEXT BRANCH
     # Return the branch origin (may be branch or page)
     def get_origin(self):
         if self._origin_branch is not None:
@@ -128,8 +127,8 @@ class Branch(db.Model, Base):
     def get_next_branch(self):
         return self._next_branch
         
-    '''Embedded questions (data)'''
         
+    # EMBEDDED QUESTIONS (DATA)
     # Return embedded questions (data)
     def get_embedded(self):
         return self._embedded
@@ -138,8 +137,8 @@ class Branch(db.Model, Base):
     def clear_embedded(self):
         self._remove_children('_embedded')
         
-    '''Next function and arguments'''
         
+    # NEXT FUNCTION AND ARGUMENTS
     # Set the next navigation function and arguments
     # to clear next function and args: next()
     def next(self, next=None, args=None):
@@ -153,8 +152,8 @@ class Branch(db.Model, Base):
     def get_next_args(self):
         return self._next_args
         
-    '''Randomization'''
         
+    # RANDOMIZATION
     # Randomize order of pages in queue
     def randomize(self):
         self._randomize_children('_page_queue')
