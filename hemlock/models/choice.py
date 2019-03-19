@@ -98,6 +98,7 @@ class Choice(db.Model, Base):
             
     # Set the choice label
     def label(self, label=''):
+        label = label.replace(' ', '_')
         self._label = label
         
     # Get the label
