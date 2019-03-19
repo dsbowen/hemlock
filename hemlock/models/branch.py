@@ -84,7 +84,7 @@ class Branch(db.Model, Base):
         
         
     ###########################################################################
-    # Public functions
+    # Public methods
     ###########################################################################
         
     # PARTICIPANT
@@ -108,7 +108,7 @@ class Branch(db.Model, Base):
     # PAGE QUEUE
     # Get the page queue
     def get_page_queue(self):
-        return self._page_queue
+        return self._page_queue.all()
         
     # Clear the page queue
     def clear_page_queue(self):

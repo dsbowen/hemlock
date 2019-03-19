@@ -32,7 +32,7 @@ class Validator(db.Model, Base):
         self.condition(condition, args)
         
     # Assign to question
-    def assign_question(self, question, index=None):
+    def question(self, question, index=None):
         self._assign_parent(question, '_question', index)
         
     # Remove from question

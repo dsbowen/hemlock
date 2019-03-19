@@ -1,113 +1,54 @@
 ###############################################################################
 # Question model
 # by Dillon Bowen
-# last modified 03/17/2019
+# last modified 03/19/2019
 ###############################################################################
 
 from hemlock.factory import db
 from hemlock.models.choice import Choice
-from hemlock.models.validator import Validator
 from hemlock.models.private.base import Base
+from hemlock.models.private.html_compiler import *
 from flask_login import current_user
-from sqlalchemy import and_
 
-# Render errors and text as question label
-def render_label(q):
-    error = ''
-    if q._error:
-        error = '''
-            <div style='color: #ff0000;'>
-            {0}
-            </div>
-        '''.format(q._error)
-    return '''
-            <label for='{0}'>
-            {1}
-            </label>
-    '''.format(q.id, error+q._text)
-    
-# Renders question text in html format
-def render_text(q):
-    return '''
-    <div class='form-group'>
-        {0}
-    </div>    
-    '''.format(render_label(q))
-    
-# Renders free response question in html format
-def render_free(q):
-    default = q._default if q._default is not None else ''
-    return '''
-    <div class='form-group'>
-        {0}
-        <input name='{1}' type='text' class='form-control' value='{2}'>
-    </div>
-    '''.format(render_label(q), q.id, default)
-    
-def render_single_choice(q):
-    [c._set_checked(c.id==q._default) for c in q._choices]
-    text_html = '''
-    <div class='form-group'>
-        {0}
-    </div>
-    '''.format(render_label(q))
-    choice_html = ['''
-    <div class='form-check'>
-        <label><input type='radio' name='{0}' value='{1}' {2}>
-        {3}
-        </label>
-    </div>
-    '''.format(q.id, c.id, c._checked, c._text) for c in q._choices]
-    return ''.join([text_html]+choice_html+['<br></br>'])
-    
-def render_dropdown(q):
-    text_html = '''
-    <div class='form-group'>
-        {0}
-    </div>
-    '''.format(render_label(q))
-    choice_html = ['''
-            <a class='dropdown-item' href='#'>{0}</a>
-    '''.format(c._text) for c in q._choices]
-    dropdown_html = '''
-    <div class='dropdown'>
-        <button class='btn btn-primary dropdown-toggle' type='button' data-toggle='dropdown'>
-        Dropdown Example
-        </button>
-        <div class='dropdown-menu'>
-        {0}
-        </div>
-    </div>
-    '''.format(''.join(choice_html))
-    return text_html + dropdown_html
+
 
 '''
-Data:
-_part_id: ID of participant to whom question belongs
-_branch_id: ID of branch to which question belongs (embedded questions only)
-_page_id: ID of page to which question belongs
-_choices: list of choices (e.g. for single choice questions
-_validators: list of validators
-_order: order in which the question appears on the page
-_text: question text
-_qtype: question type
-_var: variable to which the question contributes data
-_all_rows: indicates that question data appears on all rows
-_render_function: function called before redering the page
-_render_args: arguments for the render function
-_post_function: function called after responses are submitted and validated
-_post_args: arguments for the post function
-_init_default: initial default option (before first post)
-_default: participant's response from last post or initial default
-_error: stores an error message if response was invalid
-_response: participant's raw data response
-_data: response data (cleaned version of response)
-_vorder: order in which this question appears in its variable
+Relationships:
+    part: participant to whom this question belongs
+    branch: branch to which this question belongs (embedded data)
+    page: page to which this question belongs
+    choices: list of choices
+    validators: list of validators
+    
+NOTE: a question may be assigned to a branch or page but not both
+    
+Columns:
+    text: question text
+    
+    all_rows: indicates that question data should appear in all rows
+    qtype: question type
+    var: variable to which this question belongs
+    
+    default: initial default option or participant's response from last post
+    init_default: initial default option
+    default_is_choice: indicates that default option type is Choice
+    
+    compile_function: function called when page html is compiled
+    compile_args: arguments for compile function
+    post_function: function called after page is submitted (posted)
+    post_args: arguments for post function
+    
+    data: question data
+    response: participant's raw response
+    error: error message for invalid participant response
+    vorder: order in which question appeared relative to other questions
+        belonging to the same variable
 '''
 class Question(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     
     _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
+    _part_index = db.Column(db.Integer)
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     _page_timer_id = db.Column(db.Integer, db.ForeignKey('page.id'))
@@ -126,136 +67,250 @@ class Question(db.Model, Base):
         order_by='Validator._index')
         
     _text = db.Column(db.Text)
+    
+    _all_rows = db.Column(db.Boolean)
     _qtype = db.Column(db.String(16))
     _var = db.Column(db.Text)
-    _all_rows = db.Column(db.Boolean)
     
-    _render_function = db.Column(db.PickleType)
-    _render_args = db.Column(db.PickleType)
+    _default = db.Column(db.PickleType)
+    _init_default = db.Column(db.PickleType)
+    _default_is_choice = db.Column(db.Boolean)
+    
+    _compile_function = db.Column(db.PickleType)
+    _compile_args = db.Column(db.PickleType)
     _post_function = db.Column(db.PickleType)
     _post_args = db.Column(db.PickleType)
     
-    _init_default = db.Column(db.PickleType)
-    _default = db.Column(db.PickleType)
-    
-    _error = db.Column(db.PickleType)
-    _response = db.Column(db.Text)
     _data = db.Column(db.PickleType)
+    _response = db.Column(db.Text)
+    _error = db.Column(db.PickleType)
     _vorder = db.Column(db.Integer)
     
-    # Adds question to database and commits on initialization
-    def __init__(self, page=None, text='', qtype='text', var=None,
-        default=None, data=None, all_rows=False, index=None,
-        branch=None, branch_index=None,
-        render=None, render_args=None,
-        post=None, post_args=None):
+    
+    
+    # Initialize question
+    def __init__(
+            self, page=None, text='', part=None, branch=None, index=None,
+            all_rows=False, default=None, qtype='text', var=None,
+            compile=None, compile_args=None,
+            post=None, post_args=None,
+            data=None):
         
         db.session.add(self)
         db.session.commit()
         
-        self.var(var)
-        self.branch(branch, branch_index)
+        self.participant(part)
+        self.branch(branch, index)
         self.page(page, index)
-        self.text(text)
-        self.qtype(qtype)
-        self.all_rows(all_rows)
-        self.render(render, render_args)
-        self.post(post, post_args)
-        self.default(default)
-        self.data(data)
         
+        self.text(text)
+        
+        self.all_rows(all_rows)
+        self.default(default)
+        self.qtype(qtype)
+        self.var(var)
+        
+        self.compile(compile, compile_args)
+        self.post(post, post_args)
+        
+        self.data(data)
+    
+    
+    
+    ###########################################################################
+    # Manage parents
+    ###########################################################################
+    
+    # PARTICIPANT
     # Assign to participant
-    # set variable order
     def participant(self, participant=current_user):
-        self._part = participant
-        if not self._var:
-            return
-        prev = Question.query.filter_by(_part=participant, _var=self._var)
-        self._vorder = len(prev.all())
+        self._assign_parent(participant, '_part')
+        
+    # Get participant
+    def get_participant(self):
+        return self._part
         
     # Remove from participant
-    # update order variable for other questions belonging to the same variable
-    # set participant and variable order to None
     def remove_participant(self):
-        # if self._var:
-        # same_var = Question.query.filter_by(_part=self._part, _var=self._var)
-        # same_var = same_var.order_by('_vorder').all()
-        # for q in same_var[self._vorder:]:
-            # q._vorder -= 1
-        self._part = None
-        self._vorder = None
+        self._remove_parent('_part')
         
+    
+    # BRANCH
     # Assign to branch
+    # remove from page first
     def branch(self, branch, index=None):
+        self.remove_page()
         self._assign_parent(branch, '_branch', index)
+        if branch is not None:
+            self.participant(branch._part)
+        
+    # Get branch
+    def get_branch(self):
+        return self._branch
             
     # Remove from branch
     def remove_branch(self):
         self._remove_parent('_branch')
-    
-    # Assign to page
+        self.remove_participant()
+        
+        
+    # PAGE
+    # Assign to page and page's participant
+    # remove from branch first
     def page(self, page, index=None):
+        self.remove_branch()
         self._assign_parent(page, '_page', index)
-            
+        if page is not None:
+            self.participant(page._part)
+        
+    # Get page
+    def get_page(self):
+        return self._page
+        
     # Remove from page
     def remove_page(self):
         self._remove_parent('_page')
-            
-    # Sets the question text
-    def text(self, text):
-        self._set_text(text)
+        self.remove_participant()
+    
+    
+    
+    ###########################################################################
+    # Manage children
+    ###########################################################################
+    
+    # CHOICES
+    # Get list of choices
+    def get_choices(self):
+        return self._choices.all()
         
+    # Clear choices
+    def clear_choices(self):
+        self._remove_children('_choices')
+        
+    # Randomize choice order
+    def randomize(self, randomize=True):
+        self._randomize_children('_choices')
+    
+    
+    # VALIDATORS
+    # Get list of validators
+    def get_validators(self):
+        return self._validators.all()
+        
+    # Clear validators
+    def clear_validators(self):
+        self._remove_children('_validators')
+    
+    
+        
+    ###########################################################################
+    # Columns
+    ###########################################################################
+    
+    # TEXT
+    # Set question text
+    # to remove, text()
+    def text(self, text=''):
+        self._set_text(text)
+
     # Gets the question text
     def get_text(self):
         return self._text
-        
-    # Set question type
-    def qtype(self, qtype):
-        self._qtype = qtype
-        
-    # Set the variable in which question data will be stored
-    def var(self, var):
-        self._var = var
-        
+    
+    
+    # ALL ROWS
     # Set the all_rows indicator
     # i.e. the data will appear in all of the participant's dataframe rows
+    # True = on, False = off
     def all_rows(self, all_rows=True):
-        self._set_all_rows(all_rows)
+        self._all_rows = all_rows
         
-    # Set the render function and arguments
-    def render(self, render=None, args=None):
-        self._set_function('_render_function', render, '_render_args', args)
+    # Get all_rows indicator
+    def get_all_rows(self):
+        return self._all_rows
         
+    
+    # QUESTION TYPE
+    # Set question type
+    def qtype(self, qtype='text'):
+        self._qtype = qtype
+        
+    # Get question type
+    def get_qtype(self):
+        return self._qtype
+    
+    
+    # VARIABLE
+    # Set the variable in which question data will be stored
+    def var(self, var=None):
+        self._var = var
+        
+    # Get variable
+    def get_var(self):
+        return self._var
+        
+    
+    # DEFAULT
+    # Set default answer
+    # string for free response type
+    # choice id for choice types
+    def default(self, default=None):
+        self._default_is_choice = type(default) == Choice
+        if self._default_is_choice:
+            default = default.id
+        self._init_default = self._default = default
+        
+    # Get default
+    def get_default(self):
+        if self._default_is_choice:
+            return Choice.query.get(self._default)
+        return self._default
+        
+    # Reset default to initial default
+    # typically for use after invalid page submission
+    def reset_default(self):
+        self.default(self._init_default)
+        
+    
+    # COMPILE FUNCTION AND ARGUMENTS  
+    # Set the compile function and arguments
+    # to clear function and args, compile()
+    def compile(self, compile=None, args=None):
+        self._set_function('_compile_function', compile, '_compile_args', args)
+        
+    # Return the compile function
+    def get_compile(self):
+        return self._compile_function
+        
+    # Return the compile function arguments
+    def get_compile_args(self):
+        return self._compile_args
+        
+        
+    # POST FUNCTION AND ARGUMENTS
     # Set the post function and arguments
     def post(self, post=None, args=None):
         self._set_function('_post_function', post, '_post_args', args)
         
-    # Randomize choice order
-    def randomize(self, randomize=True):
-        self._randomize_children(self._choices.all())
+    # Return the post function
+    def get_post(self):
+        return self._post_function
+        
+    # Return the post function arguments
+    def get_post_args(self):
+        return self._post_args
     
-    # Set default answer
-    # string for free response
-    # choice id for multiple choice
-    def default(self, default):
-        if type(default) == Choice:
-            default = default.id
-        self._init_default = default
-        self._default = default
-        
-    # Reset default to initial default
-    def reset_default(self):
-        self._default = self._init_default
-        
-    # Set question data
-    def data(self, data):
+    
+    # DATA, RESPONSE, AND ERROR
+    # Set the question data
+    def data(self, data=None):
         self._data = data
         
-    # Get question data
+    # Get the question data
     def get_data(self):
         return self._data
         
-    # Get question response
+    # Get the question response
     def get_response(self):
         return self._response
         
@@ -267,37 +322,38 @@ class Question(db.Model, Base):
     def get_nonselected(self):
         return [c for c in self._choices if c._checked=='']
         
-    # Set the question error
-    def error(self, error):
-        self._error = error
+    # Set the question error message
+    def error(self, message=None):
+        self._error = message
         
-    # Clear choices
-    def clear_choices(self):
-        self._choices = []
+    # Get the question error message
+    def get_error(self):
+        return self._error
+    
         
-    # Clear error
-    def clear_error(self):
-        self._error = None
+    
+    ###########################################################################
+    # Private methods
+    ###########################################################################
         
-    # Render the question in html
-    def _render_html(self):
+    # Compile question html
+    def _compile_html(self):
         if self._qtype == 'embedded':
             return ''
         elif self._qtype == 'text':
-            return render_text(self)
+            return compile_text(self)
         elif self._qtype == 'free':
-            return render_free(self)
+            return compile_free(self)
         elif self._qtype == 'single choice':
-            return render_single_choice(self)
-        elif self._qtype == 'dropdown':
-            return render_dropdown(self)
+            return compile_single_choice(self)
+        raise ValueError('Invalid Question Type')
         
     # Record the participant's response
-    # collects response and updates default
+    # collect response and update default
     def _record_response(self, response):
         if self._qtype == 'free':
             self._default = response
-        elif self._qtype == 'single choice':
+        else:
             [c._set_checked(response==str(c.id)) for c in self._choices]
             checked = self.get_selected()
             if checked:
@@ -314,18 +370,26 @@ class Question(db.Model, Base):
                 return False
         return True
         
+    # Set the variable order
+    def _set_vorder(self, i):
+        self._vorder = i
+        
     # Output the data (both question data and order data)
+    # data consists of:
+    # main data (usually referred to simply as 'data')
+    # page (or branch) order: order in which question appeared its page
+    # variable order: order in which question appeared
+    #   relative to other questions belonging to the same variable
+    # choice order for each choice
     def _output_data(self):
         if self._part is None or self._var is None:
             return {}
     
-        # data, page order, and variable order
         data = {
             self._var: self._data,
             self._var+'_porder': self._index,
             self._var+'_vorder': self._vorder}
             
-        # choice order
         for c in self._choices:
             data['_'.join([self._var,c.get_label(),'qorder'])] = c._index
             

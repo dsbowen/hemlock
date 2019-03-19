@@ -65,7 +65,7 @@ class Participant(db.Model, UserMixin, Base):
         'Question', 
         backref='_part', 
         lazy='dynamic',
-        order_by='Question.id')
+        order_by='Question._part_index')
         
     _variables = db.relationship(
         'Variable', 
@@ -161,8 +161,10 @@ class Participant(db.Model, UserMixin, Base):
     # pad variables to even length and store
     def _store_data(self, completed_indicator=False): 
         self._clear_data()
+        self._set_vorder()
+        questions = sorted(self._questions.all(), key=lambda q: q.id)
         [self._process_question(q) 
-			for q in self._questions if q._var]
+			for q in questions if q._var is not None]
         self._update_metadata(completed_indicator)
         
         [var.pad(self._num_rows) for var in self._variables]
@@ -175,6 +177,14 @@ class Participant(db.Model, UserMixin, Base):
             for v in self._variables.all() if v.name not in self._metadata]
         [v.set_num_rows(0) for v in self._variables]
         self._num_rows = 0
+        
+    # Sets the question variable order (vorder)
+    def _set_vorder(self):
+        vars = list(set([q._var for q in self._questions]))
+        vars.remove(None)
+        for var in vars:
+            qlist = self._questions.filter_by(_var=var).all()
+            [qlist[i]._set_vorder(i) for i in range(len(qlist))]
         
     # Process question data
     # get variables associated with question data

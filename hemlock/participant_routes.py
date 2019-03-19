@@ -75,9 +75,9 @@ def survey():
     part = current_user
     page = part._get_current_page()
     compiled_html = page._compile_html()
+    if page._terminal:
+        part._store_data()
     db.session.commit()
-    
-    part._print_branch_stack()
         
     return render_template('page.html', page=Markup(compiled_html))
     

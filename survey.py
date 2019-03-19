@@ -44,12 +44,14 @@ def Consent():
     return b
     
 def Free():
-    b = Branch(FreeNextArgs)
+    b = Branch(next=FreeNextArgs)
     next_args = {}
     
     p = Page(b, timer='free_response_timer', back=True)
     
-    Question(p, 'For testing purposes, please leave this blank.', 'free', 'free response')
+    Question(p, 
+        'For testing purposes, please leave this blank.', 
+        qtype='free', var='free response')
     
     q = Question(p)
     q.text('Please enter anything you like in the box')
@@ -80,14 +82,14 @@ def Free():
     
     p.randomize()
     
-    b.next(args=next_args)
+    b.next(FreeNextArgs, next_args)
     
     return b
     
-def FreeNextArgs(free_responses):
+def FreeNextArgs(free_responses): 
     free_responses = query(free_responses)
-    
-    b = Branch(SingleChoice)
+   
+    b = Branch(next=SingleChoice)
     Question(branch=b, var='embedded_data_test', data=free_responses['anything'].get_response())
     print('the branch I am interested in is ', b)
 
@@ -102,12 +104,12 @@ def FreeNextArgs(free_responses):
     return b
     
 def SingleChoice():
-    b = Branch(Condition)
+    b = Branch(next=Condition)
     
     args = {}
     
     p = Page(b, timer='single_choice_timer', back=True)
-    q = Question(p, 'To be, or not to be?', 'single choice', 'single_choice')
+    q = Question(p, 'To be, or not to be?', qtype='single choice', var='single_choice')
     Choice(q, 'To be', 1)
     Choice(q, 'Not to be', 0)
     Validator(q, require)
@@ -266,7 +268,7 @@ def Six():
       
 # create the application (survey)
 app = create_app(Config,
-    start=Start,
+    start=Consent,
     password='123',
     record_incomplete=False,
     block_duplicate_ips=False,

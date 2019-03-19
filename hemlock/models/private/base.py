@@ -17,10 +17,6 @@ class Base():
     def _set_text(self, text):
         self._text = text
         
-    # Set the all_rows indicator
-    def _set_all_rows(self, all_rows=True):
-        self._all_rows = all_rows
-        
     # Set an object's function and arguments
     # inputs:
         # func_name: name of the function (object attribute) as string

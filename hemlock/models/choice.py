@@ -36,13 +36,13 @@ class Choice(db.Model, Base):
         db.session.add(self)
         db.session.commit()
         
-        self.assign_question(question, index)
+        self.question(question, index)
         self.text(text)
         self.value(value)
         self.label(label)
 
     # Assign to question
-    def assign_question(self, question, index=None):
+    def question(self, question, index=None):
         self._assign_parent(question, '_question', index)
         
     # Remove from question

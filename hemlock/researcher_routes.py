@@ -30,7 +30,7 @@ def download():
     if not valid_password():
         return redirect(url_for('hemlock.password', requested_url='download'))
     
-    data = pd.concat([pd.DataFrame(p.get_data()) 
+    data = pd.concat([pd.DataFrame(p._get_data()) 
         for p in Participant.query.all()], sort=False)
     resp = make_response(data.to_csv(index_label='index'))
     resp.headers['Content-Disposition'] = 'attachment; filename=data.csv'
@@ -73,6 +73,6 @@ def password():
         return redirect(url_for(requested_url, password=password))
         
     p = Page()
-    Question(p, 'Password', 'free')
+    Question(p, 'Password', qtype='free')
     return render_template('page.html', page=Markup(p._compile_html()))
     
