@@ -27,7 +27,7 @@ def Dropdown():
     return b
 
 def Consent():
-    b = Branch(Free)
+    b = Branch()
     p = Page(b)
     Question(p, consent)
     return b
