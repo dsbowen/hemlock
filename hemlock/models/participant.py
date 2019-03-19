@@ -8,7 +8,7 @@ from hemlock.factory import db, login
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 from hemlock.models.question import Question
-from hemlock.models.variable import Variable
+from hemlock.models.private.variable import Variable
 from hemlock.models.private.base import Base
 from flask import request
 from flask_login import UserMixin, login_user

@@ -6,23 +6,31 @@
 
 from hemlock.factory import db
 
+
+
 '''
-Data:
-part_id: ID of participant to whom the variable belongs
-name: variable name
-data: list of variable data
-num_rows: number of rows of data (len of data list)
-all_rows: indicates that the variable has the same data for all dataset rows
+Relationships:
+    part: participant to whom the variable belongs
+    
+Columns:
+    name: variable name
+    data: list of data ordered by row
+    num_rows: number of rows this variable contributes to data table
+    all_rows: indicates that this variable contributes same data to all rows
 '''
 class Variable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
+    
     name = db.Column(db.String)
     data = db.Column(db.PickleType, default=[])
     num_rows = db.Column(db.Integer, default=0)
     all_rows = db.Column(db.Boolean, default=False)
     
-    # Add variable to database and commit upon initialization
+    
+    
+    # Initialization
     def __init__(self, part, name, all_rows, data=None):
         db.session.add(self)
         db.session.commit()
@@ -53,5 +61,6 @@ class Variable(db.Model):
             self.data = self.data + ['']*(length-self.num_rows)
         self.num_rows = length
         
+    # Set the number of rows
     def set_num_rows(self, num_rows):
         self.num_rows = num_rows

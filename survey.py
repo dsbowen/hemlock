@@ -100,8 +100,8 @@ def SingleChoice():
     
     p = Page(b, timer='single_choice_timer', back=True)
     q = Question(p, 'To be, or not to be?', qtype='single choice', var='single_choice')
-    Choice(q, 'To be', 1)
-    Choice(q, 'Not to be', 0)
+    Choice(q, text='To be', value=1)
+    Choice(q, text='Not to be', value=0)
     Validator(q, require)
     q.randomize()
     
@@ -116,7 +116,7 @@ def SingleChoice():
     Choice(q, 'Lavender')
     Choice(q, 'Orange')
     q.randomize()
-    Choice(q, 'I hate ice cream', 'na', label='na')
+    Choice(q, text='I hate ice cream', value='na', label='na')
     Validator(q, require)
     
     args['ice_cream'] = q.id

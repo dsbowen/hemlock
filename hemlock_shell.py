@@ -45,4 +45,5 @@ def make_shell_context():
     'db':db,
     
     # private models
+    'Variable':Variable,
     'Visitors':Visitors}

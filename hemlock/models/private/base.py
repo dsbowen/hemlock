@@ -7,6 +7,8 @@
 from sqlalchemy import inspect
 from random import shuffle
 
+
+
 # Base class for Hemlock models
 class Base():
     ###########################################################################
@@ -46,8 +48,7 @@ class Base():
         
         
     ###########################################################################
-    # Navigation functions common to branch and page
-    ###########################################################################    
+    # Navigation functions common to branch and page    ###########################################################################    
     
     # Indicates whether the object is eligible to grow and insert next branch
     # next function must not be None
