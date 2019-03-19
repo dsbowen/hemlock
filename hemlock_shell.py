@@ -31,7 +31,6 @@ def make_shell_context():
     'query':query,
     'even_randomize':even_randomize, 
     'random_assignment':random_assignment,
-    'restore_branch':restore_branch,
     'requre':require,
     'integer':integer,
     'in_range':in_range,

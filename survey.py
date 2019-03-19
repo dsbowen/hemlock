@@ -6,9 +6,11 @@
 
 '''
 TODO:
-archive example surveys
+switch all function calls (next, compile, post, validation) to kwargs 
+and later args as well
 
-vaidation bank
+clean tools (comp check and randomization
+
 css - larger margins
 '''
 
@@ -257,7 +259,8 @@ def Six():
     return b
       
 # create the application (survey)
-app = create_app(Config,
+app = create_app(
+    Config,
     start=Consent,
     password='123',
     record_incomplete=False,
