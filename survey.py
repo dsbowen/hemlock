@@ -7,19 +7,9 @@
 '''
 TODO:
 archive example surveys
-check timer is working
-make __init__ for sub-modules for easier importing
-add questions to participant upon creation/assignment to page/return of branch
 
-general cleaning, incl routes folder and relationships (as opposed to queries)
-for debugging, pass args to start function
-back for branch embedded dataframe
-record empty dataframe
 vaidation bank
 css - larger margins
-page needs all_rows
-also timer function
-next branch id stuff not working
 '''
 
 # import hemlock package, configuration class, and texts

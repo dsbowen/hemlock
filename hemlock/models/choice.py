@@ -1,20 +1,24 @@
 ###############################################################################
 # Choice model
 # by Dillon Bowen
-# last modified 03/17/2019
+# last modified 03/19/2019
 ###############################################################################
 
 from hemlock.factory import db
 from hemlock.models.private.base import Base
 
+
+
 '''
-Data:
-_question_id: ID of the question to which the choice belongs
-_order: order in which the choice appears in the question
-_text: choice text
-_value: encoded value of the choice
-_label: choice label, used to record order data
-_checked: indicator that this choice was checked
+Relationships:
+    question: question to which this choice belongs
+    
+Columns:
+    text: choice text
+    value: choice value (same as choice text by default)
+    label: choice label (same as choice text by default)
+    
+    checked: indicator that this choice is a default answer
 '''
 class Choice(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,14 +28,16 @@ class Choice(db.Model, Base):
     
     _text = db.Column(db.Text)
     _value = db.Column(db.PickleType)
-    _value_followstext = db.Column(db.Boolean, default=True)
     _label = db.Column(db.String(16))
-    _label_followtext = db.Column(db.Boolean, default=True)
+    
     _checked = db.Column(db.String(8))
     
-    # Add choice to database and commit on initialization
-    def __init__(self, question=None, text='', value=None, label=None,
-        index=None):
+    
+    
+    # Initialization
+    def __init__(
+            self, question=None, text='',
+            index=None, value=None, label=''):
         
         db.session.add(self)
         db.session.commit()
@@ -41,17 +47,35 @@ class Choice(db.Model, Base):
         self.value(value)
         self.label(label)
 
+
+
+    ###########################################################################
+    # Public methods
+    ###########################################################################
+    
+    # QUESTION
     # Assign to question
     def question(self, question, index=None):
         self._assign_parent(question, '_question', index)
+        
+    # Get question
+    def get_question(self):
+        return self._question
         
     # Remove from question
     def remove_question(self):
         self._remove_parent('_question')
         
+        
+    # TEXT, VALUE, AND LABEL
     # Set the choice text
-    def text(self, text):
+    # also resets value and label to new text by default
+    def text(self, text='', reset_value=True, reset_label=True):
         self._set_text(text)
+        if reset_value:
+            self.value(text)
+        if reset_label:
+            self.label(text)
         
     # Get the choice text
     def get_text(self):
@@ -63,20 +87,22 @@ class Choice(db.Model, Base):
             
     # Get the encoded value
     def get_value(self):
-        if self._value is None:
-            return self._text
         return self._value
             
     # Set the choice label
-    def label(self, label=None):
+    def label(self, label=''):
         self._label = label
         
     # Get the label
     def get_label(self):
-        if self._label is None:
-            return self._text
         return self._label
-            
+    
+    
+    
+    ###########################################################################
+    # Private methods
+    ###########################################################################
+    
     # Set the choice as checked
     def _set_checked(self, checked=True):
         self._checked = 'checked' if checked else ''
