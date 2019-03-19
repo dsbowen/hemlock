@@ -31,6 +31,7 @@ def load_user(id):
 Relationships:
     branch_stack: stack of branches to be displayed
     current_branch: head of the branch stack
+    pages: set of pages belonging to the participant
     questions: set of questions belonging to the participant
     variables: set of variables participant contributes to dataset
     
@@ -54,6 +55,11 @@ class Participant(db.Model, UserMixin, Base):
         'Branch',
         uselist=False,
         foreign_keys='Branch._part_head_id')
+        
+    _pages = db.relationship(
+        'Page',
+        backref='_part',
+        lazy='dynamic')
     
     _questions = db.relationship(
         'Question', 
@@ -88,7 +94,7 @@ class Participant(db.Model, UserMixin, Base):
         root = Branch(next=start)
         root.participant()
         self._current_branch = root
-        self._forward()
+        self._forward_recurse()
             
         db.session.commit()
         
@@ -200,48 +206,43 @@ class Participant(db.Model, UserMixin, Base):
     ###########################################################################
     # Forward navigation
     ###########################################################################
-        
-    # Advance to the next page
-    # assign new page to participant if terminal
+    
+    # Advance forward to next page
+    # assign new current branch to participant if terminal
     def _forward(self):
         current_page = self._get_current_page()
-    
-        if current_page is None:
-            return self._terminate_branch()
-            
         current_page.participant()
-
-        if current_page._next_function is not None:
-            return self._insert_branch(current_page)
-            
-        self._current_branch._forward()
-        self._continue_forward_to_page()
+        
+        if current_page._eligible_to_insert_next():
+            self._insert_branch(current_page)
+        else:
+            self._current_branch._forward()
+            self._forward_recurse()
         
         new_current_page = self._get_current_page()
         if new_current_page._terminal:
             new_current_page.participant()
-        
-    # Terminate a branch when the end of the page queue is reached
-    def _terminate_branch(self):
-        if self._current_branch._eligible_to_insert_next():
-            return self._insert_branch(self._current_branch)
-        self._decrement_head()
-        self._current_branch._forward()
-        self._continue_forward_to_page()
-
+    
     # Inserts a branch created by the origin
     # origin may be a page or branch
     def _insert_branch(self, origin):
         new_branch = origin._grow_branch()
         new_branch.participant(index=self._current_branch._index+1)
         self._increment_head()
-        self._continue_forward_to_page()
+        self._forward_recurse()
         
-    # Continue advancing forward until participant reaches the next page
-    def _continue_forward_to_page(self):
-        if self._get_current_page() is not None:
-            return
-        self._forward()
+    # Recursive forward function
+    # move through survey pages until it finds the next page
+    def _forward_recurse(self):
+        current_page = self._get_current_page()
+        
+        if current_page is None:
+            if self._current_branch._eligible_to_insert_next():
+                self._insert_branch(self._current_branch)
+            else:
+                self._decrement_head()
+                self._current_branch._forward()
+            return self._forward_recurse()
         
         
         
@@ -255,13 +256,13 @@ class Participant(db.Model, UserMixin, Base):
         current_page.remove_participant()
         
         if current_page == self._current_branch._page_queue.first():
-            return self._remove_current_branch()
+            return self._remove_branch()
             
         self._current_branch._back()
         self._back_recurse()
         
     # Remove the current branch from stack
-    def _remove_current_branch(self):
+    def _remove_branch(self):
         current_head_index = self._current_branch._index
         self._current_branch.remove_participant()
         self._decrement_head(current_head_index)
@@ -278,7 +279,7 @@ class Participant(db.Model, UserMixin, Base):
             elif self._current_branch._page_queue.all():
                 self._current_branch._back()
             else:
-                return self._remove_current_branch()
+                return self._remove_branch()
             return self._back_recurse()
             
         if current_page._next_branch not in self._branch_stack.all():

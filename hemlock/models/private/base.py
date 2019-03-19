@@ -47,6 +47,19 @@ class Base():
             return function(object)
         return function(object, args)
         
+        
+        
+    ###########################################################################
+    # Navigation functions common to branch and page
+    ###########################################################################    
+    
+    # Indicates whether the object is eligible to grow and insert next branch
+    # next function must not be None
+    # and the next branch must not already be in the participant's branch stack
+    def _eligible_to_insert_next(self):
+        return (self._next_function is not None
+            and self._next_branch not in self._part._branch_stack)
+        
     # Grow and return a new branch
     def _grow_branch(self):
         next_branch = self._call_function(

@@ -189,13 +189,6 @@ class Branch(db.Model, Base):
     def _initialize_head_pointer(self):
         self._current_page = self._page_queue.first()
         
-    # Indicates whether the branch is eligible to grow and insert next branch
-    # next function must not be None
-    # and the next branch must not already be in the participant's branch stack
-    def _eligible_to_insert_next(self):
-        return (self._next_function is not None
-            and self._next_branch not in self._part._branch_stack)
-        
     # Print page queue
     # for debugging purposes only
     def _print_page_queue(self):

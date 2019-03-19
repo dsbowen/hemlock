@@ -41,6 +41,7 @@ def submit(page):
         
 '''
 Relationships:
+    part: participant to whom this page belongs
     branch: branch to whose queue this page belongs
     next_branch: child branch which originated from this page
     questions: list of questions
@@ -58,13 +59,14 @@ Columns:
     back: indicates that page has back button
     terminal: indicates that page is terminal (last in the survey)
     compiled: indicates that the page has been compiled
-    assigned_to_participant: indicates that page has been assigned to part
     
     direction_to: direction to which this page is arrived at
     direction_from: direction from which the page navigates
 '''
 class Page(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
+    
+    _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _branch_head_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
@@ -80,7 +82,7 @@ class Page(db.Model, Base):
         'Question', 
         backref='_page', 
         lazy='dynamic',
-        index_by='Question._index',
+        order_by='Question._index',
         foreign_keys='Question._page_id')
         
     _start_time = db.Column(db.DateTime)
@@ -99,7 +101,6 @@ class Page(db.Model, Base):
     _back = db.Column(db.Boolean)
     _terminal = db.Column(db.Boolean)
     _compiled = db.Column(db.Boolean, default=False)
-    _assigned_to_participant = db.Column(db.Boolean, default=False)
     
     _direction_to = db.Column(db.String(8))
     _direction_from = db.Column(db.String(8))
@@ -128,13 +129,13 @@ class Page(db.Model, Base):
         
     # Assign to participant
     def participant(self, participant=current_user):
-        self._assigned_to_participant = True
+        self._part = participant   
         [q.participant(participant) for q in self._questions.all()]
         self._timer.participant(participant)
         
     # Remove from participant
     def remove_participant(self):
-        self._assigned_to_participant = False
+        self._part = None
         [q.remove_participant() for q in self._questions.all()]
         self._timer.remove_participant()
     
