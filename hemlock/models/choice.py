@@ -62,6 +62,10 @@ class Choice(db.Model, Base):
     def get_question(self):
         return self._question
         
+    # Get index
+    def get_index(self):
+        return self._index
+        
     # Remove from question
     def remove_question(self):
         self._remove_parent('_question')
