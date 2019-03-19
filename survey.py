@@ -6,10 +6,7 @@
 
 '''
 TODO:
-switch all function calls (next, compile, post, validation) to kwargs 
-and later args as well
-
-clean tools (comp check and randomization
+clean tools (comp check and randomization)
 
 css - larger margins
 '''
@@ -36,7 +33,7 @@ def Consent():
     return b
     
 def Free():
-    b = Branch(next=FreeNextArgs)
+    b = Branch()
     next_args = {}
     
     p = Page(b, timer='free_response_timer', back=True)
@@ -51,7 +48,7 @@ def Free():
     q.qtype('free')
     Validator(q, require)
     
-    next_args['anything'] = q.id
+    next_args['any'] = q.id
     
     q = Question(p)
     q.text('What is your favorite number?')
@@ -60,7 +57,7 @@ def Free():
     Validator(q, require)
     Validator(q, integer)
     
-    next_args['favorite_number'] = q.id
+    next_args['num'] = q.id
     
     q = Question(p)
     q.text('What is your favorite number between 1000 and 2000?')
@@ -68,9 +65,9 @@ def Free():
     q.qtype('free')
     Validator(q, require)
     Validator(q, integer)
-    Validator(q, in_range, [1000,2000])
+    Validator(q, in_range, {'min':1000,'max':2000})
     
-    next_args['favorite_number_inrange'] = q.id
+    next_args['big_num'] = q.id
     
     p.randomize()
     
@@ -78,20 +75,17 @@ def Free():
     
     return b
     
-def FreeNextArgs(free_responses): 
-    free_responses = query(free_responses)
+def FreeNextArgs(any, num, big_num):
+    any, num, big_num = [query(q).get_response() for q in [any, num, big_num]]
    
     b = Branch(next=SingleChoice)
-    Question(branch=b, var='embedded_data_test', data=free_responses['anything'].get_response())
+    Question(branch=b, var='embedded_data_test', data=any)
     print('the branch I am interested in is ', b)
 
-    p = Page(b, timer='free_next_args_timer', back=True)
+    p = Page(b, timer='free_next_args_timer', back=True, terminal=True)
     Question(p, '''
     You entered {0} in the free response textbox, your favorite number is {1}, and your favorite number between 1000 and 2000 is {2}
-    '''.format(
-        free_responses['anything'].get_response(),
-        free_responses['favorite_number'].get_response(),
-        free_responses['favorite_number_inrange'].get_response()))
+    '''.format(any, num, big_num))
         
     return b
     
