@@ -77,7 +77,8 @@ def survey():
     page = part._get_current_page()
     compiled_html = page._compile_html()
     if page._terminal:
-        part._store_data(True)
+        part._update_metadata(completed_indicator=True)
+        part._store_data()
     db.session.commit()
         
     return render_template('page.html', page=Markup(compiled_html))

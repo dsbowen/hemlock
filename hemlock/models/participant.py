@@ -169,14 +169,12 @@ class Participant(db.Model, UserMixin, Base):
     # Store participant data
     # update current data
     # pad variables to even length and store
-    def _store_data(self, update_metadata=False): 
+    def _store_data(self): 
         self._clear_data()
         self._set_vorder()
         questions = sorted(self._questions.all(), key=lambda q: q.id)
         [self._process_question(q) 
 			for q in questions if q._var is not None]
-        if update_metadata:
-            self._update_metadata(True)
         
         [var.pad(self._num_rows) for var in self._variables]
         self._data = {var.name:var.data for var in self._variables}
