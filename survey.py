@@ -277,11 +277,32 @@ def Start_test():
     instructions1 = Page()
     Question(instructions1, '''I don't know''')
     
-    instruction2 = Page()
+    instructions2 = Page()
     Question(instructions2, '''I do now''')
     
     check1 = Page()
-    q = Question(check1, '''''')
+    q = Question(check1, '''How many words were in the isntructions?''',
+        qtype='free')
+    q.post(verify)
+    q = Question(check1, '''Yes or no?''', qtype='single choice')
+    Choice(q, 'Yes', value=True)
+    Choice(q, 'No', value=False)
+    
+    check2 = Page()
+    q = Question(check2, '''Yes, no, or maybe?''', qtype='single choice')
+    Choice(q, 'Yes', value=False)
+    Choice(q, 'No', value=False)
+    q.randomize()
+    Choice(q, 'Maybe', value=True)
+    
+    return comprehension_check(
+        [instructions1.id, instructions2.id], [check1.id, check2.id],
+        next=End, max_attempts=5)
+    
+def verify(q):
+    response = q.get_response()
+    q.data(response == str(6))
+    
         
 def End():
     b = Branch()
@@ -292,10 +313,10 @@ def End():
 # create the application (survey)
 app = create_app(
     Config,
-    start=Consent,
+    start=Start_test,
     password='123',
     record_incomplete=False,
-    block_duplicate_ips=True,
+    block_duplicate_ips=False,
     block_from_csv='block.csv')
     
 # hemlock shell
