@@ -79,6 +79,8 @@ def survey():
     if page._terminal:
         part._store_data()
     db.session.commit()
+    
+    part._print_branch_stack()
         
     return render_template('page.html', page=Markup(compiled_html))
     
@@ -96,9 +98,9 @@ def post():
         part._update_metadata()
         
     if direction == 'forward':
-        part._forward()
+        part._forward(page._forward_to)
     elif direction == 'back':
-        part._back()
+        part._back(page._back_to)
         
     db.session.commit()
     return redirect(url_for('hemlock.survey'))

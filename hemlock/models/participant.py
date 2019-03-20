@@ -217,21 +217,29 @@ class Participant(db.Model, UserMixin, Base):
     # Forward navigation
     ###########################################################################
     
-    # Advance forward to next page
+    # Advance forward to specified page (forward_to)
     # assign new current branch to participant if terminal
-    def _forward(self):
+    def _forward(self, forward_to=None):
+        self._forward_one()
+        if forward_to is not None:
+            current_page = self._get_current_page()
+            while current_page.id != forward_to.id:
+                self._forward(current_page._forward_to)
+                current_page = self._get_current_page()
+                
+        new_current_page = self._get_current_page()
+        if new_current_page._terminal:
+            new_current_page.participant()
+    
+    # Advance forward one page
+    def _forward_one(self):
         current_page = self._get_current_page()
         current_page.participant()
         
         if current_page._eligible_to_insert_next():
-            self._insert_branch(current_page)
-        else:
-            self._current_branch._forward()
-            self._forward_recurse()
-        
-        new_current_page = self._get_current_page()
-        if new_current_page._terminal:
-            new_current_page.participant()
+            return self._insert_branch(current_page)
+        self._current_branch._forward()
+        self._forward_recurse()
     
     # Inserts a branch created by the origin
     # origin may be a page or branch
@@ -259,15 +267,23 @@ class Participant(db.Model, UserMixin, Base):
     ###########################################################################
     # Backward navigation
     ###########################################################################
+    
+    # Return back to specified page (back_to)
+    def _back(self, back_to=None):
+        self._back_one()
+        if back_to is not None:
+            current_page = self._get_current_page()
+            while current_page.id != back_to.id:
+                self._back(current_page._back_to)
+                current_page = self._get_current_page()
             
-    # Return to the previous page
-    def _back(self):
+    # Go back one page
+    def _back_one(self):
         current_page = self._get_current_page()
         current_page.remove_participant()
         
         if current_page == self._current_branch._page_queue.first():
             return self._remove_branch()
-            
         self._current_branch._back()
         self._back_recurse()
         

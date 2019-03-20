@@ -4,6 +4,11 @@
 # last modified 02/19/2019
 ###############################################################################
 
+# simplest design is usual forward/back until you hit the page id
+# pass page into forward/back
+# while current_page.id != page.id:
+#   forward/back without id parm
+# have column in page for this
 '''
 TODO
 Make this more flexible:

@@ -258,11 +258,25 @@ def Six():
     p = Page(b, back=True)
     q = Question(p, 'Goodbye star')
     return b
+    
+def Test():
+    b = Branch()
+    
+    p1 = Page(b)
+    Question(p1, 'Page1')
+    p2 = Page(b, back=True)
+    Question(p2, 'Page2')
+    p3 = Page(b, back=True)
+    Question(p3, 'Page3')
+    p4 = Page(b, back=True, back_to=p2, terminal=True)
+    Question(p4, 'Page4')
+    p1.forward_to(p4)
+    return b
       
 # create the application (survey)
 app = create_app(
     Config,
-    start=Condition,
+    start=Test,
     password='123',
     record_incomplete=False,
     block_duplicate_ips=False,

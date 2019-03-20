@@ -1,7 +1,7 @@
 ###############################################################################
 # Page model
 # by Dillon Bowen
-# last modified 03/19/2019
+# last modified 03/20/2019
 ###############################################################################
 
 from hemlock.factory import db
@@ -19,6 +19,8 @@ Relationships:
     part: participant to whom this page belongs
     branch: branch to whose queue this page belongs
     next_branch: child branch which originated from this page
+    forward_to: page to which this page navigates forward
+    back_to: page to which this page navigates back
     questions: list of questions
     start_time: time at which this page was rendered (used by timer)
     timer: question to track time spent on this page
@@ -52,6 +54,18 @@ class Page(db.Model, Base):
         back_populates='_origin_page',
         uselist=False,
         foreign_keys='Branch._origin_page_id')
+        
+    _forward_to_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+    _forward_to = db.relationship(
+        'Page',
+        uselist=False,
+        foreign_keys=[_forward_to_id])
+        
+    _back_to_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+    _back_to = db.relationship(
+        'Page',
+        uselist=False,
+        foreign_keys=[_back_to_id])
     
     _questions = db.relationship(
         'Question', 
@@ -89,26 +103,33 @@ class Page(db.Model, Base):
             compile=None, compile_args=None,
             post=None, post_args=None,
             next=None, next_args=None,
-            direction_to=None, direction_from=None):
+            direction_to=None, direction_from=None,
+            forward_to=None, back_to=None):
         
         db.session.add(self)
         db.session.commit()
         
         self.branch(branch, index)
+        
         self.back(back)
         self.terminal(terminal)
         self.timer(timer)
         self.all_rows(all_rows)
+        
         self.compile(compile, compile_args)
         self.post(post, post_args)
         self.next(next, next_args)
+        
         self.direction_to(direction_to)
         self.direction_from(direction_from)
+        
+        self.forward_to(forward_to)
+        self.back_to(back_to)
 
 
 
     ###########################################################################
-    # Public methods
+    # Assign and remove parents
     ###########################################################################
     
     # PARTICIPANT
@@ -147,6 +168,30 @@ class Page(db.Model, Base):
         self._remove_parent('_branch')
     
     
+    
+    ###########################################################################
+    # Insert and remove children
+    ###########################################################################
+    
+    # FORWARD TO AND BACK TO PAGES
+    # Set forward_to page
+    # to clear, forward_to()
+    def forward_to(self, page=None):
+        self._forward_to = page
+        
+    # Get forward to page
+    def get_forward_to(self):
+        return self._forward_to
+        
+    # Set back to page
+    def back_to(self, page=None):
+        self._back_to = page
+    
+    # Get back to page
+    def get_back_to(self):
+        return self._back_to
+    
+    
     # QUESTIONS
     # Get list of questions
     def get_questions(self):
@@ -157,17 +202,30 @@ class Page(db.Model, Base):
         self._remove_children('_questions')
     
     
+    
+    ###########################################################################
+    # Public methods for manipulating columns
+    ###########################################################################
+    
     # BACK
     # Set the back button
     # in general, True = on, False = off
     def back(self, back=True):
         self._back = back
+        
+    # Get the back button status
+    def get_back(self):
+        return self._back
     
     
     # TERMINAL
     # Set the terminal status (i.e. whether this page ends the survey)
     def terminal(self, terminal=True):
         self._terminal = terminal
+        
+    # Get the terminal status
+    def get_terminal(self):
+        return self._terminal
     
     
     # COMPILED
