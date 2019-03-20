@@ -84,10 +84,8 @@ def FreeNextArgs(any, num, big_num):
     any, num, big_num = [query(q).get_response() for q in [any, num, big_num]]
    
     b = Branch(next=SingleChoice)
-    Question(branch=b, var='embedded_data_test', data=any)
-    print('the branch I am interested in is ', b)
 
-    p = Page(b, timer='free_next_args_timer', back=True, terminal=True)
+    p = Page(b, timer='free_next_args_timer', back=True)
     Question(p, '''
     You entered {0} in the free response textbox, your favorite number is {1}, and your favorite number between 1000 and 2000 is {2}
     '''.format(any, num, big_num))
@@ -106,7 +104,7 @@ def SingleChoice():
     Validator(q, require)
     q.randomize()
     
-    args['to_be'] = q.id
+    args['to_be_id'] = q.id
     
     q = Question(p, '''
     Imagine you were suddenly transported to Provence, France, and found yourself in front of a gelateria which sold three flavors gelato. If you could only pick one flavor, what would it be?
@@ -120,25 +118,29 @@ def SingleChoice():
     Choice(q, text='I hate ice cream', value='na', label='na')
     Validator(q, require)
     
-    args['ice_cream'] = q.id
+    args['ice_cream_id'] = q.id
     
-    p = Page(b, compile=display_choices, compile_args=args, timer='sc_compile_args_timer', back=True)
+    p = Page(
+        b, compile=display_choices, compile_args=args, 
+        timer='sc_compile_args_timer', back=True)
     
     return b
     
-def display_choices(page, args):
-    args = query(args)
-    to_be = 'not to be'
-    if args['to_be'].get_data():
-        to_be = 'to be'
-    if args['ice_cream'].get_data() == 'na':
+def display_choices(page, to_be_id, ice_cream_id):
+    page.clear_questions()
+
+    to_be, ice_cream = [query(qid) for qid in [to_be_id, ice_cream_id]]
+    to_be = 'to be' if to_be.get_response() else 'not to be'
+    ice_cream = ice_cream.get_data().lower()
+        
+    if ice_cream == 'na':
         text = '''
         You chose {0}, and for some strange reason you hate ice cream :(
         '''.format(to_be)
     else:
         text = '''
         You chose {0}, and your preferred flavor of ice cream is {1}
-        '''.format(to_be, args['ice_cream'].get_response().lower())
+        '''.format(to_be, ice_cream)
     Question(page, text)
     
 def Condition():
@@ -185,16 +187,16 @@ def Back2():
     q.qtype('free')
     q.var('favorite_character')
     q.all_rows()
-    Validator(q, require, '''
+    Validator(q, require, {'message':'''
     That's okay, I have no idea who the characters are either. Just make something up. This isn't English class.
-    ''')
+    '''})
     
-    p.next(Back3, q.id)
+    p.next(next=Back3, args={'character_id':q.id})
     
     return b
     
-def Back3(character):
-    character = query(character).get_response()
+def Back3(character_id):
+    character = query(character_id).get_response()
     b = Branch()
     
     p = Page(b, back=True, terminal=True)
@@ -260,7 +262,7 @@ def Six():
 # create the application (survey)
 app = create_app(
     Config,
-    start=Consent,
+    start=Condition,
     password='123',
     record_incomplete=False,
     block_duplicate_ips=False,

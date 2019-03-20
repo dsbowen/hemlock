@@ -38,16 +38,16 @@ class Choice(db.Model, Base):
     # by default, value and label are set to text unless manually entered
     def __init__(
             self, question=None, text='',
-            index=None, value=False, label=False):
+            index=None, value=None, label=None):
         
         db.session.add(self)
         db.session.commit()
         
         self.question(question, index)
         self.text(text)
-        if value != False:
+        if value is not None:
             self.value(value)
-        if label != False:
+        if label is not None:
             self.label(label)
 
 

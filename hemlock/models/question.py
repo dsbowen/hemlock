@@ -100,8 +100,10 @@ class Question(db.Model, Base):
         db.session.commit()
         
         self.participant(part)
-        self.branch(branch, index)
-        self.page(page, index)
+        if branch is not None:
+            self.branch(branch, index)
+        if page is not None:
+            self.page(page, index)
         
         self.text(text)
         

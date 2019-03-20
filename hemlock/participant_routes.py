@@ -23,7 +23,8 @@ from datetime import datetime
 @bp.before_app_first_request
 def before_first_app_request():
     db.create_all()
-    Visitors()
+    if not Visitors.query.all():
+        Visitors()
 
 # Participant initialization
 # record ipv4 and exclude as specified

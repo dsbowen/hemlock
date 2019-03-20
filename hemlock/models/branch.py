@@ -92,7 +92,7 @@ class Branch(db.Model, Base):
     # also assign embedded data
     def participant(self, participant=current_user, index=None):
         self._assign_parent(participant, '_part', index)
-        [q.participant(participant) for q in self._embedded]
+        [q.participant(participant) for q in self._embedded.all()]
         
     # Get participant
     def get_participant(self):
@@ -102,7 +102,7 @@ class Branch(db.Model, Base):
     # also remove embedded data
     def remove_participant(self):
         self._remove_parent('_part')
-        [q.remove_participant() for q in self._embedded]
+        [q.remove_participant() for q in self._embedded.all()]
         
         
     # PAGE QUEUE
