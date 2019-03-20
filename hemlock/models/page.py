@@ -54,18 +54,6 @@ class Page(db.Model, Base):
         back_populates='_origin_page',
         uselist=False,
         foreign_keys='Branch._origin_page_id')
-        
-    _forward_to_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    _forward_to = db.relationship(
-        'Page',
-        uselist=False,
-        foreign_keys=[_forward_to_id])
-        
-    _back_to_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    _back_to = db.relationship(
-        'Page',
-        uselist=False,
-        foreign_keys=[_back_to_id])
     
     _questions = db.relationship(
         'Question', 
@@ -93,6 +81,9 @@ class Page(db.Model, Base):
     
     _direction_to = db.Column(db.String(8))
     _direction_from = db.Column(db.String(8))
+    
+    _forward_to_id = db.Column(db.Integer)
+    _back_to_id = db.Column(db.Integer)
     
     
     
@@ -177,19 +168,25 @@ class Page(db.Model, Base):
     # Set forward_to page
     # to clear, forward_to()
     def forward_to(self, page=None):
-        self._forward_to = page
+        if page is None:
+            self._forward_to_id = None
+            return
+        self._forward_to_id = page.id
         
     # Get forward to page
     def get_forward_to(self):
-        return self._forward_to
+        return Page.query.get(self._forward_to_id)
         
     # Set back to page
     def back_to(self, page=None):
-        self._back_to = page
+        if page is None:
+            self._back_to_id = None
+            return
+        self._back_to_id = page.id
     
     # Get back to page
     def get_back_to(self):
-        return self._back_to
+        return Page.query.get(self._back_to_id)
     
     
     # QUESTIONS

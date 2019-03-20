@@ -272,14 +272,30 @@ def Test():
     Question(p4, 'Page4')
     p1.forward_to(p4)
     return b
+    
+def Start_test():
+    instructions1 = Page()
+    Question(instructions1, '''I don't know''')
+    
+    instruction2 = Page()
+    Question(instructions2, '''I do now''')
+    
+    check1 = Page()
+    q = Question(check1, '''''')
+        
+def End():
+    b = Branch()
+    p = Page(b, terminal=True)
+    Question(p, 'End of survey')
+    return b
       
 # create the application (survey)
 app = create_app(
     Config,
-    start=Test,
+    start=Consent,
     password='123',
     record_incomplete=False,
-    block_duplicate_ips=False,
+    block_duplicate_ips=True,
     block_from_csv='block.csv')
     
 # hemlock shell

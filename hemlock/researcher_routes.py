@@ -1,7 +1,7 @@
 ###############################################################################
 # Researcher URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 03/13/2019
+# last modified 03/20/2019
 ###############################################################################
 
 # hemlock database, application blueprint, and models
@@ -30,12 +30,30 @@ def download():
     if not valid_password():
         return redirect(url_for('hemlock.password', requested_url='download'))
     
-    data = pd.concat([pd.DataFrame(p._get_data()) 
-        for p in Participant.query.all()], sort=False)
+    data = collect_data()
+    
     resp = make_response(data.to_csv(index_label='index'))
     resp.headers['Content-Disposition'] = 'attachment; filename=data.csv'
     resp.headers['Content-Type'] = 'text/csv'
     return resp
+    
+# Collect participant data
+# store data for incomplete surveys (if applicable)
+# otherwise remove incomplete surveys
+# return dataframe of participant data
+def collect_data():
+    participants = Participant.query.all()
+    if current_app.record_incomplete:
+        [p._store_data() for p in participants 
+            if not p.get_metadata()['completed']]
+    else:
+        participants = [p for p in participants
+            if p.get_metadata()['completed']]
+                            
+    if not participants:
+        return pd.DataFrame()
+    return pd.concat(
+        [pd.DataFrame(p._get_data()) for p in participants], sort=False)
     
 # Download list of ipv4 addresses
 # for blocking duplicates in subsequent studies

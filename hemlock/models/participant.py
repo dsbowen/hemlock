@@ -129,6 +129,16 @@ class Participant(db.Model, UserMixin, Base):
     # Metadata
     ###########################################################################
     
+    # Get metadata
+    def get_metadata(self):
+        metadata = {}
+        for name in self._metadata:
+            var = [v for v in self._variables if v.name==name][0]
+            metadata[name] = None
+            if var.data:
+                metadata[name] = var.data[0]
+        return metadata
+    
     # Record participant metadata
     def _record_metadata(self, ipv4):
         Variable(self, 'id', True, self.id)
@@ -159,13 +169,14 @@ class Participant(db.Model, UserMixin, Base):
     # Store participant data
     # update current data
     # pad variables to even length and store
-    def _store_data(self, completed_indicator=False): 
+    def _store_data(self, update_metadata=False): 
         self._clear_data()
         self._set_vorder()
         questions = sorted(self._questions.all(), key=lambda q: q.id)
         [self._process_question(q) 
 			for q in questions if q._var is not None]
-        self._update_metadata(completed_indicator)
+        if update_metadata:
+            self._update_metadata(True)
         
         [var.pad(self._num_rows) for var in self._variables]
         self._data = {var.name:var.data for var in self._variables}
@@ -181,7 +192,7 @@ class Participant(db.Model, UserMixin, Base):
     # Sets the question variable order (vorder)
     def _set_vorder(self):
         vars = list(set([q._var for q in self._questions]))
-        vars.remove(None)
+        vars = [v for v in vars if v is not None]
         for var in vars:
             qlist = self._questions.filter_by(_var=var).all()
             [qlist[i]._set_vorder(i) for i in range(len(qlist))]
@@ -219,12 +230,12 @@ class Participant(db.Model, UserMixin, Base):
     
     # Advance forward to specified page (forward_to)
     # assign new current branch to participant if terminal
-    def _forward(self, forward_to=None):
+    def _forward(self, forward_to_id=None):
         self._forward_one()
-        if forward_to is not None:
+        if forward_to_id is not None:
             current_page = self._get_current_page()
-            while current_page.id != forward_to.id:
-                self._forward(current_page._forward_to)
+            while current_page.id != forward_to_id:
+                self._forward(current_page._forward_to_id)
                 current_page = self._get_current_page()
                 
         new_current_page = self._get_current_page()
@@ -269,12 +280,12 @@ class Participant(db.Model, UserMixin, Base):
     ###########################################################################
     
     # Return back to specified page (back_to)
-    def _back(self, back_to=None):
+    def _back(self, back_to_id=None):
         self._back_one()
-        if back_to is not None:
+        if back_to_id is not None:
             current_page = self._get_current_page()
-            while current_page.id != back_to.id:
-                self._back(current_page._back_to)
+            while current_page.id != back_to_id:
+                self._back(current_page._back_to_id)
                 current_page = self._get_current_page()
             
     # Go back one page

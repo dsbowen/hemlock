@@ -77,30 +77,26 @@ def survey():
     page = part._get_current_page()
     compiled_html = page._compile_html()
     if page._terminal:
-        part._store_data()
+        part._store_data(True)
     db.session.commit()
-    
-    part._print_branch_stack()
         
     return render_template('page.html', page=Markup(compiled_html))
     
 # Validate and record responses on post request (form submission)
-# record incomplete data, or update metadata (end time and completed)
+# update metadata
 # navigate in the specified direction
+# redirect to main survey route
 def post():
     part = current_user
     page = part._get_current_page()
     direction = page._validate_on_submit()
     
-    if direction != 'invalid' and current_app.record_incomplete:
-        part._store_data()
-    else:
-        part._update_metadata()
+    part._update_metadata()
         
     if direction == 'forward':
-        part._forward(page._forward_to)
+        part._forward(page._forward_to_id)
     elif direction == 'back':
-        part._back(page._back_to)
+        part._back(page._back_to_id)
         
     db.session.commit()
     return redirect(url_for('hemlock.survey'))
