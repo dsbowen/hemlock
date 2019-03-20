@@ -301,7 +301,7 @@ def Start_test():
     
 def verify(q):
     response = q.get_response()
-    q.data(response == str(6))
+    q.data(response == '6')
     
         
 def End():
