@@ -5,7 +5,7 @@
 ###############################################################################
 
 # Require a response
-def require(q, *, message=None):
+def require(q, message=None):
     data = q.get_data()
     if data is None or data == '':
         if message is not None:
@@ -13,7 +13,7 @@ def require(q, *, message=None):
         return "Please answer this question"
         
 # Data must be an integer
-def integer(q, *, message=None):
+def integer(q, message=None):
     data = q.get_data()
     if data is None or data == '':
         return
@@ -26,7 +26,7 @@ def integer(q, *, message=None):
         return 'Please enter a number without decimals'
     
 # Data must be within a given range
-def in_range(q, *, min, max, message=None):
+def in_range(q, min, max, message=None):
     data = q.get_data()
     if data is None or data == '':
         return

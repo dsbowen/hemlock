@@ -30,9 +30,14 @@ def Consent():
     b = Branch()
     p = Page(b)
     Question(p, consent)
+    b.next(Free, {'prev_branch_id':b.id})
     return b
     
-def Free():
+def Free(prev_branch_id):
+    b = query(prev_branch_id, Branch).get_next_branch()
+    if b is not None:
+        return b
+
     b = Branch()
     next_args = {}
     
