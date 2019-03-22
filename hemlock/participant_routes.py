@@ -24,7 +24,9 @@ from datetime import datetime
 def before_first_app_request():
     db.create_all()
     if not Visitors.query.all():
-        Visitors()
+        current_app.visitors = Visitors()
+    if not DataStore.query.all():
+        current_app.data_store = DataStore()
 
 # Participant initialization
 # record ipv4 and exclude as specified
@@ -36,7 +38,7 @@ def index():
     if (ipv4 in current_app.ipv4_csv
         or (current_app.block_dupips and duplicate_ipv4)):
         return redirect(url_for('hemlock.duplicate'))
-    Visitors.query.first().append(ipv4)
+    current_app.visitors.append(ipv4)
         
     part = Participant(ipv4, current_app.start)
     return redirect(url_for('hemlock.survey'))
@@ -77,8 +79,8 @@ def survey():
     page = part._get_current_page()
     compiled_html = page._compile_html()
     if page._terminal:
-        part._update_metadata(completed_indicator=True)
-        part._store_data()
+        part._update_metadata(completed=True)
+        current_app.data_store.store(part)
     db.session.commit()
         
     return render_template('page.html', page=Markup(compiled_html))

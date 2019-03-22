@@ -8,7 +8,6 @@ from hemlock.factory import db, login
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
 from hemlock.models.question import Question
-from hemlock.models.private.variable import Variable
 from hemlock.models.private.base import Base
 from flask import request
 from flask_login import UserMixin, login_user
@@ -75,8 +74,7 @@ class Participant(db.Model, UserMixin, Base):
     _data = db.Column(db.PickleType)
     _g = db.Column(db.PickleType, default={})
     _num_rows = db.Column(db.Integer, default=0)
-    _metadata = db.Column(db.PickleType, 
-        default=['id','ipv4','start_time','end_time','completed'])
+    _metadata = db.Column(db.PickleType, default={})
     
     
     
@@ -131,94 +129,23 @@ class Participant(db.Model, UserMixin, Base):
     
     # Get metadata
     def get_metadata(self):
-        metadata = {}
-        for name in self._metadata:
-            var = [v for v in self._variables if v.name==name][0]
-            metadata[name] = None
-            if var.data:
-                metadata[name] = var.data[0]
-        return metadata
+        return self._metadata
     
     # Record participant metadata
     def _record_metadata(self, ipv4):
-        Variable(self, 'id', True, self.id)
-        Variable(self, 'ipv4', True, ipv4)
-        Variable(self, 'start_time', True, datetime.utcnow())
-        Variable(self, 'end_time', True, datetime.utcnow())
-        Variable(self, 'completed', True, 0)
+        self._metadata = deepcopy({
+            'id': self.id,
+            'ipv4': ipv4,
+            'start_time': datetime.utcnow(),
+            'end_time': datetime.utcnow(),
+            'completed': 0})
         
     # Update metadata (end time and completed indicator)
-    def _update_metadata(self, completed_indicator=False):
-        metadata = [v for v in self._variables 
-            if v.name in ['end_time','completed']]
-        metadata.sort(key=lambda x: x.name)
-        completed, endtime = metadata
-        endtime.data = [datetime.utcnow()]
-        completed.data = [int(completed_indicator)]
-        
-        
-        
-    ###########################################################################
-    # Data storage
-    ###########################################################################
-    
-    # Return a dictionary of participant data
-    def _get_data(self):
-        return self._data
-            
-    # Store participant data
-    # update current data
-    # pad variables to even length and store
-    def _store_data(self): 
-        self._clear_data()
-        self._set_vorder()
-        questions = sorted(self._questions.all(), key=lambda q: q.id)
-        [self._process_question(q) 
-			for q in questions if q._var is not None]
-        
-        [var.pad(self._num_rows) for var in self._variables]
-        self._data = {var.name:var.data for var in self._variables}
-        db.session.commit()
-        
-    # Clear participant data
-    def _clear_data(self):
-        [db.session.delete(v) 
-            for v in self._variables.all() if v.name not in self._metadata]
-        [v.set_num_rows(0) for v in self._variables]
-        self._num_rows = 0
-        
-    # Sets the question variable order (vorder)
-    def _set_vorder(self):
-        vars = list(set([q._var for q in self._questions]))
-        vars = [v for v in vars if v is not None]
-        for var in vars:
-            qlist = self._questions.filter_by(_var=var).all()
-            [qlist[i]._set_vorder(i) for i in range(len(qlist))]
-        
-    # Process question data
-    # get variables associated with question data
-    # pad variables to even length
-    # write question data to these variables
-    def _process_question(self, q):
-        qdata = q._output_data()
-        
-        vars = [self._get_var(name, q._all_rows) 
-            for name in qdata.keys()]
-        
-        max_rows = max(v.num_rows for v in vars)
-        [var.pad(max_rows) for var in vars]
-
-        vars.sort(key=lambda x: x.name)
-        [var.add_data(qdata[name]) for (name,var) in zip(sorted(qdata),vars)]
-        
-    # Get variable associated with variable name
-    # create new variable if needed
-    # all_rows: indicates the variable should contain the same data in all rows
-    def _get_var(self, name, all_rows):
-        var = [v for v in self._variables if v.name == name]
-        if not var:
-            return Variable(self, name, all_rows)
-        return var[0]
+    def _update_metadata(self, completed=False):
+        temp = deepcopy(self._metadata)
+        temp['end_time'] = datetime.utcnow()
+        temp['completed'] = completed
+        self._metadata = deepcopy(temp)
         
         
         
