@@ -17,23 +17,25 @@ class DataStore(db.Model):
         db.session.commit()
         
     # Add data from given participant
+    # initialize participant data dictionary using metadata
+        # format: {'var_name':{'all_rows': Bool, 'data': list}}
     # set the variable order
-    # collect participant data in padded dictionary
-        # {'var_name':{'all_rows': Bool, 'data': list}}
+    # add question data to participant data dictionary
     # union with global dataset
     def add(self, part):
+        part_data = {var:{'all_rows': True, 'data': [val]} 
+                        for var, val in part._metadata.items()}
+    
         self.set_vorder(part)
-        
-        part_data = deepcopy(part._metadata)
+                        
         questions = sorted(part._questions.all(), key=lambda q: q.id)
         [self.process_question(part_data, q) 
             for q in questions if q._var is not None]
         self.pad_data(part_data)
             
-        union = pd.concat(
+        self.data = deepcopy(pd.concat(
             [pd.DataFrame.from_dict(self.data),
-             pd.DataFrame.from_dict(part_data)])
-        self.data = deepcopy(union.to_dict())
+             pd.DataFrame.from_dict(part_data)]).to_dict())
         
     # Set the question variable order (vorder)
     def set_vorder(self, part):

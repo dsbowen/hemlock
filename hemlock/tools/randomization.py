@@ -83,6 +83,7 @@ class Randomizer(db.Model):
             self.permutations = list(combinations(range(length), choose_num))
         else:
             self.permutations = list(permutations(range(length), choose_num))
+        shuffle(self.permutations)
         
     # Return the current permutation (combination)
     # increment head
