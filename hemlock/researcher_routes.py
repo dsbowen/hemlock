@@ -1,20 +1,19 @@
 ###############################################################################
 # Researcher URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 03/20/2019
+# last modified 03/23/2019
 ###############################################################################
 
 # hemlock database, application blueprint, and models
 from hemlock.factory import db, bp
 from hemlock.models import Participant, Page, Question
-from hemlock.models.private import Visitors
+from hemlock.models.private import DataStore, Visitors
 from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request, flash
 from flask_login import login_required, current_user, login_user
 from werkzeug.security import check_password_hash
 from datetime import datetime
-import io
+from io import StringIO
 import csv
-import pandas as pd
 
 
 
@@ -23,37 +22,33 @@ import pandas as pd
 ###############################################################################
 
 # Download data
-# collect participant responses in dataframe
-# write to csv and output
+# data: {'var_name':[entries]}
 @bp.route('/download')
 def download():
     if not valid_password():
         return redirect(url_for('hemlock.password', requested_url='download'))
     
-    data = collect_data()
+    if current_app.record_incomplete:
+        record_incomplete()
     
-    resp = make_response(data.to_csv(index_label='index'))
+    resp = make_response(get_csv(DataStore.query.first().data))
     resp.headers['Content-Disposition'] = 'attachment; filename=data.csv'
     resp.headers['Content-Type'] = 'text/csv'
     return resp
     
-# Collect participant data
-# store data for incomplete surveys (if applicable)
-# otherwise remove incomplete surveys
-# return dataframe of participant data
-def collect_data():
-    participants = Participant.query.all()
-    if current_app.record_incomplete:
-        [p._store_data() for p in participants 
-            if not p.get_metadata()['completed']]
-    else:
-        participants = [p for p in participants
-            if p.get_metadata()['completed']]
-                            
-    if not participants:
-        return pd.DataFrame()
-    return pd.concat(
-        [pd.DataFrame(p._get_data()) for p in participants], sort=False)
+# Record incomplete responses
+def record_incomplete():
+    ds = DataStore.query.first()
+    [ds.store(p) 
+        for p in Participant.query.all() if not p._metadata['completed']]
+        
+# Create csv from dictionary in format {'key':[list of values]}
+def get_csv(data):
+    si = StringIO()
+    cw = csv.writer(si)
+    cw.writerow(data.keys())
+    cw.writerows(zip(*data.values()))
+    return si.getvalue()
     
 # Download list of ipv4 addresses
 # for blocking duplicates in subsequent studies
@@ -62,9 +57,8 @@ def ipv4():
     if not valid_password():
         return redirect(url_for('hemlock.password', requested_url='ipv4'))
         
-    ipv4 = current_app.ipv4_csv + Visitors.query.first().ipv4
-    ipv4 = pd.DataFrame.from_dict({'ipv4':ipv4}).drop_duplicates()
-    resp = make_response(ipv4.to_csv(index=False))
+    ipv4 = list(set(current_app.ipv4_csv + Visitors.query.first().ipv4))
+    resp = make_response(get_csv({'ipv4':ipv4}))
     resp.headers['Content-Disposition'] = 'attachment; filename=block.csv'
     resp.headers['Content-Type'] = 'text/csv'
     return resp

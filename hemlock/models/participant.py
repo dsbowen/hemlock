@@ -139,7 +139,7 @@ class Participant(db.Model, UserMixin, Base):
     def _update_metadata(self, completed=False):
         temp = deepcopy(self._metadata)
         temp['end_time'] = datetime.utcnow()
-        temp['completed'] = completed
+        temp['completed'] = int(completed)
         self._metadata = deepcopy(temp)
         
         

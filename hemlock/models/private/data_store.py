@@ -6,7 +6,6 @@
 
 from hemlock.factory import db
 from copy import deepcopy
-import pandas as pd
 
 class DataStore(db.Model):
     id = db.Column(db.Integer, primary_key=True)    
@@ -25,7 +24,7 @@ class DataStore(db.Model):
     # set the variable order
     # add question data to participant data dictionary
     # union with global dataset
-    def add(self, part):
+    def store(self, part):
         self.remove(part)
     
         part_data = {var:{'all_rows': True, 'data': [val]} 
@@ -40,7 +39,6 @@ class DataStore(db.Model):
             
         self.union_part_data(part.id, part_data, new_rows)
         self.part_ids = self.part_ids + [part.id]
-        db.session.commit()
              
     # Remove a participant from the dataset
     # id: id of participant to be removed
