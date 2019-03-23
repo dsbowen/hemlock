@@ -9,6 +9,7 @@ from hemlock.models.question import Question
 from itertools import permutations, combinations, product
 from operator import itemgetter
 from copy import deepcopy
+from random import shuffle
 
 
 
