@@ -7,6 +7,14 @@
 from hemlock.factory import db
 from copy import deepcopy
 
+
+
+'''
+Columns:
+    data: dictionary of data from completed responses {'var name':[values]}
+    num_rows: number of rows in dataset
+    part_ids: list of ids from participants who completed the survey
+'''
 class DataStore(db.Model):
     id = db.Column(db.Integer, primary_key=True)    
     data = db.Column(db.PickleType, default={})
@@ -116,6 +124,12 @@ class DataStore(db.Model):
         
         self.data = deepcopy(temp)
         self.num_rows += new_rows
+        
+    # Store data from participants who did not complete the survey
+    def store_incomplete(self):
+        from hemlock.models.participant import Participant
+        [self.store(p)
+            for p in Participant.query.all() if not p._metadata['completed']]
         
     # Print the data
     # for debuggin purposes only

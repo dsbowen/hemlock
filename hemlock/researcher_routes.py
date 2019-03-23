@@ -28,27 +28,11 @@ def download():
     if not valid_password():
         return redirect(url_for('hemlock.password', requested_url='download'))
     
-    if current_app.record_incomplete:
-        record_incomplete()
-    
-    resp = make_response(get_csv(DataStore.query.first().data))
-    resp.headers['Content-Disposition'] = 'attachment; filename=data.csv'
-    resp.headers['Content-Type'] = 'text/csv'
-    return resp
-    
-# Record incomplete responses
-def record_incomplete():
     ds = DataStore.query.first()
-    [ds.store(p) 
-        for p in Participant.query.all() if not p._metadata['completed']]
-        
-# Create csv from dictionary in format {'key':[list of values]}
-def get_csv(data):
-    si = StringIO()
-    cw = csv.writer(si)
-    cw.writerow(data.keys())
-    cw.writerows(zip(*data.values()))
-    return si.getvalue()
+    if current_app.record_incomplete:
+        ds.store_incomplete()
+    
+    return get_response(data=ds.data, filename='data')
     
 # Download list of ipv4 addresses
 # for blocking duplicates in subsequent studies
@@ -58,8 +42,18 @@ def ipv4():
         return redirect(url_for('hemlock.password', requested_url='ipv4'))
         
     ipv4 = list(set(current_app.ipv4_csv + Visitors.query.first().ipv4))
-    resp = make_response(get_csv({'ipv4':ipv4}))
-    resp.headers['Content-Disposition'] = 'attachment; filename=block.csv'
+    return get_response(data={'ipv4': ipv4}, filename='block')
+    
+# Create response csv from data dictionary in format {'key':[values]}
+def get_response(data, filename):
+    si = StringIO()
+    cw = csv.writer(si)
+    cw.writerow(data.keys())
+    cw.writerows(zip(*data.values()))
+    
+    resp = make_response(si.getvalue())
+    disposition = 'attachment; filename={}.csv'.format(filename)
+    resp.headers['Content-Disposition'] = disposition
     resp.headers['Content-Type'] = 'text/csv'
     return resp
     
