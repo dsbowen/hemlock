@@ -65,11 +65,6 @@ class Participant(db.Model, UserMixin, Base):
         backref='_part', 
         lazy='dynamic',
         order_by='Question._part_index')
-        
-    _variables = db.relationship(
-        'Variable', 
-        backref='part', 
-        lazy='dynamic')
     
     _data = db.Column(db.PickleType)
     _g = db.Column(db.PickleType, default={})

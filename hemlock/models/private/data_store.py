@@ -11,8 +11,8 @@ import pandas as pd
 class DataStore(db.Model):
     id = db.Column(db.Integer, primary_key=True)    
     data = db.Column(db.PickleType, default={})
-    part_ids = db.Column(db.PickleType, default={})
     num_rows = db.Column(db.Integer, default=0)
+    part_ids = db.Column(db.PickleType, default=[])
     
     def __init__(self):
         db.session.add(self)
@@ -26,8 +26,7 @@ class DataStore(db.Model):
     # add question data to participant data dictionary
     # union with global dataset
     def add(self, part):
-        if part.id in self.part_ids:
-            self.remove(*self.part_ids[part.id])
+        self.remove(part)
     
         part_data = {var:{'all_rows': True, 'data': [val]} 
                         for var, val in part._metadata.items()}
@@ -40,14 +39,23 @@ class DataStore(db.Model):
         new_rows = self.pad_data(part_data)
             
         self.union_part_data(part.id, part_data, new_rows)
+        self.part_ids = self.part_ids + [part.id]
+        db.session.commit()
              
     # Remove a participant from the dataset
-    # start and end are the starting and ending indices of participant data
-    def remove(self, start, end):
+    # id: id of participant to be removed
+    def remove(self, part):
+        if part.id not in self.part_ids:
+            return
+            
+        start = self.data['id'].index(part.id)
+        end = self.data['id'][::-1].index(part.id)
         temp = deepcopy(self.data)
         for v in temp.keys():
             temp[v] = temp[v][:start] + temp[v][end:]
+            
         self.data = deepcopy(temp)
+        self.part_ids = [id for id in self.part_ids if id!=part.id]
         
     # Set the question variable order (vorder)
     def set_vorder(self, part):
@@ -67,7 +75,7 @@ class DataStore(db.Model):
             if v not in part_data:
                 part_data[v] = {'all_rows': q._all_rows, 'data': []}
         self.pad_data(part_data, vars)
-        [part_data[v]['data'].extend(qdata[v]) for v in vars]
+        [part_data[v]['data'].extend([qdata[v]]) for v in vars]
         
     # Pad participant dataset
     # arguments:
@@ -84,7 +92,7 @@ class DataStore(db.Model):
         # var: {'all_rows': Bool, 'data': list}
     def pad_var(self, var, length):
         if var['all_rows'] and var['data']:
-            var['data'] = var['data'][-1]*length
+            var['data'] = [var['data'][-1]] * length
             return
         var['data'] += ['']*(length-len(var['data']))
         
@@ -98,16 +106,21 @@ class DataStore(db.Model):
     def union_part_data(self, id, part_data, new_rows):
         temp = deepcopy(self.data)
         
-        part_data_vars = [v for v in part_data.keys() if v not in self.data]
+        part_data_vars = [v for v in part_data.keys() if v not in temp]
         for v in part_data_vars:
             temp[v] = ['']*self.num_rows
             
-        intersect_vars = [v for v in part_data.keys() if v in self.data]
+        intersect_vars = [v for v in part_data.keys() if v in temp]
         [temp[v].extend(part_data[v]['data']) for v in intersect_vars]
         
-        data_vars = [v for v in self.data.keys() if v not in part_data]
+        data_vars = [v for v in temp.keys() if v not in part_data]
         [temp[v].extend(['']*new_rows) for v in data_vars]
         
         self.data = deepcopy(temp)
-        self.part_ids[id] = (self.num_rows, self.num_rows + new_rows)
         self.num_rows += new_rows
+        
+    # Print the data
+    # for debuggin purposes only
+    def print_data(self):
+        for v in self.data.keys():
+            print(v, self.data[v])
