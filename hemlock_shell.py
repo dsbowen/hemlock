@@ -44,4 +44,5 @@ def make_shell_context():
     'db':db,
     
     # private models
+    'DataStore':DataStore,
     'Visitors':Visitors}

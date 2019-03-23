@@ -5,4 +5,4 @@
 ###############################################################################
 
 from hemlock.models.private.visitors import Visitors
-from hemlock.models.private.variable import Variable
+from hemlock.models.private.data_store import DataStore
