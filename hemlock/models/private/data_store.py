@@ -55,10 +55,11 @@ class DataStore(db.Model):
             return
             
         start = self.data['id'].index(part.id)
-        end = self.data['id'][::-1].index(part.id)
+        end = max(i for i, val in enumerate(self.data['id']) if val==part.id)
+        print(start, end)
         temp = deepcopy(self.data)
         for v in temp.keys():
-            temp[v] = temp[v][:start] + temp[v][end:]
+            temp[v] = temp[v][:start] + temp[v][end+1:]
             
         self.data = deepcopy(temp)
         self.part_ids = [id for id in self.part_ids if id!=part.id]
