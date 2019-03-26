@@ -49,14 +49,12 @@ class DataStore(db.Model):
         self.part_ids = self.part_ids + [part.id]
              
     # Remove a participant from the dataset
-    # id: id of participant to be removed
     def remove(self, part):
         if part.id not in self.part_ids:
             return
             
         start = self.data['id'].index(part.id)
         end = max(i for i, val in enumerate(self.data['id']) if val==part.id)
-        print(start, end)
         temp = deepcopy(self.data)
         for v in temp.keys():
             temp[v] = temp[v][:start] + temp[v][end+1:]
