@@ -28,7 +28,7 @@ class Choice(db.Model, Base):
     
     _text = db.Column(db.Text)
     _value = db.Column(db.PickleType)
-    _label = db.Column(db.String(16))
+    _label = db.Column(db.Text)
     
     _checked = db.Column(db.String(8))
     
