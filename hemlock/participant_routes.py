@@ -1,7 +1,7 @@
 ###############################################################################
 # Participant URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 03/20/2019
+# last modified 03/28/2019
 ###############################################################################
 
 # hemlock database, application blueprint, and models
@@ -32,6 +32,7 @@ def before_first_app_request():
 # record ipv4 and exclude as specified
 # register new participant and begin survey
 @bp.route('/')
+@bp.route('/index')
 def index():
     ipv4 = get_ipv4()
     duplicate_ipv4 = ipv4 in Visitors.query.first().ipv4
@@ -70,8 +71,10 @@ def duplicate():
     # GET: render current page
     # POST: collect and validate responses, advance to next page
 @bp.route('/survey', methods=['GET','POST'])
-@login_required
 def survey():
+    if current_user is None:
+        return redirect(url_for('hemlock.index'))
+
     if request.method == 'POST':
         return post()
         
