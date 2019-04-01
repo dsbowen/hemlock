@@ -32,6 +32,8 @@ from texts import *
 
 def Start():
     b = Branch(End)
+    p = Page(b)
+    q = Question(p, 'Hello world')
     return b
 
 def End():
