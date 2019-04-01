@@ -35,6 +35,11 @@ def before_first_app_request():
 @bp.route('/index')
 def index():
     print('index')
+    return redirect(url_for('hemlock.login'))
+    
+@bp.route('/login')
+def login():
+    print('login')
     ipv4 = get_ipv4()
     duplicate_ipv4 = ipv4 in Visitors.query.first().ipv4
     if (ipv4 in current_app.ipv4_csv
@@ -77,7 +82,7 @@ def survey():
     print('survey')
     print('num participants', len(Participant.query.all()))
     if not current_user.is_authenticated:
-        return redirect(url_for('hemlock.index'))
+        return redirect(url_for('hemlock.login'))
 
     if request.method == 'POST':
         return post()

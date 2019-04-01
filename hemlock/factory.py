@@ -15,7 +15,7 @@ import pandas as pd
 bp = Blueprint('hemlock', __name__)
 db = SQLAlchemy()
 login = LoginManager()
-login.login_view = 'hemlock.index'
+login.login_view = 'hemlock.login'
 bootstrap = Bootstrap()
 
 '''
