@@ -71,6 +71,7 @@ def duplicate():
     # GET: render current page
     # POST: collect and validate responses, advance to next page
 @bp.route('/survey', methods=['GET','POST'])
+@login_required
 def survey():
     if not current_user.is_authenticated:
         return redirect(url_for('hemlock.index'))
