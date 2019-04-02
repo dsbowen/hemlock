@@ -2,7 +2,6 @@ flask
 flask-sqlalchemy
 flask-login
 flask-bootstrap
-flask-wtf
 gunicorn
 psycopg2
 pandas

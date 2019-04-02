@@ -8,7 +8,6 @@ from flask import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
-from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import generate_password_hash
 import pandas as pd
 
@@ -18,7 +17,6 @@ db = SQLAlchemy()
 login = LoginManager()
 login.login_view = 'hemlock.index'
 bootstrap = Bootstrap()
-csrf = CSRFProtect()
 
 '''
 Application factory
@@ -56,7 +54,6 @@ def create_app(
     db.init_app(app)
     login.init_app(app)
     bootstrap.init_app(app)
-    csrf.init_app(app)
     
     # register the application blueprint
     app.register_blueprint(bp)

@@ -9,7 +9,7 @@ from hemlock.factory import db, bp
 from hemlock.models import Participant, Page, Question
 from hemlock.models.private import DataStore, Visitors
 from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request
-from flask_login import login_required, current_user, login_user
+from flask_login import login_required, current_user, login_user, logout_user
 from datetime import datetime
 
 
@@ -35,6 +35,9 @@ def before_first_app_request():
 @bp.route('/index')
 def index():
     print('index')
+    if current_user.is_authenticated:
+        return redirect(url_for('hemlock.restart'))
+        
     ipv4 = get_ipv4()
     duplicate_ipv4 = ipv4 in Visitors.query.first().ipv4
     if (ipv4 in current_app.ipv4_csv
@@ -44,6 +47,21 @@ def index():
         
     part = Participant(ipv4, current_app.start)
     return redirect(url_for('hemlock.survey'))
+    
+# Ask participant if they wish to restart the survey
+@bp.route('/restart', methods=['GET','POST'])
+def restart():
+    print('restart')
+    if request.method == 'POST':
+        if request.form.get('direction') == 'back':
+            return redirect(url_for('hemlock.survey'))
+        logout_user()
+        return redirect(url_for('hemlock.index'))
+        
+    p = Page(back=True)
+    q = Question(p, '''
+    <p>RESTART</p>''')
+    return render_template('page.html', page=Markup(p._compile_html()))
     
 # Get user ipv4
 def get_ipv4():
