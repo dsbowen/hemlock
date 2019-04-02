@@ -34,8 +34,9 @@ def before_first_app_request():
 @bp.route('/')
 @bp.route('/index')
 def index():
-    print('index')
     if current_user.is_authenticated:
+        if current_app.block_dupips:
+            return redirect(url_for('hemlock.survey'))
         return redirect(url_for('hemlock.restart'))
         
     ipv4 = get_ipv4()
@@ -51,7 +52,6 @@ def index():
 # Ask participant if they wish to restart the survey
 @bp.route('/restart', methods=['GET','POST'])
 def restart():
-    print('restart')
     if request.method == 'POST':
         if request.form.get('direction') == 'back':
             return redirect(url_for('hemlock.survey'))
@@ -60,7 +60,8 @@ def restart():
         
     p = Page(back=True)
     q = Question(p, '''
-    <p>RESTART</p>''')
+    <p>Click << to return to your in progress survey. Click >> to restart the survey.</p>
+    <p>If you choose to restart the survey, your responses will not be saved.</p>''')
     return render_template('page.html', page=Markup(p._compile_html()))
     
 # Get user ipv4
@@ -92,11 +93,6 @@ def duplicate():
 @bp.route('/survey', methods=['GET','POST'])
 @login_required
 def survey():
-    print('survey')
-    print('num participants', len(Participant.query.all()))
-    if not current_user.is_authenticated:
-        return redirect(url_for('hemlock.login'))
-
     if request.method == 'POST':
         return post()
         
