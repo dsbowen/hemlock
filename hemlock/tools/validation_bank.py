@@ -281,7 +281,7 @@ def _decimals_interval_error_message(interval, message):
         Your answer should contain exactly {0} decimals
         '''.format(min)
     return '''
-        Your answer should contain between {0} and {1} (inclusive) decimals
+        Your answer should contain between {0} and {1} decimals (inclusive)
         '''.format(min, max)
         
 # Return error message if number of decimals exceeds the maximum
