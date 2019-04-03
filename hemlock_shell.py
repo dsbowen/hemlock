@@ -35,6 +35,7 @@ def make_shell_context():
     'integer':integer,
     'in_range':in_range,
     'isin':isin,
+    'decimals':decimals,
     
     # additional tools
     'pd':pd, 

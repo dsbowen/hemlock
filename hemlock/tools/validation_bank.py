@@ -4,6 +4,8 @@
 # last modified 04/03/2019
 ###############################################################################
 
+import re
+
 # Require a response
 def require(q, message=None):
     data = q.get_data()
@@ -12,7 +14,7 @@ def require(q, message=None):
             return message
         return "Please answer this question"
         
-# Data must be an integer
+# Data should be an integer
 def integer(q, message=None):
     data = q.get_data()
     if data is None or data == '':
@@ -32,79 +34,78 @@ def integer(q, message=None):
 # check that data is in a given set or interval
 ###############################################################################
         
-# Data must be in a specified set or interval
+# Data should be in a specified set or interval
 # arguments:
     # set: iterable
     # interval: 4-tuple interval notation e.g. ('(', '-infty', 0, ']')
     # '-infty' and 'infty' represent (negative) infinity
     # message: error message, string
 # return if question does not have data
-# check that set or interval is specified but not both
+# check that set xor interval is specified
 # check if data is in the given set or interval
 def isin(q, set=None, interval=None, message=None):
     data = q.get_data()
     if data is None or data == '':
         return
 
-    if set is None and interval is None:
-        raise ValueError(
-            'isin requires either a set or an interval')
+    _check_set_xor_interval(set, interval, func_name='isin')
+    
+    if set is not None and not _isin_set(data, set):
+        return _isin_set_error_message(set, message)
+    if interval is not None and not _isin_interval(data, interval):
+        return _isin_interval_error_message(interval, message)
+    
+# Check that set and interval are not both specified
+def _check_set_xor_interval(set, interval, func_name):
     if set is not None and interval is not None:
         raise ValueError(
-            'isin does not accept both a set and an interval')
-    
-    if set is not None:
-        return _isin_set(data, set, message)
-    return _isin_interval(data, interval, message)
+            '{0} does not accept both a set and an interval'.format(name))
     
 # Check if data is in a given set
 # check that the set is iterable
 # search for a match to the data in set
-# return error message if no match is found
-def _isin_set(data, set, message):
+# return bool indicating that match was found
+def _isin_set(data, set):
     _check_valid_set(set)
 
     for item in set:
         try:
             temp_data = type(item)(data)
             if temp_data == item:
-                return
+                return True
         except:
             pass
             
-    if message is not None:
-        return message
-    return ('Your answer should be one of the following: '
-        +', '.join(str(i) for i in set))
-        
+    return False
+    
 # Check for a valid set (i.e. iterable)
 # if not, raise error
 def _check_valid_set(set):
     try:
         iter(set)
     except:
-        raise TypeError('set must be iterable')
-        
-# Check if data is in a given interval
-# check that the interval is valid and parse
-# check if data is in interval
-# if not, return error message
-def _isin_interval(data, interval, message):
-    _check_valid_interval(interval)
-    min, max, min_strict, max_strict = _parse_interval(interval)
+        raise TypeError('set should be iterable')
     
-    if min == '-infty' and max == 'infty':
-        return
-    if min == '-infty':
-        return _max(data, max, max_strict, message)
-    if max == 'infty':
-        return _min(data, min, min_strict, message)
-    if not any((_max(data, max, max_strict), _min(data, min, min_strict))):
-        return
-        
+# Return error message if data is not in set
+def _isin_set_error_message(set, message):
     if message is not None:
         return message
-    return _interval_error_message(min, max, min_strict, max_strict)
+    return ('Your answer should be one of the following: '
+        +', '.join(str(i) for i in set))
+        
+# Check if data is in a given interval
+# check if interval is valid (i.e. 4-tuple in interval notation)
+# parse interval
+# return bool indicating that data is in interval
+def _isin_interval(data, interval): 
+    _check_valid_interval(interval)
+    min, max, min_strict, max_strict = _parse_interval(interval)
+  
+    return (
+        (min == '-infty' and max == 'infty')
+        or (min == '-infty' and _max(data, max, max_strict))
+        or (max == 'infty' and _min(data, min, min_strict))
+        or (_min(data, min, min_strict) and (_max(data, max, max_strict))))
     
 # Check that the interval is valid
 # i.e. that it is a 4-tuple following interval notation
@@ -113,7 +114,7 @@ def _check_valid_interval(interval):
         and interval[0] in ('(','[') and interval[3] in (')',']')):
         return
     raise ValueError('''
-        Interval is a 4-tuple following set notation 
+        Interval should be a 4-tuple following set notation 
         e.g. ('(', '-infty', 0, ']')''')
         
 # Parse an interval (4-tuple in interval notation)
@@ -121,40 +122,46 @@ def _check_valid_interval(interval):
 def _parse_interval(interval):
     return (interval[1], interval[2], interval[0]=='(', interval[3]==')')
     
-# Check that data is less than max
-def _max(data, max, strict, message=None):
+# Check that data is less than (or equal to) max
+def _max(data, max, strict):
     try:
         temp_data = type(max)(data)
     except:
         raise TypeError('data cannot be converted to type(max)')
 
-    if temp_data < max or (not strict and data == max):
-        return
-        
-    if message is not None:
-        return message
-    if strict:
-        return 'Your answer should be less than {0}'.format(max)
-    return 'Your answer should be at most {0}'.format(max)
+    return temp_data < max or (not strict and data == max)
     
-# Check that data is greater than min
+# Check that data is greater than (or equal to) min
 def _min(data, min, strict, message=None):
     try:
         temp_data = type(min)(data)
     except:
         raise TypeError('data cannot be converted to type(min)')
         
-    if temp_data > min or (not strict and data == min):
-        return
-        
-    if message is not None:
-        return message
-    if strict:
-        return 'Your answer should be more than {0}'.format(min)
-    return 'Your answer should be at least {0}'.format(min)
+    return temp_data > min or (not strict and data == min)
 
 # Return error message for data not in interval error
-def _interval_error_message(min, max, min_strict, max_strict):
+# cases:
+    # upper bound only
+    # lower bound only
+    # both upper and lower bound
+        # open interval
+        # left open, right closed (x,y]
+        # left closed, right open [x,y)
+        # closed interval
+            # interval includes 1 element (i.e. min==max)
+            # interval includes infite elements
+def _isin_interval_error_message(interval, message):
+    if message is not None:
+        return message
+
+    min, max, min_strict, max_strict = _parse_interval(interval)
+    
+    if min == '-infty':
+        return _max_error_message(max, max_strict)
+    if max == 'infty':
+        return _min_error_message(min, min_strict)
+
     if min_strict and max_strict:
         return '''
         Your answer should be between {0} and {1}
@@ -167,11 +174,127 @@ def _interval_error_message(min, max, min_strict, max_strict):
         return '''
         Your answer should be at least {0} and less than {1}
         '''.format(min, max)
+    if min == max:
+        return '''
+        Your answer should be exactly {0}
+        '''.format(min)
     return '''
         Your answer should be between {0} and {1} (inclusive)
         '''.format(min, max)
+        
+# Return error message if data is greater than (or equal to) the maximum
+def _max_error_message(max, strict):
+    if strict:
+        return 'Your answer should be less than {0}'.format(max)
+    return 'Your answer should be at most {0}'.format(max)
+
+# Return error message if data is less than (or equal to) the minimum
+def _min_error_message(min, strict):
+    if strict:
+        return 'Your answer should be more than {0}'.format(min)
+    return 'Your answer should be at least {0}'.format(min)
+
+
+###############################################################################
+# decimals validation function
+# check that number of decimals is in a given set or interval
+###############################################################################
+
+# Number of decimals should be within a set or specified interval
+# check that the data is in numeric format
+# check that interval is a 4-tuple using interval notation
+# compute number of decimals
+# check if number of decimals is in set or interval
+def decimals(q, set=None, interval=None, message=None):
+    data = q.get_data()
+    if data is None or data == '':
+        return
+        
+    try:
+        float(data)
+    except:
+        return 'Please enter a number'
+        
+    _check_set_xor_interval(set, interval, func_name='decimals')
     
-# Data must be within a given range
+    split = str(data).split('.')
+    if len(split) == 1:
+        num_decimals = 0
+    else:
+        num_decimals = len(split[1])
+    
+    if set is not None and not _isin_set(num_decimals, set):
+        return _decimals_set_error_message(set, message)
+    if interval is not None and not _isin_interval(num_decimals, interval):
+        return _decimals_interval_error_message(interval, message)
+
+# Return error message if number of decimals not in set
+def _decimals_set_error_message(set, message):
+    if message is not None:
+        return message
+        
+    if len(set) == 1:
+        return 'Your answer should contain exactly {0} decimals'.format(set[0])
+    set, last = set[:-1], set[-1]
+    return ('Your answer should contain '
+        +', '.join([str(i) for i in set])
+        +' or {0} decimals'.format(last))
+        
+# Return error message if number of decimals not in interval
+# cases:
+    # upper bound only
+    # lower bound only
+    # both upper and lower bound
+        # open interval
+        # left open, right closed (x,y]
+        # left closed, right open [x,y)
+        # closed interval
+            # interval includes 1 element (i.e. min==max)
+            # interval includes infite elements
+def _decimals_interval_error_message(interval, message):
+    if message is not None:
+        return message
+
+    min, max, min_strict, max_strict = _parse_interval(interval)
+    
+    if min == '-infty':
+        return _max_decimals_error_message(max, max_strict)
+    if max == 'infty':
+        return _min_decimals_error_message(min, min_strict)
+
+    if min_strict and max_strict:
+        return '''
+        Your answer should contain between {0} and {1} decimals
+        '''.format(min, max)
+    if min_strict and not max_strict:
+        return '''
+        Your answer should contain more than {0} and at most {1} decimals
+        '''.format(min, max)
+    if not min_strict and max_strict:
+        return '''
+        Your answer should contain at least {0} and fewer than {1} decimals
+        '''.format(min, max)
+    if min == max:
+        return '''
+        Your answer should contain exactly {0} decimals
+        '''.format(min)
+    return '''
+        Your answer should contain between {0} and {1} (inclusive) decimals
+        '''.format(min, max)
+        
+# Return error message if number of decimals exceeds the maximum
+def _max_decimals_error_message(max, strict):
+    if strict:
+        return 'Your answer should contain fewer than {0} decimals'.format(max)
+    return 'Your answer should contain at most {0} decimals'.format(max)
+
+# Return error message if number of decimals deceeds the minimum
+def _min_decimals_error_message(min, strict):
+    if strict:
+        return 'Your answer should contain more than {0} decimals'.format(min)
+    return 'Your answer should contain at least {0} decimals'.format(min)
+    
+# Data should be within a given range
 def in_range(q, min, max, message=None):
     data = q.get_data()
     if data is None or data == '':
