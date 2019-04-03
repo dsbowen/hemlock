@@ -34,6 +34,7 @@ def make_shell_context():
     'requre':require,
     'integer':integer,
     'in_range':in_range,
+    'isin':isin,
     
     # additional tools
     'pd':pd, 
