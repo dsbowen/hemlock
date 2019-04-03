@@ -216,17 +216,19 @@ def decimals(q, set=None, interval=None, message=None):
         return 'Please enter a number'
         
     _check_set_xor_interval(set, interval, func_name='decimals')
-    
-    split = str(data).split('.')
-    if len(split) == 1:
-        num_decimals = 0
-    else:
-        num_decimals = len(split[1])
+    num_decimals = _get_num_decimals(data)
     
     if set is not None and not _isin_set(num_decimals, set):
         return _decimals_set_error_message(set, message)
     if interval is not None and not _isin_interval(num_decimals, interval):
         return _decimals_interval_error_message(interval, message)
+        
+# Return the number of decimals given a number (or string)
+def _get_num_decimals(data):
+    split = str(data).split('.')
+    if len(split) == 1:
+        return 0
+    return len(split[1])
 
 # Return error message if number of decimals not in set
 def _decimals_set_error_message(set, message):
