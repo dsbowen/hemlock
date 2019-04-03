@@ -129,7 +129,7 @@ def _max(data, max, strict):
     except:
         raise TypeError('data cannot be converted to type(max)')
 
-    return temp_data < max or (not strict and data == max)
+    return temp_data < max or (not strict and temp_data == max)
     
 # Check that data is greater than (or equal to) min
 def _min(data, min, strict, message=None):
@@ -138,7 +138,7 @@ def _min(data, min, strict, message=None):
     except:
         raise TypeError('data cannot be converted to type(min)')
         
-    return temp_data > min or (not strict and data == min)
+    return temp_data > min or (not strict and temp_data == min)
 
 # Return error message for data not in interval error
 # cases:
