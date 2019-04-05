@@ -89,7 +89,7 @@ class Page(db.Model, Base):
     
     # Initialize page
     def __init__(
-            self, branch=None, index=None, 
+            self, branch=None, index=None, part=None,
             back=False, terminal=False, timer=None, all_rows=False,
             compile=None, compile_args=None,
             post=None, post_args=None,
@@ -100,11 +100,12 @@ class Page(db.Model, Base):
         db.session.add(self)
         db.session.commit()
         
+        self.timer(timer)
+        self.participant(part)
         self.branch(branch, index)
         
         self.back(back)
         self.terminal(terminal)
-        self.timer(timer)
         self.all_rows(all_rows)
         
         self.compile(compile, compile_args)

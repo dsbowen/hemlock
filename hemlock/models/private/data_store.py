@@ -1,7 +1,7 @@
 ###############################################################################
 # Data Store model
 # by Dillon Bowen
-# last modified 03/23/2019
+# last modified 04/05/2019
 ###############################################################################
 
 from hemlock.factory import db
@@ -13,13 +13,15 @@ from copy import deepcopy
 Columns:
     data: dictionary of data from completed responses {'var name':[values]}
     num_rows: number of rows in dataset
-    part_ids: list of ids from participants who completed the survey
+    stored_ids: list of ids from participants stored in data store
+    completed_ids: list of ids from stored participants who completed survey
 '''
 class DataStore(db.Model):
     id = db.Column(db.Integer, primary_key=True)    
     data = db.Column(db.PickleType, default={})
     num_rows = db.Column(db.Integer, default=0)
-    part_ids = db.Column(db.PickleType, default=[])
+    stored_ids = db.Column(db.PickleType, default=[])
+    completed_ids = db.Column(db.PickleType, default=[])
     
     def __init__(self):
         db.session.add(self)
@@ -31,7 +33,7 @@ class DataStore(db.Model):
         # format: {'var_name':{'all_rows': Bool, 'data': list}}
     # set the variable order
     # add question data to participant data dictionary
-    # union with global dataset
+    # union with global dataset and store id
     def store(self, part):
         self.remove(part)
     
@@ -46,11 +48,13 @@ class DataStore(db.Model):
         new_rows = self.pad_data(part_data)
             
         self.union_part_data(part.id, part_data, new_rows)
-        self.part_ids = self.part_ids + [part.id]
+        self.stored_ids = self.stored_ids + [part.id]
+        if part._metadata['completed']:
+            self.completed_ids = self.completed_ids + [part.id]
              
     # Remove a participant from the dataset
     def remove(self, part):
-        if part.id not in self.part_ids:
+        if part.id not in self.stored_ids:
             return
             
         start = self.data['id'].index(part.id)
@@ -60,7 +64,10 @@ class DataStore(db.Model):
             temp[v] = temp[v][:start] + temp[v][end+1:]
             
         self.data = deepcopy(temp)
-        self.part_ids = [id for id in self.part_ids if id!=part.id]
+        self.num_rows -= end+1 - start
+        
+        self.stored_ids = [id for id in self.stored_ids if id!=part.id]
+        self.completed_ids = [id for id in self.completed_ids if id!=part.id]
         
     # Set the question variable order (vorder)
     def set_vorder(self, part):
@@ -124,11 +131,18 @@ class DataStore(db.Model):
         self.data = deepcopy(temp)
         self.num_rows += new_rows
         
-    # Store data from participants who did not complete the survey
-    def store_incomplete(self):
+    # Store data from remaining participants on download
+    def store_on_download(self, record_incomplete=False):
         from hemlock.models.participant import Participant
-        [self.store(p)
-            for p in Participant.query.all() if not p._metadata['completed']]
+        if record_incomplete:
+            [self.store(p) for p in Participant.query.all()
+                if p.id not in self.completed_ids 
+                or not p._metadata['completed']]
+        else:
+            [self.store(p) for p in Participant.query.all()
+                if p.id not in self.completed_ids 
+                and p._metadata['completed']]
+        db.session.commit()
         
     # Print the data
     # for debuggin purposes only
