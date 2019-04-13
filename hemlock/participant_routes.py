@@ -1,7 +1,7 @@
 ###############################################################################
 # Participant URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 04/01/2019
+# last modified 04/13/2019
 ###############################################################################
 
 # hemlock database, application blueprint, and models
@@ -10,6 +10,7 @@ from hemlock.models import Participant, Page, Question
 from hemlock.models.private import DataStore, Visitors
 from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request
 from flask_login import login_required, current_user, login_user, logout_user
+from threading import Thread
 from datetime import datetime
 
 
@@ -20,13 +21,17 @@ from datetime import datetime
 
 # Initialize database tables upon survey launch
 # create a Visitors model to track survey visitors
+# create two DataStore models
+    # DataStore 1 stores data from all participants (incomplete and complete)
+    # DataStore 2 stores data only from participants who completed the survey
 @bp.before_app_first_request
 def before_first_app_request():
     db.create_all()
+    
     if not Visitors.query.all():
         Visitors()
     if not DataStore.query.all():
-        DataStore()
+        DataStore(), DataStore()
 
 # Participant initialization
 # record ipv4 and exclude as specified
@@ -101,7 +106,7 @@ def survey():
     compiled_html = page._compile_html()
     if page._terminal:
         part._update_metadata(completed=True)
-        DataStore.query.first().store(part)
+        [store(ds_id=ds_id, part_id=part.id) for ds_id in [1,2]]
     db.session.commit()
         
     return render_template('page.html', page=Markup(compiled_html))
@@ -109,6 +114,7 @@ def survey():
 # Validate and record responses on post request (form submission)
 # update metadata
 # navigate in the specified direction
+# store data in DataStore for all participants (complete and incomplete, id=1)
 # redirect to main survey route
 def post():
     part = current_user
@@ -121,6 +127,15 @@ def post():
         part._forward(page._forward_to_id)
     elif direction == 'back':
         part._back(page._back_to_id)
+    
+    store(ds_id=1, part_id=part.id)
         
     db.session.commit()
     return redirect(url_for('hemlock.survey'))
+    
+# Store a participant's data in DataStore
+# given DataStore id and Participant id
+def store(ds_id, part_id):
+    Thread(
+        target = DataStore.query.get(ds_id).thread_store,
+        args = (current_app._get_current_object(), part_id)).start()

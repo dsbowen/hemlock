@@ -11,6 +11,34 @@ from texts import *
 from flask_login import current_user
 
 def Start():
+    b = Branch()
+    p = Page(b)
+    q = Question(p, 'Hello world')
+    p = Page(b)
+    q = Question(p, 'Hello moon')
+    p = Page(b, terminal=True)
+    q = Question(p, 'Goodbye world')
+    return b
+      
+# create the application (survey)
+app = create_app(
+    Config,
+    start=Start,
+    password='',
+    record_incomplete=False,
+    block_duplicate_ips=False,
+    block_from_csv='block.csv')
+    
+# hemlock shell
+import hemlock_shell
+'''
+# import hemlock package, configuration class, and texts
+from hemlock import *
+from config import Config
+from texts import *
+from flask_login import current_user
+
+def Start():
     raise NotImplementedError()
       
 # create the application (survey)
@@ -24,3 +52,4 @@ app = create_app(
     
 # hemlock shell
 import hemlock_shell
+'''

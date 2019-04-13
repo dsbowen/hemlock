@@ -1,7 +1,7 @@
 ###############################################################################
 # Data Store model
 # by Dillon Bowen
-# last modified 04/05/2019
+# last modified 04/13/2019
 ###############################################################################
 
 from hemlock.factory import db
@@ -27,21 +27,30 @@ class DataStore(db.Model):
         db.session.add(self)
         db.session.commit()
         
+    # Use thread to store participant data
+    def thread_store(self, app, part_id):
+        from hemlock.models.participant import Participant
+        with app.app_context():
+            self = DataStore.query.get(self.id)
+            part = Participant.query.get(part_id)
+            self.store(part)
+            db.session.commit()
+            
     # Add data from given participant
     # remove from dataset if participant was previously stored
     # initialize participant data dictionary using metadata
         # format: {'var_name':{'all_rows': Bool, 'data': list}}
     # set the variable order
     # add question data to participant data dictionary
-    # union with global dataset and store id
+    # union with global dataset and store id    
     def store(self, part):
         self.remove(part)
-    
+
         part_data = {var:{'all_rows': True, 'data': [val]} 
                         for var, val in part._metadata.items()}
-    
+
         self.set_vorder(part)
-                        
+                    
         questions = sorted(part._questions.all(), key=lambda q: q.id)
         [self.process_question(part_data, q) 
             for q in questions if q._var is not None]
@@ -56,13 +65,13 @@ class DataStore(db.Model):
     def remove(self, part):
         if part.id not in self.stored_ids:
             return
-            
+        
         start = self.data['id'].index(part.id)
         end = max(i for i, id in enumerate(self.data['id']) if id==part.id)
         temp = deepcopy(self.data)
         for v in temp.keys():
             temp[v] = temp[v][:start] + temp[v][end+1:]
-            
+        
         self.data = deepcopy(temp)
         self.num_rows -= end+1 - start
         
@@ -131,17 +140,11 @@ class DataStore(db.Model):
         self.data = deepcopy(temp)
         self.num_rows += new_rows
         
-    # Store data from remaining participants on download
-    def store_on_download(self, record_incomplete=False):
+    # Store data from completed participants not currently in datastore
+    def store_completed(self):
         from hemlock.models.participant import Participant
-        if record_incomplete:
-            [self.store(p) for p in Participant.query.all()
-                if p.id not in self.completed_ids 
-                or not p._metadata['completed']]
-        else:
-            [self.store(p) for p in Participant.query.all()
-                if p.id not in self.completed_ids 
-                and p._metadata['completed']]
+        [self.store(p) for p in Participant.query.all()
+            if p.id not in self.completed_ids and p._metadata['completed']]
         db.session.commit()
         
     # Print the data

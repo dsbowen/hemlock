@@ -1,7 +1,7 @@
 ###############################################################################
 # Researcher URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 04/05/2019
+# last modified 04/13/2019
 ###############################################################################
 
 # hemlock database, application blueprint, and models
@@ -28,8 +28,11 @@ def download():
     if not valid_password():
         return redirect(url_for('hemlock.password', requested_url='download'))
     
-    ds = DataStore.query.first()
-    ds.store_on_download(record_incomplete=current_app.record_incomplete)
+    if current_app.record_incomplete:
+        ds = DataStore.query.get(1)
+    else:
+        ds = DataStore.query.get(2)
+    ds.store_completed()
     
     return get_response(data=ds.data, filename='data')
     
