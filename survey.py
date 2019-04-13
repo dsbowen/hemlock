@@ -286,7 +286,7 @@ app = create_app(
     Config,
     start=Start,
     password='',
-    record_incomplete=True,
+    record_incomplete=False,
     block_duplicate_ips=True,
     block_from_csv='block.csv')
     
