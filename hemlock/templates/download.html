@@ -1,0 +1,22 @@
+<!--
+Download template
+by Dillon Bowen
+last modified 04/14/2019
+-->
+
+{% extends 'bootstrap/base.html' %}
+
+{% block content %}
+<p id='id' style='text-align:center;'>Password correct: Download in progress</p>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+$(document).ready(function(){
+    $.get("{{ url_for('hemlock.store_completed') }}", function(){
+        location.replace("{{url_for('hemlock._download', password=password) }}");
+        });
+    });
+</script>
+{% endblock %}

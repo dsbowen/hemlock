@@ -131,13 +131,6 @@ class DataStore(db.Model):
         self.data = deepcopy(temp)
         self.num_rows += new_rows
         
-    # Store data from completed participants not currently in datastore
-    def store_completed(self):
-        from hemlock.models.participant import Participant
-        [self.store(p) for p in Participant.query.all()
-            if p.id not in self.completed_ids and p._metadata['completed']]
-        db.session.commit()
-        
     # Print the data
     # for debuggin purposes only
     def print_data(self):
