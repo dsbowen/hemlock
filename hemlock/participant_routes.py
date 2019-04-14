@@ -106,7 +106,10 @@ def survey():
     compiled_html = page._compile_html()
     if page._terminal:
         part._update_metadata(completed=True)
-        [store(ds_id=ds_id, part_id=part.id) for ds_id in [1,2]]
+        # [store(ds_id=ds_id, part_id=part.id) for ds_id in [1,2]]
+        Thread(
+            target=store,
+            args=(current_app._get_current_object(), [1,2], part.id)).start()
     db.session.commit()
         
     return render_template('page.html', page=Markup(compiled_html))
@@ -128,14 +131,23 @@ def post():
     elif direction == 'back':
         part._back(page._back_to_id)
     
-    store(ds_id=1, part_id=part.id)
+    Thread(
+        target=store, 
+        args=(current_app._get_current_object(), [1], part.id)).start()
         
     db.session.commit()
     return redirect(url_for('hemlock.survey'))
     
 # Store a participant's data in DataStore
-# given DataStore id and Participant id
-def store(ds_id, part_id):
-    Thread(
-        target = DataStore.query.get(ds_id).thread_store,
-        args = (current_app._get_current_object(), part_id)).start()
+# ds_ids: list of DataStore ids 
+# [1] for incomplete only
+# [1,2] for incomplete and complete
+import time
+def store(app, ds_ids, part_id):
+    print('sleeping')
+    time.sleep(5)
+    print('awake')
+    with app.app_context():
+        [DataStore.query.get(ds_id).store(Participant.query.get(part_id))
+            for ds_id in ds_ids]
+        db.session.commit()

@@ -26,15 +26,6 @@ class DataStore(db.Model):
     def __init__(self):
         db.session.add(self)
         db.session.commit()
-        
-    # Use thread to store participant data
-    def thread_store(self, app, part_id):
-        from hemlock.models.participant import Participant
-        with app.app_context():
-            self = DataStore.query.get(self.id)
-            part = Participant.query.get(part_id)
-            self.store(part)
-            db.session.commit()
             
     # Add data from given participant
     # remove from dataset if participant was previously stored
