@@ -47,7 +47,7 @@ app = create_app(
     Config,
     start=Start,
     password='',
-    record_incomplete=False,
+    record_incomplete=True,
     block_duplicate_ips=False,
     block_from_csv='block.csv')
     
