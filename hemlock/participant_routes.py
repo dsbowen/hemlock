@@ -93,8 +93,11 @@ def duplicate():
        
 # Main survey route
 # alternate between GET and POST
-    # GET: render current page
-    # POST: collect and validate responses, advance to next page
+# GET: 
+    # compile current page
+    # update metadata and store if page is terminal
+    # return rendered page
+# POST: collect and validate responses, advance to next page
 @bp.route('/survey', methods=['GET','POST'])
 @login_required
 def survey():
@@ -104,14 +107,14 @@ def survey():
     part = current_user
     page = part._get_current_page()
     compiled_html = page._compile_html()
+    
     if page._terminal:
         part._update_metadata(completed=True)
-        # [store(ds_id=ds_id, part_id=part.id) for ds_id in [1,2]]
         Thread(
             target=store,
             args=(current_app._get_current_object(), [1,2], part.id)).start()
+            
     db.session.commit()
-        
     return render_template('page.html', page=Markup(compiled_html))
     
 # Validate and record responses on post request (form submission)
@@ -142,11 +145,7 @@ def post():
 # ds_ids: list of DataStore ids 
 # [1] for incomplete only
 # [1,2] for incomplete and complete
-import time
 def store(app, ds_ids, part_id):
-    print('sleeping')
-    time.sleep(5)
-    print('awake')
     with app.app_context():
         [DataStore.query.get(ds_id).store(Participant.query.get(part_id))
             for ds_id in ds_ids]
