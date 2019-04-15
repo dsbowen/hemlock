@@ -37,7 +37,7 @@ def download():
 def store_completed():
     import time
     print('asleep')
-    time.sleep(5)
+    time.sleep(40)
     print('awake')
     ds_id = 1 if current_app.record_incomplete else 2
     ds = DataStore.query.get(ds_id)
