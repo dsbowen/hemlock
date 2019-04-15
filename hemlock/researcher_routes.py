@@ -35,6 +35,10 @@ def download():
 # before the terminal page can load
 @bp.route('/store_completed')
 def store_completed():
+    import time
+    print('asleep')
+    time.sleep(5)
+    print('awake')
     ds_id = 1 if current_app.record_incomplete else 2
     ds = DataStore.query.get(ds_id)
     [ds.store(p) for p in Participant.query.all()
