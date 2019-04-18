@@ -22,5 +22,9 @@ app = create_app(
     block_duplicate_ips=False,
     block_from_csv='block.csv')
     
+# run app
+if __name__ == '__main__':
+    app.run()
+    
 # hemlock shell
 import hemlock_shell
