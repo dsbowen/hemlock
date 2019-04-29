@@ -10,7 +10,6 @@ from hemlock.models import Participant, Page, Question
 from hemlock.models.private import DataStore, Visitors
 from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request
 from flask_login import login_required, current_user, login_user, logout_user
-from threading import Thread
 from datetime import datetime
 
 
@@ -31,7 +30,7 @@ def before_first_app_request():
     if not Visitors.query.all():
         Visitors()
     if not DataStore.query.all():
-        DataStore(), DataStore()
+        DataStore()
 
 # Participant initialization
 # record ipv4 and exclude as specified
@@ -110,9 +109,7 @@ def survey():
     
     if page._terminal:
         part._update_metadata(completed=True)
-        Thread(
-            target=store,
-            args=(current_app._get_current_object(), [1,2], part.id)).start()
+        DataStore.query.first().store(part)
             
     db.session.commit()
     return render_template('page.html', page=Markup(compiled_html))
@@ -133,20 +130,6 @@ def post():
         part._forward(page._forward_to_id)
     elif direction == 'back':
         part._back(page._back_to_id)
-    
-    Thread(
-        target=store, 
-        args=(current_app._get_current_object(), [1], part.id)).start()
         
     db.session.commit()
     return redirect(url_for('hemlock.survey'))
-    
-# Store a participant's data in DataStore
-# ds_ids: list of DataStore ids 
-# [1] for incomplete only
-# [1,2] for incomplete and complete
-def store(app, ds_ids, part_id):
-    with app.app_context():
-        [DataStore.query.get(ds_id).store(Participant.query.get(part_id))
-            for ds_id in ds_ids]
-        db.session.commit()

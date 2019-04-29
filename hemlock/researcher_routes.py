@@ -35,8 +35,7 @@ def download():
 # before the terminal page can load
 @bp.route('/store_completed')
 def store_completed():
-    ds_id = 1 if current_app.record_incomplete else 2
-    ds = DataStore.query.get(ds_id)
+    ds = DataStore.query.first()
     [ds.store(p) for p in Participant.query.all()
         if p.id not in ds.completed_ids and p._metadata['completed']]
     db.session.commit()
@@ -48,8 +47,7 @@ def store_completed():
 def _download():
     if not valid_password():
         return redirect(url_for('hemlock.password', requested_url='download'))
-    ds_id = 1 if current_app.record_incomplete else 2
-    return get_response(data=DataStore.query.get(ds_id).data, filename='data')
+    return get_response(data=DataStore.query.first().data, filename='data')
 
 
 
