@@ -49,7 +49,6 @@ def _get_store_lists():
 import time
 @bp.route('/_update_data_store')
 def _update_data_store():
-    time.sleep(20)
     ds = DataStore.query.first()
     return jsonify(finished=ds.update(current_app.record_incomplete))
         
