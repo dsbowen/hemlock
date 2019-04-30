@@ -17,14 +17,27 @@ last modified 04/30/2019
 {% block scripts %}
 {{ super() }}
 <script>
-$(function(){
-    $.get("{{ url_for('hemlock.store_completed') }}", function(){
-        $.get("{{ url_for('hemlock._countdown') }}", function(){
-            $.get("{{ url_for('hemlock._countdown') }}", function(){
-                location.replace("{{url_for('hemlock._download', password=password) }}");
-                });
-            });
-        });
+function record_incomplete() {
+    $.getJSON("{{ url_for('hemlock._countdown') }}", function(resp) {
+        if (!resp.finished) {
+            record_incomplete();
+        }
     });
+}
+
+$(record_incomplete());
+<!-- $(function(){ -->
+    <!-- $.get("{{ url_for('hemlock.store_completed') }}", function(){ -->
+        <!-- $.getJSON("{{ url_for('hemlock._countdown') }}", function(resp){ -->
+            <!-- var val = resp.val; -->
+            <!-- if (val) { -->
+                <!-- alert('val is true') -->
+            <!-- } else { -->
+                <!-- alert('val is false') -->
+            <!-- } -->
+            <!-- location.replace("{{ url_for('hemlock._download', password=password) }}"); -->
+            <!-- }); -->
+        <!-- }); -->
+    <!-- }); -->
 </script>
 {% endblock %}

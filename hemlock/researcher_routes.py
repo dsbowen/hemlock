@@ -50,11 +50,13 @@ def _download():
     return get_response(data=DataStore.query.first().data, filename='data')
 
 import time
+from flask import jsonify
+from random import choice
 @bp.route('/_countdown')
 def _countdown():
     print('countdown')
-    time.sleep(20)
-    return ''
+    time.sleep(1)
+    return jsonify(finished=choice([True, False]))
 
 
 ###############################################################################
