@@ -35,7 +35,6 @@ def download():
 # before the terminal page can load
 @bp.route('/store_completed')
 def store_completed():
-    print('here')
     ds = DataStore.query.first()
     [ds.store(p) for p in Participant.query.all()
         if p.id not in ds.completed_ids and p._metadata['completed']]

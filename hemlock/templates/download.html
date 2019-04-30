@@ -20,7 +20,9 @@ last modified 04/30/2019
 $(function(){
     $.get("{{ url_for('hemlock.store_completed') }}", function(){
         $.get("{{ url_for('hemlock._countdown') }}", function(){
-            $.get("{{ url_for('hemlock._countdown') }}")
+            $.get("{{ url_for('hemlock._countdown') }}", function(){
+                location.replace("{{url_for('hemlock._download', password=password) }}");
+                });
             });
         });
     });

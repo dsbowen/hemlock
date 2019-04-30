@@ -42,7 +42,7 @@ def Start():
     q = Question(p, 'hello world')
     p = Page(b, terminal=True)
     q = Question(p, 'goodbye world')
-    return b 
+    return b
       
 # create the application (survey)
 app = create_app(
