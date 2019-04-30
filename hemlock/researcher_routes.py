@@ -46,7 +46,6 @@ def _get_store_lists():
     return ''
     
 # Update the data store
-import time
 @bp.route('/_update_data_store')
 def _update_data_store():
     ds = DataStore.query.first()
