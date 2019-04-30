@@ -1,9 +1,3 @@
-<!--
-Download template
-by Dillon Bowen
-last modified 04/30/2019
--->
-
 {% extends 'bootstrap/base.html' %}
 
 {% block content %}
@@ -19,9 +13,7 @@ last modified 04/30/2019
 <script>
 $(function(){
     $.get("{{ url_for('hemlock.store_completed') }}", function(){
-        $.get("{{ url_for('hemlock._countdown') }}", function(){
-            $.get("{{ url_for('hemlock._countdown') }}")
-            });
+        location.replace("{{url_for('hemlock._download', password=password) }}");
         });
     });
 </script>
