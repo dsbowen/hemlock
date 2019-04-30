@@ -7,6 +7,7 @@
 from hemlock.factory import db
 from copy import deepcopy
 
+STORE_BATCH_SIZE = 1
 
 
 '''
@@ -15,6 +16,11 @@ Columns:
     num_rows: number of rows in dataset
     stored_ids: list of ids from participants stored in data store
     completed_ids: list of ids from stored participants who completed survey
+    
+Relationships:
+    to_store_complete: participants who completed the survey
+        but whose data was not properly stored on completion
+    incomplete: participants who did not complete the survey
 '''
 class DataStore(db.Model):
     id = db.Column(db.Integer, primary_key=True)    
@@ -23,9 +29,51 @@ class DataStore(db.Model):
     stored_ids = db.Column(db.PickleType, default=[])
     completed_ids = db.Column(db.PickleType, default=[])
     
+    to_store_complete = db.relationship(
+        'Participant', 
+        lazy='dynamic',
+        foreign_keys='Participant.ds_completed_id')
+        
+    incomplete = db.relationship(
+        'Participant', 
+        lazy='dynamic',
+        foreign_keys='Participant.ds_incomplete_id')
+    
     def __init__(self):
         db.session.add(self)
         db.session.commit()
+        
+    # Set lists of participants to store (or remove) on download
+    def set_to_store(self, to_store_complete, incomplete):
+        self.to_store_complete = to_store_complete
+        self.incomplete = incomplete
+        db.session.commit()
+        
+    # Update the datastore with a batch of participants
+    # either in the to_store_complete list or incomplete list
+    # if to_store_complete is not empty,
+    #   store a batch of participants from this list and return
+    # if incomplete is not empty,
+    #   store a batch of participants from this list and return
+    # return value indicates update has completed
+    def update(self, record_incomplete):
+        to_store = self.to_store_complete.all()
+        if to_store:
+            [self.store(p) for p in to_store[:STORE_BATCH_SIZE]]
+            self.to_store_complete = to_store[STORE_BATCH_SIZE:]
+            db.session.commit()
+            return False
+
+        incomplete = self.incomplete.all()
+        if not incomplete:
+            return True
+        if record_incomplete:
+            [self.store(p) for p in incomplete[:STORE_BATCH_SIZE]]
+        else:
+            [self.remove(p) for p in incomplete[:STORE_BATCH_SIZE]]
+        self.incomplete = incomplete[STORE_BATCH_SIZE:]
+        db.session.commit()
+        return False
             
     # Add data from given participant
     # remove from dataset if participant was previously stored

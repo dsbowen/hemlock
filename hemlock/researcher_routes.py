@@ -8,7 +8,7 @@
 from hemlock.factory import db, bp
 from hemlock.models import Participant, Page, Question
 from hemlock.models.private import DataStore, Visitors
-from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request, flash
+from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request, flash, jsonify
 from flask_login import login_required, current_user, login_user
 from werkzeug.security import check_password_hash
 from datetime import datetime
@@ -29,34 +29,38 @@ def download():
     return render_template(
         'download.html', password=request.args.get('password'))
     
-# Store data from participants who completed the survey
-# but are not counted as completed in DataStore
-# this occurs in rare cases when participants disconnect
-# before the terminal page can load
-@bp.route('/store_completed')
-def store_completed():
+# Get lists of participants with which to update datastore
+# to_store_complete: completed participants whose data was not properly stored
+# incomplete: incomplete participants
+@bp.route('/_get_store_lists')
+def _get_store_lists():
     ds = DataStore.query.first()
-    [ds.store(p) for p in Participant.query.all()
+    participants = Participant.query.all()
+    
+    to_store_complete = [p for p in participants
         if p.id not in ds.completed_ids and p._metadata['completed']]
-    db.session.commit()
+    incomplete = [p for p in participants
+        if not p._metadata['completed']]
+    ds.set_to_store(to_store_complete, incomplete)
+
     return ''
+    
+# Update the data store
+import time
+@bp.route('/_update_data_store')
+def _update_data_store():
+    time.sleep(20)
+    ds = DataStore.query.first()
+    return jsonify(finished=ds.update(current_app.record_incomplete))
         
 # Data download
-# this view called after store_completed
+# called after update is finished
 @bp.route('/_download')
 def _download():
     if not valid_password():
         return redirect(url_for('hemlock.password', requested_url='download'))
     return get_response(data=DataStore.query.first().data, filename='data')
 
-import time
-from flask import jsonify
-from random import choice
-@bp.route('/_countdown')
-def _countdown():
-    print('countdown')
-    time.sleep(1)
-    return jsonify(finished=choice([True, False]))
 
 
 ###############################################################################

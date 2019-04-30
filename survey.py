@@ -40,6 +40,8 @@ def Start():
     b = Branch()
     p = Page(b)
     q = Question(p, 'hello world')
+    p = Page(b)
+    q = Question(p, 'hello moon')
     p = Page(b, terminal=True)
     q = Question(p, 'goodbye world')
     return b
@@ -49,7 +51,7 @@ app = create_app(
     Config,
     start=Start,
     password='',
-    record_incomplete=False,
+    record_incomplete=True,
     block_duplicate_ips=False,
     block_from_csv='block.csv')
     

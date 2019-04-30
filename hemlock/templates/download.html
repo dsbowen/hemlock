@@ -17,27 +17,25 @@ last modified 04/30/2019
 {% block scripts %}
 {{ super() }}
 <script>
-function record_incomplete() {
-    $.getJSON("{{ url_for('hemlock._countdown') }}", function(resp) {
-        if (!resp.finished) {
-            record_incomplete();
-        }
+<!-- Compile list of participants to store when updating the datastore -->
+<!-- then update datastore -->
+$(function() {
+    $.get("{{ url_for('hemlock._get_store_lists') }}", function() {
+        update_data_store();
+        });
     });
-}
 
-$(record_incomplete());
-<!-- $(function(){ -->
-    <!-- $.get("{{ url_for('hemlock.store_completed') }}", function(){ -->
-        <!-- $.getJSON("{{ url_for('hemlock._countdown') }}", function(resp){ -->
-            <!-- var val = resp.val; -->
-            <!-- if (val) { -->
-                <!-- alert('val is true') -->
-            <!-- } else { -->
-                <!-- alert('val is false') -->
-            <!-- } -->
-            <!-- location.replace("{{ url_for('hemlock._download', password=password) }}"); -->
-            <!-- }); -->
-        <!-- }); -->
-    <!-- }); -->
+<!-- Update datastore -->
+<!-- when finished, download data -->
+function update_data_store() {
+    $.getJSON("{{ url_for('hemlock._update_data_store') }}", function(resp) {
+        if (resp.finished) {
+            location.replace("{{ url_for('hemlock._download', password=password) }}");
+            }
+        else {
+            update_data_store();
+            }
+        });
+    };
 </script>
 {% endblock %}

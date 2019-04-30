@@ -42,6 +42,8 @@ Columns:
 '''
 class Participant(db.Model, UserMixin, Base):
     id = db.Column(db.Integer, primary_key=True)
+    ds_completed_id = db.Column(db.Integer, db.ForeignKey('data_store.id'))
+    ds_incomplete_id = db.Column(db.Integer, db.ForeignKey('data_store.id'))
     
     _branch_stack = db.relationship(
         'Branch',
