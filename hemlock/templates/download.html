@@ -25,8 +25,8 @@ $(function() {
         });
     });
 
-<!-- Update datastore -->
-<!-- when finished, download data -->
+<!-- Update datastore in batches -->
+<!-- download data when finished -->
 function update_data_store() {
     $.getJSON("{{ url_for('hemlock._update_data_store') }}", function(resp) {
         if (resp.finished) {

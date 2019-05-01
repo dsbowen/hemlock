@@ -65,11 +65,13 @@ class DataStore(db.Model):
     def update(self, record_incomplete):
         to_store = self.to_store_complete.all()
         if to_store:
-            return self.update_complete(to_store)
+            self.update_complete(to_store)
+            return False
             
         incomplete = self.incomplete.all()
         if incomplete:
-            return self.update_incomplete(incomplete, record_incomplete)
+            self.update_incomplete(incomplete, record_incomplete)
+            return False
             
         return True
             
@@ -78,7 +80,6 @@ class DataStore(db.Model):
         [self.store(p) for p in to_store[:STORE_BATCH_SIZE]]
         self.to_store_complete = to_store[STORE_BATCH_SIZE:]
         db.session.commit()
-        return False
 
     # Update with incomplete participants
     def update_incomplete(self, incomplete, record_incomplete):
@@ -88,7 +89,6 @@ class DataStore(db.Model):
             [self.remove(p) for p in incomplete[:STORE_BATCH_SIZE]]
         self.incomplete = incomplete[STORE_BATCH_SIZE:]
         db.session.commit()
-        return False
     
     
     
