@@ -1,7 +1,7 @@
 ###############################################################################
 # Researcher URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 04/14/2019
+# last modified 05/02/2019
 ###############################################################################
 
 # hemlock database, application blueprint, and models
@@ -48,8 +48,7 @@ def _get_store_lists():
 # Update the data store
 @bp.route('/_update_data_store')
 def _update_data_store():
-    ds = DataStore.query.first()
-    return jsonify(finished=ds.update(current_app.record_incomplete))
+    return jsonify(finished=DataStore.query.first().update())
         
 # Data download
 # called after update is finished

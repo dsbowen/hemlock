@@ -1,10 +1,11 @@
 ###############################################################################
 # Data Store model
 # by Dillon Bowen
-# last modified 04/13/2019
+# last modified 05/02/2019
 ###############################################################################
 
 from hemlock.factory import db
+from flask import current_app
 from copy import deepcopy
 
 STORE_BATCH_SIZE = 20
@@ -62,7 +63,7 @@ class DataStore(db.Model):
     # if incomplete is not empty,
     #   store a batch of participants from this list
     # return value indicates update has finished
-    def update(self, record_incomplete):
+    def update(self):
         to_store = self.to_store_complete.all()
         if to_store:
             self.update_complete(to_store)
@@ -70,7 +71,7 @@ class DataStore(db.Model):
             
         incomplete = self.incomplete.all()
         if incomplete:
-            self.update_incomplete(incomplete, record_incomplete)
+            self.update_incomplete(incomplete)
             return False
             
         return True
@@ -82,8 +83,8 @@ class DataStore(db.Model):
         db.session.commit()
 
     # Update with incomplete participants
-    def update_incomplete(self, incomplete, record_incomplete):
-        if record_incomplete:
+    def update_incomplete(self, incomplete):
+        if current_app.record_incomplete:
             [self.store(p) for p in incomplete[:STORE_BATCH_SIZE]]
         else:
             [self.remove(p) for p in incomplete[:STORE_BATCH_SIZE]]
