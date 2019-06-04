@@ -13,14 +13,26 @@ label.span sets the label with to span the div
 {% block styles %}
 {{ super() }}
 <style>
-    .center-fit{
+    .left {
         display: block;
-        max-width: 100%;
-        max-height: 100vh;
+        margin-left: 0px;
+        margin-right: auto;
+    }
+    .center {
+        display: block;
         margin-left: auto;
         margin-right: auto;
     }
-    label.span{
+    .right {
+        display: block;
+        margin-left: auto;
+        margin-right: 0px;
+    }
+    .fit {
+        max-width: 100%;
+        max-height: 100vh;
+    }
+    label.span {
         width: 100%;
     }
 </style>

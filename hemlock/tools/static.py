@@ -11,7 +11,10 @@ def static(filename):
     return url_for('static', filename=filename)
     
 # Return html for image
-def image(filename):
+# filename: name of file in static folder
+# format: list of format classes
+#   see page.html for format classes
+def image(filename, format=[], width='auto', height='auto'):
     return '''
-        <img class='center-fit' src={0} alt='{0}'
-        '''.format(static(filename))
+        <img class='{1}' src={0} width='{2}' height='{3}' alt='{0}'
+        '''.format(static(filename), ' '.join(format), width, height)

@@ -88,7 +88,7 @@ def compile_single_choice(q):
     '''.format(compile_label(q))
     choice_html = ['''
     <div class='form-check'>
-        <label><input type='radio' name='{0}' value='{1}' {2}>
+        <label class='span'><input type='radio' name='{0}' value='{1}' {2}>
         {3}
         </label>
     </div>
