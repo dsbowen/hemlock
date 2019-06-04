@@ -1,10 +1,30 @@
 <!--
 Page template
 by Dillon Bowen
-last modified 02/27/2019
+last modified 06/04/2019
 -->
 
 {% extends 'bootstrap/base.html' %}
+
+<!--
+center-fit centers an object and fits to screen
+label.span sets the label with to span the div 
+-->
+{% block styles %}
+{{ super() }}
+<style>
+    .center-fit{
+        display: block;
+        max-width: 100%;
+        max-height: 100vh;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    label.span{
+        width: 100%;
+    }
+</style>
+{% endblock %}
 
 <!--
 Credit to rybo111 for a version of this script
@@ -32,16 +52,3 @@ $('form.submit-once').submit(function(e){
     </form>
 </div>
 {% endblock %}
-
-<!-- <script> -->
-<!-- $(document).ready(function(){ -->
-    <!-- $('#id').load("{{ url_for('hemlock.password_correct') }}"); -->
-    <!-- }); -->
-<!-- </script> -->
-<!-- <script> -->
-<!-- $(document).ready(function(){ -->
-    <!-- $.get("{{ url_for('hemlock.store_completed') }}", function(){ -->
-        <!-- location.replace("{{url_for('hemlock._download', password=password) }}"); -->
-        <!-- }); -->
-    <!-- }); -->
-<!-- </script> -->

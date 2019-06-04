@@ -55,7 +55,7 @@ def compile_label(q):
             </div>
         '''.format(q._error)
     return '''
-            <label for='{0}'>
+            <label class='span' for='{0}'>
             {1}
             </label>
     '''.format(q.id, error+q._text)

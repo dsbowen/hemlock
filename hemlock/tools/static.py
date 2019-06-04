@@ -13,5 +13,5 @@ def static(filename):
 # Return html for image
 def image(filename):
     return '''
-        <img src={0} alt='{0}'
+        <img class='center-fit' src={0} alt='{0}'
         '''.format(static(filename))
