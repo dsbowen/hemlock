@@ -30,7 +30,8 @@ $(function() {
 function update_data_store() {
     $.getJSON("{{ url_for('hemlock._update_data_store') }}", function(resp) {
         if (resp.finished) {
-            location.replace("{{ url_for('hemlock._download', password=password) }}");
+            location.replace(
+                "{{ url_for('hemlock._download', password=password) }}");
             }
         else {
             update_data_store();

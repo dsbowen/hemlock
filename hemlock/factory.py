@@ -28,6 +28,7 @@ Arguments:
     record_incomplete: indicates incomplete responses should be recorded
     block_duplicates: indicates duplicate IP addresses should be blocked
     block_from_csv: csv file containing IP addresses to block
+    static_folder: folder in which statics are stored
 '''
 def create_app(
         config_class, 
@@ -35,10 +36,11 @@ def create_app(
         password='', 
         record_incomplete=False,
         block_duplicate_ips=True, 
-        block_from_csv=None):
+        block_from_csv=None,
+        static_folder='../static'):
     
     # configure application
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder=static_folder)
     app.config.from_object(config_class)
     
     # set application parameters
