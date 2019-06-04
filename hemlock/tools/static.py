@@ -16,5 +16,5 @@ def static(filename):
 #   see page.html for format classes
 def image(filename, format=[], width='auto', height='auto'):
     return '''
-        <img class='{1}' src={0} width='{2}' height='{3}' alt='{0}'
+        <img class='{1}' src={0} width='{2}' height='{3}' alt='{0}'>
         '''.format(static(filename), ' '.join(format), width, height)
