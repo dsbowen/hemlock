@@ -9,5 +9,5 @@ from hemlock.tools.comprehension_check import comprehension_check
 from hemlock.tools.global_vars import modg, g
 from hemlock.tools.query import query
 from hemlock.tools.randomization import even_randomize, random_assignment
-from hemlock.tools.static import static
+from hemlock.tools.static import *
 from hemlock.tools.validation_bank import *

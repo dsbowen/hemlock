@@ -39,9 +39,7 @@ def Start():
     b = Branch()
     p = Page(b, terminal=True)
     q = Question(p)
-    q.text('''
-        <img src={0} alt='Lena'>
-        '''.format(static('Lena.jpg')))
+    q.text(image('Lena.jpg'))
     return b
       
 # create the application (survey)
