@@ -117,7 +117,7 @@ class Participant(db.Model, UserMixin, Base):
         if type(to_get) is dict:
             return {key:self.g(val) for (key,val) in to_get.items()}
         if to_get in self._g.keys():
-            return self._g[to_get]
+            return deepcopy(self._g[to_get])
 
 
     
