@@ -1,8 +1,8 @@
-###############################################################################
+##############################################################################
 # Comprehension check
 # by Dillon Bowen
-# last modified 03/20/2019
-###############################################################################
+# last modified 07/03/2019
+##############################################################################
 
 # Notes:
 # To pass a comprehension check, either the check's post function must
@@ -85,7 +85,8 @@ def verify_answers(check, last_instructions_id, post, post_args):
 def passed(check, post, post_args):
     if post is not None:
         return check._call_function(post, post_args)
-    return all([q.get_data() for q in check._questions.all()])
+    questions = [q for q in check._questions if q._qtype != 'text']
+    return all([q.get_data() for q in questions])
     
 # Indicates participant has reached their attempt limit
 def attempt_limit_reached():
