@@ -120,9 +120,9 @@ class Page(db.Model, Base):
 
 
 
-    ###########################################################################
+    ##########################################################################
     # Assign and remove parents
-    ###########################################################################
+    ##########################################################################
     
     # PARTICIPANT
     # Assign page, its questions, and its timer to participant
@@ -317,7 +317,11 @@ class Page(db.Model, Base):
     # VALIDATION
     # Return whether page submission was valid
     def valid(self):
-        return all([q._validate() for q in self._questions])
+        return not any([q._error for q in self._questions])
+    
+    # Return whether page is blank
+    def blank(self):
+        return all([q.get_response() is None for q in self._questions])
     
     
     ##########################################################################
