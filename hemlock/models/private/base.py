@@ -1,13 +1,11 @@
 ##############################################################################
 # Base class
 # by Dillon Bowen
-# last modified 07/16/2019
+# last modified 07/17/2019
 ##############################################################################
 
 from sqlalchemy import inspect
 from random import shuffle
-
-CALL_FUNCTION_TRIES = 10
 
 
 
@@ -41,21 +39,6 @@ class Base():
         # function: the called function
         # args: additional keyword arguments (dict)
     def _call_function(self, object=None, function=None, args=None):
-        for i in range(CALL_FUNCTION_TRIES):
-            try:
-                return self._try_call_function(object, function, args)
-            except:
-                pass
-        raise AssertionError(
-            '''
-            Call function error: {0}
-            on object: {1}
-            with arguments: {2}
-            '''.format(function.__name__, object, args))
-            
-    # Try to call a function
-    # gives survey multiple tries to successfully call a function
-    def _try_call_function(self, object=None, function=None, args=None):
         if function is None:
             return
         if object is None and args is None:
