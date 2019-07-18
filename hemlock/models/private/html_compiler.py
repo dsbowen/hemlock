@@ -26,14 +26,14 @@ def submit(page):
     html = '<br></br>'
     if page._back:
         html += '''
-    <button name='direction' type='submit' class='btn btn-primary' style='float: left;' value='back'> 
+    <button id='back-button' name='direction' type='submit' class='btn btn-primary' style='float: left;' value='back'> 
     << 
     </button>
     '''
     if page._terminal:
         return html+"<br style = 'line-height:3;'></br>"
     return html + '''
-    <button name='direction' type='submit' class='btn btn-primary' style='float: right;' value='forward'>
+    <button id='forward-button' name='direction' type='submit' class='btn btn-primary' style='float: right;' value='forward'>
     >> 
     </button>
     <br style = 'line-height:3;'></br>
