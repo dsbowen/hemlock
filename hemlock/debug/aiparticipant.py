@@ -7,12 +7,14 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from random import random
+import warnings
 
 class AIParticipantBase():
     def setUp(self):
+        warnings.simplefilter('ignore', ResourceWarning)
         self.driver = webdriver.Chrome()
         
-    # Navigate through survey checking for internal server errors
+    # Test survey with AI participant
     def test(self):
         self.driver.get(self.SURVEY_URL)
         h1 = None
@@ -46,7 +48,10 @@ class AIParticipantBase():
             self.driver.find_element_by_id(direction_button).click()
             return False
         except:
-            return direction_button == 'forward-button'
+            pass
+        if direction_button == 'forward-button':
+            return True
+        return self.navigate_direction('forward-button')
 
     def tearDown(self):
         self.driver.close()
