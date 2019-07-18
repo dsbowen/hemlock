@@ -17,8 +17,13 @@ class AIParticipant(unittest.TestCase):
     def test(self):
         driver = self.driver
         driver.get(self.SURVEY_URL)
-        elem = driver.find_element_by_value('forward')
-        print(elem)
+        while True:
+            try:
+                elem = driver.find_element_by_id('forward-button')
+                print('elem', elem)
+                elem.click()
+            except:
+                return
 
     # def test_search_in_python_org(self):
         # driver = self.driver

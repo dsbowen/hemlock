@@ -40,6 +40,8 @@ def Start():
     b = Branch()
     p = Page(b)
     q = Question(p, "What's your name?", qtype='free', var='name')
+    p = Page(b)
+    q = Question(p, "What's your favorite flavor of ice cream?", qtype='free', var='ice_cream')
     p = Page(b, terminal=True)
     q = Question(p, 'Hello World')
     return b
