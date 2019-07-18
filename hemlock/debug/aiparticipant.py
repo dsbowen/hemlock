@@ -1,41 +1,52 @@
 ##############################################################################
-# AI Participant class
+# AI Participant Base class
 # by Dillon Bowen
 # last modified 07/18/2019
 ##############################################################################
 
-import unittest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from random import random
 
-class AIParticipant(unittest.TestCase):
-    SURVEY_URL = None
-
+class AIParticipantBase():
     def setUp(self):
         self.driver = webdriver.Chrome()
         
+    # Navigate through survey checking for internal server errors
     def test(self):
-        driver = self.driver
-        driver.get(self.SURVEY_URL)
-        while True:
-            h1 = driver.find_element_by_tag_name('h1').text
-            assert h1 != 'Internal Server Error'
-            forward_button = driver.find_element_by_id('forward-button')
-            if forward_button is None:
-                return
-            forward_button.click()
-            
-
-    # def test_search_in_python_org(self):
-        # driver = self.driver
-        # driver.get(self.SURVEY_URL)
-        # print('dirver title', driver.title)
-        # self.assertIn("Python", driver.title)
-        # elem = driver.find_element_by_name("q")
-        # elem.send_keys("pycon")
-        # elem.send_keys(Keys.RETURN)
-        # assert "No results found." not in driver.page_source
-
+        self.driver.get(self.SURVEY_URL)
+        h1 = None
+        completed = False
+        while not completed:
+            self.internal_server_error()
+            completed = self.navigate()
+                
+    # Assert heading is not internal server error
+    def internal_server_error(self):
+        try:
+            h1 = self.driver.find_element_by_tag_name('h1').text
+        except:
+            h1 = None
+        assert h1 != 'Internal Server Error'
+        
+    # Navigate in unspecified direction (forward, back, refresh)
+    def navigate(self):
+        if random() < self.P_REFRESH:
+            self.driver.refresh()
+            return False
+        if random() < self.P_BACK:
+            return self.navigate_direction('back-button')
+        return self.navigate_direction('forward-button')
+        
+    # Navigate in a specified direction
+    # return True if it is not possible to go forward
+    # indicating survey is completed
+    def navigate_direction(self, direction_button):
+        try:
+            self.driver.find_element_by_id(direction_button).click()
+            return False
+        except:
+            return direction_button == 'forward-button'
 
     def tearDown(self):
         self.driver.close()

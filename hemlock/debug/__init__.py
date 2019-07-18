@@ -4,5 +4,4 @@
 # last modified 07/18/2019
 ##############################################################################
 
-from hemlock.debug.main import debug
-from hemlock.debug.aiparticipant import AIParticipant
+from hemlock.debug.aiparticipant import AIParticipantBase

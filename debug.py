@@ -4,9 +4,15 @@
 # last modified 07/18/2019
 ##############################################################################
 
-# With command line: python debug.py https://<appname>.herokuapp.com
+# TODO
+# enter data into form fields
 
-from hemlock.debug import debug, AIParticipant
+from hemlock.debug import AIParticipantBase
+from unittest import TestCase, main
 
-if __name__ == '__main__':
-    debug()
+class AIParticipant(AIParticipantBase, TestCase):
+    SURVEY_URL = 'https://test235711.herokuapp.com'
+    P_REFRESH = 0.5
+    P_BACK = 0.3
+
+main()
