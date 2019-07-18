@@ -37,6 +37,7 @@ from texts import *
 from flask_login import current_user
 
 def Start():
+    x = 1/0
     b = Branch()
     p = Page(b)
     q = Question(p, "What's your name?", qtype='free', var='name')

@@ -18,12 +18,14 @@ class AIParticipant(unittest.TestCase):
         driver = self.driver
         driver.get(self.SURVEY_URL)
         while True:
-            try:
-                elem = driver.find_element_by_id('forward-button')
-                print('elem', elem)
-                elem.click()
-            except:
+            title = driver.find_element_by_tag('title')
+            print(title)
+            assert title != '500 Internal Server Error'
+            forward_button = driver.find_element_by_id('forward-button')
+            if forward_button is None:
                 return
+            forward_button.click()
+            
 
     # def test_search_in_python_org(self):
         # driver = self.driver
