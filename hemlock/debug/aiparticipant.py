@@ -17,12 +17,13 @@ class AIParticipant(unittest.TestCase):
     def test(self):
         driver = self.driver
         driver.get(self.SURVEY_URL)
-        
+        elem = driver.find_element_by_value('forward')
+        print(elem)
 
-    def test_search_in_python_org(self):
-        driver = self.driver
-        driver.get(self.SURVEY_URL)
-        print('dirver title', driver.title)
+    # def test_search_in_python_org(self):
+        # driver = self.driver
+        # driver.get(self.SURVEY_URL)
+        # print('dirver title', driver.title)
         # self.assertIn("Python", driver.title)
         # elem = driver.find_element_by_name("q")
         # elem.send_keys("pycon")

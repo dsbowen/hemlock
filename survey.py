@@ -39,9 +39,9 @@ from flask_login import current_user
 def Start():
     b = Branch()
     p = Page(b)
-    q = Question(p, 'Hello World')
+    q = Question(p, "What's your name?", qtype='free', var='name')
     p = Page(b, terminal=True)
-    q = Question(p, 'Goodbye World')
+    q = Question(p, 'Hello World')
     return b
       
 # create the application (survey)
