@@ -18,9 +18,8 @@ class AIParticipant(unittest.TestCase):
         driver = self.driver
         driver.get(self.SURVEY_URL)
         while True:
-            title = driver.find_element_by_tag('title')
-            print(title)
-            assert title != '500 Internal Server Error'
+            h1 = driver.find_element_by_tag_name('h1').text
+            assert h1 != 'Internal Server Error'
             forward_button = driver.find_element_by_id('forward-button')
             if forward_button is None:
                 return
