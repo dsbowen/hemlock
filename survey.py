@@ -1,8 +1,8 @@
-###############################################################################
+##############################################################################
 # Hemlock survey template
 # by Dillon Bowen
 # last modified 04/29/2019
-###############################################################################
+##############################################################################
 '''
 # import hemlock package, configuration class, and texts
 from hemlock import *
@@ -38,8 +38,10 @@ from flask_login import current_user
 
 def Start():
     b = Branch()
-    p = Page(b, terminal=True)
+    p = Page(b)
     q = Question(p, 'Hello World')
+    p = Page(b, terminal=True)
+    q = Question(p, 'Goodbye World')
     return b
       
 # create the application (survey)
