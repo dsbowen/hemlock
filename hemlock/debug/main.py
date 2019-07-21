@@ -12,14 +12,18 @@ from hemlock.debug.success_thread import SuccessThread
 def main(num_batches=1, batch_size=1):
     [run_batch(batch_size) for i in range(num_batches)]
             
-# Run a single batch of participants
+# Run a batch of participants
 def run_batch(batch_size):
-    threads = [SuccessThread(target=unittest.main, daemon=True)
+    threads = [SuccessThread(target=run_participant, daemon=True)
         for i in range(batch_size)]
     [t.start() for t in threads]
     [t.join() for t in threads]
     if not all([t.success for t in threads]):
         sys.exit(INSIRATIONAL_ERROR_MESSAGE)
+
+# Runs a single participant
+def run_participant():
+    unittest.main(exit=False)
         
 INSIRATIONAL_ERROR_MESSAGE = '''
 Congratulations!
