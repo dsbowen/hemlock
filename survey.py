@@ -48,6 +48,7 @@ def Start():
 
 def fail(p):
     from random import choice
+    print('might fail')
     if choice([True,False]):
         print('failing')
         x = 1/0
