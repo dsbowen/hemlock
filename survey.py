@@ -38,7 +38,7 @@ from flask_login import current_user
 
 def Start():
     b = Branch()
-    p = Page(b, compile=fail)
+    p = Page(b)
     q = Question(p, "What's your name?", qtype='free', var='name')
     p = Page(b)
     q = Question(p, "What's your favorite flavor of ice cream?", qtype='free', var='ice_cream')
@@ -47,7 +47,10 @@ def Start():
     return b
 
 def fail(p):
-    x = 1/0
+    from random import choice
+    if choice([True,False]):
+        print('failing')
+        x = 1/0
       
 # create the application (survey)
 app = create_app(

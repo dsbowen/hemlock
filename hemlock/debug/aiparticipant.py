@@ -6,12 +6,21 @@
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from random import random
+from random import random, choice
+import string
 import warnings
+
+# DATA_TYPES = ['letters', 'uppercase', 'lowercase', 'integer', 'numeric', 'all']
+DATA_TYPES = ['letters']
 
 class AIParticipantBase():
     P_REFRESH = 0.1
     P_BACK = 0.1
+    P_NO_ANSWER = 0.1
+    P_CLEAR_TEXT = 0.1
+    LOG_LETTER_LEN = range(0,4)
+    P_WHITESPACE = 0.1
+    LOG_NUMBER_LEN = range(0,10)
 
     def setUp(self):
         warnings.simplefilter('ignore', ResourceWarning)
@@ -42,13 +51,28 @@ class AIParticipantBase():
         
     # Fill out question
     def fill_question(self, q):
+        self.question = q
+        if random() < P_NO_ANSWER:
+            return
         qtype = q.get_attribute('type')
         if qtype == 'text':
-            self.fill_text(q)
+            self.fill_text()
             
     # Fill out text question
-    def fill_text(self, q):
-        q.send_keys('Hello world') ## More on this
+    def fill_text(self):
+        if random() < P_CLEAR_TEXT:
+            self.question.clear()
+        getattr(self, choice(DATA_TYPES))()
+    
+    # Letters
+    def letters(self):
+        keys = string.ascii_letters
+        key_len = 10**choice(LOG_LETTER_LEN)
+        keys = ''.join([choice(string.ascii_letters) for i in range(key_len)])
+        for i in range(key_len):
+            if random() < P_WHITESPACE:
+                keys[i] = ' '
+        q.send_keys(keys)
         
     # Navigate in unspecified direction (forward, back, refresh)
     def navigate(self):
