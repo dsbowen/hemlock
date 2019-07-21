@@ -10,6 +10,9 @@ from random import random
 import warnings
 
 class AIParticipantBase():
+    P_REFRESH = 0.5
+    P_BACK = 0.3
+
     def setUp(self):
         warnings.simplefilter('ignore', ResourceWarning)
         self.driver = webdriver.Chrome()
@@ -21,6 +24,7 @@ class AIParticipantBase():
         completed = False
         while not completed:
             self.internal_server_error()
+            self.fill_form()
             completed = self.navigate()
                 
     # Assert heading is not internal server error
@@ -30,6 +34,21 @@ class AIParticipantBase():
         except:
             h1 = None
         assert h1 != 'Internal Server Error'
+        
+    # Fill out form
+    def fill_form(self):
+        questions = self.driver.find_elements_by_tag_name('input')
+        [self.fill_question(q) for q in questions]
+        
+    # Fill out question
+    def fill_question(self, q):
+        qtype = q.get_attribute('type')
+        if qtype == 'text':
+            self.fill_text(q)
+            
+    # Fill out text question
+    def fill_text(self, q):
+        q.send_keys('Hello world') ## More on this
         
     # Navigate in unspecified direction (forward, back, refresh)
     def navigate(self):
