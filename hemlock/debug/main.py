@@ -7,6 +7,7 @@
 import unittest
 import sys
 from hemlock.debug.success_thread import SuccessThread
+from threading import Thread
 
 # Tests survey with batches of participants
 def main(num_batches=1, batch_size=1):
@@ -23,11 +24,8 @@ def run_batch(batch_size):
 
 # Runs a single participant
 def run_participant():
-    try:
-        unittest.main(exit=False)
-        return True
-    except:
-        return False
+    unittest.main(exit=False)
+    print(sys.exc_info())
         
 INSIRATIONAL_ERROR_MESSAGE = '''
 Congratulations!
