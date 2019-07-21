@@ -14,6 +14,6 @@ BATCH_SIZE = 1
 NUM_BATCHES = 10
 
 class AIParticipant(AIParticipantBase, TestCase):
-    SURVEY_URL = 'localhost:5000'
+    SURVEY_URL = 'https://test235711.herokuapp.com'
 
 main(NUM_BATCHES, BATCH_SIZE)

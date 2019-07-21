@@ -11,8 +11,4 @@ from threading import Thread
 # operates as normal Thread with success indicator
 class SuccessThread(Thread):
     def run(self):
-        try:
-            Thread.run(self)
-            self.success = True
-        except:
-            self.success = False
+        self.success = Thread.run(self)

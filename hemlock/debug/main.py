@@ -23,7 +23,11 @@ def run_batch(batch_size):
 
 # Runs a single participant
 def run_participant():
-    unittest.main(exit=False)
+    try:
+        unittest.main(exit=False)
+        return True
+    except:
+        return False
         
 INSIRATIONAL_ERROR_MESSAGE = '''
 Congratulations!
