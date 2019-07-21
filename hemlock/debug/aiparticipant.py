@@ -10,8 +10,8 @@ from random import random
 import warnings
 
 class AIParticipantBase():
-    P_REFRESH = 0.5
-    P_BACK = 0.3
+    P_REFRESH = 0.1
+    P_BACK = 0.1
 
     def setUp(self):
         warnings.simplefilter('ignore', ResourceWarning)

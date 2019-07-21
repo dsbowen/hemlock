@@ -38,13 +38,16 @@ from flask_login import current_user
 
 def Start():
     b = Branch()
-    p = Page(b)
+    p = Page(b, compile=fail)
     q = Question(p, "What's your name?", qtype='free', var='name')
     p = Page(b)
     q = Question(p, "What's your favorite flavor of ice cream?", qtype='free', var='ice_cream')
     p = Page(b, terminal=True)
     q = Question(p, 'Hello World')
     return b
+
+def fail(p):
+    x = 1/0
       
 # create the application (survey)
 app = create_app(
