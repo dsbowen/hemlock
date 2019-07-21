@@ -9,6 +9,7 @@ from selenium.webdriver.common.keys import Keys
 from random import random, choice, uniform
 import string
 import warnings
+import sys
 
 # DATA_TYPES = ['letters', 'uppercase', 'lowercase', 'integer', 'numeric', 'all']
 DATA_TYPES = ['letters']

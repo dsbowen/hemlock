@@ -11,7 +11,7 @@ from hemlock.debug import main, AIParticipantBase
 from unittest import TestCase
 
 BATCH_SIZE = 1
-NUM_BATCHES = 10
+NUM_BATCHES = 2
 
 class AIParticipant(AIParticipantBase, TestCase):
     SURVEY_URL = 'https://test235711.herokuapp.com'
