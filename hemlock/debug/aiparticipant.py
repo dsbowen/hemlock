@@ -77,6 +77,7 @@ class AIParticipantBase():
             
     # Fill out text question
     def fill_text(self):
+        print(self.inputs.getAttribute('test'))
         self.inputs = self.inputs[0]
         if random() < self.P_CLEAR_TEXT:
             self.inputs.clear()

@@ -54,7 +54,7 @@ ERROR = '''
 '''
 
 FREE = '''
-        <input type='text' class='form-control' id='{0}' name='{0}' value='{1}'>
+        <input type='text' test='hello world' class='form-control' id='{0}' name='{0}' value='{1}'>
 '''
 
 CHOICE = '''

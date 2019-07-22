@@ -42,7 +42,7 @@ def Start():
     q = Question(p, '<p>hello world</p>', qtype='free')
     Validator(q, require)
     p = Page(b, terminal=True)
-    q = Question(p, '<p>here is a super long question. I mean, seriously, super duper long question. This should INCREDIBLY long.........</p>')
+    q = Question(p, '<p>goodbye world</p>')
     return b 
       
 # create the application (survey)
