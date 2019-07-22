@@ -1,12 +1,12 @@
 ##############################################################################
 # AI Participant Base class
 # by Dillon Bowen
-# last modified 07/18/2019
+# last modified 07/21/2019
 ##############################################################################
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from random import random, choice, uniform
+from random import random, choice, uniform, shuffle
 import string
 import warnings
 import sys
@@ -17,6 +17,7 @@ class AIParticipantBase():
     P_REFRESH = 0.1
     P_BACK = 0.1
     P_NO_ANSWER = 0.1
+    P_CLICK = 0.5
     P_CLEAR_TEXT = 0.1
     LOG_LETTER_LEN = (0,3)
     P_WHITESPACE = 0.1
@@ -53,21 +54,29 @@ class AIParticipantBase():
         
     # Fill out question
     def fill_question(self, q):
-        self.question = q
         if random() < self.P_NO_ANSWER:
             return
-        input = q.find_elements_by_tag_name('input')
-        print(input)
-        qtype = q.get_attribute('type')
+        self.inputs = inputs = q.find_elements_by_tag_name('input')
+        if not inputs:
+            return
+        qtype = inputs[0].get_attribute('type')
+        if qtype == 'radio':
+            self.fill_choice()
         if qtype == 'text':
             self.fill_text()
-        if qtype == 'single choice':
-            pass
+    
+    # Fill out a choice
+    def fill_choice(self):
+        shuffle(self.inputs)
+        for i in self.inputs:
+            if random() < self.P_CLICK:
+                i.click()
             
     # Fill out text question
     def fill_text(self):
+        self.inputs = self.inputs[0]
         if random() < self.P_CLEAR_TEXT:
-            self.question.clear()
+            self.inputs.clear()
         getattr(self, choice(DATA_TYPES))()
     
     # Letters
@@ -83,7 +92,7 @@ class AIParticipantBase():
             keys = string.printable
         if choice([True, False]):
             keys = string.ascii_letters
-        self.question.send_keys(self.gen_text(keys))
+        self.inputs.send_keys(self.gen_text(keys))
 
     # Generate text entry using
     def gen_text(self, keys):
@@ -97,13 +106,13 @@ class AIParticipantBase():
     # Integer
     def integer(self):
         x = self.gen_number()
-        self.question.send_keys(str(int(x)))
+        self.inputs.send_keys(str(int(x)))
     
     # Numeric
     def numeric(self):
         x = self.gen_number()
         x = round(x, choice(range(*self.DECIMAL_LEN)))
-        self.question.send_keys(str(x))
+        self.inputs.send_keys(str(x))
         
     # Randomly generate a number
     def gen_number(self):
