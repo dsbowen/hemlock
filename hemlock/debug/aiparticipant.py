@@ -48,7 +48,7 @@ class AIParticipantBase():
         
     # Fill out form
     def fill_form(self):
-        questions = self.driver.find_elements_by_tag_name('input')
+        questions = self.driver.find_elements_by_class_name('form-group')
         [self.fill_question(q) for q in questions]
         
     # Fill out question
@@ -56,10 +56,13 @@ class AIParticipantBase():
         self.question = q
         if random() < self.P_NO_ANSWER:
             return
+        input = q.find_elements_by_tag_name('input')
+        print(input)
         qtype = q.get_attribute('type')
         if qtype == 'text':
             self.fill_text()
-        if qtype == '
+        if qtype == 'single choice':
+            pass
             
     # Fill out text question
     def fill_text(self):
