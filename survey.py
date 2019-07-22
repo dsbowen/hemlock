@@ -38,7 +38,7 @@ from flask_login import current_user
 
 def Start():
     b = Branch()
-    p = Page(b)
+    p = Page(b, fail)
     q = Question(p, "What's your first name?", qtype='free', var='first')
     Validator(q, require)
     q = Question(p, "What's your last name?", qtype='free', var='last')
@@ -52,7 +52,10 @@ def Start():
     p = Page(b, terminal=True)
     q = Question(p, 'Hello World')
     return b
-      
+
+def fail(p):
+    x = 1/0
+
 # create the application (survey)
 app = create_app(
     Config,
