@@ -1,7 +1,7 @@
 <!--
 Page template
 by Dillon Bowen
-last modified 06/04/2019
+last modified 07/22/2019
 -->
 
 {% extends 'bootstrap/base.html' %}
@@ -35,9 +35,9 @@ label.span sets the label with to span the div
     .span {
         width: 100%;
     }
-    div.form-container {
-        height: 100vh;
-    }
+    <!-- div.form-container { -->
+        <!-- height: 100vh; -->
+    <!-- } -->
     form {
         width: inherit;
         position: absolute;
@@ -79,7 +79,7 @@ $('form.submit-once').submit(function(e){
 {% endblock %}
 
 {% block content %}
-<div class='container form-container'>
+<div class='container'>
 <form method='post' class='submit-once' novalidate>
     {{ page }}
 </form>
