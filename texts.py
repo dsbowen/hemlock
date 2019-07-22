@@ -304,11 +304,15 @@ incentive_compatibility_instr = '''
 '''
 
 def get_mech_instr():
-    x1, t1, x2, t2, delay_frame = gen_parms()
-    ITC_text = get_ITC_text(x1, t1, x2, t2, delay_frame)
-    ans = x2 if delay_frame else x1
-    mech_exmpls = get_mech_exmpls(x1, t1, x2, t2, delay_frame)
-    return mech_instr.format(ITC_text, ans, mech_exmpls)
+    while True:
+        try:
+            x1, t1, x2, t2, delay_frame = gen_parms()
+            ITC_text = get_ITC_text(x1, t1, x2, t2, delay_frame)
+            ans = x2 if delay_frame else x1
+            mech_exmpls = get_mech_exmpls(x1, t1, x2, t2, delay_frame)
+            return mech_instr.format(ITC_text, ans, mech_exmpls)
+        except:
+            pass
     
 mech_instr = '''
 <p>To understand how this mechanism works, imagine you are asked the following question:</p>

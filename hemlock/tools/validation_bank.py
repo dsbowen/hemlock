@@ -26,6 +26,19 @@ def integer(q, message=None):
         if message is not None:
             return message
         return '<p>Please enter a number without decimals.</p>'
+
+# Data should be numeric
+def numeric(q, message=None):
+    data = q.get_data()
+    if data is None or data == '':
+        return
+    try:
+        float(data)
+        return
+    except:
+        if message is not None:
+            return message
+        return '<p>Please enter a number.</p>'
         
 
 
