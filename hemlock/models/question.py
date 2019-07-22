@@ -1,7 +1,7 @@
 ###############################################################################
 # Question model
 # by Dillon Bowen
-# last modified 03/19/2019
+# last modified 07/21/2019
 ###############################################################################
 
 from hemlock.factory import db
@@ -346,13 +346,14 @@ class Question(db.Model, Base):
     def _compile_html(self):
         if self._qtype == 'embedded':
             return ''
-        elif self._qtype == 'text':
-            return compile_text(self)
-        elif self._qtype == 'free':
-            return compile_free(self)
-        elif self._qtype == 'single choice':
-            return compile_single_choice(self)
-        raise ValueError('Invalid Question Type')
+        return compile_question(self)
+        # elif self._qtype == 'text':
+            # return compile_text(self)
+        # elif self._qtype == 'free':
+            # return compile_free(self)
+        # elif self._qtype == 'single choice':
+            # return compile_single_choice(self)
+        # raise ValueError('Invalid Question Type')
         
     # Record the participant's response
     # collect response and update default

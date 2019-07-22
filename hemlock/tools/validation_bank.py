@@ -12,7 +12,7 @@ def require(q, message=None):
     if data is None or data == '':
         if message is not None:
             return message
-        return "Please answer this question"
+        return '<p>Please answer this question.</p>'
         
 # Data should be an integer
 def integer(q, message=None):
@@ -25,7 +25,7 @@ def integer(q, message=None):
     except:
         if message is not None:
             return message
-        return 'Please enter a number without decimals'
+        return '<p>Please enter a number without decimals.</p>'
         
 
 
@@ -90,8 +90,10 @@ def _check_valid_set(set):
 def _isin_set_error_message(set, message):
     if message is not None:
         return message
-    return ('Your answer should be one of the following: '
-        +', '.join(str(i) for i in set))
+    return (
+        '<p>Your answer should be one of the following: '
+        +', '.join(str(i) for i in set)
+        +'.</p>')
         
 # Check if data is in a given interval
 # check if interval is valid (i.e. 4-tuple in interval notation)
@@ -164,35 +166,35 @@ def _isin_interval_error_message(interval, message):
 
     if min_strict and max_strict:
         return '''
-        Your answer should be between {0} and {1}
+        <p>Your answer should be between {0} and {1}.</p>
         '''.format(min, max)
     if min_strict and not max_strict:
         return '''
-        Your answer should be more than {0} and at most {1}
+        <p>Your answer should be more than {0} and at most {1}.</p>
         '''.format(min, max)
     if not min_strict and max_strict:
         return '''
-        Your answer should be at least {0} and less than {1}
+        <p>Your answer should be at least {0} and less than {1}.</p>
         '''.format(min, max)
     if min == max:
         return '''
-        Your answer should be exactly {0}
+        <p>Your answer should be exactly {0}.</p>
         '''.format(min)
     return '''
-        Your answer should be between {0} and {1} (inclusive)
+        <p>Your answer should be between {0} and {1} (inclusive).</p>
         '''.format(min, max)
         
 # Return error message if data is greater than (or equal to) the maximum
 def _max_error_message(max, strict):
     if strict:
-        return 'Your answer should be less than {0}'.format(max)
-    return 'Your answer should be at most {0}'.format(max)
+        return '<p>Your answer should be less than {0}.</p>'.format(max)
+    return '<p>Your answer should be at most {0}.</p>'.format(max)
 
 # Return error message if data is less than (or equal to) the minimum
 def _min_error_message(min, strict):
     if strict:
-        return 'Your answer should be more than {0}'.format(min)
-    return 'Your answer should be at least {0}'.format(min)
+        return '<p>Your answer should be more than {0}.</p>'.format(min)
+    return '<p>Your answer should be at least {0}.</p>'.format(min)
 
 
 ###############################################################################
@@ -238,9 +240,10 @@ def _decimals_set_error_message(set, message):
     if len(set) == 1:
         return 'Your answer should contain exactly {0} decimals'.format(set[0])
     set, last = set[:-1], set[-1]
-    return ('Your answer should contain '
+    return (
+        '<p>Your answer should contain '
         +', '.join([str(i) for i in set])
-        +' or {0} decimals'.format(last))
+        +' or {0} decimals.</p>'.format(last))
         
 # Return error message if number of decimals not in interval
 # cases:
@@ -266,50 +269,32 @@ def _decimals_interval_error_message(interval, message):
 
     if min_strict and max_strict:
         return '''
-        Your answer should contain between {0} and {1} decimals
+        <p>Your answer should contain between {0} and {1} decimals.</p>
         '''.format(min, max)
     if min_strict and not max_strict:
         return '''
-        Your answer should contain more than {0} and at most {1} decimals
+        <p>Your answer should contain more than {0} and at most {1} decimals.</p>
         '''.format(min, max)
     if not min_strict and max_strict:
         return '''
-        Your answer should contain at least {0} and fewer than {1} decimals
+        <p>Your answer should contain at least {0} and fewer than {1} decimals.</p>
         '''.format(min, max)
     if min == max:
         return '''
-        Your answer should contain exactly {0} decimals
+        <p>Your answer should contain exactly {0} decimals.</p>
         '''.format(min)
     return '''
-        Your answer should contain between {0} and {1} decimals (inclusive)
+        <p>Your answer should contain between {0} and {1} decimals (inclusive).</p>
         '''.format(min, max)
         
 # Return error message if number of decimals exceeds the maximum
 def _max_decimals_error_message(max, strict):
     if strict:
-        return 'Your answer should contain fewer than {0} decimals'.format(max)
-    return 'Your answer should contain at most {0} decimals'.format(max)
+        return '<p>Your answer should contain fewer than {0} decimals.</p>'.format(max)
+    return '<p>Your answer should contain at most {0} decimals.</p>'.format(max)
 
 # Return error message if number of decimals deceeds the minimum
 def _min_decimals_error_message(min, strict):
     if strict:
-        return 'Your answer should contain more than {0} decimals'.format(min)
-    return 'Your answer should contain at least {0} decimals'.format(min)
-    
-# Data should be within a given range
-def in_range(q, min, max, message=None):
-    data = q.get_data()
-    if data is None or data == '':
-        return
-        
-    try:
-        data = type(min)(data)
-    except:
-        return 'Please enter the correct type of data'
-        
-    if min <= data <= max:
-        return
-        
-    if message is not None:
-        return message
-    return 'Your answer should be between {0} and {1}'.format(min, max)
+        return '<p>Your answer should contain more than {0} decimals.</p>'.format(min)
+    return '<p>Your answer should contain at least {0} decimals.</p>'.format(min)

@@ -32,8 +32,28 @@ label.span sets the label with to span the div
         max-width: 100%;
         max-height: 100vh;
     }
-    label.span {
+    .span {
         width: 100%;
+    }
+    div.form-container {
+        height: 100vh;
+    }
+    form {
+        width: inherit;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    div.question {
+        padding: 15px 5px;
+    }
+    div.error {
+        border-radius: 15px;
+        background-color: lightgray;
+    }
+    p {
+        font-weight: normal;
     }
 </style>
 {% endblock %}
@@ -58,9 +78,9 @@ $('form.submit-once').submit(function(e){
 {% endblock %}
 
 {% block content %}
-<div class='container'>
-    <form method="post" class="submit-once" novalidate>
-        {{ page }}
-    </form>
+<div class='container form-container'>
+<form method='post' class='submit-once' novalidate>
+    {{ page }}
+</form>
 </div>
 {% endblock %}

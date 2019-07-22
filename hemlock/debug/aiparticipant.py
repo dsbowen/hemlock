@@ -11,8 +11,7 @@ import string
 import warnings
 import sys
 
-# DATA_TYPES = ['letters', 'uppercase', 'lowercase', 'integer', 'numeric', 'all']
-DATA_TYPES = ['letters']
+DATA_TYPES = ['letters', 'numeric', 'integer']
 
 class AIParticipantBase():
     P_REFRESH = 0.1
@@ -21,7 +20,9 @@ class AIParticipantBase():
     P_CLEAR_TEXT = 0.1
     LOG_LETTER_LEN = (0,3)
     P_WHITESPACE = 0.1
-    LOG_NUMBER_LEN = (0,10)
+    NUMBER_LEN = (0,10)
+    DECIMAL_LEN = (0,10)
+    P_NEGATIVE = 0.5
 
     def setUp(self):
         warnings.simplefilter('ignore', ResourceWarning)
@@ -58,6 +59,7 @@ class AIParticipantBase():
         qtype = q.get_attribute('type')
         if qtype == 'text':
             self.fill_text()
+        if qtype == '
             
     # Fill out text question
     def fill_text(self):
@@ -67,18 +69,45 @@ class AIParticipantBase():
     
     # Letters
     def letters(self):
-        keys = string.ascii_letters
-        key_len = int(10**uniform(*self.LOG_LETTER_LEN))
-        keys = [choice(string.ascii_letters) for i in range(key_len)]
-        keys = self.whitespace(keys)
-        self.question.send_keys(keys)
-    
-    # Randomly insert white space
-    def whitespace(self, keys):
+        data_type = choice(['letters', 'uppercase', 'lowercase', 'mix'])
+        if data_type == 'letters':
+            keys = string.ascii_letters
+        if data_type == 'uppercase':
+            keys = string.ascii_uppercase
+        if data_type == 'lowercase':
+            keys = string.ascii_lowercase
+        if data_type == 'mix':
+            keys = string.printable
+        if choice([True, False]):
+            keys = string.ascii_letters
+        self.question.send_keys(self.gen_text(keys))
+
+    # Generate text entry using
+    def gen_text(self, keys):
+        length = int(10**uniform(*self.LOG_LETTER_LEN))
+        keys = [choice(keys) for i in range(length)]
         for i in range(len(keys)):
             if random() < self.P_WHITESPACE:
                 keys[i] = ' '
         return ''.join(keys)
+    
+    # Integer
+    def integer(self):
+        x = self.gen_number()
+        self.question.send_keys(str(int(x)))
+    
+    # Numeric
+    def numeric(self):
+        x = self.gen_number()
+        x = round(x, choice(range(*self.DECIMAL_LEN)))
+        self.question.send_keys(str(x))
+        
+    # Randomly generate a number
+    def gen_number(self):
+        x = uniform(0, 10**choice(range(*self.NUMBER_LEN)))
+        if random() < self.P_NEGATIVE:
+            return -x
+        return x
         
     # Navigate in unspecified direction (forward, back, refresh)
     def navigate(self):

@@ -341,7 +341,7 @@ class Page(db.Model, Base):
     
     # Compile the html code for the form specified on this page
     # executes compile functions (page then question)
-    # returns compiled html with hidden tag and submit button
+    # returns compiled html
     def _compile_html(self):
         self._call_function(self, self._compile_function, self._compile_args)
         [q._call_function(q, q._compile_function, q._compile_args)
@@ -351,7 +351,7 @@ class Page(db.Model, Base):
         self._compiled = True
         self._start_time = datetime.utcnow()
         db.session.commit()
-        return ''.join([hidden_tag()]+Qhtml+[submit(self)])
+        return ''.join(Qhtml+[submit(self)])
         
     # Checks if questions have valid answers upon page submission
     # set direction from

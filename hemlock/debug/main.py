@@ -12,6 +12,7 @@ from threading import Thread
 # Tests survey with batches of participants
 def main(num_batches=1, batch_size=1):
     [run_batch(batch_size) for i in range(num_batches)]
+    print(SUCCESS_MESSAGE)
             
 # Run a batch of participants
 def run_batch(batch_size):
@@ -24,7 +25,7 @@ def run_batch(batch_size):
 
 # Runs a single participant
 def run_participant():
-    assert not unittest.main().result.failures
+    assert not unittest.main(exit=False).result.failures
         
 INSIRATIONAL_ERROR_MESSAGE = '''
 Congratulations!
@@ -38,4 +39,8 @@ When you think about it like that, it's actually pretty great news that you foun
 And it's all thanks to you being clever enough to run the debugger. Say, I guess that makes you pretty awesome, doesn't it?
 
 So, don't despair! You're amazing! You can do it! Now go fix that damn bug!
+'''
+
+SUCCESS_MESSAGE = '''
+No errors detected.
 '''

@@ -39,17 +39,18 @@ from flask_login import current_user
 def Start():
     b = Branch()
     p = Page(b)
-    q = Question(p, "What's your name?", qtype='free', var='name')
+    q = Question(p, "What's your first name?", qtype='free', var='first')
+    Validator(q, require)
+    q = Question(p, "What's your last name?", qtype='free', var='last')
+    Validator(q, require)
     p = Page(b)
-    q = Question(p, "What's your favorite flavor of ice cream?", qtype='free', var='ice_cream')
+    q = Question(p, "What's your favorite flavor of ice cream?", qtype='single choice', var='ice_cream')
+    Choice(q, 'Lavender')
+    Choice(q, 'Chocolate')
+    Choice(q, 'Orange')
     p = Page(b, terminal=True)
     q = Question(p, 'Hello World')
     return b
-
-def fail(p):
-    from random import choice
-    if choice([True,False]):
-        x = 1/0
       
 # create the application (survey)
 app = create_app(
