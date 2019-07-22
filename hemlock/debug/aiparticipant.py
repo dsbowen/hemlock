@@ -7,6 +7,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from random import random, choice, uniform, shuffle
+from time import sleep
 import string
 import warnings
 import sys
@@ -24,6 +25,8 @@ class AIParticipantBase():
     NUMBER_LEN = (0,10)
     DECIMAL_LEN = (0,10)
     P_NEGATIVE = 0.5
+    MAX_WAIT = 30
+    WAIT_INCREMENT = 5
 
     def setUp(self):
         warnings.simplefilter('ignore', ResourceWarning)
@@ -133,15 +136,18 @@ class AIParticipantBase():
     # Navigate in a specified direction
     # return True if it is not possible to go forward
     # indicating survey is completed
-    def navigate_direction(self, direction_button):
+    def navigate_direction(self, direction_button, wait=0):
         try:
             self.driver.find_element_by_id(direction_button).click()
             return False
         except:
             pass
-        if direction_button == 'forward-button':
+        if direction_button == 'back-button':
+            return self.navigate_direction('forward-button')
+        if wait >= self.MAX_WAIT:
             return True
-        return self.navigate_direction('forward-button')
+        wait += self.WAIT_INCREMENT
+        return self.navigate_direction('forward-button', wait)
 
     def tearDown(self):
         self.driver.close()
