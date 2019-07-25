@@ -25,13 +25,20 @@ class Base():
         # func: callable or None
         # args_name: name of function arguments as string
         # args: may be None or dict
-    def _set_function(self, func_name, func, args_name, args):
+    def _set_function(
+            self, func_name, func, 
+            args_name, args, 
+            attrs_name=None, attrs=None):
         if not (func is None or callable(func)):
             raise ValueError('Function must be callable (or None)')
         if not (args is None or type(args) == dict):
             raise ValueError('Arguments must be dictionary (or None)')
+        if not (attrs is None or type(attrs) == dict):
+            raise ValueError('Attributes must be dictionary (or None)')
         setattr(self, func_name, func)
         setattr(self, args_name, args)
+        if attrs_name is not None:
+            setattr(self, attrs_name, attrs)
             
     # Call a function
     # inputs:

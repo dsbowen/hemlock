@@ -32,7 +32,11 @@ def submit(page):
 def compile_page(p):
     debug = p.get_debug()
     debug = '' if debug is None else debug.__name__
-    return PAGE_DEBUG.format(debug, str(p.get_debug_args()))
+    args = p.get_debug_args()
+    args = '' if args is None else str(args)
+    attrs = p.get_debug_attrs()
+    attrs = '' if attrs is None else str(attrs)
+    return PAGE_DEBUG.format(debug, args, attrs)
 
 
 

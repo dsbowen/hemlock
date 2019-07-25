@@ -38,8 +38,7 @@ from flask_login import current_user
 
 def Start():
     b = Branch()
-    p = Page(b, debug=AIP.debug_test)
-    print(p.get_debug())
+    p = Page(b, debug=AIP.debug_test, debug_attrs={'test':'hello moon'})
     q = Question(p, '<p>hello moon</p>')
     q = Question(p, '<p>hello world</p>', qtype='free')
     Validator(q, require)

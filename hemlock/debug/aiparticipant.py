@@ -1,9 +1,10 @@
 ##############################################################################
 # AI Participant Base class
 # by Dillon Bowen
-# last modified 07/21/2019
+# last modified 07/24/2019
 ##############################################################################
 
+from hemlock.debug.debug_classes import DebugPage
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from random import random, choice, uniform, shuffle
@@ -38,16 +39,15 @@ class AIParticipantBase():
         h1 = None
         completed = False
         while not completed:
-            self.internal_server_error()
-            page = self.driver.find_element_by_tag_name('page')
-            debug = page.get_attribute('debug')
-            args = page.get_attribute('args')
-            print(debug, args)
+            self._internal_server_error()
+            self.page = DebugPage(self.driver)
+            print(self.page)
+            print('hello moon test:', self.page.test)
             self.fill_form()
-            completed = self.navigate()
+            completed = self._navigate()
                 
     # Assert heading is not internal server error
-    def internal_server_error(self):
+    def _internal_server_error(self):
         try:
             h1 = self.driver.find_element_by_tag_name('h1').text
         except:
@@ -129,29 +129,29 @@ class AIParticipantBase():
         return x
         
     # Navigate in unspecified direction (forward, back, refresh)
-    def navigate(self):
+    def _navigate(self):
         if random() < self.P_REFRESH:
             self.driver.refresh()
             return False
         if random() < self.P_BACK:
-            return self.navigate_direction('back-button')
-        return self.navigate_direction('forward-button')
+            return self._navigate_direction('back-button')
+        return self._navigate_direction('forward-button')
         
     # Navigate in a specified direction
     # return True if it is not possible to go forward
     # indicating survey is completed
-    def navigate_direction(self, direction_button, wait=0):
+    def _navigate_direction(self, direction_button, wait=0):
         try:
             self.driver.find_element_by_id(direction_button).click()
             return False
         except:
             pass
         if direction_button == 'back-button':
-            return self.navigate_direction('forward-button')
+            return self._navigate_direction('forward-button')
         if wait >= self.MAX_WAIT:
             return True
         wait += self.WAIT_INCREMENT
-        return self.navigate_direction('forward-button', wait)
+        return self._navigate_direction('forward-button', wait)
 
     def tearDown(self):
         self.driver.close()
