@@ -1,7 +1,7 @@
 ###############################################################################
 # Participant model
 # by Dillon Bowen
-# last modified 03/19/2019
+# last modified 07/25/2019
 ###############################################################################
 
 from hemlock.factory import db, login
@@ -39,6 +39,7 @@ Columns:
     g: global dictionary, accessible from navigation functions
     num_rows: number of rows participant contributes to dataset
     metadata: participant metadata (e.g. start and end time)
+    page_html: html of all pages seen by participant
 '''
 class Participant(db.Model, UserMixin, Base):
     id = db.Column(db.Integer, primary_key=True)
@@ -72,6 +73,7 @@ class Participant(db.Model, UserMixin, Base):
     _g = db.Column(db.PickleType, default={})
     _num_rows = db.Column(db.Integer, default=0)
     _metadata = db.Column(db.PickleType, default={})
+    _page_html = db.Column(db.PickleType, default=[])
     
     
     
@@ -147,6 +149,15 @@ class Participant(db.Model, UserMixin, Base):
         
         
         
+    ###########################################################################
+    # Store page html
+    ###########################################################################
+    
+    def _store_html(self, html):
+        temp = deepcopy(self._page_html)
+        temp.append(html)
+        self._page_html = temp
+    
     ###########################################################################
     # Forward navigation
     ###########################################################################

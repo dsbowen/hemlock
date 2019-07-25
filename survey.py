@@ -13,6 +13,25 @@ from flask_login import current_user
 
 def Start():
     raise NotImplementedError()
+    
+def Start():
+    b = Branch()
+    p = Page(b)
+    q = Question(p, '<p>Please enter your name</p>', qtype='free')
+    Validator(q, require)
+    p = Page(b)
+    q = Question(p, 'What is your favorite flavor of ice cream?', qtype='single choice')
+    Choice(q, 'Lavender')
+    Choice(q, 'Chocolate')
+    Choice(q, 'Orange')
+    q.randomize()
+    Validator(q, require)
+    p = Page(b, compile=print_html, terminal=True)
+    q = Question(p, 'goodbye world')
+    return b
+
+def print_html(p):
+    print([i for i in current_user._page_html])
       
 # create the application (survey)
 app = create_app(

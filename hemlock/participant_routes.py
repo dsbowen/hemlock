@@ -1,7 +1,7 @@
 ###############################################################################
 # Participant URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 04/15/2019
+# last modified 07/25/2019
 ###############################################################################
 
 # hemlock database, application blueprint, and models
@@ -106,13 +106,15 @@ def survey():
     part = current_user
     page = part._get_current_page()
     compiled_html = page._compile_html()
+    page_html = render_template('page.html', page=Markup(compiled_html))
+    part._store_html(page_html)
     
-    if page._terminal:
+    if page.get_terminal():
         part._update_metadata(completed=True)
         DataStore.query.first().store(part)
-            
+      
     db.session.commit()
-    return render_template('page.html', page=Markup(compiled_html))
+    return page_html
     
 # Validate and record responses on post request (form submission)
 # update metadata
