@@ -31,13 +31,15 @@ import hemlock_shell
 '''
 # import hemlock package, configuration class, and texts
 from hemlock import *
+from debug import AIParticipant as AIP
 from config import Config
 from texts import *
 from flask_login import current_user
 
 def Start():
     b = Branch()
-    p = Page(b)
+    p = Page(b, debug=AIP.debug_test)
+    print(p.get_debug())
     q = Question(p, '<p>hello moon</p>')
     q = Question(p, '<p>hello world</p>', qtype='free')
     Validator(q, require)

@@ -14,5 +14,9 @@ class AIParticipant(AIParticipantBase, TestCase):
     SURVEY_URL = 'https://test235711.herokuapp.com'
     P_CLEAR_TEXT = 1
     LOG_LETTER_LEN = (0,1)
+    
+    def debug_test(self):
+        print('hello world')
 
-main(NUM_BATCHES, BATCH_SIZE)
+if __name__ == '__main__':
+    main(NUM_BATCHES, BATCH_SIZE)

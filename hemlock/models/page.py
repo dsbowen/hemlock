@@ -1,7 +1,7 @@
 ##############################################################################
 # Page model
 # by Dillon Bowen
-# last modified 07/03/2019
+# last modified 07/24/2019
 ##############################################################################
 
 from hemlock.factory import db
@@ -36,6 +36,8 @@ Columns:
     post_args: arguments for post function
     next_function: navigation function which grows the next branch
     next_args: arguments for next function
+    debug_function: debug function called by AI Participant
+    debug_args: arguments for debug function
     
     direction_to: direction to which this page is arrived at
     direction_from: direction from which the page navigates
@@ -78,6 +80,8 @@ class Page(db.Model, Base):
     _post_args = db.Column(db.PickleType)
     _next_function = db.Column(db.PickleType)
     _next_args = db.Column(db.PickleType)
+    _debug_function = db.Column(db.PickleType)
+    _debug_args = db.Column(db.PickleType)
     
     _direction_to = db.Column(db.String(8))
     _direction_from = db.Column(db.String(8))
@@ -94,6 +98,7 @@ class Page(db.Model, Base):
             compile=None, compile_args=None,
             post=None, post_args=None,
             next=None, next_args=None,
+            debug=None, debug_args=None,
             direction_to=None, direction_from=None,
             forward_to=None, back_to=None):
         
@@ -111,6 +116,7 @@ class Page(db.Model, Base):
         self.compile(compile, compile_args)
         self.post(post, post_args)
         self.next(next, next_args)
+        self.debug(debug, debug_args)
         
         self.direction_to(direction_to)
         self.direction_from(direction_from)
@@ -290,6 +296,20 @@ class Page(db.Model, Base):
     # Get the next function arguments
     def get_next_args(self):
         return self._next_args
+    
+    
+    # DEBUG FUNCTION AND ARGUMENTS
+    # Set the debug function and arguments
+    def debug(self, debug=None, args=None):
+        self._set_function('_debug_function', debug, '_debug_args', args)
+    
+    # Get the debug function
+    def get_debug(self):
+        return self._debug_function
+    
+    # Get the debug function arguments
+    def get_debug_args(self):
+        return self._debug_args
 
         
     # DIRECTION
@@ -347,11 +367,12 @@ class Page(db.Model, Base):
         [q._call_function(q, q._compile_function, q._compile_args)
             for q in self._questions]
         
+        Phtml = compile_page(self)
         Qhtml = [q._compile_html() for q in self._questions]
         self._compiled = True
         self._start_time = datetime.utcnow()
         db.session.commit()
-        return ''.join(Qhtml+[submit(self)])
+        return ''.join([Phtml]+Qhtml+[submit(self)])
         
     # Checks if questions have valid answers upon page submission
     # set direction from

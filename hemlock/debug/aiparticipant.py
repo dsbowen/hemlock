@@ -39,6 +39,10 @@ class AIParticipantBase():
         completed = False
         while not completed:
             self.internal_server_error()
+            page = self.driver.find_element_by_tag_name('page')
+            debug = page.get_attribute('debug')
+            args = page.get_attribute('args')
+            print(debug, args)
             self.fill_form()
             completed = self.navigate()
                 
