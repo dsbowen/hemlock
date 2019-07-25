@@ -15,10 +15,11 @@ class AIParticipant(AIParticipantBase, TestCase):
     P_CLEAR_TEXT = 1
     LOG_LETTER_LEN = (0,1)
     
-    def debug_test(self):
+    def debug_test(self, page):
         print('debug test')
     
-    def debug_test2(self):
+    def debug_test2(self, question, hello):
+        print('hello', hello)
         print('debug test 2')
 
 if __name__ == '__main__':

@@ -33,8 +33,8 @@ class DebugBase():
     
     def debug(self):
         if self._args is None:
-            return self._debug(self, **self._args)
-        return self._debug(self)
+            return self._debug(self)
+        return self._debug(self, **self._args)
         
 
 class DebugPage(DebugBase):
@@ -47,6 +47,24 @@ class DebugPage(DebugBase):
         question_elems = AIP.driver.find_elements_by_class_name('question')
         self.questions = [DebugQuestion(AIP, elem) for elem in question_elems]
 
-class DebugQuestion():
+class DebugQuestion(DebugBase):
     def __init__(self, AIP, question_elem):
+        self._debug_init(AIP, AIP._default_question_debug, question_elem)
+        self._get_inputs(AIP, question_elem)
+    
+    def _get_inputs(self, AIP, question_elem):
+        inputs = question_elem.find_elements_by_tag_name('input')
+        
+        text_entry = [i for i in inputs 
+            if i.get_attribute('type') == 'text']
+        self.text_entry = text_entry[0] if len(text_entry)==1 else text_entry
+        print('get input text entry:', self.text_entry)
+        
+        self.choices = [DebugChoice(AIP, i) for i in inputs 
+            if i.get_attribute('type') == 'radio']
+
+class DebugChoice(DebugBase):
+    def __init__(self, AIP, elem):
         pass
+    
+    

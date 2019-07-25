@@ -40,14 +40,11 @@ class AIParticipantBase():
         completed = False
         while not completed:
             self._internal_server_error()
+            page = DebugPage(self)
+            print(page.questions)
             DebugPage(self).debug()
             self.fill_form()
             completed = self._navigate()
-    
-    # Default page debug function
-    def _default_page_debug(self):
-        print('default page debug')
-        return
                 
     # Assert heading is not internal server error
     def _internal_server_error(self):
@@ -56,6 +53,15 @@ class AIParticipantBase():
         except:
             h1 = None
         assert h1 != 'Internal Server Error'
+    
+    # Default page debug function
+    def _default_page_debug(self, page):
+        [q.debug() for q in page.questions]
+    
+    # Default question debug function
+    def _default_question_debug(question, self):
+        print('default question debug')
+        return
         
     # Fill out form
     def fill_form(self):
