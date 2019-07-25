@@ -5,3 +5,4 @@ flask-bootstrap4
 gunicorn
 psycopg2
 pandas
+selenium
