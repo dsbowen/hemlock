@@ -121,6 +121,7 @@ class Question(db.Model, Base):
         
         self.compile(compile, compile_args)
         self.post(post, post_args)
+        self.debug(debug, debug_args, debug_attrs)
         
         self.data(data)
     
