@@ -70,7 +70,7 @@ class AIParticipantBase():
     
     # Call debug functions of objects in list randomly ordered
     def _random_order(self, objects):
-        order = range(len(objects))
+        order = list(range(len(objects)))
         shuffle(order)
         [objects[i].debug() for i in order]
             
