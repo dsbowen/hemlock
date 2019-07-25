@@ -17,10 +17,12 @@ def Start():
 def Start():
     b = Branch()
     p = Page(b)
-    q = Question(p, '<p>Please enter your name</p>', qtype='free')
+    q = Question(p, 'Please enter your name', qtype='free', var='name')
     Validator(q, require)
     p = Page(b)
-    q = Question(p, 'What is your favorite flavor of ice cream?', qtype='single choice')
+    q = Question(
+        p, 'What is your favorite flavor of ice cream?', 
+        qtype='single choice', var='ice_cream')
     Choice(q, 'Lavender')
     Choice(q, 'Chocolate')
     Choice(q, 'Orange')

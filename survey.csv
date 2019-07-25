@@ -1,0 +1,475 @@
+PageHTML
+"<!--
+Page template
+by Dillon Bowen
+last modified 07/22/2019
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset=""utf-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1, shrink-to-fit=no"">
+    <title></title>
+
+    <!-- Bootstrap -->
+    <link href=""//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"" rel=""stylesheet"">
+    <link href=""//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/fontawesome-all.min.css"" rel=""stylesheet"">
+<style>
+    body, html {
+        height: 100%;
+        width: 100%;
+    }
+    .left {
+        display: block;
+        margin-left: 0px;
+        margin-right: auto;
+    }
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .right {
+        display: block;
+        margin-left: auto;
+        margin-right: 0px;
+    }
+    .fit {
+        max-width: 100%;
+        max-height: 100vh;
+    }
+    .span {
+        width: 100%;
+    }
+    div.question {
+        padding: 0px 5px;
+    }
+    div.error {
+        padding: 15px 5px;
+        border-radius: 15px;
+        background-color: lightgray;
+    }
+    p {
+        font-weight: normal;
+    }
+</style>
+
+  </head>
+  <body>
+    
+    
+<div class=""container h-100"">
+<div class=""row h-100 justify-content-center align-items-center"">
+    <form method=""POST"" class=""submit-once col-12"">
+    
+    <page debug="""" args="""" attrs=""""/>
+
+    <div class=""form-group question"" debug="""" args="""" attrs="""">
+    
+        <label for=""6"">
+        Please enter your name
+        </label>
+        
+        <input type=""text"" class=""form-control"" id=""6"" name=""6"" value="""">
+
+
+    </div>
+
+    <br>
+
+    <button id=""forward-button"" name=""direction"" type=""submit"" class=""btn btn-primary"" style=""float: right;"" value=""forward"">
+    >> 
+    </button>
+
+    <br style=""line-height:3;""></br>
+
+    </form>   
+</div>
+</div>
+
+
+    
+
+    <script src=""//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js""></script>
+    <script src=""//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js""></script>
+    <script src=""//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js""></script>
+<script>
+$('form.submit-once').submit(function(e){
+  if( $(this).hasClass('form-submitted') ){
+    e.preventDefault();
+    return;
+  }
+  $(this).addClass('form-submitted');
+  $(""[name='direction']"").html('Loading');
+});
+</script>
+
+  </body>
+</html>
+"
+"<!--
+Page template
+by Dillon Bowen
+last modified 07/22/2019
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset=""utf-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1, shrink-to-fit=no"">
+    <title></title>
+
+    <!-- Bootstrap -->
+    <link href=""//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"" rel=""stylesheet"">
+    <link href=""//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/fontawesome-all.min.css"" rel=""stylesheet"">
+<style>
+    body, html {
+        height: 100%;
+        width: 100%;
+    }
+    .left {
+        display: block;
+        margin-left: 0px;
+        margin-right: auto;
+    }
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .right {
+        display: block;
+        margin-left: auto;
+        margin-right: 0px;
+    }
+    .fit {
+        max-width: 100%;
+        max-height: 100vh;
+    }
+    .span {
+        width: 100%;
+    }
+    div.question {
+        padding: 0px 5px;
+    }
+    div.error {
+        padding: 15px 5px;
+        border-radius: 15px;
+        background-color: lightgray;
+    }
+    p {
+        font-weight: normal;
+    }
+</style>
+
+  </head>
+  <body>
+    
+    
+<div class=""container h-100"">
+<div class=""row h-100 justify-content-center align-items-center"">
+    <form method=""POST"" class=""submit-once col-12"">
+    
+    <page debug="""" args="""" attrs=""""/>
+
+    <div class=""form-group question"" debug="""" args="""" attrs="""">
+    
+        <label for=""8"">
+        What is your favorite flavor of ice cream?
+        </label>
+        
+        <div class=""radio"">
+            <label class=""span"">
+            <input type=""radio"" name=""8"" value=""2""  debug="""" args="""" attrs="""">
+            Chocolate
+            </label>
+        </div>
+
+        <div class=""radio"">
+            <label class=""span"">
+            <input type=""radio"" name=""8"" value=""1""  debug="""" args="""" attrs="""">
+            Lavender
+            </label>
+        </div>
+
+        <div class=""radio"">
+            <label class=""span"">
+            <input type=""radio"" name=""8"" value=""3""  debug="""" args="""" attrs="""">
+            Orange
+            </label>
+        </div>
+
+
+    </div>
+
+    <br>
+
+    <button id=""forward-button"" name=""direction"" type=""submit"" class=""btn btn-primary"" style=""float: right;"" value=""forward"">
+    >> 
+    </button>
+
+    <br style=""line-height:3;""></br>
+
+    </form>   
+</div>
+</div>
+
+
+    
+
+    <script src=""//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js""></script>
+    <script src=""//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js""></script>
+    <script src=""//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js""></script>
+<script>
+$('form.submit-once').submit(function(e){
+  if( $(this).hasClass('form-submitted') ){
+    e.preventDefault();
+    return;
+  }
+  $(this).addClass('form-submitted');
+  $(""[name='direction']"").html('Loading');
+});
+</script>
+
+  </body>
+</html>
+"
+"<!--
+Page template
+by Dillon Bowen
+last modified 07/22/2019
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset=""utf-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1, shrink-to-fit=no"">
+    <title></title>
+
+    <!-- Bootstrap -->
+    <link href=""//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"" rel=""stylesheet"">
+    <link href=""//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/fontawesome-all.min.css"" rel=""stylesheet"">
+<style>
+    body, html {
+        height: 100%;
+        width: 100%;
+    }
+    .left {
+        display: block;
+        margin-left: 0px;
+        margin-right: auto;
+    }
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .right {
+        display: block;
+        margin-left: auto;
+        margin-right: 0px;
+    }
+    .fit {
+        max-width: 100%;
+        max-height: 100vh;
+    }
+    .span {
+        width: 100%;
+    }
+    div.question {
+        padding: 0px 5px;
+    }
+    div.error {
+        padding: 15px 5px;
+        border-radius: 15px;
+        background-color: lightgray;
+    }
+    p {
+        font-weight: normal;
+    }
+</style>
+
+  </head>
+  <body>
+    
+    
+<div class=""container h-100"">
+<div class=""row h-100 justify-content-center align-items-center"">
+    <form method=""POST"" class=""submit-once col-12"">
+    
+    <page debug="""" args="""" attrs=""""/>
+
+    <div class=""form-group question error"" debug="""" args="""" attrs="""">
+    
+        <label for=""8"">
+        
+        <span style=""color:red""><p>Please answer this question.</p></span>
+What is your favorite flavor of ice cream?
+        </label>
+        
+        <div class=""radio"">
+            <label class=""span"">
+            <input type=""radio"" name=""8"" value=""2""  debug="""" args="""" attrs="""">
+            Chocolate
+            </label>
+        </div>
+
+        <div class=""radio"">
+            <label class=""span"">
+            <input type=""radio"" name=""8"" value=""1""  debug="""" args="""" attrs="""">
+            Lavender
+            </label>
+        </div>
+
+        <div class=""radio"">
+            <label class=""span"">
+            <input type=""radio"" name=""8"" value=""3""  debug="""" args="""" attrs="""">
+            Orange
+            </label>
+        </div>
+
+
+    </div>
+
+    <br>
+
+    <button id=""forward-button"" name=""direction"" type=""submit"" class=""btn btn-primary"" style=""float: right;"" value=""forward"">
+    >> 
+    </button>
+
+    <br style=""line-height:3;""></br>
+
+    </form>   
+</div>
+</div>
+
+
+    
+
+    <script src=""//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js""></script>
+    <script src=""//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js""></script>
+    <script src=""//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js""></script>
+<script>
+$('form.submit-once').submit(function(e){
+  if( $(this).hasClass('form-submitted') ){
+    e.preventDefault();
+    return;
+  }
+  $(this).addClass('form-submitted');
+  $(""[name='direction']"").html('Loading');
+});
+</script>
+
+  </body>
+</html>
+"
+"<!--
+Page template
+by Dillon Bowen
+last modified 07/22/2019
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset=""utf-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1, shrink-to-fit=no"">
+    <title></title>
+
+    <!-- Bootstrap -->
+    <link href=""//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"" rel=""stylesheet"">
+    <link href=""//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/fontawesome-all.min.css"" rel=""stylesheet"">
+<style>
+    body, html {
+        height: 100%;
+        width: 100%;
+    }
+    .left {
+        display: block;
+        margin-left: 0px;
+        margin-right: auto;
+    }
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .right {
+        display: block;
+        margin-left: auto;
+        margin-right: 0px;
+    }
+    .fit {
+        max-width: 100%;
+        max-height: 100vh;
+    }
+    .span {
+        width: 100%;
+    }
+    div.question {
+        padding: 0px 5px;
+    }
+    div.error {
+        padding: 15px 5px;
+        border-radius: 15px;
+        background-color: lightgray;
+    }
+    p {
+        font-weight: normal;
+    }
+</style>
+
+  </head>
+  <body>
+    
+    
+<div class=""container h-100"">
+<div class=""row h-100 justify-content-center align-items-center"">
+    <form method=""POST"" class=""submit-once col-12"">
+    
+    <page debug="""" args="""" attrs=""""/>
+
+    <div class=""form-group question"" debug="""" args="""" attrs="""">
+    
+        <label for=""10"">
+        goodbye world
+        </label>
+        
+
+    </div>
+
+    <br>
+
+    <br style=""line-height:3;""></br>
+
+    </form>   
+</div>
+</div>
+
+
+    
+
+    <script src=""//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js""></script>
+    <script src=""//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js""></script>
+    <script src=""//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js""></script>
+<script>
+$('form.submit-once').submit(function(e){
+  if( $(this).hasClass('form-submitted') ){
+    e.preventDefault();
+    return;
+  }
+  $(this).addClass('form-submitted');
+  $(""[name='direction']"").html('Loading');
+});
+</script>
+
+  </body>
+</html>
+"

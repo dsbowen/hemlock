@@ -106,15 +106,14 @@ def survey():
     part = current_user
     page = part._get_current_page()
     compiled_html = page._compile_html()
-    page_html = render_template('page.html', page=Markup(compiled_html))
-    part._store_html(page_html)
+    part._store_html(compiled_html)
     
     if page.get_terminal():
         part._update_metadata(completed=True)
         DataStore.query.first().store(part)
       
     db.session.commit()
-    return page_html
+    return render_template('page.html', page=Markup(compiled_html))
     
 # Validate and record responses on post request (form submission)
 # update metadata

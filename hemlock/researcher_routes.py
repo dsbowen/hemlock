@@ -14,6 +14,8 @@ from werkzeug.security import check_password_hash
 from datetime import datetime
 from io import StringIO
 import csv
+import imgkit
+import os
 
 
 
@@ -73,6 +75,45 @@ def ipv4():
         
     ipv4 = list(set(current_app.ipv4_csv + Visitors.query.first().ipv4))
     return get_response(data={'ipv4': ipv4}, filename='block')
+    
+@bp.route('/view_survey', methods=['GET','POST'])
+def view_survey():
+    if not valid_password():
+        return redirect(url_for(
+            'hemlock.password', requested_url='view_survey'))
+    
+    if request.method == 'POST':
+        part_ids = [p.id for p in Participant.query.all()]
+        try:
+            part_id = int(request.form.get(list(request.form)[0]))
+            if part_id in part_ids:
+                return download_survey(part_id)
+        except:
+            pass
+
+    p = Page()
+    Question(p, 'Participant ID', qtype='free')
+    return render_template('page.html', page=Markup(p._compile_html()))
+    
+def _view_survey(part_id):
+    compiled_html = Participant.query.get(part_id)._page_html
+    compiled_html = Markup('\n<hr>\n'.join(compiled_html))
+    return render_template('page.html', page=compiled_html)
+    
+from flask import render_template_string
+def download_survey(part_id):
+    compiled_html = Participant.query.get(part_id)._page_html
+    rendered_html = [render_template('temp.html', page=Markup(html))
+        for html in compiled_html]
+    html = rendered_html[0]
+    dir = os.path.dirname(os.path.realpath(__file__))+'\\templates\\'
+    css = [dir+'temp.css', 'C:\\Users\\dsbowen\\Downloads\\_temp_matlab_R2018b_win64\\help\\includes\\product\\css\\bootstrap.min.css']
+    img = imgkit.from_string(html, False, css=css)
+    resp = make_response(img)
+    disposition = 'attachment; filename=survey.png'
+    resp.headers['Content-Disposition'] = disposition
+    resp.headers['Content-Type'] = 'image/png'
+    return resp
     
     
     
