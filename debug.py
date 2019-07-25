@@ -16,7 +16,10 @@ class AIParticipant(AIParticipantBase, TestCase):
     LOG_LETTER_LEN = (0,1)
     
     def debug_test(self):
-        print('hello world')
+        print('debug test')
+    
+    def debug_test2(self):
+        print('debug test 2')
 
 if __name__ == '__main__':
     main(NUM_BATCHES, BATCH_SIZE)

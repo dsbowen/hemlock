@@ -42,8 +42,13 @@ def Start():
     q = Question(p, '<p>hello moon</p>')
     q = Question(p, '<p>hello world</p>', qtype='free')
     Validator(q, require)
+    p = Page(b)
+    q = Question(
+        p, '<p>goodbye world</p>', qtype='free', 
+        debug=AIP.debug_test2, debug_args={'hello':'world'})
+    Validator(q, require)
     p = Page(b, terminal=True)
-    q = Question(p, '<p>goodbye world</p>')
+    q = Question(p, '<p>goodbye galaxy</p>')
     return b 
       
 # create the application (survey)

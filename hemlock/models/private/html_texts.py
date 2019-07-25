@@ -47,8 +47,8 @@ PAGE_DEBUG = '''
 ##############################################################################
 
 QUESTION = '''
-    <div class="{0}">
-    {1}
+    <div class="{0}" debug="{1}" args="{2}" attrs="{3}">
+    {4}
     </div>
 '''
 
@@ -64,7 +64,7 @@ ERROR = '''
 '''
 
 FREE = '''
-        <input type="text" test="hello world" class="form-control" id="{0}" name="{0}" value="{1}">
+        <input type="text" class="form-control" id="{0}" name="{0}" value="{1}">
 '''
 
 CHOICE = '''

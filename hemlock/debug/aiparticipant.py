@@ -40,11 +40,14 @@ class AIParticipantBase():
         completed = False
         while not completed:
             self._internal_server_error()
-            self.page = DebugPage(self.driver)
-            print(self.page)
-            print('hello moon test:', self.page.test)
+            DebugPage(self).debug()
             self.fill_form()
             completed = self._navigate()
+    
+    # Default page debug function
+    def _default_page_debug(self):
+        print('default page debug')
+        return
                 
     # Assert heading is not internal server error
     def _internal_server_error(self):

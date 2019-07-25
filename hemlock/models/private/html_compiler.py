@@ -30,13 +30,17 @@ def submit(page):
 
 # Page debug html
 def compile_page(p):
-    debug = p.get_debug()
+    return PAGE_DEBUG.format(*get_debug_attrs(p))
+    
+# Debugging html attributes
+def get_debug_attrs(object):
+    debug = object.get_debug()
     debug = '' if debug is None else debug.__name__
-    args = p.get_debug_args()
+    args = object.get_debug_args()
     args = '' if args is None else str(args)
-    attrs = p.get_debug_attrs()
+    attrs = object.get_debug_attrs()
     attrs = '' if attrs is None else str(attrs)
-    return PAGE_DEBUG.format(debug, args, attrs)
+    return (debug, args, attrs)
 
 
 
@@ -49,7 +53,7 @@ def compile_question(q):
     div_class = 'form-group question'
     if q.get_error() is not None:
         div_class += ' error'
-    return QUESTION.format(div_class, compile_div(q))
+    return QUESTION.format(div_class, *get_debug_attrs(q), compile_div(q))
     
 # Compile form-group div
 def compile_div(q):
