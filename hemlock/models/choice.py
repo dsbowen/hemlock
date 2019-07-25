@@ -1,8 +1,8 @@
-###############################################################################
+##############################################################################
 # Choice model
 # by Dillon Bowen
-# last modified 03/28/2019
-###############################################################################
+# last modified 07/24/2019
+##############################################################################
 
 from hemlock.factory import db
 from hemlock.models.private.base import Base
@@ -19,6 +19,10 @@ Columns:
     label: choice label (same as choice text by default)
     
     checked: indicator that this choice is a default answer
+    
+    debug_function: debug function called by AI Participant
+    debug_args: arguments for debug function
+    debug_attrs: attributes for Debug Choice
 '''
 class Choice(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
@@ -32,13 +36,18 @@ class Choice(db.Model, Base):
     
     _checked = db.Column(db.String(8))
     
+    _debug_function = db.Column(db.PickleType)
+    _debug_args = db.Column(db.PickleType)
+    _debug_attrs = db.Column(db.PickleType)
+    
     
     
     # Initialization
     # by default, value and label are set to text unless manually entered
     def __init__(
             self, question=None, text='',
-            index=None, value=None, label=None):
+            index=None, value=None, label=None,
+            debug=None, debug_args=None, debug_attrs=None):
         
         db.session.add(self)
         db.session.commit()
@@ -49,12 +58,13 @@ class Choice(db.Model, Base):
             self.value(value)
         if label is not None:
             self.label(label)
+        self.debug(debug, debug_args, debug_attrs)
 
 
 
-    ###########################################################################
+    ##########################################################################
     # Public methods
-    ###########################################################################
+    ##########################################################################
     
     # QUESTION
     # Assign to question
@@ -106,10 +116,31 @@ class Choice(db.Model, Base):
         return self._label
     
     
+    # DEBUG FUNCTION AND ARGUMENTS
+    # Set the debug function and arguments
+    def debug(self, debug=None, args=None, attrs=None):
+        self._set_function(
+            '_debug_function', debug, 
+            '_debug_args', args, 
+            '_debug_attrs', attrs)
     
-    ###########################################################################
+    # Get the debug function
+    def get_debug(self):
+        return self._debug_function
+    
+    # Get the debug function arguments
+    def get_debug_args(self):
+        return self._debug_args
+    
+    # Get the Debug Page attributes
+    def get_debug_attrs(self):
+        return self._debug_attrs
+    
+    
+    
+    ##########################################################################
     # Private methods
-    ###########################################################################
+    ##########################################################################
     
     # Set the choice as checked
     def _set_checked(self, checked=True):

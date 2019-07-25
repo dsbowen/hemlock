@@ -37,6 +37,7 @@ def create_app(
         record_incomplete=False,
         block_duplicate_ips=True, 
         block_from_csv=None,
+        debug=True,
         static_folder='../static'):
     
     # configure application
@@ -51,6 +52,7 @@ def create_app(
     app.ipv4_csv, app.ipv4_current = [], []
     if block_from_csv is not None:
         app.ipv4_csv = list(pd.read_csv(block_from_csv)['ipv4'])
+    app.debug_mode = debug
     
     # initialize application features
     db.init_app(app)

@@ -70,8 +70,8 @@ FREE = '''
 CHOICE = '''
         <div class="radio">
             <label class="span">
-            <input type="radio" name="{0}" value="{1}" {2}>
-            {3}
+            <input type="radio" name="{0}" value="{1}" {2} debug="{3}" args="{4}" attrs="{5}">
+            {6}
             </label>
         </div>
 '''

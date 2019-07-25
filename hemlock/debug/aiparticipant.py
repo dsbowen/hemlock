@@ -13,7 +13,7 @@ import string
 import warnings
 import sys
 
-DATA_TYPES = ['letters', 'numeric', 'integer']
+DATA_TYPES = ['_letters', '_numeric', '_integer']
 
 class AIParticipantBase():
     P_REFRESH = 0.1
@@ -40,10 +40,7 @@ class AIParticipantBase():
         completed = False
         while not completed:
             self._internal_server_error()
-            page = DebugPage(self)
-            print(page.questions)
             DebugPage(self).debug()
-            self.fill_form()
             completed = self._navigate()
                 
     # Assert heading is not internal server error
@@ -56,47 +53,35 @@ class AIParticipantBase():
     
     # Default page debug function
     def _default_page_debug(self, page):
-        [q.debug() for q in page.questions]
+        self._random_order(page.questions)
     
     # Default question debug function
-    def _default_question_debug(question, self):
-        print('default question debug')
-        return
-        
-    # Fill out form
-    def fill_form(self):
-        questions = self.driver.find_elements_by_class_name('form-group')
-        [self.fill_question(q) for q in questions]
-        
-    # Fill out question
-    def fill_question(self, q):
+    def _default_question_debug(self, question):
         if random() < self.P_NO_ANSWER:
             return
-        self.inputs = inputs = q.find_elements_by_tag_name('input')
-        if not inputs:
-            return
-        qtype = inputs[0].get_attribute('type')
-        if qtype == 'radio':
-            self.fill_choice()
-        if qtype == 'text':
-            self.fill_text()
+        self._random_order(question.choices)
+        if question._text_entry is not None:
+            self._fill_text_entry(question)
     
-    # Fill out a choice
-    def fill_choice(self):
-        shuffle(self.inputs)
-        for i in self.inputs:
-            if random() < self.P_CLICK:
-                i.click()
+    # Default choice debug function
+    def _default_choice_debug(self, choice):
+        if random() < self.P_CLICK:
+            choice.click()
+    
+    # Call debug functions of objects in list randomly ordered
+    def _random_order(self, objects):
+        order = range(len(objects))
+        shuffle(order)
+        [objects[i].debug() for i in order]
             
     # Fill out text question
-    def fill_text(self):
-        self.inputs = self.inputs[0]
+    def _fill_text_entry(self, question):
         if random() < self.P_CLEAR_TEXT:
-            self.inputs.clear()
-        getattr(self, choice(DATA_TYPES))()
+            question.clear()
+        getattr(self, choice(DATA_TYPES))(question)
     
     # Letters
-    def letters(self):
+    def _letters(self, question):
         data_type = choice(['letters', 'uppercase', 'lowercase', 'mix'])
         if data_type == 'letters':
             keys = string.ascii_letters
@@ -108,10 +93,10 @@ class AIParticipantBase():
             keys = string.printable
         if choice([True, False]):
             keys = string.ascii_letters
-        self.inputs.send_keys(self.gen_text(keys))
+        question.send_keys(self._gen_text(keys))
 
-    # Generate text entry using
-    def gen_text(self, keys):
+    # Generate text entry using keys
+    def _gen_text(self, keys):
         length = int(10**uniform(*self.LOG_LETTER_LEN))
         keys = [choice(keys) for i in range(length)]
         for i in range(len(keys)):
@@ -120,18 +105,17 @@ class AIParticipantBase():
         return ''.join(keys)
     
     # Integer
-    def integer(self):
-        x = self.gen_number()
-        self.inputs.send_keys(str(int(x)))
+    def _integer(self, question):
+        question.send_keys(str(int(self._gen_number())))
     
     # Numeric
-    def numeric(self):
-        x = self.gen_number()
+    def _numeric(self, question):
+        x = self._gen_number()
         x = round(x, choice(range(*self.DECIMAL_LEN)))
-        self.inputs.send_keys(str(x))
+        question.send_keys(str(x))
         
     # Randomly generate a number
-    def gen_number(self):
+    def _gen_number(self):
         x = uniform(0, 10**choice(range(*self.NUMBER_LEN)))
         if random() < self.P_NEGATIVE:
             return -x

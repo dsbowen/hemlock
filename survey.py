@@ -47,6 +47,14 @@ def Start():
         p, '<p>goodbye world</p>', qtype='free', 
         debug=AIP.debug_test2, debug_args={'hello':'world'})
     Validator(q, require)
+    p = Page(b)
+    q = Question(
+        p, '<p>What is your favorite ice cream flavor?</p>', 
+        qtype='single choice')
+    Choice(q, 'Lavender', debug=AIP.debug_test3)
+    Choice(q, 'Chocolate', debug=AIP.debug_test3)
+    Choice(q, 'Orange', debug=AIP.debug_test3)
+    Validator(q, require)
     p = Page(b, terminal=True)
     q = Question(p, '<p>goodbye galaxy</p>')
     return b 
@@ -58,7 +66,8 @@ app = create_app(
     password='',
     record_incomplete=False,
     block_duplicate_ips=False,
-    block_from_csv='block.csv')
+    block_from_csv='block.csv',
+    debug=True)
     
 # run app
 if __name__ == '__main__':

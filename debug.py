@@ -16,11 +16,13 @@ class AIParticipant(AIParticipantBase, TestCase):
     LOG_LETTER_LEN = (0,1)
     
     def debug_test(self, page):
-        print('debug test')
+        [q.send_keys(page.test) for q in page.questions]
     
     def debug_test2(self, question, hello):
-        print('hello', hello)
-        print('debug test 2')
+        question.send_keys('hello '+hello)
+    
+    def debug_test3(self, choice):
+        choice.click()
 
 if __name__ == '__main__':
     main(NUM_BATCHES, BATCH_SIZE)

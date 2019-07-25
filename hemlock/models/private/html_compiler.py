@@ -5,6 +5,7 @@
 ##############################################################################
 
 from hemlock.models.private.html_texts import *
+from flask import current_app
 from random import choice
 
 
@@ -34,6 +35,8 @@ def compile_page(p):
     
 # Debugging html attributes
 def get_debug_attrs(object):
+    if not current_app.debug_mode:
+        return ('','','')
     debug = object.get_debug()
     debug = '' if debug is None else debug.__name__
     args = object.get_debug_args()
@@ -80,5 +83,8 @@ def free(q):
 def single_choice(q):
     [c._set_checked(c.id==q._default) for c in q._choices]
     choices = q.get_choices()
-    return ''.join([CHOICE.format(q.id, c.id, c._checked, c.get_text()) 
-        for c in choices])
+    return ''.join([CHOICE.format(*get_choice_args(q, c)) for c in choices])
+
+# Get arguments for choice html
+def get_choice_args(q, c):
+    return (q.id, c.id, c._checked, *get_debug_attrs(c), c.get_text()) 

@@ -45,10 +45,12 @@ class DebugPage(DebugBase):
     
     def _get_questions(self, AIP):
         question_elems = AIP.driver.find_elements_by_class_name('question')
-        self.questions = [DebugQuestion(AIP, elem) for elem in question_elems]
+        self.questions = [DebugQuestion(AIP, self, elem) 
+            for elem in question_elems]
 
 class DebugQuestion(DebugBase):
-    def __init__(self, AIP, question_elem):
+    def __init__(self, AIP, page, question_elem):
+        self.page = page
         self._debug_init(AIP, AIP._default_question_debug, question_elem)
         self._get_inputs(AIP, question_elem)
     
@@ -57,14 +59,30 @@ class DebugQuestion(DebugBase):
         
         text_entry = [i for i in inputs 
             if i.get_attribute('type') == 'text']
-        self.text_entry = text_entry[0] if len(text_entry)==1 else text_entry
-        print('get input text entry:', self.text_entry)
+        self._text_entry = text_entry[0] if len(text_entry)==1 else text_entry
         
-        self.choices = [DebugChoice(AIP, i) for i in inputs 
+        self.choices = [DebugChoice(AIP, self, i) for i in inputs 
             if i.get_attribute('type') == 'radio']
+    
+    def send_keys(self, keys):
+        try:
+            self._text_entry.send_keys(keys)
+        except:
+            pass
+    
+    def clear(self):
+        try:
+            self._text_entry.clear()
+        except:
+            pass
 
 class DebugChoice(DebugBase):
-    def __init__(self, AIP, elem):
-        pass
+    def __init__(self, AIP, question, choice_elem):
+        self.question = question
+        self._debug_init(AIP, AIP._default_choice_debug, choice_elem)
+        self._button = choice_elem
+        
+    def click(self):
+        self._button.click()
     
     
