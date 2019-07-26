@@ -1,7 +1,7 @@
 ###############################################################################
 # Researcher URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 05/02/2019
+# last modified 07/26/2019
 ###############################################################################
 
 # hemlock database, application blueprint, and models
@@ -111,19 +111,13 @@ def download_survey(part_id):
     compiled_html = Participant.query.get(part_id)._page_html
     rendered_html = [render_template('temp.html', page=Markup(html))
         for html in compiled_html]
-    # html = rendered_html[0]
     
     basedir = os.path.abspath(os.path.dirname(__file__))+'\\templates\\'
     css = [basedir+css_file+'.css' for css_file in ['temp', 'bootstrap.min']]
 
-    images = [imgkit.from_string(html, False, css=css) 
+    config = imgkit.config(wkhtmltoimage=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage.exe')
+    images = [imgkit.from_string(html, False, css=css, config=config) 
         for html in rendered_html]
-    # img = imgkit.from_string(html, False, css=css)
-    # resp = make_response(img)
-    # disposition = 'attachment; filename=survey.png'
-    # resp.headers['Content-Disposition'] = disposition
-    # resp.headers['Content-Type'] = 'image/png'    
-    # return resp
     
     zipf = zipfile.ZipFile('survey.zip', 'w', zipfile.ZIP_DEFLATED)
     [zipf.writestr('page{}.png'.format(i), img) 
