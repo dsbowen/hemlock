@@ -8,7 +8,7 @@
 from hemlock.factory import db, bp
 from hemlock.models import Participant, Page, Question
 from hemlock.models.private import DataStore, Visitors
-from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request, flash, jsonify
+from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request, flash, jsonify, send_file
 from flask_login import login_required, current_user, login_user
 from flask_bootstrap import bootstrap_find_resource
 from werkzeug.security import check_password_hash
@@ -17,6 +17,8 @@ from io import StringIO
 import csv
 import imgkit
 import os
+import zipfile
+
 
 
 
@@ -104,27 +106,19 @@ def _view_survey(part_id):
     compiled_html = Markup('\n<hr>\n'.join(compiled_html))
     return render_template('page.html', page=compiled_html)
     
-import zipfile
-import os
-from flask import send_file
 import pdfkit
 def download_survey(part_id):
     compiled_html = Participant.query.get(part_id)._page_html
     rendered_html = [render_template('temp.html', page=Markup(html))
         for html in compiled_html]
     
-    # basedir = os.path.abspath(os.path.dirname(__file__))+'\\'
-    # css = [basedir+'templates\\'+css_file+'.css' 
-        # for css_file in ['temp', 'bootstrap.min']]
-    basedir = os.path.abspath(os.path.dirname(__file__))+'/'
-    css = [basedir+'templates/'+css_file+'.css' 
-        for css_file in ['temp', 'bootstrap.min']]
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    css = [basedir+'/templates'+css_file 
+        for css_file in ['/temp.css', '/bootstrap.min.css']]
 
-    # config = imgkit.config(wkhtmltoimage=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage.exe')
-    # location = wkhtmltoimage=basedir+'wkhtmltoimage'
-    # print(location)
-    # config = imgkit.config(wkhtmltoimage=basedir+'wkhtmltoimage')
-    config = pdfkit.configuration(wkhtmltopdf=basedir+'wkhtmltopdf.exe')
+    # images = [imgkit.from_string(html, False, css=css) 
+        # for html in rendered_html]
+    config = pdfkit.configuration(wkhtmltopdf=app.conifig['WKHTMLTOPDF_BINARY'])
     images = [pdfkit.from_string(html, False, css=css, configuration=config) 
         for html in rendered_html]
     
@@ -132,7 +126,9 @@ def download_survey(part_id):
     [zipf.writestr('page{}.pdf'.format(i), img) 
         for i, img in enumerate(images)]
     zipf.close()
-    return send_file('../survey.zip', mimetype='zip', attachment_filename='survey.zip', as_attachment=True)
+    return send_file(
+        '../survey.zip', mimetype='zip', 
+        attachment_filename='survey.zip', as_attachment=True)
     
     
     
