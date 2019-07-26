@@ -120,9 +120,9 @@ def download_survey(part_id):
         for css_file in ['temp', 'bootstrap.min']]
 
     # config = imgkit.config(wkhtmltoimage=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage.exe')
-    location = wkhtmltoimage=basedir+'wkhtmltoimage.exe'
+    location = wkhtmltoimage=basedir+'wkhtmltoimage'
     print(location)
-    config = imgkit.config(wkhtmltoimage=basedir+'wkhtmltoimage.exe')
+    config = imgkit.config(wkhtmltoimage=basedir+'wkhtmltoimage')
     images = [imgkit.from_string(html, False, css=css, config=config) 
         for html in rendered_html]
     
