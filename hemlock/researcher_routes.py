@@ -107,27 +107,28 @@ def _view_survey(part_id):
 import zipfile
 import os
 from flask import send_file
+import pdfkit
 def download_survey(part_id):
     compiled_html = Participant.query.get(part_id)._page_html
     rendered_html = [render_template('temp.html', page=Markup(html))
         for html in compiled_html]
     
-    # basedir = os.path.abspath(os.path.dirname(__file__))+'\\'
-    # css = [basedir+'templates\\'+css_file+'.css' 
-        # for css_file in ['temp', 'bootstrap.min']]
-    basedir = os.path.abspath(os.path.dirname(__file__))+'/'
-    css = [basedir+'templates/'+css_file+'.css' 
+    basedir = os.path.abspath(os.path.dirname(__file__))+'\\'
+    css = [basedir+'templates\\'+css_file+'.css' 
         for css_file in ['temp', 'bootstrap.min']]
+    # basedir = os.path.abspath(os.path.dirname(__file__))+'/'
+    # css = [basedir+'templates/'+css_file+'.css' 
+        # for css_file in ['temp', 'bootstrap.min']]
 
     # config = imgkit.config(wkhtmltoimage=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage.exe')
-    location = wkhtmltoimage=basedir+'wkhtmltoimage'
-    print(location)
-    config = imgkit.config(wkhtmltoimage=basedir+'wkhtmltoimage')
-    images = [imgkit.from_string(html, False, css=css, config=config) 
+    # location = wkhtmltoimage=basedir+'wkhtmltoimage'
+    # print(location)
+    # config = imgkit.config(wkhtmltoimage=basedir+'wkhtmltoimage')
+    images = [pdfkit.from_string(html, False, css=css) 
         for html in rendered_html]
     
     zipf = zipfile.ZipFile('survey.zip', 'w', zipfile.ZIP_DEFLATED)
-    [zipf.writestr('page{}.png'.format(i), img) 
+    [zipf.writestr('page{}.pdf'.format(i), img) 
         for i, img in enumerate(images)]
     zipf.close()
     return send_file('../survey.zip', mimetype='zip', attachment_filename='survey.zip', as_attachment=True)
