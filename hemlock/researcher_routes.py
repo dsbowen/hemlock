@@ -125,7 +125,7 @@ def download_survey(part_id):
     # print(location)
     # config = imgkit.config(wkhtmltoimage=basedir+'wkhtmltoimage')
     # config = pdfkit.configuration(wkhtmltopdf=basedir+'wkhtmltopdf.exe')
-    images = [pdfkit.from_string(html, False, css=css, configuration=config) 
+    images = [pdfkit.from_string(html, False, css=css) 
         for html in rendered_html]
     
     zipf = zipfile.ZipFile('survey.zip', 'w', zipfile.ZIP_DEFLATED)
