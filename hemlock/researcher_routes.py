@@ -118,7 +118,7 @@ def download_survey(part_id):
 
     # images = [imgkit.from_string(html, False, css=css) 
         # for html in rendered_html]
-    config = pdfkit.configuration(wkhtmltopdf=app.conifig['WKHTMLTOPDF_BINARY'])
+    config = pdfkit.configuration(wkhtmltopdf=app.conifig['WKHTMLTOPDF_CMD'])
     images = [pdfkit.from_string(html, False, css=css, configuration=config) 
         for html in rendered_html]
     
