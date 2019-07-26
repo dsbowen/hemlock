@@ -10,6 +10,7 @@ from hemlock.models import Participant, Page, Question
 from hemlock.models.private import DataStore, Visitors
 from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request, flash, jsonify
 from flask_login import login_required, current_user, login_user
+from flask_bootstrap import bootstrap_find_resource
 from werkzeug.security import check_password_hash
 from datetime import datetime
 from io import StringIO
@@ -84,12 +85,15 @@ def view_survey():
     
     if request.method == 'POST':
         part_ids = [p.id for p in Participant.query.all()]
-        try:
-            part_id = int(request.form.get(list(request.form)[0]))
-            if part_id in part_ids:
-                return download_survey(part_id)
-        except:
-            pass
+        part_id = int(request.form.get(list(request.form)[0]))
+        if part_id in part_ids:
+            return download_survey(part_id)
+        # try:
+            # part_id = int(request.form.get(list(request.form)[0]))
+            # if part_id in part_ids:
+                # return download_survey(part_id)
+        # except:
+            # pass
 
     p = Page()
     Question(p, 'Participant ID', qtype='free')
@@ -100,20 +104,32 @@ def _view_survey(part_id):
     compiled_html = Markup('\n<hr>\n'.join(compiled_html))
     return render_template('page.html', page=compiled_html)
     
-from flask import render_template_string
+import zipfile
+import os
+from flask import send_file
 def download_survey(part_id):
     compiled_html = Participant.query.get(part_id)._page_html
     rendered_html = [render_template('temp.html', page=Markup(html))
         for html in compiled_html]
-    html = rendered_html[0]
-    dir = os.path.dirname(os.path.realpath(__file__))+'\\templates\\'
-    css = [dir+'temp.css', 'C:\\Users\\dsbowen\\Downloads\\_temp_matlab_R2018b_win64\\help\\includes\\product\\css\\bootstrap.min.css']
-    img = imgkit.from_string(html, False, css=css)
-    resp = make_response(img)
-    disposition = 'attachment; filename=survey.png'
-    resp.headers['Content-Disposition'] = disposition
-    resp.headers['Content-Type'] = 'image/png'
-    return resp
+    # html = rendered_html[0]
+    
+    basedir = os.path.abspath(os.path.dirname(__file__))+'\\templates\\'
+    css = [basedir+css_file+'.css' for css_file in ['temp', 'bootstrap.min']]
+
+    images = [imgkit.from_string(html, False, css=css) 
+        for html in rendered_html]
+    # img = imgkit.from_string(html, False, css=css)
+    # resp = make_response(img)
+    # disposition = 'attachment; filename=survey.png'
+    # resp.headers['Content-Disposition'] = disposition
+    # resp.headers['Content-Type'] = 'image/png'    
+    # return resp
+    
+    zipf = zipfile.ZipFile('survey.zip', 'w', zipfile.ZIP_DEFLATED)
+    [zipf.writestr('page{}.png'.format(i), img) 
+        for i, img in enumerate(images)]
+    zipf.close()
+    return send_file('../survey.zip', mimetype='zip', attachment_filename='survey.zip', as_attachment=True)
     
     
     
