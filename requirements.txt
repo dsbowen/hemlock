@@ -9,3 +9,4 @@ selenium
 imgkit
 pdfkit
 wkhtmltopdf-pack
+python-pdf
