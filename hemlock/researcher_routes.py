@@ -112,10 +112,14 @@ def download_survey(part_id):
     rendered_html = [render_template('temp.html', page=Markup(html))
         for html in compiled_html]
     
-    basedir = os.path.abspath(os.path.dirname(__file__))+'\\templates\\'
-    css = [basedir+css_file+'.css' for css_file in ['temp', 'bootstrap.min']]
+    basedir = os.path.abspath(os.path.dirname(__file__))+'\\'
+    css = [basedir+'templates\\'+css_file+'.css' 
+        for css_file in ['temp', 'bootstrap.min']]
 
-    config = imgkit.config(wkhtmltoimage=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage.exe')
+    # config = imgkit.config(wkhtmltoimage=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage.exe')
+    location = wkhtmltoimage=basedir+'wkhtmltoimage.exe'
+    print(location)
+    config = imgkit.config(wkhtmltoimage=basedir+'wkhtmltoimage.exe')
     images = [imgkit.from_string(html, False, css=css, config=config) 
         for html in rendered_html]
     
