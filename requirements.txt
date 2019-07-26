@@ -8,4 +8,4 @@ pandas
 selenium
 imgkit
 pdfkit
-wkhtmltopdf-pack-ng
+wkhtmltopdf-pack
