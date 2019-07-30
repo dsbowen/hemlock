@@ -29,6 +29,9 @@ div.error {
 .choice-hover {
     background-color: lightgray;
 }
+input[type="radio"] {
+    vertical-align: middle;
+}
 input[type="radio"]:checked + label {
     background-color: darkgray;
 }
