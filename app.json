@@ -1,6 +1,5 @@
 {
     "name": "Hemlock survey",
-    "repository": "https://github.com/dsbowen/Hemlock/blob/master",
     "env": {
         "SECRET_TOKEN": {
             "generator": "secret"
@@ -15,11 +14,6 @@
     "addons": [
         {
             "plan": "heroku-postgresql:hobby-dev"
-        }
-    ],
-    "buildpacks": [
-        {
-            "url": "https://github.com/simplefractal/heroku-buildpack-wkhtmltopdf"
         }
     ]
 }
