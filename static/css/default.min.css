@@ -23,14 +23,10 @@ div.error {
 
 /* Choice formatting */
 .choice {
-    margin: .3rem;
     border-radius: 3px;
 }
 .choice-hover {
     background-color: lightgray;
-}
-input[type="radio"] {
-    vertical-align: middle;
 }
 input[type="radio"]:checked + label {
     background-color: darkgray;
