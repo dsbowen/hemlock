@@ -106,12 +106,13 @@ def _view_survey(part_id):
     compiled_html = Markup('\n<hr>\n'.join(compiled_html))
     return render_template('page.html', page=compiled_html)
     
+import shlex
 def download_survey(part_id):
-    compiled_html = Participant.query.get(part_id)._page_html
+    compiled_html = Participant.query.get(part_id)._page_html[0]
     basedir = os.getcwd()
-    css = [basedir+url_for('static', filename='css/'+css_file).replace('/','\\')
+    css = [basedir+url_for('static', filename='css/'+css_file)
         for css_file in ['default.min.css', 'bootstrap.min.css']]
-    config = imgkit.config(wkhtmltoimage='/app/bin/wkhtmltoimage')
+    config = imgkit.config(wkhtmltoimage=basedir+'/app/bin/wkhtmltoimage')
     images = [imgkit.from_string(html, False, css=css, config=config) 
         for html in compiled_html]
     zipf = zipfile.ZipFile('survey.zip', 'w', zipfile.ZIP_DEFLATED)
