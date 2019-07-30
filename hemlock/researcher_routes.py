@@ -1,8 +1,8 @@
-###############################################################################
+##############################################################################
 # Researcher URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 07/26/2019
-###############################################################################
+# last modified 07/30/2019
+##############################################################################
 
 # hemlock database, application blueprint, and models
 from hemlock.factory import db, bp
@@ -22,9 +22,9 @@ import zipfile
 
 
 
-###############################################################################
+##############################################################################
 # Data download views
-###############################################################################
+##############################################################################
 
 # Request data download
 @bp.route('/download')
@@ -65,9 +65,9 @@ def _download():
 
 
 
-###############################################################################
+##############################################################################
 # ipv4 download view
-###############################################################################
+##############################################################################
 
 # Download list of ipv4 addresses
 # for blocking duplicates in subsequent studies
@@ -106,35 +106,26 @@ def _view_survey(part_id):
     compiled_html = Markup('\n<hr>\n'.join(compiled_html))
     return render_template('page.html', page=compiled_html)
     
-import pdfkit
 def download_survey(part_id):
     compiled_html = Participant.query.get(part_id)._page_html
-    rendered_html = [render_template('temp.html', page=Markup(html))
+    basedir = os.getcwd()
+    css = [basedir+url_for('static', filename='css/'+css_file).replace('/','\\')
+        for css_file in ['default.min.css', 'bootstrap.min.css']]
+    images = [imgkit.from_string(html, False, css=css) 
         for html in compiled_html]
-    
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    css = [basedir+'/templates'+css_file 
-        for css_file in ['/temp.css', '/bootstrap.min.css']]
-
-    # images = [imgkit.from_string(html, False, css=css) 
-        # for html in rendered_html]
-    config = pdfkit.configuration(wkhtmltopdf=current_app.config['WKHTMLTOPDF_CMD'])
-    images = [pdfkit.from_string(html, False, css=css, configuration=config) 
-        for html in rendered_html]
-    
     zipf = zipfile.ZipFile('survey.zip', 'w', zipfile.ZIP_DEFLATED)
-    [zipf.writestr('page{}.pdf'.format(i), img) 
+    [zipf.writestr('page{}.png'.format(i), img)
         for i, img in enumerate(images)]
     zipf.close()
     return send_file(
-        '../survey.zip', mimetype='zip', 
+        '../survey.zip', mimetype='zip',
         attachment_filename='survey.zip', as_attachment=True)
     
     
     
-###############################################################################
+##############################################################################
 # Password validation and get response
-###############################################################################
+##############################################################################
 
 # Check for valid password
 def valid_password():

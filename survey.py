@@ -23,7 +23,7 @@ def Start():
     q = Question(
         p, 'What is your favorite flavor of ice cream?', 
         qtype='single choice', var='ice_cream')
-    Choice(q, 'Lavender')
+    q.default(Choice(q, 'Lavender'))
     Choice(q, 'Chocolate')
     Choice(q, 'Orange')
     q.randomize()

@@ -1,7 +1,7 @@
 ##############################################################################
 # Html texts
 # by Dillon Bowen
-# last modified 07/24/2019
+# last modified 07/30/2019
 ##############################################################################
 
 
@@ -15,13 +15,13 @@ BREAK = '''
 '''
 
 FORWARD_BUTTON = '''
-    <button id="forward-button" name="direction" type="submit" class="btn btn-primary" style="float: right;" value="forward">
+    <button id="forward-button" name="direction" type="submit" class="btn btn-outline-primary" style="float: right;" value="forward">
     >> 
     </button>
 '''
 
 BACK_BUTTON = '''
-    <button id="back-button" name="direction" type="submit" class="btn btn-primary" style="float: left;" value="back"> 
+    <button id="back-button" name="direction" type="submit" class="btn btn-outline-primary" style="float: left;" value="back"> 
     << 
     </button>
 '''
@@ -68,9 +68,9 @@ FREE = '''
 '''
 
 CHOICE = '''
-        <div class="radio">
-            <label class="span">
-            <input type="radio" name="{0}" value="{1}" {2} debug="{3}" args="{4}" attrs="{5}">
+        <div class="custom-control custom-radio">
+            <input id="{0}" value="{0}" name="{1}" class="custom-control-input" type="radio" {2} debug="{3}" args="{4}" attrs="{5}">
+            <label class="custom-control-label w-100 choice" for="{0}">
             {6}
             </label>
         </div>

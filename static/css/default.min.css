@@ -1,0 +1,56 @@
+/*****************************************************************************
+Default css file
+by Dillon Bowen
+created 07/27/2019
+last modified 07/30/2019
+*****************************************************************************/
+
+/* Set body and html to viewport width */
+body, html {
+    height: 100%;
+    width: 100%;
+}
+
+/* Question div formatting */
+div.question {
+    padding: 0px 5px;
+}
+div.error {
+    padding: 15px 5px;
+    border-radius: 15px;
+    background-color: gainsboro;
+}
+
+/* Choice formatting */
+.choice {
+    border-radius: 3px;
+}
+.choice-hover {
+    background-color: lightgray;
+}
+input[type="radio"]:checked + label {
+    background-color: darkgray;
+}
+
+/* Object alignment */
+/* e.g. for use with images */
+.left {
+    display: block;
+    margin-left: 0px;
+    margin-right: auto;
+}
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.right {
+    display: block;
+    margin-left: auto;
+    margin-right: 0px;
+}
+.fit {
+    max-width: 100%;
+    max-height: 100vh;
+}
+

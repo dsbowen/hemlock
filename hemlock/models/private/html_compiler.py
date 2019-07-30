@@ -1,7 +1,7 @@
 ##############################################################################
 # Html compiler functions
 # by Dillon Bowen
-# last modified 07/24/2019
+# last modified 07/30/2019
 ##############################################################################
 
 from hemlock.models.private.html_texts import *
@@ -10,21 +10,6 @@ from random import choice
 
 
 
-##############################################################################
-# Navigation
-##############################################################################
-    
-# Submit button
-def submit(page):
-    html = BREAK
-    if page._back:
-        html += BACK_BUTTON
-    if not page._terminal:
-        html += FORWARD_BUTTON
-    return html + PAGE_BREAK    
-
-
-    
 ##############################################################################
 # Page html
 ##############################################################################
@@ -44,6 +29,21 @@ def get_debug_attrs(object):
     attrs = object.get_debug_attrs()
     attrs = '' if attrs is None else str(attrs)
     return (debug, args, attrs)
+
+
+
+##############################################################################
+# Navigation
+##############################################################################
+    
+# Submit button
+def submit(page):
+    html = BREAK
+    if page._back:
+        html += BACK_BUTTON
+    if not page._terminal:
+        html += FORWARD_BUTTON
+    return html + PAGE_BREAK    
 
 
 
@@ -87,4 +87,4 @@ def single_choice(q):
 
 # Get arguments for choice html
 def get_choice_args(q, c):
-    return (q.id, c.id, c._checked, *get_debug_attrs(c), c.get_text()) 
+    return (c.id, q.id, c._checked, *get_debug_attrs(c), c.get_text())
