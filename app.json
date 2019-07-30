@@ -1,6 +1,6 @@
 {
     "name": "Hemlock survey",
-    "repository": "https://github.com/dsbowen/Hemlock/blob/master",
+    "repository": "https://github.com/dsbowen/Hemlock",
     "env": {
         "SECRET_TOKEN": {
             "generator": "secret"
