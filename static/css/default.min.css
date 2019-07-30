@@ -22,6 +22,9 @@ div.error {
 }
 
 /* Choice formatting */
+div.div-choice {
+    margin: 3px;
+}
 .choice {
     border-radius: 3px;
 }
