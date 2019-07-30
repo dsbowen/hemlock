@@ -120,6 +120,9 @@ def download_survey(part_id):
     for root, dirs, files in os.walk('/app/bin/wkhtmltoimage'):
         for filename in files:
             print(filename)
+    print('versions')
+    shlex.split('/app/bin/wkhtmltopdf -V')
+    shlex.split('/app/bin/wkhtmltoimage -V')
     config = imgkit.config(wkhtmltoimage='/app/bin/wkhtmltoimage')
     images = [imgkit.from_string(html, False, css=css, config=config) 
         for html in compiled_html]
