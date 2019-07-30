@@ -111,7 +111,7 @@ def download_survey(part_id):
     basedir = os.getcwd()
     css = [basedir+url_for('static', filename='css/'+css_file).replace('/','\\')
         for css_file in ['default.min.css', 'bootstrap.min.css']]
-    config = imgkit.config(wkhtmltoimage='/app/bin/wkhtmltoimage')
+    config = imgkit.config(wkhtmltoimage='/app/bin')
     images = [imgkit.from_string(html, False, css=css, config=config) 
         for html in compiled_html]
     zipf = zipfile.ZipFile('survey.zip', 'w', zipfile.ZIP_DEFLATED)
