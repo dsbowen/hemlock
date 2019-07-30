@@ -31,7 +31,9 @@ div.error {
     background-color: lightgray;
 }
 input[type="radio"] {
-    vertical-align: middle;
+    margin-top: ((@line-height-base - 1)/2) * 1em;
+	width: 1em;
+	height: 1em;
 }
 input[type="radio"]:checked + label {
     background-color: darkgray;
