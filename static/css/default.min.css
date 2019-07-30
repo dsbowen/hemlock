@@ -23,7 +23,9 @@ div.error {
 
 /* Choice formatting */
 div.div-choice {
-    padding: 3px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    background-clip: padding-box;
 }
 .choice {
     border-radius: 3px;
