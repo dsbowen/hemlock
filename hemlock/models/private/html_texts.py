@@ -69,7 +69,7 @@ FREE = '''
 
 CHOICE = '''
         <div class="custom-control custom-radio">
-            <input id="{0}" value="{0}" name="{1}" class="custom-control-input" type="radio" {2} debug="{3}" args="{4}" attrs="{5}">
+            <input id="{0}" value="{0}" name="{1}" class="custom-control-input align-middle" type="radio" {2} debug="{3}" args="{4}" attrs="{5}">
             <label class="custom-control-label h-100 w-100 choice" for="{0}">
             {6}
             </label>
