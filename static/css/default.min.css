@@ -23,7 +23,7 @@ div.error {
 
 /* Choice formatting */
 div.div-choice {
-    margin: 3px;
+    padding: 3px;
 }
 .choice {
     border-radius: 3px;
