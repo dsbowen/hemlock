@@ -106,7 +106,6 @@ def _view_survey(part_id):
     compiled_html = Markup('\n<hr>\n'.join(compiled_html))
     return render_template('page.html', page=compiled_html)
     
-import shlex
 def download_survey(part_id):
     compiled_html = Participant.query.get(part_id)._page_html[0]
     basedir = os.getcwd()
