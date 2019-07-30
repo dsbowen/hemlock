@@ -89,7 +89,7 @@ def view_survey():
         part_ids = [p.id for p in Participant.query.all()]
         part_id = int(request.form.get(list(request.form)[0]))
         if part_id in part_ids:
-            return download_survey(part_id)
+            return _view_survey(part_id)
         # try:
             # part_id = int(request.form.get(list(request.form)[0]))
             # if part_id in part_ids:
