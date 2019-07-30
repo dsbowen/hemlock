@@ -22,17 +22,16 @@ div.error {
 }
 
 /* Choice formatting */
-div.div-choice {
-    padding-top: 3px;
-    padding-bottom: 3px;
-    background-clip: padding-box;
-}
 .choice {
+    padding: 3px;
     border-radius: 3px;
     background-clip: padding-box;
 }
 .choice-hover {
     background-color: lightgray;
+}
+input[type="radio"] {
+    padding-top: 3px
 }
 input[type="radio"]:checked + label {
     background-color: darkgray;
