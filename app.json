@@ -15,7 +15,7 @@
         {
             "plan": "heroku-postgresql:hobby-dev"
         }
-    ]
+    ],
     "buildpacks": [
         {
             "url": "https://github.com/simplefractal/heroku-buildpack-wkhtmltopdf"
