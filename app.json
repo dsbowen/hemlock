@@ -18,7 +18,7 @@
     ],
     "buildpacks": [
         {
-            "url": "https://github.com/simplefractal/heroku-buildpack-wkhtmltopdf"
+            "url": "https://github.com/heroku/heroku-buildpack-multi.git"
         }
     ]
 }
