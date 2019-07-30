@@ -23,6 +23,7 @@ div.error {
 
 /* Choice formatting */
 .choice {
+    margin: .3rem;
     border-radius: 3px;
 }
 .choice-hover {
