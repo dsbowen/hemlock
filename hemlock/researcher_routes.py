@@ -110,13 +110,13 @@ def download_survey(part_id):
     compiled_html = Participant.query.get(part_id)._page_html
     compiled_html = [render_template('temp.html', page=Markup(p))
         for p in compiled_html]
-    [print(p) for p in compiled_html]
     basedir = os.getcwd()
     css = [basedir+url_for('static', filename='css/'+css_file)
         for css_file in ['bootstrap.min.css', 'default.min.css']]
-    print(css)
     config = imgkit.config(wkhtmltoimage='/app/bin/wkhtmltoimage')
-    images = [imgkit.from_string(html, False, css=css, config=config) 
+    # images = [imgkit.from_string(html, False, css=css, config=config) 
+        # for html in compiled_html]
+    images = [imgkit.from_string(html, False, config=config) 
         for html in compiled_html]
     zipf = zipfile.ZipFile('survey.zip', 'w', zipfile.ZIP_DEFLATED)
     [zipf.writestr('page{}.png'.format(i), img)
