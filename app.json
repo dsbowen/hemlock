@@ -1,5 +1,6 @@
 {
     "name": "Hemlock survey",
+    "stack": "heroku-16"
     "env": {
         "SECRET_TOKEN": {
             "generator": "secret"
@@ -23,6 +24,5 @@
         {
             "url": "https://github.com/simplefractal/heroku-buildpack-wkhtmltopdf"
         }
-    ],
-    "stack": "heroku-16"
+    ]
 }
