@@ -10,12 +10,6 @@ body, html {
     height: 100%;
     width: 100%;
 }
-div {
-    width: 100%;
-}
-label {
-    width: 100%;
-}
 
 /* Question div formatting */
 div.question {
