@@ -22,7 +22,7 @@
             "url": "heroku/python"
         },
         {
-            "url": "https://github.com/dsbowen/wkhtmltopdf"
+            "url": "https://github.com/dsbowen/heroku-buildpack-wkhtmltopdf"
         }
     ]
 }
