@@ -53,7 +53,7 @@ QUESTION = '''
 '''
 
 DIV = '''
-        <label for="{0}">
+        <label class="w-100" for="{0}">
         {1}
         </label>
         {2}
