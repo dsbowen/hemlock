@@ -1,6 +1,6 @@
 {
     "name": "Hemlock survey",
-    "stack": "heroku-16",
+    "stack": "heroku-18",
     "env": {
         "SECRET_TOKEN": {
             "generator": "secret"
