@@ -15,10 +15,5 @@
         {
             "plan": "heroku-postgresql:hobby-dev"
         }
-    ],
-    "buildpacks": [
-        {
-            "url": "https://github.com/stomita/heroku-buildpack-phantomjs"
-        }
     ]
 }
