@@ -2,7 +2,7 @@
 Default css file
 by Dillon Bowen
 created 07/27/2019
-last modified 07/30/2019
+last modified 07/31/2019
 *****************************************************************************/
 
 /* Set body and html to viewport width */
@@ -23,15 +23,12 @@ div.error {
 
 /* Choice formatting */
 .choice {
-    padding: 3px;
+    padding-left: 3px;
     border-radius: 3px;
     background-clip: padding-box;
 }
 .choice-hover {
     background-color: lightgray;
-}
-input[type="radio"] {
-    padding-top: 3px
 }
 input[type="radio"]:checked + label {
     background-color: darkgray;
