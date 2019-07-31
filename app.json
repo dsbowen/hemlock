@@ -21,7 +21,7 @@
             "url": "heroku/python"
         },
         {
-            "url": "https://github.com/stomita/heroku-buildpack-phantomjs"
+            "url": "https://github.com/simplefractal/heroku-buildpack-wkhtmltopdf"
         }
     ]
 }
