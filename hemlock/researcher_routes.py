@@ -108,10 +108,8 @@ def _view_survey(part_id):
     
 def download_survey(part_id):
     compiled_html = Participant.query.get(part_id)._page_html
-    compiled_html = [Markup(p) for p in compiled_html]
-    [print(p) for p in compiled_html]
-    # compiled_html = [render_template('temp.html', page=Markup(p))
-        # for p in compiled_html]
+    compiled_html = [render_template('temp.html', page=Markup(p))
+        for p in compiled_html]
     basedir = os.getcwd()
     css = [basedir+url_for('static', filename='css/'+css_file)
         for css_file in ['bootstrap.min.css']]
