@@ -108,10 +108,11 @@ def _view_survey(part_id):
     
 def download_survey(part_id):
     compiled_html = Participant.query.get(part_id)._page_html
+    compiled_html = [render_template('page.html', page=p)
+        for p in compiled_html]
     basedir = os.getcwd()
     css = [basedir+url_for('static', filename='css/'+css_file)
         for css_file in ['default.min.css', 'bootstrap.min.css']]
-    print(css)
     config = imgkit.config(wkhtmltoimage='/app/bin/wkhtmltoimage')
     images = [imgkit.from_string(html, False, css=css, config=config) 
         for html in compiled_html]
