@@ -113,7 +113,7 @@ def download_survey(part_id):
     [print(p) for p in compiled_html]
     basedir = os.getcwd()
     css = [basedir+url_for('static', filename='css/'+css_file)
-        for css_file in ['bootstrap.min.css']]
+        for css_file in ['bootstrap.min.css', 'default.min.css']]
     print(css)
     config = imgkit.config(wkhtmltoimage='/app/bin/wkhtmltoimage')
     images = [imgkit.from_string(html, False, css=css, config=config) 
