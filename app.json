@@ -23,8 +23,6 @@
         {
             "url": "https://github.com/simplefractal/heroku-buildpack-wkhtmltopdf"
         }
-    ],
-    {
-        "stack": "heroku-16"
-    }
+    ].
+    "stack": "heroku-16"
 }
