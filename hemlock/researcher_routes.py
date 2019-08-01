@@ -1,7 +1,7 @@
 ##############################################################################
 # Researcher URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 07/30/2019
+# last modified 08/01/2019
 ##############################################################################
 
 # hemlock database, application blueprint, and models
@@ -14,10 +14,14 @@ from flask_bootstrap import bootstrap_find_resource
 from werkzeug.security import check_password_hash
 from datetime import datetime
 from io import StringIO
+from docx import Document
+from docx.shared import Inches
 import csv
 import imgkit
 import os
 import zipfile
+
+SURVEY_VIEW_IMG_WIDTH = Inches(6)
 
 
 
@@ -78,53 +82,103 @@ def ipv4():
         
     ipv4 = list(set(current_app.ipv4_csv + Visitors.query.first().ipv4))
     return get_response(data={'ipv4': ipv4}, filename='block')
-    
-@bp.route('/view_survey', methods=['GET','POST'])
-def view_survey():
+
+
+
+##############################################################################
+# Survey download view
+##############################################################################
+   
+# Download survey view for a specified participant
+@bp.route('/survey_view', methods=['GET','POST'])
+def survey_view():
     if not valid_password():
         return redirect(url_for(
-            'hemlock.password', requested_url='view_survey'))
+            'hemlock.password', requested_url='survey_view'))
     
     if request.method == 'POST':
-        part_ids = [p.id for p in Participant.query.all()]
-        part_id = int(request.form.get(list(request.form)[0]))
-        if part_id in part_ids:
-            return download_survey(part_id)
-        # try:
-            # part_id = int(request.form.get(list(request.form)[0]))
-            # if part_id in part_ids:
-                # return download_survey(part_id)
-        # except:
-            # pass
+        return _survey_view()
 
     p = Page()
     Question(p, 'Participant ID', qtype='free')
     return render_template('page.html', page=Markup(p._compile_html()))
     
-def _view_survey(part_id):
-    compiled_html = Participant.query.get(part_id)._page_html
-    compiled_html = Markup('\n<hr>\n'.join(compiled_html))
-    return render_template('page.html', page=compiled_html)
-    
-def download_survey(part_id):
-    compiled_html = Participant.query.get(part_id)._page_html
-    compiled_html = [render_template('temp.html', page=Markup(p))
-        for p in compiled_html]
-    basedir = os.getcwd()
-    css = [basedir+url_for('static', filename='css/'+css_file)
-        for css_file in ['default.min.css', 'bootstrap.min.css']]
-    config = imgkit.config(wkhtmltoimage='/app/bin/wkhtmltoimage')
-    images = [imgkit.from_string(html, False, css=css, config=config) 
-        for html in compiled_html]
-    # images = [imgkit.from_string(html, False, css=css) 
-        # for html in compiled_html]
-    zipf = zipfile.ZipFile('survey.zip', 'w', zipfile.ZIP_DEFLATED)
-    [zipf.writestr('page{}.png'.format(i), img)
-        for i, img in enumerate(images)]
-    zipf.close()
+# Download survey view (private)
+# get requested participant
+# render compiled html and add to docx and zip files
+# add docx to zip and return zip file
+def _survey_view():
+    part = _get_participant()
+    if part is None:
+        return redirect(url_for('hemlock.view_survey'))
+    _create_folders()
+    _create_files(part)
     return send_file(
-        '../survey.zip', mimetype='zip',
-        attachment_filename='survey.zip', as_attachment=True)
+        os.getcwd()+'/tmp/survey_view.zip', mimetype='zip',
+        attachment_filename='survey_view.zip', as_attachment=True)
+    
+# Get requested participant
+def _get_participant():
+    pid = request.form.get(list(request.form)[0])
+    try:
+        pid = int(pid)
+    except:
+        return
+    return Participant.query.get(pid)
+
+# Create and clean folders for the survey_view zip file
+def _create_folders():
+    try:
+        os.mkdir('/tmp')
+    except:
+        pass
+    os.chdir('tmp')
+    try:
+        os.remove('survey_view.zip')
+    except:
+        pass
+    os.chdir('..')
+        
+# Create png and docx files and zip
+def _create_files(part):
+    page_html, css, config = _setup_pages(part)
+    
+    os.chdir('tmp')
+    doc = Document()
+    zipf = zipfile.ZipFile('survey_view.zip', 'w', zipfile.ZIP_DEFLATED)
+    [_process_page(i, p, css, config, doc, zipf) 
+        for i, p in enumerate(page_html)]
+    doc.save('survey_view.docx')
+    zipf.write('survey_view.docx')
+    os.remove('survey_view.docx')
+    zipf.close()
+    os.chdir('..')
+
+# Set up for creating survey view files
+# render page html and get css and config for imgkit
+def _setup_pages(part):
+    page_html = [render_template('survey_view.html', page=Markup(p))
+        for p in part._page_html]
+    dir = os.getcwd()
+    css = [dir+url_for('static', filename='css/'+css_file)
+        for css_file in ['default.min.css', 'bootstrap.min.css']]
+    try:
+        config = imgkit.config(wkhtmltoimage='/app/bin/wkhtmltoimage')
+    except:
+        config = imgkit.config()
+    return page_html, css, config
+
+# Process page
+# create png file
+# add to docx
+# add to zip file
+def _process_page(i, page, css, config, doc, zipf):
+    page_name = 'page{}.png'.format(i)
+    imgkit.from_string(
+        page, page_name, css=css, config=config, options={'quiet':''})
+    doc.add_picture(page_name, width=SURVEY_VIEW_IMG_WIDTH)
+    zipf.write(page_name)
+    os.remove(page_name)
     
     
     

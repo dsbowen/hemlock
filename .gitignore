@@ -1,4 +1,5 @@
 __pycache__
 data.db
 test.py
+tmp
 *.log
