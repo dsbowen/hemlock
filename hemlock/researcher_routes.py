@@ -128,9 +128,11 @@ def _get_participant():
 
 # Create and clean folders for the survey_view zip file
 def _create_folders():
+    print(os.getcwd())
     try:
         os.mkdir('/tmp')
     except:
+        print('Unable to create tmp directory')
         pass
     os.chdir('tmp')
     try:
