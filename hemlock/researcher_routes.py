@@ -130,7 +130,7 @@ def _get_participant():
 def _create_folders():
     print(os.getcwd())
     try:
-        os.mkdir('/tmp')
+        os.mkdir('tmp')
     except:
         print('Unable to create tmp directory')
         pass
