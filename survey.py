@@ -16,24 +16,36 @@ def Start():
     
 def Start():
     b = Branch()
+    
     p = Page(b)
-    q = Question(p, 'Please enter your name', qtype='free', var='name')
-    Validator(q, require)
+    name = Question(p, 'What is your name?', var='name', qtype='free')
+    Validator(name, require)
+    
     p = Page(b)
-    q = Question(
-        p, 'What is your favorite flavor of ice cream?', 
-        qtype='single choice', var='ice_cream')
-    q.default(Choice(q, 'Lavender'))
-    Choice(q, 'Chocolate')
-    Choice(q, 'Orange')
-    q.randomize()
-    Validator(q, require)
-    p = Page(b, compile=print_html, terminal=True)
-    q = Question(p, 'goodbye world')
+    ice_cream = Question(
+        p, 'Favorite ice cream:', var='ice_cream', qtype='single choice')
+    ice_cream.default(Choice(ice_cream, 'Vanilla'))
+    Choice(ice_cream, 'Chocolate')
+    Choice(ice_cream, 'Strawberry')
+    Choice(ice_cream, 'Cookies and cream')
+    Choice(ice_cream, 'Mint chocolate chip')
+    ice_cream.randomize()
+    Validator(ice_cream, require)
+    
+    b.next(End, {'name_id':name.id, 'ice_cream_id':ice_cream.id})
+    
     return b
-
-def print_html(p):
-    print([i for i in current_user._page_html])
+    
+def End(name_id, ice_cream_id):
+    name, ice_cream = [q.get_response() 
+        for q in query([name_id, ice_cream_id])]
+    
+    b = Branch()
+    p = Page(b, terminal=True)
+    q = Question(p, 'Your name is {0} and your favorite ice cream is {1}'.format(name, ice_cream))
+    
+    return b
+    
       
 # create the application (survey)
 app = create_app(
