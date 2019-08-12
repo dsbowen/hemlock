@@ -18,31 +18,27 @@ def Start():
     b = Branch()
     
     p = Page(b)
-    name = Question(p, 'What is your name?', var='name', qtype='free')
+    color = Question(
+        p, "What's your favorite color?", qtype='single choice', var='Color')
+    color.default(Choice(color, 'Pink'))
+    Choice(color, 'Blue')
+    Choice(color, 'White')
+    
+    name = Question(
+        p, "What's your middle name?", qtype='free', var='MiddleName')
     Validator(name, require)
     
-    p = Page(b)
-    ice_cream = Question(
-        p, 'Favorite ice cream:', var='ice_cream', qtype='single choice')
-    ice_cream.default(Choice(ice_cream, 'Vanilla'))
-    Choice(ice_cream, 'Chocolate')
-    Choice(ice_cream, 'Strawberry')
-    Choice(ice_cream, 'Cookies and cream')
-    Choice(ice_cream, 'Mint chocolate chip')
-    ice_cream.randomize()
-    Validator(ice_cream, require)
-    
-    b.next(End, {'name_id':name.id, 'ice_cream_id':ice_cream.id})
+    b.next(End, {'name_id':name.id, 'color_id':color.id})
     
     return b
     
-def End(name_id, ice_cream_id):
-    name, ice_cream = [q.get_response() 
-        for q in query([name_id, ice_cream_id])]
+def End(name_id, color_id):
+    name, color = [q.get_response() 
+        for q in query([name_id, color_id])]
     
     b = Branch()
     p = Page(b, terminal=True)
-    q = Question(p, 'Your name is {0} and your favorite ice cream is {1}'.format(name, ice_cream))
+    q = Question(p, 'Nice to meet you, {0}! My favorite color is also {1}'.format(name, color))
     
     return b
     
