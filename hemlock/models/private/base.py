@@ -83,6 +83,7 @@ class Base():
         return arg_class.query.get(value)
         
         
+        
     ##########################################################################
     # Navigation functions common to branch and page    ##########################################################################
     
