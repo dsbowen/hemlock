@@ -33,7 +33,6 @@ def make_shell_context():
     'random_assignment':random_assignment,
     'requre':require,
     'integer':integer,
-    'in_range':in_range,
     'isin':isin,
     'decimals':decimals,
     

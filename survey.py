@@ -28,13 +28,13 @@ def Start():
         p, "What's your middle name?", qtype='free', var='MiddleName')
     Validator(name, require)
     
-    b.next(End, {'name_id':name.id, 'color_id':color.id})
+    b.next(End, {'name':name, 'color':color})
     
     return b
     
-def End(name_id, color_id):
-    name, color = [q.get_response() 
-        for q in query([name_id, color_id])]
+def End(name, color):
+    name = name.get_response()
+    color = color.get_response()
     
     b = Branch()
     p = Page(b, terminal=True)
