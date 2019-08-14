@@ -1,8 +1,18 @@
 ##############################################################################
 # Html texts
 # by Dillon Bowen
-# last modified 07/30/2019
+# last modified 08/14/2019
 ##############################################################################
+
+
+
+##############################################################################
+# Page
+##############################################################################
+
+PAGE_ID = '''
+    <page id="{pid}"/>
+'''
 
 
 
@@ -33,45 +43,43 @@ PAGE_BREAK = '''
 
 
 ##############################################################################
-# Page
-##############################################################################
-
-PAGE_DEBUG = '''
-    <page debug="{0}" args="{1}" attrs="{2}"/>
-'''
-
-
-
-##############################################################################
 # Question
 ##############################################################################
 
-QUESTION = '''
-    <div class="{0}" debug="{1}" args="{2}" attrs="{3}">
-    {4}
+QDIV = '''
+    <div class="{classes}">
+    {label}
+    {content}
     </div>
 '''
 
-DIV = '''
-        <label class="w-100" for="{0}">
-        {1}
-        </label>
-        {2}
-'''
-
 ERROR = '''
-        <span style="color:red">{0}</span>
+    <span style="color:red">{0}</span>
 '''
 
-FREE = '''
-        <input type="text" class="form-control" id="{0}" name="{0}" value="{1}">
+QLABEL = '''
+    <label class="w-100" for="{qid}">
+    {text}
+    </label>
 '''
 
-CHOICE = '''
-        <div class="custom-control custom-radio">
-            <input id="{0}" value="{0}" name="{1}" class="custom-control-input" type="radio" {2} debug="{3}" args="{4}" attrs="{5}">
-            <label class="custom-control-label w-100 choice" for="{0}">
-            {6}
-            </label>
-        </div>
+FREE_INPUT = '''
+    <input type="text" class="form-control" id="{qid}" name="{qid}" value="{default}">
+'''
+
+CDIV = '''
+    <div class="custom-control custom-radio">
+    {input}
+    {label}      
+    </div>
+'''
+
+CHOICE_INPUT = '''
+    <input id="{cid}" value="{cid}" name="{qid}" class="custom-control-input" type="radio" {checked}>
+    '''
+
+CHOICE_LABEL = '''
+    <label class="custom-control-label w-100 choice" for="{cid}">
+    {text}
+    </label>
 '''

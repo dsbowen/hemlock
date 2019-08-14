@@ -4,10 +4,9 @@
 # last modified 07/24/2019
 ##############################################################################
 
-from hemlock.factory import db
+from hemlock.factory import db, compiler
 from hemlock.models.question import Question
 from hemlock.models.private.base import Base
-from hemlock.models.private.html_compiler import *
 from flask import request
 from flask_login import current_user
 from datetime import datetime
@@ -376,12 +375,11 @@ class Page(db.Model, Base):
         [q._call_function(q, q._compile_function, q._compile_args)
             for q in self._questions]
         
-        Phtml = compile_page(self)
-        Qhtml = [q._compile_html() for q in self._questions]
+        html = compiler.compile_page(self)
         self._compiled = True
         self._start_time = datetime.utcnow()
         db.session.commit()
-        return ''.join([Phtml]+Qhtml+[submit(self)])
+        return html
         
     # Checks if questions have valid answers upon page submission
     # set direction from

@@ -1,13 +1,12 @@
 ##############################################################################
 # Question model
 # by Dillon Bowen
-# last modified 07/24/2019
+# last modified 08/14/2019
 ##############################################################################
 
 from hemlock.factory import db
 from hemlock.models.choice import Choice
 from hemlock.models.private.base import Base
-from hemlock.models.private.html_compiler import *
 from flask_login import current_user
 
 
@@ -370,19 +369,6 @@ class Question(db.Model, Base):
     ##########################################################################
     # Private methods
     ##########################################################################
-        
-    # Compile question html
-    def _compile_html(self):
-        if self._qtype == 'embedded':
-            return ''
-        return compile_question(self)
-        # elif self._qtype == 'text':
-            # return compile_text(self)
-        # elif self._qtype == 'free':
-            # return compile_free(self)
-        # elif self._qtype == 'single choice':
-            # return compile_single_choice(self)
-        # raise ValueError('Invalid Question Type')
         
     # Record the participant's response
     # collect response and update default
