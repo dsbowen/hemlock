@@ -390,7 +390,7 @@ class Page(db.Model, Base):
         self._update_timer()
         self.direction_from(request.form.get('direction'))
 
-        [q._record_response(request.form.get(str(q.id))) 
+        [q._record_response(request.form.get('q'+str(q.id))) 
             for q in self._questions if q._qtype != 'embedded']
 
         [q._call_function(q, q._post_function, q._post_args)

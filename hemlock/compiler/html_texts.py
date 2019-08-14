@@ -11,7 +11,7 @@
 ##############################################################################
 
 PAGE_ID = '''
-    <page id="{pid}"/>
+    <page id="p{pid}"/>
 '''
 
 
@@ -54,17 +54,17 @@ QDIV = '''
 '''
 
 ERROR = '''
-    <span style="color:red">{0}</span>
+    <span style="color:red">{error}</span>
 '''
 
 QLABEL = '''
-    <label class="w-100" for="{qid}">
+    <label class="w-100" for="q{qid}">
     {text}
     </label>
 '''
 
 FREE_INPUT = '''
-    <input type="text" class="form-control" id="{qid}" name="{qid}" value="{default}">
+    <input type="text" class="form-control" id="q{qid}" name="q{qid}" value="{default}">
 '''
 
 CDIV = '''
@@ -75,11 +75,11 @@ CDIV = '''
 '''
 
 CHOICE_INPUT = '''
-    <input id="{cid}" value="{cid}" name="{qid}" class="custom-control-input" type="radio" {checked}>
+    <input id="c{cid}" value="c{cid}" name="q{qid}" class="custom-control-input" type="radio" {checked}>
     '''
 
 CHOICE_LABEL = '''
-    <label class="custom-control-label w-100 choice" for="{cid}">
+    <label class="custom-control-label w-100 choice" for="c{cid}">
     {text}
     </label>
 '''

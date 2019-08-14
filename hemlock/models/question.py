@@ -376,7 +376,7 @@ class Question(db.Model, Base):
         if self._qtype == 'free':
             self._default = response
         else:
-            [c._set_checked(response==str(c.id)) for c in self._choices]
+            [c._set_checked(response=='c'+str(c.id)) for c in self._choices]
             checked = self.get_selected()
             if checked:
                 response = checked[0].get_value()

@@ -8,19 +8,19 @@ from hemlock.factory import compiler
 from hemlock.compiler.html_texts import *
 
 # Compile embedded data
-@compiler.register('embedded')
+@compiler.register('embedded', overwrite=False)
 def compile_embedded(q):
     return ''
 
 # Compile text question
-@compiler.register('text')
+@compiler.register('text', overwrite=False)
 def compile_text(q):
     classes = get_classes(q)
     label = get_label(q)
     return QDIV.format(classes=classes, label=label, content='')
     
 # Compile free response question
-@compiler.register('free')
+@compiler.register('free', overwrite=False)
 def compile_free(q):
     classes = get_classes(q)
     label = get_label(q)
@@ -30,15 +30,15 @@ def compile_free(q):
     return QDIV.format(classes=classes, label=label, content=content)
     
 # Compile single choice question
-@compiler.register('single choice')
+@compiler.register('single choice', overwrite=False)
 def compile_single_choice(q):
     classes = get_classes(q)
     qlabel = get_label(q)
     
     choices = q.get_choices()
-    [c._set_checked(c.id==q._default) for c in choices]
     choice_divs = []
     for c in choices:
+        c._set_checked(c.id==q._default)
         input = CHOICE_INPUT.format(cid=c.id, qid=q.id, checked=c._checked)
         label = CHOICE_LABEL.format(cid=c.id, text=c.get_text())
         choice_divs.append(CDIV.format(input=input, label=label))
@@ -50,11 +50,11 @@ def compile_single_choice(q):
 def get_classes(q):
     classes = 'form-group question'
     if q.get_error() is not None:
-        classes += 'error'
+        classes += ' error'
     return classes
 
 # Get question label
 def get_label(q):
     error = q.get_error()
-    error = '' if error is None else error
+    error = '' if error is None else ERROR.format(error=error)
     return QLABEL.format(qid=q.id, text=error+q.get_text())
