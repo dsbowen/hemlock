@@ -6,6 +6,7 @@
 
 # import hemlock package, configuration class, and texts
 from hemlock import *
+from custom_compilers import *
 from debug import AIParticipant as AIP
 from config import Config
 from texts import *
@@ -16,6 +17,9 @@ def Start():
     
 def Start():
     b = Branch()
+    
+    p = Page(b)
+    q = Question(p, 'Hello moon')
     
     p = Page(b)
     color = Question(
