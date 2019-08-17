@@ -8,7 +8,7 @@ import os
 import imgkit
 import zipfile
 from hemlock.extensions.extensions_base import ExtensionsBase
-from flask import url_for, render_template, Markup, send_file
+from flask import current_app, url_for, render_template, Markup, send_file
 from docx import Document
 from docx.shared import Inches
 
@@ -19,18 +19,22 @@ SURVEY_VIEW_IMG_WIDTH = Inches(6)
 PAGE_NAME = 'page{}.png'
 
 class Viewer(ExtensionsBase):
+    # Initialize with application
+    # local indicates whether the app is running locally or deployed on Heroku
+    # create temp folder for storing survey view zip file
     def init_app(self, app):
-        print('viewer init app')
-        self.local = os.getcwd() != '/app'
+        # self.local = os.getcwd() != '/app'
         self.create_tmp()
         self._register_app(app, ext_name='viewer')
     
     # Create temporary folder to store survey view files
+    # remove survey view zip file if it exists
     def create_tmp(self):
         try:
             os.mkdir(TMPDIR)
         except:
             pass
+            
         os.chdir(TMPDIR)
         try:
             os.remove(SURVEY_VIEW_ZIP)
@@ -38,25 +42,20 @@ class Viewer(ExtensionsBase):
             pass
         os.chdir('..')
     
-    # Download the survey view for a give participant
+    # Download the survey view for a given participant
+    # create 
     def survey_view(self, part):
-        print('viewer survey view')
         self.part = part
-        print('participant', self.part)
-        self.create_files()
+        self.create_zipfile()
         path = os.path.join(os.getcwd(), TMPDIR, SURVEY_VIEW_ZIP)
-        print('path', path)
         return send_file(
             path, mimetype='zip', 
             attachment_filename=SURVEY_VIEW_ZIP, as_attachment=True)
         
     # Create survey view files
-    def create_files(self):
-        print('create files')
+    def create_zipfile(self):
         self.setup_pages()
-        print(self.page_html)
-        print(self.css)
-        print(self.config)
+
         os.chdir(TMPDIR)
         self.doc = Document()
         self.zipf = zipfile.ZipFile(SURVEY_VIEW_ZIP, 'w', zipfile.ZIP_DEFLATED)
@@ -70,21 +69,21 @@ class Viewer(ExtensionsBase):
     # Set up for creating survey view files
     # render page html and get css and config for imgkit
     def setup_pages(self):
-        print('setup')
         self.page_html = [render_template('survey_view.html', page=Markup(p))
             for p in self.part._page_html]
         cssdir = url_for('static', filename='css/')[1:]
-        print('cssdir', cssdir)
         cssdir = os.path.join(os.getcwd(), cssdir).replace('\\','/')
-        print(cssdir)
         self.css = [cssdir+cssfile 
             for cssfile in ['default.min.css', 'bootstrap.min.css']]
-        if self.local:
-            self.config = imgkit.config()
-        else:
-            print('wkhtmltoimage', os.environ.get('WKHTMLTOIMAGE'))
-            self.config = imgkit.config(
-                wkhtmltoimage=os.environ.get('WKHTMLTOIMAGE'))
+        wkhtmltoimage_location = current_app.config['WKHTMLTOIMAGE']
+        print('current app wkhtmltoimage', wkhtmltoimage_location)
+        self.config = imgkit.config(wkhtmltoimage=wkhtmltoimage_location)
+        # if self.local:
+            # self.config = imgkit.config()
+        # else:
+            # print('wkhtmltoimage', os.environ.get('WKHTMLTOIMAGE'))
+            # self.config = imgkit.config(
+                # wkhtmltoimage=os.environ.get('WKHTMLTOIMAGE'))
         
     # Process page
     # create png file
