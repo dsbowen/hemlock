@@ -62,4 +62,4 @@ class Viewer(ExtensionsBase):
             self.config = imgkit.config()
         else:
             self.config = imgkit.config(
-                wkhtmltoimage=os.environ.get('WKHTMLTOIMG'))
+                wkhtmltoimage=os.environ.get('WKHTMLTOIMAGE'))
