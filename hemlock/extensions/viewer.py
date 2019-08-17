@@ -20,10 +20,9 @@ PAGE_NAME = 'page{}.png'
 
 class Viewer(ExtensionsBase):
     # Initialize with application
-    # local indicates whether the app is running locally or deployed on Heroku
     # create temp folder for storing survey view zip file
+    # register to application
     def init_app(self, app):
-        # self.local = os.getcwd() != '/app'
         self.create_tmp()
         self._register_app(app, ext_name='viewer')
     
@@ -43,7 +42,7 @@ class Viewer(ExtensionsBase):
         os.chdir('..')
     
     # Download the survey view for a given participant
-    # create 
+    # create zipfile and send
     def survey_view(self, part):
         self.part = part
         self.create_zipfile()
@@ -53,6 +52,9 @@ class Viewer(ExtensionsBase):
             attachment_filename=SURVEY_VIEW_ZIP, as_attachment=True)
         
     # Create survey view files
+    # create docx and zip files
+    # add pages to docx and zip files
+    # save docx and write to zip file
     def create_zipfile(self):
         self.setup_pages()
 
@@ -76,14 +78,7 @@ class Viewer(ExtensionsBase):
         self.css = [cssdir+cssfile 
             for cssfile in ['default.min.css', 'bootstrap.min.css']]
         wkhtmltoimage_location = current_app.config['WKHTMLTOIMAGE']
-        print('current app wkhtmltoimage', wkhtmltoimage_location)
         self.config = imgkit.config(wkhtmltoimage=wkhtmltoimage_location)
-        # if self.local:
-            # self.config = imgkit.config()
-        # else:
-            # print('wkhtmltoimage', os.environ.get('WKHTMLTOIMAGE'))
-            # self.config = imgkit.config(
-                # wkhtmltoimage=os.environ.get('WKHTMLTOIMAGE'))
         
     # Process page
     # create png file
