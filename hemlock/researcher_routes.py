@@ -91,6 +91,7 @@ def survey_view():
             'hemlock.password', requested_url='survey_view'))
     
     if request.method == 'POST':
+        pid = request.form.get(list(request.form)[0])
         try:
             part = Participant.query.get(int(pid))
             assert part is not None
