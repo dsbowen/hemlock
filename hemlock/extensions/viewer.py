@@ -55,11 +55,14 @@ class Viewer(ExtensionsBase):
         self.page_html = [render_template('survey_view.html', page=Markup(p))
             for p in self.part._page_html]
         cssdir = url_for('static', filename='css/')[1:]
+        print('cssdir', cssdir)
         cssdir = os.path.join(os.getcwd(), cssdir).replace('\\','/')
+        print(cssdir)
         self.css = [cssdir+cssfile 
             for cssfile in ['default.min.css', 'bootstrap.min.css']]
         if self.local:
             self.config = imgkit.config()
         else:
+            print('wkhtmltoimage', os.environ.get('WKHTMLTOIMAGE'))
             self.config = imgkit.config(
                 wkhtmltoimage=os.environ.get('WKHTMLTOIMAGE'))
