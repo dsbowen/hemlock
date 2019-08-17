@@ -5,7 +5,7 @@
 ##############################################################################
 
 # hemlock database, application blueprint, and models
-from hemlock.factory import db, bp
+from hemlock.factory import viewer, db, bp
 from hemlock.models import Participant, Page, Question
 from hemlock.models.private import DataStore, Visitors
 from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request, flash, jsonify, send_file
@@ -89,6 +89,33 @@ def ipv4():
 # Survey download view
 ##############################################################################
    
+@bp.route('/survey_view', methods=['GET','POST'])
+def survey_view():
+    if not valid_password():
+        return redirect(url_for(
+            'hemlock.password', requested_url='survey_view'))
+    
+    if request.method == 'POST':
+        pid = request.form.get(list(request.form)[0])
+        part = Participant.query.get(int(pid))
+        assert part is not None
+        return viewer.survey_view(part)
+        '''
+        try:
+            part = Participant.query.get(int(pid))
+            assert part is not None
+            return viewer.survey_view(part)
+        except:
+            error = '<p>Participant ID invalid.</p>'
+        '''
+    else:
+        error = None
+        
+    p = Page()
+    q = Question(p, '<p>Participant ID</p>', qtype='free')
+    q.error(error)
+    return render_template('page.html', page=Markup(p._compile_html()))
+'''
 # Download survey view for a specified participant
 @bp.route('/survey_view', methods=['GET','POST'])
 def survey_view():
@@ -110,7 +137,7 @@ def survey_view():
 def _survey_view():
     part = _get_participant()
     if part is None:
-        return redirect(url_for('hemlock.view_survey'))
+        return redirect(url_for('hemlock.survey_view'))
     _create_folders()
     _create_files(part)
     return send_file(
@@ -180,7 +207,7 @@ def _process_page(i, page, css, config, doc, zipf):
     doc.add_picture(page_name, width=SURVEY_VIEW_IMG_WIDTH)
     zipf.write(page_name)
     os.remove(page_name)
-    
+'''
     
     
 ##############################################################################

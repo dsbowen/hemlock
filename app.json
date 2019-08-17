@@ -2,8 +2,11 @@
     "name": "Hemlock survey",
     "stack": "heroku-18",
     "env": {
-        "SECRET_TOKEN": {
+        "SECRET_KEY": {
             "generator": "secret"
+        },
+        "WKHTMLTOIMG" {
+            "value": "/app/bin/wkhtmltoimage"
         }
     },
     "formation": {

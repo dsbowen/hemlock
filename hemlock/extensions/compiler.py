@@ -4,9 +4,10 @@
 # last modified 08/14/2019
 ##############################################################################
 
-from hemlock.compiler.html_texts import *
+from hemlock.extensions.extensions_base import ExtensionsBase
+from hemlock.extensions.compile_texts import *
 
-class Compiler():
+class Compiler(ExtensionsBase):
     def __init__(self):
         self.compiler_functions = {}
 
@@ -20,11 +21,8 @@ class Compiler():
     
     # Initialize with app
     def init_app(self, app):
-        import hemlock.compiler.compile_functions
-        self.app = app
-        if not hasattr(app, 'extensions'):
-            app.extensions = {}
-        app.extensions['compiler'] = self
+        import hemlock.extensions.compile_functions
+        self._register_app(app, 'compiler')
     
     # Compile html for a page
     def compile_page(self, p):

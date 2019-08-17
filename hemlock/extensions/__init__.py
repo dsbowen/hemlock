@@ -4,4 +4,5 @@
 # last modified 08/14/2019
 ##############################################################################
 
-from hemlock.compiler.html_compiler import Compiler
+from hemlock.extensions.compiler import Compiler
+from hemlock.extensions.viewer import Viewer

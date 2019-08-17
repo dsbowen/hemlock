@@ -5,7 +5,7 @@
 ##############################################################################
 
 from hemlock.factory import compiler
-from hemlock.compiler.html_texts import *
+from hemlock.extensions.compile_texts import *
 
 # Compile embedded data
 @compiler.register('embedded', overwrite=False)
