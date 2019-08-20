@@ -17,35 +17,29 @@ def Start():
     
 def Start():
     b = Branch()
-    
     p = Page(b)
-    q = Question(p, 'Hello moon')
+    city = Question(
+        p, "Where is your next vacation?", qtype='free', var='City')
+    Validator(city, require)
+    dessert = Question(
+        p, "What's your favorite dessert?", qtype='single choice', 
+        var='Dessert')
+    Choice(dessert, 'Cake')
+    Choice(dessert, 'Ice cream')
+    Choice(dessert, 'Cannoli')
+    dessert.randomize()
+    Validator(dessert, require)
     
-    p = Page(b)
-    color = Question(
-        p, "What's your favorite color?", qtype='single choice', var='Color')
-    color.default(Choice(color, 'Pink'))
-    Choice(color, 'Blue')
-    Choice(color, 'White')
-    
-    name = Question(
-        p, "What's your middle name?", qtype='free', var='MiddleName')
-    Validator(name, require)
-    
-    b.next(End, {'name':name, 'color':color})
-    
+    b.next(End, args={'city': city, 'dessert': dessert})
     return b
     
-def End(name, color):
-    name = name.get_response()
-    color = color.get_response()
-    
+def End(city, dessert):
+    city = city.get_response()
+    dessert = dessert.get_response()
     b = Branch()
     p = Page(b, terminal=True)
-    q = Question(p, 'Nice to meet you, {0}! My favorite color is also {1}'.format(name, color))
-    
-    return b
-    
+    q = Question(p, "Your vacation is to {0} and your favorite dessert is {1}".format(city, dessert))
+    return b 
       
 # create the application (survey)
 app = create_app(
