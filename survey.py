@@ -17,10 +17,20 @@ def Start():
     
 def Start():
     b = Branch()
+    treatment = random_assignment(b, 'treat', ['Treatment'], [[0,1]])
+    
     p = Page(b)
     q = Question(p, "Choose 'yes' to at most 3")
     yn_qid = [create_yn_question(p) for i in range(5)]
     Validator(q, max_yesses, args={'max_y':3, 'yn_qid': yn_qid})
+    
+    p = Page(b)
+    q = Question(p)
+    if treatment:
+        q.text("<p>You are in the treatment condition, which means you can go back.</p>")
+        p.back()
+    else:
+        q.text("<p>You are in the control condition, which means you can never go back!</p>")
     
     p = Page(b, terminal=True)
     q = Question(p, 'Thank you for participanting!')
