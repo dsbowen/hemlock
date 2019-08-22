@@ -35,7 +35,7 @@ def Start():
     Choice(q, '2', value=2)
     
     p = Page(b)
-    q = Question(b, 'Where do you shop?', qtype='free', var='shop')
+    q = Question(p, 'Where do you shop?', qtype='free', var='shop')
     
     p = Page(b, terminal=True)
     q = Question(p, "<p>Thank you for participating!</p>")
