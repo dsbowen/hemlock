@@ -20,6 +20,11 @@ def Start():
     p = Page(b)
     q = Question(
         p, "<p>Hey there, what's your name?</p>", qtype='free', var='name')
+        
+    q = Question(
+        p, "<p>Yes or no?</p>", qtype='single choice', var='yes')
+    Choice(q, 'Yes', value=1)
+    Choice(q, 'No', value=0)
     
     p = Page(b, terminal=True)
     q = Question(p, "<p>Thank you for participating!</p>")
