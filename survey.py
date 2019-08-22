@@ -22,6 +22,9 @@ def Start():
         p, "<p>Hey there, what's your name?</p>", qtype='free', var='name')
         
     q = Question(
+        p, "<p>What's your department?</p>", qtype='free', var='department')
+        
+    q = Question(
         p, "<p>Yes or no?</p>", qtype='single choice', var='yes')
     Choice(q, 'Yes', value=1)
     Choice(q, 'No', value=0)
