@@ -7,3 +7,7 @@
 consent = '''
 
 '''
+
+consent = '''
+<p>Here is a consent form.</p>
+'''
