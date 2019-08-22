@@ -17,8 +17,12 @@ def Start():
         
 def Start():
     b = Branch()
+    p = Page(b)
+    q = Question(
+        p, "<p>Hey there, what's your name?</p>", qtype='free', var='name')
+    
     p = Page(b, terminal=True)
-    q = Question(p, "Hey there, what's your name?", qtype='free', var-'name')
+    q = Question(p, "<p>Thank you for participating!</p>")
     return b
       
 # create the application (survey)
