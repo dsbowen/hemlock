@@ -29,6 +29,14 @@ def Start():
     Choice(q, 'Yes', value=1)
     Choice(q, 'No', value=0)
     
+    q = Question(
+        p, "Department year", qtype='single choice', var='year')
+    Choice(q, '1', value=1)
+    Choice(q, '2', value=2)
+    
+    p = Page(b)
+    q = Question(b, 'Where do you shop?', qtype='free', var='shop')
+    
     p = Page(b, terminal=True)
     q = Question(p, "<p>Thank you for participating!</p>")
     return b
