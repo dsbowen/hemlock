@@ -8,3 +8,4 @@ pandas
 selenium
 imgkit
 python-docx
+bs4
