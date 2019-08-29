@@ -18,27 +18,11 @@ def Start():
 def Start():
     b = Branch()
     p = Page(b)
-    q = Question(
-        p, "<p>Hey there, what's your name?</p>", qtype='free', var='name')
-        
-    q = Question(
-        p, "<p>What's your department?</p>", qtype='free', var='department')
-        
-    q = Question(
-        p, "<p>Yes or no?</p>", qtype='single choice', var='yes')
-    Choice(q, 'Yes', value=1)
-    Choice(q, 'No', value=0)
-    
-    q = Question(
-        p, "Department year", qtype='single choice', var='year')
-    Choice(q, '1', value=1)
-    Choice(q, '2', value=2)
-    
+    q = Question(p, image('wanna_see_the_code.png', format=['fit', 'center']))
     p = Page(b)
-    q = Question(p, 'Where do you shop?', qtype='free', var='shop')
-    
+    q = Question(p, '<img src="https://imgs.xkcd.com/comics/wanna_see_the_code_2x.png">')
     p = Page(b, terminal=True)
-    q = Question(p, "<p>Thank you for participating!</p>")
+    q = Question(p, 'The End')
     return b
       
 # create the application (survey)

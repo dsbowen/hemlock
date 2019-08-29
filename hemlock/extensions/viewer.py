@@ -88,7 +88,7 @@ class Viewer(ExtensionsBase):
         page_name = PAGE_NAME.format(page_num)
         imgkit.from_string(
             page_html, page_name, css=self.css, config=self.config, 
-            options={'quiet':''})
+            options={'quiet':'', 'quality':100})
         self.doc.add_picture(page_name, width=SURVEY_VIEW_IMG_WIDTH)
         self.zipf.write(page_name)
         os.remove(page_name)
