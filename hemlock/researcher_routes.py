@@ -1,7 +1,7 @@
 ##############################################################################
 # Researcher URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 08/17/2019
+# last modified 08/30/2019
 ##############################################################################
 
 # hemlock database, application blueprint, and models
@@ -92,12 +92,15 @@ def survey_view():
     
     if request.method == 'POST':
         pid = request.form.get(list(request.form)[0])
-        try:
-            part = Participant.query.get(int(pid))
-            assert part is not None
-            return viewer.survey_view(part)
-        except:
-            error = '<p>Participant ID invalid.</p>'
+        # try:
+            # part = Participant.query.get(int(pid))
+            # assert part is not None
+            # return viewer.survey_view(part)
+        # except:
+            # error = '<p>Participant ID invalid.</p>'
+        part = Participant.query.get(int(pid))
+        assert part is not None
+        return viewer.survey_view(part)
     else:
         error = None
         

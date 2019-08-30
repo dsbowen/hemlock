@@ -1,7 +1,7 @@
 ##############################################################################
 # Survey viewer class
 # by Dillon Bowen
-# last modified 08/17/2019
+# last modified 08/30/2019
 ##############################################################################
 
 import os
@@ -9,7 +9,6 @@ import imgkit
 import zipfile
 from hemlock.extensions.extensions_base import ExtensionsBase
 from flask import current_app, url_for, render_template, Markup, send_file
-from bs4 import BeautifulSoup
 from docx import Document
 from docx.shared import Inches
 
@@ -45,7 +44,7 @@ class Viewer(ExtensionsBase):
     # Download the survey view for a given participant
     # create zipfile and send
     def survey_view(self, part):
-        self.part = part
+        self.page_htmls = part._page_htmls.all()
         self.create_zipfile()
         path = os.path.join(os.getcwd(), TMPDIR, SURVEY_VIEW_ZIP)
         return send_file(
@@ -62,7 +61,7 @@ class Viewer(ExtensionsBase):
         os.chdir(TMPDIR)
         self.doc = Document()
         self.zipf = zipfile.ZipFile(SURVEY_VIEW_ZIP, 'w', zipfile.ZIP_DEFLATED)
-        [self.process_page(i, p) for i, p in enumerate(self.page_html)]
+        [self.store_page(i, p) for i, p in enumerate(self.page_htmls)]
         self.doc.save(SURVEY_VIEW_DOC)
         self.zipf.write(SURVEY_VIEW_DOC)
         os.remove(SURVEY_VIEW_DOC)
@@ -72,8 +71,7 @@ class Viewer(ExtensionsBase):
     # Set up for creating survey view files
     # render page html and get css and config for imgkit
     def setup_pages(self):
-        self.page_html = [self.format_page_html(p) 
-            for p in self.part._page_html]
+        self.page_htmls = [self.format_page(p) for p in self.page_htmls]
         cssdir = url_for('static', filename='css/')[1:]
         cssdir = os.path.join(os.getcwd(), cssdir).replace('\\','/')
         self.css = [cssdir+cssfile 
@@ -81,27 +79,16 @@ class Viewer(ExtensionsBase):
         wkhtmltoimage_location = current_app.config['WKHTMLTOIMAGE']
         self.config = imgkit.config(wkhtmltoimage=wkhtmltoimage_location)
     
-    # Reformats page html for compatibility with wkhtmltopdf
-    def format_page_html(self, page_html):
-        page_html = render_template('survey_view.html', page=Markup(page_html))
-        soup = BeautifulSoup(page_html, 'html.parser')
-        images = soup.find_all('img')
-        # get src attribute, convert to abspath for local, base64 for url, replace images in page_html
+    # Format html for compatibility with wkhtmltopdf
+    def format_page(self, page_html):
+        page_html = page_html.process()
+        return render_template('survey_view.html', page=Markup(page_html))
         
-        # Return url path for static file
-# def static(filename):
-    # print(os.getcwd())
-    # print(url_for('static', filename=filename))
-    # path = os.path.join(os.getcwd(), url_for('static', filename=filename)[1:])
-    # path = path.replace('\\', '/')
-    # return path
-        return page_html
-        
-    # Process page
+    # Store page
     # create png file
     # add to document
     # add to zip file
-    def process_page(self, page_num, page_html):
+    def store_page(self, page_num, page_html):
         page_name = PAGE_NAME.format(page_num)
         imgkit.from_string(
             page_html, page_name, css=self.css, config=self.config, 

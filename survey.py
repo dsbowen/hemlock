@@ -21,17 +21,22 @@ def Start():
         
 def Start():
     b = Branch()
+    
+    attrs = {'width': 'auto', 'height': 'auto'}
+    
     p = Page(b)
-    q = Question(
-        p, image(filename='wanna_see_the_code.png', imgclass='fit center'))
+    img = image(
+        src='wanna_see_the_code.png', classes=['fit', 'center'], 
+        attrs=attrs)
+    q = Question(p, img)
+    
     p = Page(b)
     url = "https://imgs.xkcd.com/comics/wanna_see_the_code_2x.png"
-    q = Question(p, image(url=url, imgclass='fit center'))
-    # import base64
-    # import requests
-    # src = base64.b64encode(requests.get("https://imgs.xkcd.com/comics/wanna_see_the_code_2x.png").content).decode('utf-8')
-    # print(src[0:11])
-    # q = Question(p, '<img src="data:image/png;base64,{}">'.format(src))
+    img = image(
+        src=url, src_type='url', classes=['fit', 'center'], 
+        attrs=attrs, copy_for_viewing=True)
+    q = Question(p, img)
+    
     p = Page(b, terminal=True)
     q = Question(p, 'The End')
     return b

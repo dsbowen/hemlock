@@ -1,13 +1,13 @@
 ##############################################################################
 # Participant URL routes for Hemlock survey
 # by Dillon Bowen
-# last modified 07/25/2019
+# last modified 08/30/2019
 ##############################################################################
 
 # hemlock database, application blueprint, and models
 from hemlock.factory import db, bp
 from hemlock.models import Participant, Page, Question
-from hemlock.models.private import DataStore, Visitors
+from hemlock.models.private import PageHtml, DataStore, Visitors
 from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request
 from flask_login import login_required, current_user, login_user, logout_user
 from datetime import datetime
@@ -93,7 +93,7 @@ def duplicate():
 # Main survey route
 # alternate between GET and POST
 # GET: 
-    # compile current page
+    # compile current page and store as PageHtml
     # update metadata and store if page is terminal
     # return rendered page
 # POST: collect and validate responses, advance to next page
@@ -106,7 +106,7 @@ def survey():
     part = current_user
     page = part._get_current_page()
     compiled_html = page._compile_html()
-    part._store_html(compiled_html)
+    PageHtml(compiled_html)
     
     if page.get_terminal():
         part._update_metadata(completed=True)

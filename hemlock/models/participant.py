@@ -1,12 +1,13 @@
 ###############################################################################
 # Participant model
 # by Dillon Bowen
-# last modified 07/25/2019
+# last modified 08/30/2019
 ###############################################################################
 
 from hemlock.factory import db, login
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page
+from hemlock.models.private.page_html import PageHtml
 from hemlock.models.question import Question
 from hemlock.models.private.base import Base
 from flask import request
@@ -31,6 +32,7 @@ Relationships:
     branch_stack: stack of branches to be displayed
     current_branch: head of the branch stack
     pages: set of pages belonging to the participant
+    page_htmls: set of page_htmls belonging to the participant
     questions: set of questions belonging to the participant
     variables: set of variables participant contributes to dataset
     
@@ -63,6 +65,11 @@ class Participant(db.Model, UserMixin, Base):
         backref='_part',
         lazy='dynamic')
     
+    _page_htmls = db.relationship(
+        'PageHtml',
+        backref='part',
+        lazy='dynamic')
+    
     _questions = db.relationship(
         'Question', 
         backref='_part', 
@@ -73,7 +80,6 @@ class Participant(db.Model, UserMixin, Base):
     _g = db.Column(db.PickleType, default={})
     _num_rows = db.Column(db.Integer, default=0)
     _metadata = db.Column(db.PickleType, default={})
-    _page_html = db.Column(db.PickleType, default=[])
     
     
     
@@ -146,17 +152,8 @@ class Participant(db.Model, UserMixin, Base):
         temp['end_time'] = datetime.utcnow()
         temp['completed'] = int(completed)
         self._metadata = deepcopy(temp)
-        
-        
-        
-    ###########################################################################
-    # Store page html
-    ###########################################################################
     
-    def _store_html(self, html):
-        temp = deepcopy(self._page_html)
-        temp.append(html)
-        self._page_html = temp
+    
     
     ###########################################################################
     # Forward navigation
