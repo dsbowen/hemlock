@@ -4,10 +4,6 @@
 # last modified 07/24/2019
 ##############################################################################
 
-# TODO FOR WKHTML
-# Local files: use static url_for in survey, convert to abspath for wkhtmltopdf
-# URL: use regular src in survey, convert to base64 for wkhtmltopdf 
-
 # import hemlock package, configuration class, and texts
 from hemlock import *
 from custom_compilers import *
@@ -22,19 +18,15 @@ def Start():
 def Start():
     b = Branch()
     
-    attrs = {'width': 'auto', 'height': 'auto'}
-    
     p = Page(b)
-    img = image(
-        src='wanna_see_the_code.png', classes=['fit', 'center'], 
-        attrs=attrs)
+    q = Question(p, '<p>This image is local</p>')
+    img = image(src='wanna_see_the_code.png', classes=['fit', 'center'])
     q = Question(p, img)
     
     p = Page(b)
+    q = Question(p, '<p>This image is from a url</p>')
     url = "https://imgs.xkcd.com/comics/wanna_see_the_code_2x.png"
-    img = image(
-        src=url, src_type='url', classes=['fit', 'center'], 
-        attrs=attrs, copy_for_viewing=True)
+    img = image(src=url, classes=['fit', 'center'], copy_for_viewing=True)
     q = Question(p, img)
     
     p = Page(b, terminal=True)

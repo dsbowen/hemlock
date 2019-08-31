@@ -51,22 +51,17 @@ class PageHtml(db.Model):
     # Encode an image in base64
     # if local, encode using absolute path
     # if url, encode using content from request
-    # change image source to base64 data and src_type to 'data'
+    # change image source to base64 data
     def encode64(self, image):
-        src, src_type = image['src'], image['src_type']
-        
-        if src_type == 'local':
+        src = image['src']
+        if src.startswith('/'):
             path = os.path.join(os.getcwd(), src[1:]).replace('\\', '/')
             data = b64encode(open(path, 'rb').read()).decode('utf-8')
-            
-        elif src_type == 'url':
+        elif src.startswith('http'):
             try:
                 data = b64encode(requests.get(src).content).decode('utf-8')
             except:
                 data = ''
-        
         else:
             return
-                
-        src = 'data:image/png;base64,{}'.format(data)
-        image['src'], image['src_type'] = src, 'data'
+        image['src'] = 'data:image/png;base64,{}'.format(data)
