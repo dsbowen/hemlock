@@ -16,6 +16,7 @@ SURVEY_VIEW_ZIP = 'survey_view.zip'
 SURVEY_VIEW_DOC = 'survey_view.docx'
 TMPDIR = 'tmp'
 SURVEY_VIEW_IMG_WIDTH = Inches(6)
+ZOOM = 1.5
 PAGE_NAME = 'page{}.png'
 
 class Viewer(ExtensionsBase):
@@ -92,7 +93,7 @@ class Viewer(ExtensionsBase):
         page_name = PAGE_NAME.format(page_num)
         imgkit.from_string(
             page_html, page_name, css=self.css, config=self.config, 
-            options={'quiet':'', 'quality':100, 'zoom':1.5})
+            options={'quiet':'', 'quality':100, 'zoom':ZOOM})
         self.doc.add_picture(page_name, width=SURVEY_VIEW_IMG_WIDTH)
         self.zipf.write(page_name)
         os.remove(page_name)
