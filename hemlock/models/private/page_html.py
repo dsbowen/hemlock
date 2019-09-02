@@ -56,9 +56,6 @@ class PageHtml(db.Model):
         src = image['src']
         if src.startswith('/'):
             path = os.path.join(os.getcwd(), src[1:]).replace('\\', '/')
-            if not image.has_attr('copy_for_viewing'):
-                image['src'] = path
-                return
             data = b64encode(open(path, 'rb').read()).decode('utf-8')
         elif src.startswith('http'):
             try:
