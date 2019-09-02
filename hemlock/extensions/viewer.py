@@ -46,6 +46,7 @@ class Viewer(ExtensionsBase):
     # create zipfile and send
     def survey_view(self, part):
         self.page_htmls = part._page_htmls.all()
+        self.zfill = len(str(len(self.page_htmls)))
         self.create_zipfile()
         path = os.path.join(os.getcwd(), TMPDIR, SURVEY_VIEW_ZIP)
         return send_file(
@@ -90,7 +91,7 @@ class Viewer(ExtensionsBase):
     # add to document
     # add to zip file
     def store_page(self, page_num, page_html):
-        page_name = PAGE_NAME.format(page_num)
+        page_name = PAGE_NAME.format(str(page_num).zfill(self.zfill))
         imgkit.from_string(
             page_html, page_name, css=self.css, config=self.config, 
             options={'quiet':'', 'quality':100, 'zoom':ZOOM})

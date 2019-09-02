@@ -29,6 +29,10 @@ def Start():
     img = image(src=url, classes=['fit', 'center'], copy_for_viewing=True)
     q = Question(p, img)
     
+    for i in range(10):
+        p = Page(b)
+        q = Question(p, 'Page {}'.format(i+1))
+    
     p = Page(b, terminal=True)
     q = Question(p, 'The End')
     return b
