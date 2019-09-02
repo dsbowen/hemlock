@@ -10,3 +10,4 @@ imgkit
 python-docx
 bs4
 requests
+pillow
