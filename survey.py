@@ -31,7 +31,7 @@ def Start():
     
     p = Page(b)
     url = 'https://www.youtube.com/watch?v=yafxUluB6DA&list=PLIJr7Mgu0_IJeD3vlOAtGSArnRvmjyHO8&index=13'
-    q = Question(p, video(url))
+    q = Question(p, video(url, autoplay=True))
     
     p = Page(b, terminal=True)
     q = Question(p, 'The End')

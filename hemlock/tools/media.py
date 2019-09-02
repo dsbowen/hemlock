@@ -8,13 +8,6 @@ import os
 import urllib.parse as urlparse
 from flask import url_for
 
-# Arguments:
-# src: media source (must be youtube url for videos)
-# classes: css classes (see default.min.css for formatting classes)
-# attrs: tag attributes
-# copy_for_viewing: indicates media should be copied for survey_view download
-#   set this to True for temporary media
-
 IMAGE = '''
     <img class="{classes}" src="{src}" {attrs} {cfv}/>
 '''
@@ -27,13 +20,21 @@ VIDEO = '''
 
 YOUTUBE_EMBED_URL = '''https://www.youtube.com/embed/{id}?autoplay={autoplay}'''
 
+# Return html for image tag
+# src: media source (must be youtube url for videos)
+# classes: css classes (see default.min.css for formatting classes)
+# attrs: tag attributes
+# copy_for_viewing: indicates media should be copied for survey_view download
+#   set this to True for temporary media
 def image(src, classes=[], attrs={}, copy_for_viewing=False):
     return media('image', src, classes, attrs, copy_for_viewing)
 
+# Return html for video tag
+# autoplay: automatically play the video when the page is loaded
 def video(src, classes=[], attrs={}, copy_for_viewing=False, autoplay=False):
     return media('video', src, classes, attrs, copy_for_viewing, autoplay)
     
-# Return static html
+# Return html for media
 # convert src
 # convert classes for insert to html
 # convert attributes
@@ -58,4 +59,5 @@ def media(media_type, src, classes, attrs, copy_for_viewing, autoplay=None):
     if media_type == 'image':
         return IMAGE.format(classes=classes, src=src, attrs=attrs, cfv=cfv)
     elif media_type == 'video':
-        return VIDEO.format(vid=vid, classes=classes, src=src, attrs=attrs, cfv=cfv)
+        return VIDEO.format(
+            vid=vid, classes=classes, src=src, attrs=attrs, cfv=cfv)
