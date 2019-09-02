@@ -18,46 +18,49 @@ VIDEO = '''
     </div>
 '''
 
-YOUTUBE_EMBED_URL = '''https://www.youtube.com/embed/{id}?autoplay={autoplay}'''
+YOUTUBE_EMBED_URL = '''https://www.youtube.com/embed/{id}?{parms}'''
 
 # Return html for image tag
-# src: media source (must be youtube url for videos)
+# src: image source (local filename, url, or uri)
 # classes: css classes (see default.min.css for formatting classes)
 # attrs: tag attributes
-# copy_for_viewing: indicates media should be copied for survey_view download
+# copy_for_viewing: indicates image should be copied for survey_view download
 #   set this to True for temporary media
+# convert source to local path if image is local
+# return tag
 def image(src, classes=[], attrs={}, copy_for_viewing=False):
-    return media('image', src, classes, attrs, copy_for_viewing)
+    if not (src.startswith('data') or src.startswith('http')):
+        src = url_for('static', filename=src)
+    classes, attrs, cfv = media(classes, attrs, copy_for_viewing)
+    return IMAGE.format(classes=classes, src=src, attrs=attrs, cfv=cfv)
 
 # Return html for video tag
-# autoplay: automatically play the video when the page is loaded
-def video(src, classes=[], attrs={}, copy_for_viewing=False, autoplay=False):
-    return media('video', src, classes, attrs, copy_for_viewing, autoplay)
+# parms: youtube video url parameters
+# get video id
+# add youtube url parms to parms dict unless already in parms
+# convert parms and src to html format
+# return tag
+def video(src, classes=[], attrs={}, copy_for_viewing=False, parms={}):
+    parsed = urlparse.urlparse(src)
+    src_parms = urlparse.parse_qs(parsed.query)
+    vid = src_parms['v'][0]
+    for key, val in src_parms.items():
+        if key != 'v' and key not in parms:
+            parms[key] = val[0]
+    parms = '&'.join([key+'='+str(val) for key, val in parms.items()])
+    src = YOUTUBE_EMBED_URL.format(id=vid, parms=parms)
+    classes, attrs, cfv = media(classes, attrs, copy_for_viewing)
+    return VIDEO.format(
+        vid=vid, classes=classes, src=src, attrs=attrs, cfv=cfv)
     
-# Return html for media
-# convert src
-# convert classes for insert to html
+# Return html attributes for media
+# convert classes to html format
 # convert attributes
 # convert copy_for_viewing
-# return tag as string
-def media(media_type, src, classes, attrs, copy_for_viewing, autoplay=None):
-    if media_type == 'video':
-        parsed = urlparse.urlparse(src)
-        vid = urlparse.parse_qs(parsed.query)['v'][0]
-        autoplay = 1 if autoplay else 0
-        src = YOUTUBE_EMBED_URL.format(id=vid, autoplay=autoplay)
-    elif not (src.startswith('data') or src.startswith('http')):
-        src = url_for('static', filename=src)
-    
+# return tuple (classes, attributes, copy_for_viewing)
+def media(classes, attrs, copy_for_viewing):
     classes = [classes] if type(classes) == str else classes
     classes = ' '.join(classes)
-    
     attrs = ' '.join([key+'="'+str(val)+'"' for key, val in attrs.items()])
-    
-    cfv = 'copy_for_viewing' if copy_for_viewing else ''
-    
-    if media_type == 'image':
-        return IMAGE.format(classes=classes, src=src, attrs=attrs, cfv=cfv)
-    elif media_type == 'video':
-        return VIDEO.format(
-            vid=vid, classes=classes, src=src, attrs=attrs, cfv=cfv)
+    copy_for_viewing = 'copy_for_viewing' if copy_for_viewing else ''
+    return (classes, attrs, copy_for_viewing)
