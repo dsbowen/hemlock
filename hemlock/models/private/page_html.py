@@ -22,6 +22,10 @@ ASPECT_RATIO = 16/9.0
 COLOR_TOLERANCE = 27
 # Black percent of row or column to detect padding
 PCT_PADDING = .95
+# Max cropping when removing padding
+MAX_CROP = 45
+
+
 
 '''
 Relationships:
@@ -126,10 +130,10 @@ class PageHtml(db.Model):
         temp = np.linalg.norm(np.array(thumbnail)-np.array([0,0,0]), axis=2)
         temp = temp < COLOR_TOLERANCE
         min_y = 0
-        while sum(temp[min_y]) > PCT_PADDING*width:
+        while sum(temp[min_y]) > PCT_PADDING*width and min_y < MAX_CROP:
             min_y += 1
         max_y = thumbnail.size[1]-1
-        while sum(temp[max_y]) > PCT_PADDING*width:
+        while sum(temp[max_y])>PCT_PADDING*width and height-max_y<MAX_CROP:
             max_y -= 1
         thumbnail = thumbnail.crop((0, min_y, thumbnail.size[0], max_y))
         return thumbnail
