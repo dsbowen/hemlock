@@ -21,7 +21,7 @@ ASPECT_RATIO = 16/9.0
 # Euclidean distance of pixel color from black
 COLOR_TOLERANCE = 27
 # Black percent of row or column to detect padding
-PCT_PADDING = .9
+PCT_PADDING = .95
 
 '''
 Relationships:
