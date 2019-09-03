@@ -4,6 +4,7 @@
 # last modified 09/02/2019
 ##############################################################################
 
+import numpy as np
 import requests
 import os
 from hemlock.factory import db
@@ -15,6 +16,12 @@ from flask_login import current_user
 
 # Video aspect ratio
 ASPECT_RATIO = 16/9.0
+
+# Padding tolerance parameters for video thumbnail
+# Euclidean distance of pixel color from black
+COLOR_TOLERANCE = 27
+# Black percent of row or column to detect padding
+PCT_PADDING = .9
 
 '''
 Relationships:
@@ -96,28 +103,45 @@ class PageHtml(db.Model):
     # get play button
     # paste play button onto thumbnail
     def create_thumbnail(self, video):
-        thumbnail = self.get_raw_thumbnail(video)
-        
+        thumbnail = self.get_thumbnail(video)
+
         path = os.path.join(os.getcwd(), 'static/YouTube.png')
         play = Image.open(path.replace('\\', '/'))
-        play = play.resize(thumbnail.size)
+        thumbnail = thumbnail.resize(play.size)
         
         thumbnail.paste(play, (0,0), play)
         return thumbnail
     
-    # Get raw video thumbnail from url and pad to aspect ratio
-    def get_raw_thumbnail(self, video):
+    # Get video thumbnail from url
+    def get_thumbnail(self, video):
         url = 'https://i4.ytimg.com/vi/{}/0.jpg'.format(video['vid'])
         thumbnail = Image.open(BytesIO(requests.get(url).content))
+        thumbnail = self.remove_padding(thumbnail)
+        thumbnail = self.fit_aspect(thumbnail)
+        return thumbnail
+        
+    # Remove black padding from thumbnail
+    def remove_padding(self, thumbnail):
         width, height = thumbnail.size
-        pad_vertical = width/float(height) > ASPECT_RATIO
-        if pad_vertical:
+        temp = np.linalg.norm(np.array(thumbnail)-np.array([0,0,0]), axis=2)
+        temp = temp < COLOR_TOLERANCE
+        min_y = 0
+        while sum(temp[min_y]) > PCT_PADDING*width:
+            min_y += 1
+        max_y = thumbnail.size[1]-1
+        while sum(temp[max_y]) > PCT_PADDING*width:
+            max_y -= 1
+        thumbnail = thumbnail.crop((0, min_y, thumbnail.size[0], max_y))
+        return thumbnail
+    
+    # Crop thumbnail to fit aspect ratio
+    def fit_aspect(self, thumbnail):
+        width, height = thumbnail.size
+        crop_vertical = width/float(height) < ASPECT_RATIO
+        if crop_vertical:
             new_width, new_height = width, width // ASPECT_RATIO
         else:
             new_width, new_height = round(height * ASPECT_RATIO), height
-        delta_w, delta_h = new_width-width, new_height-height
-        padding = (
-            delta_w//2, delta_h//2, 
-            delta_w-(delta_w//2), delta_h-(delta_h//2))
-        thumbnail = ImageOps.expand(thumbnail, padding)
-        return thumbnail
+        delta_w, delta_h = new_width - width, -(new_height - height)
+        crop = (delta_w//2, delta_h//2, width-delta_w//2, height-delta_h//2)
+        return thumbnail.crop(crop)

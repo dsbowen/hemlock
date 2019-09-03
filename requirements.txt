@@ -5,6 +5,7 @@ flask-bootstrap4
 gunicorn
 psycopg2
 pandas
+numpy
 selenium
 imgkit
 python-docx
