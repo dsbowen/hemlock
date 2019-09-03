@@ -66,8 +66,8 @@ def Start():
     q = Question(p, img)
     
     p = Page(b)
-    url = 'https://www.youtube.com/watch?v=cpsJw26b3dM'
-    q = Question(p, video(url, parms={'autoplay':1}))
+    url = 'https://www.youtube.com/watch?v=9Lq6KSPcdiY'
+    q = Question(p, video(url, parms={'autoplay':1}, attrs={'frameborder':0}))
     
     p = Page(b)
     q = Question(p, table)

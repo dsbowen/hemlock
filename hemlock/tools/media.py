@@ -7,18 +7,30 @@
 import os
 import urllib.parse as urlparse
 from flask import url_for
+from copy import deepcopy
 
+# Image tag
 IMAGE = '''
     <img class="{classes}" src="{src}" {attrs} {cfv}/>
 '''
 
+# Video tag
 VIDEO = '''
     <div class="video-wrapper">
-    <iframe vid="{vid}"  src="{src}" class="video {classes}" {attrs} {cfv} allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe vid="{vid}"  src="{src}" class="video {classes}" {attrs} {cfv}>
+    </iframe>
     </div>
 '''
 
+# URL for embedding YouTube video
 YOUTUBE_EMBED_URL = '''https://www.youtube.com/embed/{id}?{parms}'''
+
+# Default attributes for video tag
+VIDEO_DEFAULT_ATTRS = {
+    'frameborder': 0,
+    'allow': 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
+    'allowfullscreen': None
+    }
 
 # Return html for image tag
 # src: image source (local filename, url, or uri)
@@ -41,17 +53,24 @@ def image(src, classes=[], attrs={}, copy_for_viewing=False):
 # convert parms and src to html format
 # return tag
 def video(src, classes=[], attrs={}, copy_for_viewing=False, parms={}):
-    parsed = urlparse.urlparse(src)
-    src_parms = urlparse.parse_qs(parsed.query)
-    vid = src_parms['v'][0]
-    for key, val in src_parms.items():
-        if key != 'v' and key not in parms:
-            parms[key] = val[0]
-    parms = '&'.join([key+'='+str(val) for key, val in parms.items()])
+    vid, parms = get_parms(src, parms)
     src = YOUTUBE_EMBED_URL.format(id=vid, parms=parms)
-    classes, attrs, cfv = media(classes, attrs, copy_for_viewing)
+    video_attrs = deepcopy(VIDEO_DEFAULT_ATTRS)
+    video_attrs.update(attrs)
+    classes, attrs, cfv = media(classes, video_attrs, copy_for_viewing)
     return VIDEO.format(
         vid=vid, classes=classes, src=src, attrs=attrs, cfv=cfv)
+
+# Get video id and url parameters
+def get_parms(src, parms):
+    parsed = urlparse.urlparse(src)
+    src_parms = urlparse.parse_qs(parsed.query)
+    src_parms = {k: v[0] for k, v in src_parms.items()}
+    vid = src_parms['v']
+    del src_parms['v']
+    src_parms.update(parms)
+    src_parms = '&'.join([k+'='+str(v) for k,v in src_parms.items()])
+    return vid, src_parms
     
 # Return html attributes for media
 # convert classes to html format

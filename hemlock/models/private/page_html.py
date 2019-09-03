@@ -13,6 +13,7 @@ from PIL import Image, ImageOps
 from io import BytesIO
 from flask_login import current_user
 
+# Video aspect ratio
 ASPECT_RATIO = 16/9.0
 
 '''
