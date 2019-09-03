@@ -4,6 +4,7 @@
 # last modified 08/13/2019
 ##############################################################################
 
+from hemlock.models.private.model_shell import ModelShell
 from inspect import getmro
 from sqlalchemy import inspect
 from flask_sqlalchemy.model import Model
@@ -27,28 +28,22 @@ class Base():
         # func: callable or None
         # args_name: name of function arguments as string
         # args: may be None or dict
-    def _set_function(
-            self, func_name, func, 
-            args_name, args, 
-            attrs_name=None, attrs=None):
+    def _set_function(self, func_name, func, args_name, args):
         if not (func is None or callable(func)):
             raise ValueError('Function must be callable (or None)')
         if not (args is None or type(args) == dict):
             raise ValueError('Arguments must be dictionary (or None)')
-        if not (attrs is None or type(attrs) == dict):
-            raise ValueError('Attributes must be dictionary (or None)')
             
         setattr(self, func_name, func)
         if args is not None:
             args = {key: self._model_indicator(value) 
                 for key, value in args.items()}
         setattr(self, args_name, args)
-        if attrs_name is not None:
-            setattr(self, attrs_name, attrs)
             
     # Attach a model indicator to arguments
     def _model_indicator(self, value):
         if Model in getmro(value.__class__):
+            x = ModelShell(value)
             return (value.id, value.__class__)
         return (value, None)
             
@@ -83,7 +78,14 @@ class Base():
         return arg_class.query.get(value)
         
         
-        
+    
+    ##########################################################################
+    # Shell database models for pickling
+    # pass in name of column to shell
+    # go recursive shelling
+    # also have an unshell method
+    ##########################################################################
+    
     ##########################################################################
     # Navigation functions common to branch and page    ##########################################################################
     

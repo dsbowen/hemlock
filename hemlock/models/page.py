@@ -37,7 +37,6 @@ Columns:
     next_args: arguments for next function
     debug_function: debug function called by AI Participant
     debug_args: arguments for debug function
-    debug_attrs: attributes for Debug Page
     
     direction_to: direction to which this page is arrived at
     direction_from: direction from which the page navigates
@@ -82,7 +81,6 @@ class Page(db.Model, Base):
     _next_args = db.Column(db.PickleType)
     _debug_function = db.Column(db.PickleType)
     _debug_args = db.Column(db.PickleType)
-    _debug_attrs = db.Column(db.PickleType)
     
     _direction_to = db.Column(db.String(8))
     _direction_from = db.Column(db.String(8))
@@ -99,7 +97,7 @@ class Page(db.Model, Base):
             compile=None, compile_args=None,
             post=None, post_args=None,
             next=None, next_args=None,
-            debug=None, debug_args=None, debug_attrs=None,
+            debug=None, debug_args=None,
             direction_to=None, direction_from=None,
             forward_to=None, back_to=None):
         
@@ -117,7 +115,7 @@ class Page(db.Model, Base):
         self.compile(compile, compile_args)
         self.post(post, post_args)
         self.next(next, next_args)
-        self.debug(debug, debug_args, debug_attrs)
+        self.debug(debug, debug_args)
         
         self.direction_to(direction_to)
         self.direction_from(direction_from)
@@ -302,10 +300,7 @@ class Page(db.Model, Base):
     # DEBUG FUNCTION AND ARGUMENTS
     # Set the debug function and arguments
     def debug(self, debug=None, args=None, attrs=None):
-        self._set_function(
-            '_debug_function', debug, 
-            '_debug_args', args, 
-            '_debug_attrs', attrs)
+        self._set_function('_debug_function', debug, '_debug_args', args)
     
     # Get the debug function
     def get_debug(self):
@@ -314,10 +309,6 @@ class Page(db.Model, Base):
     # Get the debug function arguments
     def get_debug_args(self):
         return self._debug_args
-    
-    # Get the Debug Page attributes
-    def get_debug_attrs(self):
-        return self._debug_attrs
 
         
     # DIRECTION
