@@ -102,7 +102,7 @@ class Page(db.Model, Base):
             forward_to=None, back_to=None):
         
         db.session.add(self)
-        db.session.commit()
+        db.session.flush([self])
         
         self.timer(timer)
         self.participant(part)

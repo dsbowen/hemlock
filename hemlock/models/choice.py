@@ -22,7 +22,6 @@ Columns:
     
     debug_function: debug function called by AI Participant
     debug_args: arguments for debug function
-    debug_attrs: attributes for Debug Choice
 '''
 class Choice(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
@@ -50,7 +49,7 @@ class Choice(db.Model, Base):
             debug=None, debug_args=None, debug_attrs=None):
         
         db.session.add(self)
-        db.session.commit()
+        db.session.flush([self])
         
         self.question(question, index)
         self.text(text)

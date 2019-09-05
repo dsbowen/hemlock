@@ -90,7 +90,7 @@ class Participant(db.Model, UserMixin, Base):
     def __init__(self, ipv4, start): 
         
         db.session.add(self)
-        db.session.commit()
+        db.session.flush([self])
         login_user(self)
         
         self._record_metadata(ipv4)

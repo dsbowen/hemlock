@@ -101,7 +101,7 @@ class Question(db.Model, Base):
             data=None):
         
         db.session.add(self)
-        db.session.commit()
+        db.session.flush([self])
         
         self.participant(part)
         if branch is not None:
