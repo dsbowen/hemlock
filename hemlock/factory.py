@@ -4,7 +4,7 @@
 # last modified 08/14/2019
 ##############################################################################
 
-from hemlock.extensions import Compiler, Viewer
+from hemlock.extensions import Compiler, Viewer, AttrValidator
 from flask import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -15,6 +15,7 @@ import pandas as pd
 # Create compiler, blueprint, database, login, and bootstrap
 compiler = Compiler()
 viewer = Viewer()
+attr_validator = AttrValidator()
 bp = Blueprint('hemlock', __name__)
 db = SQLAlchemy()
 login = LoginManager()
@@ -60,6 +61,7 @@ def create_app(
     # initialize application features
     compiler.init_app(app)
     viewer.init_app(app)
+    attr_validator.init_app(app)
     db.init_app(app)
     login.init_app(app)
     bootstrap.init_app(app)

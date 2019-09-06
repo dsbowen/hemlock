@@ -4,7 +4,7 @@
 # last modified 09/06/2019
 ##############################################################################
 
-from hemlock.factory import db
+from hemlock.factory import attr_validator, db
 from hemlock.models.choice import Choice
 from hemlock.models.private import Base
 from hemlock.database_types import MutableDict
@@ -89,8 +89,6 @@ class Question(db.Model, Base):
     _response = db.Column(db.Text)
     _error = db.Column(db.PickleType)
     _vorder = db.Column(db.Integer)
-    
-    
     
     # Initialize question
     def __init__(
@@ -408,3 +406,8 @@ class Question(db.Model, Base):
             data['_'.join([self._var,c.get_label(),'qorder'])] = c._index
             
         return data
+        
+@attr_validator.register(Question, '_compile')
+def iscallable(value):
+    if not callable(value):
+        raise ValueError('Compile function must be callable')

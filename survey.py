@@ -86,8 +86,8 @@ def get_video(q, video_q):
     
 def Start():
     b = Branch()
-    p = Page(b)
-    q = Question(p, compile=compile, compile_args={'hello':'world'})
+    p = Page(b, terminal=True)
+    q = Question(p, 'hello world')
     return b
     
 def compile(q, hello):

@@ -88,7 +88,6 @@ class Participant(db.Model, UserMixin, Base):
     # record metadata
     # initialize branch stack with root branch
     def __init__(self, ipv4, start): 
-        
         db.session.add(self)
         db.session.flush([self])
         login_user(self)
