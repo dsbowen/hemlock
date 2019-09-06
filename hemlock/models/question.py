@@ -10,8 +10,7 @@ from hemlock.models.private import Base
 from hemlock.database_types import MutableDict
 from flask_login import current_user
 
-def helloworld():
-    return {'hello':'world'}
+
 
 '''
 Relationships:

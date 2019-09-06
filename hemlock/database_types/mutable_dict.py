@@ -65,8 +65,14 @@ class MutableDictWrapper(Mutable, dict):
             return ModelShell(value)
         if isinstance(value, dict):
             return {key: self.shell(v) for key, v in value.items()}
-        if isinstance(value, list):
-            return type(value)([self.shell(v) for v in value])
+        if not isinstance(value, str):
+            try:
+                value_as_list = []
+                for v in value:
+                    value_as_list.append(self.shell(v))
+                return type(value)(value_as_list)
+            except:
+                pass
         return value
         
     # Unshell value
@@ -77,8 +83,14 @@ class MutableDictWrapper(Mutable, dict):
             return value.unshell()
         if isinstance(value, dict):
             return {key: self.unshell(v) for key, v in value.items()}
-        if isinstance(value, list):
-            return type(value)([self.unshell(v) for v in value])
+        if not isinstance(value, str):
+            try:
+                value_as_list = []
+                for v in value:
+                    value_as_list.append(self.unshell(v))
+                return type(value)(value_as_list)
+            except:
+                pass
         return value
         
 MutableDictWrapper.associate_with(MutableDict)
