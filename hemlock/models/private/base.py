@@ -1,11 +1,9 @@
 ##############################################################################
 # Base class
 # by Dillon Bowen
-# last modified 08/13/2019
+# last modified 09/06/2019
 ##############################################################################
 
-from hemlock.models.private.model_shell import ModelShell
-from inspect import getmro
 from sqlalchemy import inspect
 from flask_sqlalchemy.model import Model
 from random import shuffle
@@ -35,17 +33,7 @@ class Base():
             raise ValueError('Arguments must be dictionary (or None)')
             
         setattr(self, func_name, func)
-        if args is not None:
-            args = {key: self._model_indicator(value) 
-                for key, value in args.items()}
         setattr(self, args_name, args)
-            
-    # Attach a model indicator to arguments
-    def _model_indicator(self, value):
-        if Model in getmro(value.__class__):
-            x = ModelShell(value)
-            return (value.id, value.__class__)
-        return (value, None)
             
     # Call a function
     # inputs:
@@ -53,7 +41,6 @@ class Base():
         # function: the called function
         # args: additional keyword arguments (dict)
     def _call_function(self, object=None, function=None, args=None):
-        args = self._query_args(args)
         if function is None:
             return
         if object is None and args is None:
@@ -63,28 +50,8 @@ class Base():
         if object is not None and args is None:
             return function(object)
         return function(object, **args)
-        
-    # Query database to convert argument id's to models
-    def _query_args(self, args):
-        if args is None:
-            return None
-        return {key:self._query_arg(arg) for key, arg in args.items()}
-    
-    # Query databae to convert single argument id to model
-    def _query_arg(self, arg):
-        value, arg_class = arg
-        if arg_class is None:
-            return value
-        return arg_class.query.get(value)
-        
-        
-    
-    ##########################################################################
-    # Shell database models for pickling
-    # pass in name of column to shell
-    # go recursive shelling
-    # also have an unshell method
-    ##########################################################################
+
+
     
     ##########################################################################
     # Navigation functions common to branch and page    ##########################################################################

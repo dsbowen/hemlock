@@ -8,4 +8,3 @@ from hemlock.models.private.page_html import PageHtml
 from hemlock.models.private.visitors import Visitors
 from hemlock.models.private.data_store import DataStore
 from hemlock.models.private.base import Base
-from hemlock.models.private.mutable_dict import MutableDict, PickleEncodedDict

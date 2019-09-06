@@ -1,15 +1,17 @@
 ##############################################################################
 # Question model
 # by Dillon Bowen
-# last modified 09/05/2019
+# last modified 09/06/2019
 ##############################################################################
 
 from hemlock.factory import db
 from hemlock.models.choice import Choice
-from hemlock.models.private import Base, MutableDict, PickleEncodedDict
+from hemlock.models.private import Base
+from hemlock.database_types import MutableDict
 from flask_login import current_user
 
-
+def helloworld():
+    return {'hello':'world'}
 
 '''
 Relationships:
@@ -78,8 +80,7 @@ class Question(db.Model, Base):
     _default_is_choice = db.Column(db.Boolean)
     
     _compile_function = db.Column(db.PickleType)
-    # _compile_args = db.Column(MutableDict.as_mutable(db.PickleType))
-    _compile_args = db.Column(PickleEncodedDict)
+    _compile_args = db.Column(MutableDict)
     _post_function = db.Column(db.PickleType)
     _post_args = db.Column(db.PickleType)
     _debug_function = db.Column(db.PickleType)
