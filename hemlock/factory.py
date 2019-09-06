@@ -1,7 +1,7 @@
 ##############################################################################
 # Application factory
 # by Dillon Bowen
-# last modified 08/14/2019
+# last modified 09/06/2019
 ##############################################################################
 
 from hemlock.extensions import Compiler, Viewer, AttrSettor
@@ -11,6 +11,7 @@ from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from werkzeug.security import generate_password_hash
 import pandas as pd
+import os
 
 # Create extensions
 compiler = Compiler()
@@ -42,9 +43,10 @@ def create_app(
         block_duplicate_ips=True, 
         block_from_csv=None,
         debug=True,
-        static_folder='../static'):
+        static_folder='static'):
     
     # configure application
+    static_folder = os.path.join(os.getcwd(), static_folder)
     app = Flask(__name__, static_folder=static_folder)
     app.config.from_object(config_class)
     

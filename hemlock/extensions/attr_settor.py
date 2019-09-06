@@ -8,7 +8,7 @@ from hemlock.extensions.extensions_base import ExtensionsBase
 
 # Attribute Settor class
 class AttrSettor(ExtensionsBase):
-    # Validators is {(model_class, attribute name): validation function}
+    # set_functions is {(model_class, attribute name): set function}
     def __init__(self):
         self.set_functions = {}
         
