@@ -97,7 +97,7 @@ class Question(db.Model, Base):
     def __init__(
             self, page=None, text='', part=None, branch=None, index=None,
             all_rows=False, default=None, qtype='text', var=None,
-            compile=None, compile_args=None,
+            compile=None, compile_args={},
             post=None, post_args=None,
             debug=None, debug_args=None,
             data=None):
