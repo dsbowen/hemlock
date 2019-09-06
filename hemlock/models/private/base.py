@@ -4,7 +4,7 @@
 # last modified 09/06/2019
 ##############################################################################
 
-from hemlock.factory import attr_validator
+from hemlock.factory import attr_settor, db
 from sqlalchemy import inspect
 from flask_sqlalchemy.model import Model
 from random import shuffle
@@ -20,10 +20,8 @@ class Base():
     # Set attribute
     # ensure input value is correct type
     def __setattr__(self, name, value):
-        # if name == 'compile' and not callable(value):
-                # raise ValueError('Compile function must be callable')
-        attr_validator.validate(self.__class__, name, value)
-        self.__dict__[name] = value
+        value = attr_settor.set(self, name, value)
+        db.Model.__setattr__(self, name, value)
     
     # Set the object text
     def _set_text(self, text):

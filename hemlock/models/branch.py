@@ -1,11 +1,12 @@
 ##############################################################################
 # Branch model
 # by Dillon Bowen
-# last modified 09/04/2019
+# last modified 09/06/2019
 ##############################################################################
 
-from hemlock.factory import db
+from hemlock.factory import attr_settor, db
 from hemlock.models.private.base import Base
+from hemlock.database_types import MutableDict
 from flask_login import current_user
 
 
@@ -69,17 +70,18 @@ class Branch(db.Model, Base):
         lazy='dynamic',
         order_by='Question._index')
         
-    _next_function = db.Column(db.PickleType)
-    _next_args = db.Column(db.PickleType)
+    next = db.Column(db.PickleType)
+    next_args = db.Column(MutableDict)
     
     
     
     # Initialize branch
-    def __init__(self, next=None, next_args=None):
+    def __init__(self, next=None, next_args={}):
         db.session.add(self)
         db.session.flush([self])
         
-        self.next(next, next_args)
+        self.next = next
+        self.next_args = next_args
         
         
         
@@ -91,29 +93,21 @@ class Branch(db.Model, Base):
     # Assign branch to participant
     # also assign embedded data
     def participant(self, participant=current_user, index=None):
-        self._assign_parent(participant, '_part', index)
-        [q.participant(participant) for q in self._embedded.all()]
-        
-    # Get participant
-    def get_participant(self):
-        return self._part
+        participant._branch_stack.append(self)
+        participant.embedded.extend(self.embedded)
         
     # Remove branch from participant
     # also remove embedded data
     def remove_participant(self):
-        self._remove_parent('_part')
-        [q.remove_participant() for q in self._embedded.all()]
+        self.part.branch_stack.remove(self)
+        [self.part.embedded.remove(q) for q in self._embedded]
         
         
     # PAGE QUEUE
-    # Get the page queue
-    def get_page_queue(self):
-        return self._page_queue.all()
-        
     # Clear the page queue
-    def clear_page_queue(self):
+    def clear_pages(self):
         self._current_page = None
-        self._remove_children('_page_queue')
+        self._remove_children('pages')
         
         
     # ORIGIN AND NEXT BRANCH
@@ -198,3 +192,9 @@ class Branch(db.Model, Base):
                 print(p)
         if self._current_page is None:
             print(None, '***')
+            
+@attr_settor.register(Branch, 'next')
+def iscallable(branch, value):
+    if value is not None and not callable(value):
+        raise ValueError('Next function must be callable (or None)')
+    return value

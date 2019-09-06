@@ -4,7 +4,7 @@
 # last modified 09/06/2019
 ##############################################################################
 
-from hemlock.factory import attr_validator, db
+from hemlock.factory import attr_settor, db
 from hemlock.models.choice import Choice
 from hemlock.models.private import Base
 from hemlock.database_types import MutableDict
@@ -407,7 +407,9 @@ class Question(db.Model, Base):
             
         return data
         
-@attr_validator.register(Question, '_compile')
-def iscallable(value):
+@attr_settor.register(Question, '_compile')
+def iscallable(question, value):
+    print('testing callable')
     if not callable(value):
         raise ValueError('Compile function must be callable')
+    return value

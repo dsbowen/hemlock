@@ -6,4 +6,4 @@
 
 from hemlock.extensions.compiler import Compiler
 from hemlock.extensions.viewer import Viewer
-from hemlock.extensions.attr_validator import AttrValidator   
+from hemlock.extensions.attr_settor import AttrSettor

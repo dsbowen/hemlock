@@ -1,7 +1,7 @@
 ##############################################################################
 # Page model
 # by Dillon Bowen
-# last modified 07/24/2019
+# last modified 09/06/2019
 ##############################################################################
 
 from hemlock.factory import db, compiler
@@ -9,6 +9,7 @@ from hemlock.models.question import Question
 from hemlock.models.private.base import Base
 from flask import request
 from flask_login import current_user
+from sqlalchemy.ext.orderinglist import ordering_list
 from datetime import datetime
 
 
@@ -58,9 +59,9 @@ class Page(db.Model, Base):
     
     _questions = db.relationship(
         'Question', 
-        backref='_page', 
-        lazy='dynamic',
+        backref='_page',
         order_by='Question._index',
+        collection_class=ordering_list('_index'),
         foreign_keys='Question._page_id')
         
     _start_time = db.Column(db.DateTime)
