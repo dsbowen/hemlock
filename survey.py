@@ -83,6 +83,15 @@ def Start():
 def get_video(q, video_q):
     url = video_q.get_response()
     q.text(video(url, parms={'autoplay':1}))
+    
+def Start():
+    b = Branch()
+    p = Page(b)
+    q = Question(p, compile=compile, compile_args={'hello':'world'})
+    return b
+    
+def compile(q, hello):
+    q.text('hello '+hello)
       
 # create the application (survey)
 app = create_app(
