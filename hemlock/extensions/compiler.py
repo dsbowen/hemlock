@@ -9,13 +9,13 @@ from hemlock.extensions.compile_texts import *
 
 class Compiler(ExtensionsBase):
     def __init__(self):
-        self.compiler_functions = {}
+        self.compile_functions = {}
 
     # Register question type to compiler function mapping
     def register(self, qtype, overwrite=True):
         def original_function(f):
-            if qtype not in self.compiler_functions or overwrite:
-                self.compiler_functions[qtype] = f
+            if qtype not in self.compile_functions or overwrite:
+                self.compile_functions[qtype] = f
             return f
         return original_function
     
@@ -34,7 +34,7 @@ class Compiler(ExtensionsBase):
 
     # Compile html for a question
     def compile_question(self, q):
-        return self.compiler_functions[q.get_qtype()](q)
+        return self.compile_functions[q.get_qtype()](q)
 
     # Submit button
     def submit(self, p):

@@ -33,12 +33,12 @@ class DataStore(db.Model):
     to_store_complete = db.relationship(
         'Participant', 
         lazy='dynamic',
-        foreign_keys='Participant.ds_completed_id')
+        foreign_keys='Participant._ds_completed_id')
         
     incomplete = db.relationship(
         'Participant', 
         lazy='dynamic',
-        foreign_keys='Participant.ds_incomplete_id')
+        foreign_keys='Participant._ds_incomplete_id')
     
     def __init__(self):
         db.session.add(self)
@@ -206,3 +206,6 @@ class DataStore(db.Model):
     def print_data(self):
         for v in self.data.keys():
             print(v, self.data[v])
+
+class DataStore():
+    pass
