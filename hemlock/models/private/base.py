@@ -34,6 +34,7 @@ class Base():
     # args is a dict of kwargs
     # object is the object on which the function operates (may be None)
     def _call_function(self, function, args, object=None):
+        args = args.unshell()
         if function is None:
             return
         if object is None:

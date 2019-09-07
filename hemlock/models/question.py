@@ -80,7 +80,7 @@ class Question(db.Model, Base):
     _default_is_choice = db.Column(db.Boolean)
     
     compile = db.Column(db.PickleType)
-    compile_args = db.Column(MutableDict)
+    compile_args = db.Column(MutableFlex)
     post = db.Column(db.PickleType)
     post_args = db.Column(MutableFlex)
     debug = db.Column(db.PickleType)

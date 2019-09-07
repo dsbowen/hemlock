@@ -23,14 +23,18 @@ class ModelShell():
 class ValueShell(Mutable, dict):
     @classmethod
     def coerce(cls, key, value):
+        print('coercing', value)
         if not isinstance(value, ValueShell):
             return ValueShell(value)
         return value
 
     # Set value and shell
-    def __init__(self, value):
+    def __init__(self, value, parent=None):
+        print('init')
+        print('parent', parent)
         self.value_type = type(value)
         self.value = self.shell(value)
+        self.parent = parent
         
     # Get state
     def __getstate__(self):
@@ -40,8 +44,16 @@ class ValueShell(Mutable, dict):
         
     # Set item
     def __setitem__(self, key, value):
-        self.value.__setitem__(key, ValueShell(value))
-        self.changed()
+        self.value.__setitem__(key, ValueShell(value, self))
+        self._changed()
+        
+    def _changed(self):
+        if self.parent is not None:
+            print('changing parent')
+            self.parent._changed()
+        else:
+            print('changing self')
+            self.changed()
         
     # Get item
     def __getitem__(self, key):
@@ -57,10 +69,11 @@ class ValueShell(Mutable, dict):
         if Model in getmro(value.__class__):
             return ModelShell(value)
         if isinstance(value, dict):
-            return {key: ValueShell(v) for key, v in value.items()}
+            print('shelling dict')
+            return {key: ValueShell(v, self) for key, v in value.items()}
         if not isinstance(value, str):
             try:
-                value_as_list = [ValueShell(v) for v in value]
+                value_as_list = [ValueShell(v, self) for v in value]
                 return type(value)(value_as_list)
             except:
                 pass
