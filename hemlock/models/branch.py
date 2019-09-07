@@ -5,38 +5,39 @@
 ##############################################################################
 
 from hemlock.factory import attr_settor, db
-from hemlock.models.private.base import Base
+from hemlock.models.private.base import Base, iscallable
 from hemlock.database_types import MutableDict
 from flask_login import current_user
+from sqlalchemy.ext.orderinglist import ordering_list
 
 
 
 '''
 Relationships:
     part: participant to whose branch stack this branch belongs
-    page_queue: queue of pages to be displayed
+    pages: queue of pages to be displayed
     current_page: head of page queue
     origin_branch: parent branch from which this branch originated
     next_branch: child branch which originated from this branch
     origin_page: parent page from which this branch originated
-    embedded: set of embedded data questions
+    embedded: list of embedded data questions
 
 Columns:
     next_function: navigation function which grows the next branch
     next_args: arguments for next function
 '''
-class Branch(db.Model, Base):
+class Branch(Base):
     id = db.Column(db.Integer, primary_key=True)
     
     _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     _part_head_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     _index = db.Column(db.Integer)
     
-    _page_queue = db.relationship(
+    pages = db.relationship(
         'Page', 
         backref='_branch', 
-        lazy='dynamic',
-        order_by='Page._index',
+        order_by='Page.index',
+        collection_class=ordering_list('index'),
         foreign_keys='Page._branch_id')
         
     _current_page = db.relationship(
@@ -45,30 +46,30 @@ class Branch(db.Model, Base):
         foreign_keys='Page._branch_head_id')
         
     _origin_branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
-    _origin_branch = db.relationship(
+    origin_branch = db.relationship(
         'Branch',
-        back_populates='_next_branch',
+        back_populates='next_branch',
         uselist=False,
         foreign_keys=_origin_branch_id)
         
-    _next_branch = db.relationship(
+    next_branch = db.relationship(
         'Branch',
-        back_populates='_origin_branch',
+        back_populates='origin_branch',
         uselist=False,
         remote_side=id,
         foreign_keys=_origin_branch_id)
         
     _origin_page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    _origin_page = db.relationship(
+    origin_page = db.relationship(
         'Page', 
-        back_populates='_next_branch',
+        back_populates='next_branch',
         foreign_keys=_origin_page_id)
         
-    _embedded = db.relationship(
+    embedded = db.relationship(
         'Question', 
-        backref='_branch', 
-        lazy='dynamic',
-        order_by='Question._index')
+        backref='branch',
+        order_by='Question.index',
+        collection_class=ordering_list('index'))
         
     next = db.Column(db.PickleType)
     next_args = db.Column(MutableDict)
@@ -89,68 +90,16 @@ class Branch(db.Model, Base):
     # Public methods
     ##########################################################################
         
-    # PARTICIPANT
-    # Assign branch to participant
-    # also assign embedded data
+    # Assign branch (and embedded data) to participant
     def participant(self, participant=current_user, index=None):
-        participant._branch_stack.append(self)
+        participant.branch_stack.append(self)
         participant.embedded.extend(self.embedded)
         
-    # Remove branch from participant
+    # Remove branch (and embedded data) from participant
     # also remove embedded data
     def remove_participant(self):
         self.part.branch_stack.remove(self)
-        [self.part.embedded.remove(q) for q in self._embedded]
-        
-        
-    # PAGE QUEUE
-    # Clear the page queue
-    def clear_pages(self):
-        self._current_page = None
-        self._remove_children('pages')
-        
-        
-    # ORIGIN AND NEXT BRANCH
-    # Return the branch origin (may be branch or page)
-    def get_origin(self):
-        if self._origin_branch is not None:
-            return self._origin_branch
-        return self._origin_page
-        
-    # Return the next branch
-    def get_next_branch(self):
-        return self._next_branch
-        
-        
-    # EMBEDDED QUESTIONS (DATA)
-    # Return embedded questions (data)
-    def get_embedded(self):
-        return self._embedded
-        
-    # Clear embedded questions (data)
-    def clear_embedded(self):
-        self._remove_children('_embedded')
-        
-        
-    # NEXT FUNCTION AND ARGUMENTS
-    # Set the next navigation function and arguments
-    # to clear next function and args: next()
-    def next(self, next=None, args=None):
-        self._set_function('_next_function', next, '_next_args', args)
-        
-    # Get the next function
-    def get_next(self):
-        return self._next_function
-        
-    # Get the next function arguments
-    def get_next_args(self):
-        return self._next_args
-        
-        
-    # RANDOMIZATION
-    # Randomize order of pages in queue
-    def randomize(self):
-        self._randomize_children('_page_queue')
+        [self.part.embedded.remove(q) for q in self.embedded]
         
         
         
@@ -162,30 +111,30 @@ class Branch(db.Model, Base):
     def _forward(self):
         if self._current_page is None:
             return
-        new_head_index = self._current_page._index + 1
-        if new_head_index == len(self._page_queue.all()):
+        new_head_index = self._current_page.index + 1
+        if new_head_index == len(self.pages):
             self._current_page = None
             return
-        self._current_page = self._page_queue[new_head_index]
+        self._current_page = self.pages[new_head_index]
         
     # Return to previous page in queue
     def _back(self):
-        if not self._page_queue:
+        if not self.pages:
             return
         if self._current_page is None:
-            self._current_page = self._page_queue.all()[-1]
+            self._current_page = self.pages[-1]
             return
-        new_head_index = self._current_page._index - 1
-        self._current_page = self._page_queue[new_head_index]
+        new_head_index = self._current_page.index - 1
+        self._current_page = self.pages[new_head_index]
         
     # Initialize head pointer to first page in queue
     def _initialize_head_pointer(self):
-        self._current_page = self._page_queue.first()
+        self._current_page = self.pages[0]
         
     # Print page queue
     # for debugging purposes only
     def _print_page_queue(self):
-        for p in self._page_queue.all():
+        for p in self.pages:
             if p == self._current_page:
                 print(p, '***')
             else:
@@ -193,8 +142,7 @@ class Branch(db.Model, Base):
         if self._current_page is None:
             print(None, '***')
             
+# Validate that next is a function (or None)
 @attr_settor.register(Branch, 'next')
 def iscallable(branch, value):
-    if value is not None and not callable(value):
-        raise ValueError('Next function must be callable (or None)')
-    return value
+    return iscallable(value)

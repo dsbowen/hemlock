@@ -409,7 +409,7 @@ class Question(db.Model, Base):
         
 @attr_settor.register(Question, '_compile')
 def iscallable(question, value):
-    print('testing callable')
+    return iscallable(value)
     if not callable(value):
         raise ValueError('Compile function must be callable')
     return value

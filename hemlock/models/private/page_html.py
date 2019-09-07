@@ -1,7 +1,7 @@
 ##############################################################################
 # Page Html model
 # by Dillon Bowen
-# last modified 09/02/2019
+# last modified 09/06/2019
 ##############################################################################
 
 import numpy as np
@@ -42,7 +42,6 @@ class PageHtml(db.Model):
     # Store compiled html and add to participant
     # preprocess the html
     def __init__(self, html):
-        self.raw_html = html
         self.html = html
         self.part = current_user
         self.preprocess_html()

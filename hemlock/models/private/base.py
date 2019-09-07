@@ -12,7 +12,7 @@ from random import shuffle
 
 
 # Base class for Hemlock models
-class Base():
+class Base(db.Model):
     ##########################################################################
     # Set public model attributes
     ##########################################################################
@@ -212,3 +212,9 @@ class Base():
         shuffle(order)
         
         [c._set_index(i, order_by_key) for (c,i) in zip(children, order)]
+    
+# Validation function ensuring function attribute assigned value is callable
+def iscallable(value):
+    if not (value is None or callable(value)):
+        raise ValueError('Function attribute must be callable (or None)')
+    return value
