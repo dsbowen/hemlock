@@ -1,28 +1,19 @@
 ##############################################################################
 # Mutable Dictionary
 # by Dillon Bowen
-# last modified 09/06/2019
+# last modified 09/07/2019
 ##############################################################################
 
 from hemlock.factory import db
-from flask_sqlalchemy.model import Model
+from hemlock.database_types.model_shell import ModelShell
 from sqlalchemy.ext.mutable import Mutable
+
+from flask_sqlalchemy.model import Model
 from inspect import getmro
 
 # Mutable Dictionary database type
 class MutableDict(db.PickleType):
     pass
-
-# Model shell
-class ModelShell():
-    # Shell model: store model id and class (table)
-    def __init__(self, model):
-        self.id = model.id
-        self.model_class = model.__class__
-        
-    # Unshell: query database to return original model
-    def unshell(self):
-        return self.model_class.query.get(self.id)
 
 # Mutable Dictionary Wrapper
 class MutableDictWrapper(Mutable, dict):
@@ -31,7 +22,7 @@ class MutableDictWrapper(Mutable, dict):
     def coerce(cls, key, value):
         if not isinstance(value, MutableDictWrapper):
             if isinstance(value, dict):
-                return MutableDictWrapper(value)
+                return MutableDictWrapper(value) # shell
             return Mutable.coerce(key, value)
         return value
         
@@ -45,52 +36,19 @@ class MutableDictWrapper(Mutable, dict):
         
     # Set item after shelling models in value
     def __setitem__(self, key, value):
-        dict.__setitem__(self, key, self.shell(value))
+        dict.__setitem__(self, key, value) # shell
         self.changed()
         
     # Get item after unshelling models in value
-    def __getitem__(self, key):
-        return self.unshell(dict.__getitem__(self, key))
+    # def __getitem__(self, key):
+        # return dict.__getitem__(unshell(dict(self)), key)
+        # print('get item')
+        # return dict.__getitem__(dict(self), key)
     
     # Delete item
     def __delitem__(self, key):
         dict.__delitem__(self, key)
         self.changed()
-    
-    # Shell value
-    # store value as ModelShell if value is a model
-    # cascading shelling for dictionaries and iterables
-    def shell(self, value):
-        if Model in getmro(value.__class__):
-            return ModelShell(value)
-        if isinstance(value, dict):
-            return {key: self.shell(v) for key, v in value.items()}
-        if not isinstance(value, str):
-            try:
-                value_as_list = []
-                for v in value:
-                    value_as_list.append(self.shell(v))
-                return type(value)(value_as_list)
-            except:
-                pass
-        return value
         
-    # Unshell value
-    # recover model from ModelShell
-    # cascading unshelling for dictionaries and iterables
-    def unshell(self, value):
-        if isinstance(value, ModelShell):
-            return value.unshell()
-        if isinstance(value, dict):
-            return {key: self.unshell(v) for key, v in value.items()}
-        if not isinstance(value, str):
-            try:
-                value_as_list = []
-                for v in value:
-                    value_as_list.append(self.unshell(v))
-                return type(value)(value_as_list)
-            except:
-                pass
-        return value
-        
+# Wrap Mutable Dictionary
 MutableDictWrapper.associate_with(MutableDict)
