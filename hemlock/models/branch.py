@@ -6,7 +6,6 @@
 
 from hemlock.factory import attr_settor, db
 from hemlock.models.private.base import Base, iscallable
-from hemlock.database_types import MutableDict
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
 
@@ -78,7 +77,7 @@ class Branch(db.Model, Base):
         )
         
     next = db.Column(db.PickleType)
-    next_args = db.Column(MutableDict)
+    next_args = db.Column(db.PickleType)
     
     
     

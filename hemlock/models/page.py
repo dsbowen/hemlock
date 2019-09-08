@@ -7,7 +7,6 @@
 from hemlock.factory import attr_settor, compiler, db
 from hemlock.models.question import Question
 from hemlock.models.private.base import Base, iscallable
-from hemlock.database_types import MutableDict
 from flask import request
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
@@ -87,13 +86,13 @@ class Page(db.Model, Base):
     terminal = db.Column(db.Boolean)
     
     compile = db.Column(db.PickleType)
-    compile_args = db.Column(MutableDict)
+    compile_args = db.Column(db.PickleType)
     post = db.Column(db.PickleType)
-    post_args = db.Column(MutableDict)
+    post_args = db.Column(db.PickleType)
     next = db.Column(db.PickleType)
-    next_args = db.Column(MutableDict)
+    next_args = db.Column(db.PickleType)
     debug = db.Column(db.PickleType)
-    debug_args = db.Column(MutableDict)
+    debug_args = db.Column(db.PickleType)
     
     compiled = db.Column(db.Boolean, default=False)
     direction_to = db.Column(db.String(8))

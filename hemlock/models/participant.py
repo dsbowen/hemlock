@@ -10,7 +10,6 @@ from hemlock.models.page import Page
 from hemlock.models.private.page_html import PageHtml
 from hemlock.models.question import Question
 from hemlock.models.private.base import Base
-from hemlock.database_types import MutableDict
 from flask import request
 from flask_login import UserMixin, login_user
 from sqlalchemy.ext.orderinglist import ordering_list
@@ -43,6 +42,8 @@ Columns:
 '''
 class Participant(db.Model, UserMixin, Base):
     id = db.Column(db.Integer, primary_key=True)
+    _ds_completed_id = db.Column(db.Integer, db.ForeignKey('data_store.id'))
+    _ds_incomplete_id = db.Column(db.Integer, db.ForeignKey('data_store.id'))
     
     _branch_stack = db.relationship(
         'Branch',
@@ -64,8 +65,8 @@ class Participant(db.Model, UserMixin, Base):
         lazy='dynamic'
         )
     
-    g = db.Column(MutableDict)
-    meta = db.Column(MutableDict)
+    g = db.Column(db.PickleType)
+    meta = db.Column(db.PickleType)
     
     _data = db.Column(db.PickleType)
     _num_rows = db.Column(db.Integer, default=0)

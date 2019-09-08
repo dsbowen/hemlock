@@ -1,8 +1,9 @@
 flask
 flask-sqlalchemy
-sqlalchemy
 flask-login
 flask-bootstrap4
+sqlalchemy
+sqlalchemy-json
 gunicorn
 psycopg2
 pandas

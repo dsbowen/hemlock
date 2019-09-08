@@ -6,7 +6,6 @@
 
 from hemlock.factory import attr_settor, db
 from hemlock.models.private.base import Base, iscallable
-from hemlock.database_types import MutableDict
 
 
 
@@ -26,7 +25,7 @@ class Validator(db.Model, Base):
     index = db.Column(db.Integer)
     
     condition = db.Column(db.PickleType)
-    condition_args = db.Column(MutableDict)
+    condition_args = db.Column(db.PickleType)
     
     
     

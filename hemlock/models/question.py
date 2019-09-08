@@ -1,18 +1,21 @@
 ##############################################################################
 # Question model
 # by Dillon Bowen
-# last modified 09/07/2019
+# last modified 09/08/2019
 ##############################################################################
 
 from hemlock.factory import attr_settor, compiler, db
-from hemlock.models.choice import Choice
+from .choice import Choice
 from hemlock.models.private.base import Base, iscallable
-from hemlock.database_types import MutableDict
-from hemlock.database_types.model_shell import MutableFlex
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy_json import NestedMutableJson
 
-
+# from sqlalchemy_json import NestedMutable
+# class NestedMutablePickle(db.PickleType):
+    # pass
+    
+# NestedMutable.associate_with(NestedMutablePickle)
 
 '''
 Relationships:
@@ -80,11 +83,11 @@ class Question(db.Model, Base):
     _default_is_choice = db.Column(db.Boolean)
     
     compile = db.Column(db.PickleType)
-    compile_args = db.Column(MutableFlex)
+    compile_args = db.Column(db.PickleType)
     post = db.Column(db.PickleType)
-    post_args = db.Column(MutableFlex)
+    post_args = db.Column(NestedMutableJson)
     debug = db.Column(db.PickleType)
-    debug_args = db.Column(MutableDict)
+    debug_args = db.Column(db.PickleType)
     
     data = db.Column(db.PickleType)
     response = db.Column(db.Text)

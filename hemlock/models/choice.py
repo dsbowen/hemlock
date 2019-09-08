@@ -6,7 +6,6 @@
 
 from hemlock.factory import attr_settor, db
 from hemlock.models.private.base import Base, iscallable
-from hemlock.database_types import MutableDict
 
 
 
@@ -33,7 +32,7 @@ class Choice(db.Model, Base):
     value = db.Column(db.PickleType)
     label = db.Column(db.Text)
     debug = db.Column(db.PickleType)
-    debug_args = db.Column(MutableDict)
+    debug_args = db.Column(db.PickleType)
     
     _checked = db.Column(db.String(8))
     
