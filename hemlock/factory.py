@@ -1,10 +1,6 @@
-##############################################################################
-# Application factory
-# by Dillon Bowen
-# last modified 09/06/2019
-##############################################################################
+"""Application factory"""
 
-from hemlock.extensions import Compiler, Viewer, AttrSettor
+# from hemlock.extensions import Compiler, Viewer, AttrSettor
 from flask import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -14,13 +10,13 @@ import pandas as pd
 import os
 
 # Create extensions
-compiler = Compiler()
-viewer = Viewer()
-attr_settor = AttrSettor()
+# compiler = Compiler()
+# viewer = Viewer()
+# attr_settor = AttrSettor()
 bp = Blueprint('hemlock', __name__)
 db = SQLAlchemy()
-login = LoginManager()
-login.login_view = 'hemlock.index'
+# login = LoginManager()
+# login.login_view = 'hemlock.index'
 bootstrap = Bootstrap()
 
 '''
@@ -61,11 +57,11 @@ def create_app(
     app.debug_mode = debug
     
     # initialize application features
-    compiler.init_app(app)
-    viewer.init_app(app)
-    attr_settor.init_app(app)
+    # compiler.init_app(app)
+    # viewer.init_app(app)
+    # attr_settor.init_app(app)
     db.init_app(app)
-    login.init_app(app)
+    # login.init_app(app)
     bootstrap.init_app(app)
     
     # register the application blueprint

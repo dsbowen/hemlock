@@ -1,19 +1,10 @@
-##############################################################################
-# Hemlock survey template
-# by Dillon Bowen
-# last modified 07/24/2019
-##############################################################################
+"""Hemlock survey"""
 
 # import hemlock package, configuration class, and texts
 from hemlock import *
-from custom_compilers import *
-from debug import AIParticipant as AIP
 from config import Config
 from texts import *
 from flask_login import current_user
-
-def Start():
-    raise NotImplementedError()
     
 def Start():
     b = Branch()

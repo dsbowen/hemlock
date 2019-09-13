@@ -1,8 +1,6 @@
-##############################################################################
-# Page model
-# by Dillon Bowen
-# last modified 09/07/2019
-##############################################################################
+"""Page database model
+
+"""
 
 from hemlock.factory import attr_settor, compiler, db
 from hemlock.models.question import Question

@@ -1,73 +1,51 @@
-##############################################################################
-# Base class
-# by Dillon Bowen
-# last modified 09/07/2019
-##############################################################################
+"""Base classes for public database models
 
-from hemlock.factory import attr_settor, db
-from sqlalchemy import inspect
-from flask_sqlalchemy.model import Model
-from random import shuffle
+Defines generic Base class and BranchingBase with methods for growing and
+inserting new branches to a Participant's branch_stack.
+"""
 
-
-
-# Base class for Hemlock models
 class Base():
-    ##########################################################################
-    # Set public model attributes
-    ##########################################################################
-    
-    # Set attribute
-    # ensure input value is correct type
-    def __setattr__(self, name, value):
-        value = attr_settor.set(self, name, value)
-        db.Model.__setattr__(self, name, value)
-        
-    # Set parent
+    """Generic base class for public database models"""    
     def _set_parent(self, parent, index, parent_attr, child_attr):
+        """Set model parent
+        
+        Automatically detect whether to insert using standard __setattr___
+        or insert.
+        """
         if parent is None or index is None:
             self.__setattr__(parent_attr, parent)
         else:
             getattr(parent, child_attr).insert(index, self)
 
-    # Call function
-    # args is a dict of kwargs
-    # object is the object on which the function operates (may be None)
-    def _call_function(self, function, args, object=None):
-        args = args.unshell()
-        if function is None:
-            return
-        if object is None:
-            return function(**args)
-        return function(object, **args)
 
-
+class BranchingBase(Base):
+    """Base class for Branch and Page models
     
-    ##########################################################################
-    # Navigation functions common to branch and page    ##########################################################################
+    Defines additional methods for growing new branches.
+    """
     
-    # Indicates whether the object is eligible to grow and insert next branch
-    # next function must not be None
-    # and the next branch must not already be in participant's branch stack
     def _eligible_to_insert_next(self):
+        """Indicate that object is eligible to grow and insert next branch
+        
+        A Page or Branch is eligible to insert the next branch to the
+        Participant's branch_stack iff the next function is not None and
+        the next branch is not already in the branch_stack.
+        """
         return (
             self.next is not None
-            and self.next_branch not in self._part._branch_stack
+            and self.next_branch not in self.part.branch_stack
             )
         
-    # Grow and return a new branch
     def _grow_branch(self):
-        next_branch = self._call_function(self.next, self.next_args)
+        """Grow and return a new branch"""
+        from hemlock.models import Branch, Page
+        
+        next_branch = self.next(*self.next_args, **self.next_kwargs)
         if next_branch is None:
             return
         
-        next_branch._initialize_head_pointer()
-        next_branch.origin_page = next_branch.origin_branch = None
         self.next_branch = next_branch
+        next_branch.origin_branch = self if isinstance(self, Branch) else None
+        next_branch.origin_page = self if isinstance(self, Page) else None
+        next_branch._initialize_head_pointer()
         return next_branch
-    
-# Validation function ensuring function attribute assigned value is callable
-def iscallable(value):
-    if not (value is None or callable(value)):
-        raise ValueError('Function attribute must be callable (or None)')
-    return value

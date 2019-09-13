@@ -1,55 +1,51 @@
-##############################################################################
-# Validator model
-# by Dillon Bowen
-# last modified 09/07/2019
-##############################################################################
+"""Validator database model
 
-from hemlock.factory import attr_settor, db
-from hemlock.models.private.base import Base, iscallable
+A Question may contain a list of Validators. A Validator ensure that the
+Participant entered a valid answer for the question to which it belongs.
+
+Validators execute a validation function, which takes its Question as its
+first argument. The valiation function returns an error message if the
+Participant's response was invalid. Otherwise, it returns None.
+
+Validation occurs after post functions are executed.
+"""
+
+from hemlock.factory import db
+from hemlock.database_types import FunctionType
+from hemlock.models.private.base import Base
+
+from sqlalchemy_mutable import MutableListType, MutableDictType
 
 
-
-'''
-Relationships:
-    question: question to which this validator belongs
-    
-Columns:
-    condition: function which determines the validity of response
-        Return None if valid, error message if invalid
-    condition_args: arguments for condition function
-'''
 class Validator(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     index = db.Column(db.Integer)
     
-    condition = db.Column(db.PickleType)
-    condition_args = db.Column(db.PickleType)
+    validation = db.Column(FunctionType)
+    validation_args = db.Column(MutableListType)
+    validation_kwargs = db.Column(MutableDictType)
     
-    
-    
-    # Initialization
     def __init__(
             self, question=None, index=None, 
-            condition=None, condition_args=None):
+            validation=None, validation_args=[], validation_kwargs={}):
         db.session.add(self)
         db.session.flush([self])
         
         self.set_question(question, index)
-        self.condition, self.condition_args = condition, condition_args
+        self.validation = validation
+        self.validation_args = validation_args
+        self.validation_kwargs = validation_kwargs
     
-    # Set question
     def set_question(self, question, index=None):
         self._set_parent(question, index, 'question', 'validators')
     
-    # Return error message if response is invalid
-    # return None if response was valid
-    def _get_error(self):
-        return self._call_function(
-            self.condition, self.condition_args, self.question)
-
-# Validate function attributes are callable (or None)
-@attr_settor.register(Validator, 'condition')
-def valid_function(validator, value):
-    return iscallable(value)
+    def _validate(self):
+        """Validate Participant response
+        
+        Validation function returns an error message if the Participant's
+        response was invalid. Otherwise it returns None.
+        """
+        return self.validation(
+            self.question, *self.validation_args, **self.validation_kwargs)

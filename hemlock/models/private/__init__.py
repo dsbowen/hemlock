@@ -1,10 +1,9 @@
-###############################################################################
-# Initialization for private models
-# by Dillon Bowen
-# last modified 09/05/2019
-###############################################################################
+"""Private database models and classes
 
-from hemlock.models.private.page_html import PageHtml
-from hemlock.models.private.visitors import Visitors
-from hemlock.models.private.data_store import DataStore
-from hemlock.models.private.base import Base
+These should rarely be modified by the user.
+"""
+
+from hemlock.models.private.base import Base, BranchingBase
+# from hemlock.models.private.page_html import PageHtml
+# from hemlock.models.private.visitors import Visitors
+# from hemlock.models.private.data_store import DataStore

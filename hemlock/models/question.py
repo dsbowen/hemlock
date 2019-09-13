@@ -1,21 +1,23 @@
-##############################################################################
-# Question model
-# by Dillon Bowen
-# last modified 09/08/2019
-##############################################################################
+"""Question database model
 
-from hemlock.factory import attr_settor, compiler, db
-from .choice import Choice
-from hemlock.models.private.base import Base, iscallable
+A Branch may contain a list of Questions. These Questions do not appear in 
+the survey, but contribute to the Participant's data in the DataStore.
+
+A Page contains a list of Questions which appear on the survey page.
+
+Questions of certain types (such as multiple choice) contain a list of 
+Choices. Questions may also contain a list of Validators.
+"""
+
+from hemlock.factory import db
+from hemlock.database_types import FunctionType
+from hemlock.models.private.base import Base
+
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy_json import NestedMutableJson
+from sqlalchemy_mutable import Mutable, MutableType
+from sqlalchemy_mutable import MutableListType, MutableDictType
 
-# from sqlalchemy_json import NestedMutable
-# class NestedMutablePickle(db.PickleType):
-    # pass
-    
-# NestedMutable.associate_with(NestedMutablePickle)
 
 '''
 Relationships:
@@ -63,7 +65,22 @@ class Question(db.Model, Base):
         'Choice', 
         backref='question',
         order_by='Choice.index',
-        collection_class=ordering_list('index')
+        collection_class=ordering_list('index'),
+        foreign_keys='Choice._question_id'
+        )
+    
+    selected_choices = db.relationship(
+        'Choice',
+        order_by='Choice._selected_index',
+        collection_class=ordering_list('_selected_index'),
+        foreign_keys='Choice._selected_id'
+        )
+    
+    nonselected_choices = db.relationship(
+        'Choice',
+        order_by='Choice._nonselected_index',
+        collection_class=ordering_list('_nonselected_index'),
+        foreign_keys='Choice._nonselected_id'
         )
         
     validators = db.relationship(
@@ -73,35 +90,75 @@ class Question(db.Model, Base):
         collection_class=ordering_list('index')
         )
         
-    text = db.Column(db.Text)
     all_rows = db.Column(db.Boolean)
-    qtype = db.Column(db.String)
+    data = db.Column(db.PickleType)
+    _default = db.Column(MutableType)
+    init_default = db.Column(MutableType)
+    _qtype = db.Column(db.String)
+    text = db.Column(db.Text)
     var = db.Column(db.Text)
     
-    default = db.Column(db.PickleType)
-    init_default = db.Column(db.PickleType)
-    _default_is_choice = db.Column(db.Boolean)
+    compile = db.Column(FunctionType)
+    compile_args = db.Column(MutableListType)
+    compile_kwargs = db.Column(MutableDictType)
+    post = db.Column(FunctionType)
+    post_args = db.Column(MutableListType)
+    post_kwargs = db.Column(MutableDictType)
+    debug = db.Column(FunctionType)
+    debug_args = db.Column(MutableListType)
+    debug_kwargs = db.Column(MutableDictType)
     
-    compile = db.Column(db.PickleType)
-    compile_args = db.Column(db.PickleType)
-    post = db.Column(db.PickleType)
-    post_args = db.Column(NestedMutableJson)
-    debug = db.Column(db.PickleType)
-    debug_args = db.Column(db.PickleType)
-    
-    data = db.Column(db.PickleType)
-    response = db.Column(db.Text)
+    response = db.Column(db.PickleType)
     error = db.Column(db.Text)
-    vorder = db.Column(db.Integer)
     
-    # Initialize question
+    @property
+    def default(self):
+        return self._default
+    
+    @default.setter
+    def default(self, default):
+        """Set initial default the first time default is set"""
+        if self.init_default is None:
+            self.init_default = default
+        self._default = default
+    
+    @property
+    def qtype(self):
+        return self._qtype
+    
+    @qtype.setter
+    def qtype(self, qtype):
+        assert qtype in self._html_compilers, (
+            'Question type does not have an associated html compiler'
+            )
+        self._qtype = qtype
+    
+    """Associate question types with html compilers and response recorders"""
+    _html_compilers = {}
+    
+    @classmethod
+    def register_html_compiler(cls, qtype):
+        def register(compiler):
+            cls._html_compilers[qtype] = compiler
+            return compiler
+        return register
+    
+    _response_recorders = {}
+    
+    @classmethod
+    def register_response_recorder(cls, qtype):
+        def register(recorder):
+            cls._response_recorders[qtype] = recorder
+            return recorder
+        return register
+    
     def __init__(
             self, page=None, branch=None, index=None,
-            text='',  all_rows=False, default=None, qtype='text', var=None,
-            compile=None, compile_args={},
-            post=None, post_args={},
-            debug=None, debug_args={},
-            data=None):
+            all_rows=False, data=None, default=Mutable(),
+            qtype='text', text='', var=None,
+            compile=None, compile_args=[], compile_kwargs={},
+            post=None, post_args=[], post_kwargs={},
+            debug=None, debug_args=[], debug_kwargs={}):
         
         db.session.add(self)
         db.session.flush([self])
@@ -109,68 +166,50 @@ class Question(db.Model, Base):
         self.set_branch(branch, index)
         self.set_page(page, index)
         
-        self.text = text
         self.all_rows = all_rows
+        self.data = data
         self.default = default
         self.qtype = qtype
+        self.text = text
         self.var = var
         
-        self.compile, self.compile_args = compile, compile_args
-        self.post, self.post_args = post, post_args
-        self.debug, self.debug_args = debug, debug_args
-        
-        self.data = data
+        self.compile = compile
+        self.compile_args = compile_args
+        self.compile_kwargs = compile_kwargs
+        self.post = post
+        self.post_args = post_args
+        self.post_kwargs = post_kwargs
+        self.debug = debug
+        self.debug_args = debug_args
+        self.debug_kwargs = debug_kwargs
     
-    
-    
-    ##########################################################################
-    # Public methods
-    ##########################################################################
-    
-    # Set branch
     def set_branch(self, branch, index=None):
         self._set_parent(branch, index, 'branch', 'embedded')
         
-    # Set page
     def set_page(self, page, index=None):
         self._set_parent(page, index, 'page', 'questions')
         
-    # Reset default to initial default
-    # typically for use after invalid page submission
     def reset_default(self):
         self.default = self.init_default
-        
-    # Get the list of selected choices
-    def get_selected(self):
-        return [c for c in self.choices if c._checked=='checked']
-        
-    # Get the list of nonselected choices
-    def get_nonselected(self):
-        return [c for c in self.choices if c._checked=='']
     
-        
-    
-    ##########################################################################
-    # Private methods
-    ##########################################################################
-        
-    # Record the participant's response
-    # collect response and update default
+    def _compile_html(self):
+        return self._html_compilers[self.qtype](self)
+
     def _record_response(self, response):
-        # if self._qtype == 'free':
-            # self._default = response
-        # else:
-            # [c._set_checked(response=='c'+str(c.id)) for c in self._choices]
-            # checked = self.get_selected()
-            # if checked:
-                # response = checked[0].get_value()
-                # self._default = checked[0].id
-        self.response = self.data = response
+        """Record Participant response
         
-    # Validate the participant's response
-    def _validate(self):
+        Use a response recorder specific to the question type if one has been
+        registered. Otherwise set data and response to Participant's response.
+        """
+        response_recorder = self._response_recorders.get(self.qtype)
+        if response_recorder is not None:
+            return response_recorder(self, response)
+        self.data = self.response = response
+        
+    def _validate_response(self):
+        """Validate Participant response"""
         for v in self.validators:
-            self.error = v._get_error()
+            self.error = v._validate()
             if self.error is not None:
                 return False
         return True
@@ -195,37 +234,3 @@ class Question(db.Model, Base):
             data['_'.join([self.var, c.label, 'qorder'])] = c.index
             
         return data
-        
-# Question may be assigned to page or branch but not both
-@attr_settor.register(Question, 'page')
-def remove_from_branch(question, value):
-    from hemlock.models.page import Page
-    if isinstance(value, Page):
-        question.branch = None
-    return value
-
-@attr_settor.register(Question, 'branch')
-def remove_from_page(question, value):
-    from hemlock.models.branch import Branch
-    if isinstance(value, Branch):
-        question.page = None
-    return value
-        
-# Validate function attributes are callable (or None)
-@attr_settor.register(Question, ['compile', 'post', 'debug'])
-def valid_function(question, value):
-    return iscallable(value)
-    
-# Validate question type exists
-@attr_settor.register(Question, 'qtype')
-def valid_qtype(question, value):
-    if value not in compiler.compile_functions:
-        raise ValueError('Nonexistent question type')
-    return value
-    
-# Set initial default value if not already set
-@attr_settor.register(Question, 'default')
-def init_default(question, value):
-    if question.init_default is None:
-        question.init_default = value
-    return value

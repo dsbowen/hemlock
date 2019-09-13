@@ -1,74 +1,58 @@
-##############################################################################
-# Choice model
-# by Dillon Bowen
-# last modified 09/07/2019
-##############################################################################
+"""Choice database model
 
-from hemlock.factory import attr_settor, db
-from hemlock.models.private.base import Base, iscallable
-
-
-
-'''
-Relationships:
-    question: question to which this choice belongs
+Question of certain question types, such as multiple choice, contain a list of Choices. Each choice specifies:
     
-Columns:
-    text: choice text
-    value: choice value
-    label: choice label
-    debug: debug function called by AI Participant
-    debug_args: arguments for debug function
-    
-    _checked: indicator that this choice is a default answer
-'''
+1. A text: to be displayed on the page
+2. A value: stored as the Question's data by default
+3. A label: to identify the Choice when the data are downloaded
+
+Choices also have a debugging function and arguments.
+"""
+
+from hemlock.factory import db
+from hemlock.database_types import FunctionType
+from hemlock.models.private import Base
+
+from sqlalchemy_mutable import MutableType, MutableListType, MutableDictType
+
+
 class Choice(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     index = db.Column(db.Integer)
+    _selected_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    _selected_index = db.Column(db.Integer)
+    _nonselected_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    _nonselected_index = db.Column(db.Integer)
     
     text = db.Column(db.Text)
     value = db.Column(db.PickleType)
     label = db.Column(db.Text)
-    debug = db.Column(db.PickleType)
-    debug_args = db.Column(db.PickleType)
     
-    _checked = db.Column(db.String(8))
+    debug = db.Column(FunctionType)
+    debug_args = db.Column(MutableListType)
+    debug_kwargs = db.Column(MutableDictType)
     
-    
-    
-    # Initialization
-    # by default, value and label are set to text unless manually entered
     def __init__(
             self, question=None, index=None,
             text='', value=None, label=None,
-            debug=None, debug_args={}):
+            debug=None, debug_args=[], debug_kwargs={}):
         
         db.session.add(self)
         db.session.flush([self])
         
         self.set_question(question, index)
         self.set_all(text)
-        if value is not None:
-            self.value = value
-        if label is not None:
-            self.label = label
-        self.debug, self.debug_args = debug, debug_args
+        self.value = value if value is not None else self.value
+        self.label = label if label is not None else self.label
+        self.debug = debug
+        self.debug_args = debug_args
+        self.debug_kwargs = debug_kwargs
 
-    # Set question
     def set_question(self, question, index=None):
         self._set_parent(question, index, 'question', 'choices')
         
-    # Set text, value, and label
     def set_all(self, text):
+        """Set text, value, and label to the same value"""
         self.text = self.value = self.label = text
-
-    # Set the choice as checked
-    def _set_checked(self, checked=True):
-        self._checked = 'checked' if checked else ''
-        
-# Validate function attributes are callable (or None)
-@attr_settor.register(Choice, 'debug')
-def valid_function(choice, value):
-    return iscallable(value)

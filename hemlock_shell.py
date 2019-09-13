@@ -1,11 +1,6 @@
-##############################################################################
-# Hemlock shell context processor
-# by Dillon Bowen
-# last modified 09/06/2019
-##############################################################################
+"""Hemlock shell context processor"""
 
-from survey import app
-from hemlock import *
+from survey import *
 from hemlock.factory import db
 import pandas as pd
 import numpy as np
