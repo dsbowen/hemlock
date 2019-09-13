@@ -1,3 +1,3 @@
-"""Custom database types"""
+"""Custom Hemlock database types"""
 
-from hemlock.database_types.function_type import FunctionType
+from hemlock.database_types.function import Function, FunctionType

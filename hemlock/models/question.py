@@ -10,13 +10,15 @@ Choices. Questions may also contain a list of Validators.
 """
 
 from hemlock.factory import db
-from hemlock.database_types import FunctionType
-from hemlock.models.private.base import Base
+from hemlock.models.private import Base
+from hemlock.database_types import Function, FunctionType
 
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import Mutable, MutableType
 from sqlalchemy_mutable import MutableListType, MutableDictType
+
+REGISTRATIONS = ['html_compiler', 'response_recorder', 'data_recorder']
 
 
 '''
@@ -26,8 +28,6 @@ Relationships:
     page: page to which this question belongs
     choices: list of choices
     validators: list of validators
-    
-NOTE: question may be assigned to page or branch but not both
     
 Columns:
     text: question text
@@ -55,10 +55,10 @@ Columns:
 class Question(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
     
-    _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
-    _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
-    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    _page_timer_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+    # _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
+    # _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    # _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+    # _page_timer_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     index = db.Column(db.Integer)
     
     choices = db.relationship(
@@ -97,19 +97,9 @@ class Question(db.Model, Base):
     _qtype = db.Column(db.String)
     text = db.Column(db.Text)
     var = db.Column(db.Text)
-    
     compile = db.Column(FunctionType)
-    compile_args = db.Column(MutableListType)
-    compile_kwargs = db.Column(MutableDictType)
     post = db.Column(FunctionType)
-    post_args = db.Column(MutableListType)
-    post_kwargs = db.Column(MutableDictType)
     debug = db.Column(FunctionType)
-    debug_args = db.Column(MutableListType)
-    debug_kwargs = db.Column(MutableDictType)
-    
-    response = db.Column(db.PickleType)
-    error = db.Column(db.Text)
     
     @property
     def default(self):
@@ -128,37 +118,32 @@ class Question(db.Model, Base):
     
     @qtype.setter
     def qtype(self, qtype):
-        assert qtype in self._html_compilers, (
+        assert qtype in self.html_compiler, (
             'Question type does not have an associated html compiler'
             )
         self._qtype = qtype
     
-    """Associate question types with html compilers and response recorders"""
-    _html_compilers = {}
-    
+    """
+    Register question types with html compilers, response recorders, and
+    data recorders
+    """
+    html_compiler = {}
+    response_recorder = {}
+    data_recorder = {}
+
     @classmethod
-    def register_html_compiler(cls, qtype):
-        def register(compiler):
-            cls._html_compilers[qtype] = compiler
-            return compiler
-        return register
-    
-    _response_recorders = {}
-    
-    @classmethod
-    def register_response_recorder(cls, qtype):
-        def register(recorder):
-            cls._response_recorders[qtype] = recorder
-            return recorder
+    def register(cls, qtype, registration):
+        assert registration in REGISTRATIONS
+        def register(func):
+            getattr(cls, registration)[qtype] = func
+            return func
         return register
     
     def __init__(
             self, page=None, branch=None, index=None,
             all_rows=False, data=None, default=Mutable(),
             qtype='text', text='', var=None,
-            compile=None, compile_args=[], compile_kwargs={},
-            post=None, post_args=[], post_kwargs={},
-            debug=None, debug_args=[], debug_kwargs={}):
+            compile=Function(), post=Function(), debug=Function()):
         
         db.session.add(self)
         db.session.flush([self])
@@ -172,16 +157,9 @@ class Question(db.Model, Base):
         self.qtype = qtype
         self.text = text
         self.var = var
-        
         self.compile = compile
-        self.compile_args = compile_args
-        self.compile_kwargs = compile_kwargs
         self.post = post
-        self.post_args = post_args
-        self.post_kwargs = post_kwargs
         self.debug = debug
-        self.debug_args = debug_args
-        self.debug_kwargs = debug_kwargs
     
     def set_branch(self, branch, index=None):
         self._set_parent(branch, index, 'branch', 'embedded')
@@ -193,26 +171,29 @@ class Question(db.Model, Base):
         self.default = self.init_default
     
     def _compile_html(self):
-        return self._html_compilers[self.qtype](self)
+        return self.html_compiler[self.qtype](self)
 
     def _record_response(self, response):
-        """Record Participant response
-        
-        Use a response recorder specific to the question type if one has been
-        registered. Otherwise set data and response to Participant's response.
-        """
-        response_recorder = self._response_recorders.get(self.qtype)
+        """Record Participant response"""
+        response_recorder = self.response_recorder.get(self.qtype)
         if response_recorder is not None:
             return response_recorder(self, response)
-        self.data = self.response = response
+        self.response = response
         
     def _validate_response(self):
         """Validate Participant response"""
         for v in self.validators:
-            self.error = v._validate()
+            self.error = v.validate()
             if self.error is not None:
                 return False
         return True
+    
+    def _record_data(self):
+        """Record Question data"""
+        data_recorder = self.data_recorder.get(self.qtype)
+        if data_recorder is not None:
+            return data_recorder(self)
+        self.data = self.response
         
     # Output the data (both question data and order data)
     # data consists of:

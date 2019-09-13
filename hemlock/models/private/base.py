@@ -5,7 +5,8 @@ inserting new branches to a Participant's branch_stack.
 """
 
 class Base():
-    """Generic base class for public database models"""    
+    """Generic base class for public database models"""  
+    
     def _set_parent(self, parent, index, parent_attr, child_attr):
         """Set model parent
         

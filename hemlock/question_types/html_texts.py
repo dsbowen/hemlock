@@ -26,6 +26,19 @@ PAGE_BREAK = '''
     <br style="line-height:3;"></br>
 '''
 
+def get_classes(question):
+    """Get question div classes"""
+    classes = 'form-group question'
+    if question.error is not None:
+        classes += ' error'
+    return classes
+
+def get_label(question):
+    """Get question label"""
+    error = question.error
+    error = '' if error is None else ERROR.format(error=error)
+    return QLABEL.format(qid=question.id, text=error+question.text)
+
 """Questions"""
 QDIV = '''
     <div class="{classes}">
