@@ -24,7 +24,7 @@ Function Columns:
 
 compile: run before html is compiled
 debug: run during debugging
-next: run to create the next Branch of the experiment
+navigation: run to create the next Branch to which the experiment navigates
 post: run after data are recorded
 """
 
@@ -64,16 +64,16 @@ class Page(db.Model, BranchingBase):
     def pid(self):
         return 'p{}'.format(self.id)
     
-    # _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
-    # _branch_head_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    _branch_head_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     index = db.Column(db.Integer)
 
-    # next_branch = db.relationship(
-        # 'Branch',
-        # back_populates='origin_page',
-        # uselist=False,
-        # foreign_keys='Branch._origin_page_id'
-        # )
+    next_branch = db.relationship(
+        'Branch',
+        back_populates='origin_page',
+        uselist=False,
+        foreign_keys='Branch._origin_page_id'
+        )
     
     _back_to_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     back_to = db.relationship(
@@ -135,7 +135,7 @@ class Page(db.Model, BranchingBase):
     
     compile = db.Column(FunctionType)
     debug = db.Column(FunctionType)
-    next = db.Column(FunctionType)
+    navigation = db.Column(FunctionType)
     post = db.Column(FunctionType)
     
     def __init__(
@@ -144,7 +144,7 @@ class Page(db.Model, BranchingBase):
             back=False, forward=True, terminal=False,
             css=None, js=None,        
             compile=default_compile_Function(), 
-            debug=Function(), next=Function(), 
+            debug=Function(), navigation=Function(), 
             post=default_post_Function()):
         
         db.session.add(self)
@@ -165,7 +165,7 @@ class Page(db.Model, BranchingBase):
 
         self.compile = compile
         self.debug = debug
-        self.next = next
+        self.navigation = navigation
         self.post = post
 
     def set_branch(self, branch, index):

@@ -29,21 +29,22 @@ class BranchingBase(Base):
         """Indicate that object is eligible to grow and insert next branch
         
         A Page or Branch is eligible to insert the next branch to the
-        Participant's branch_stack iff the next function is not None and
+        Participant's branch_stack iff the navigation function is not None and
         the next branch is not already in the branch_stack.
         """
         return (
-            self.next is not None
-            and self.next_branch not in self.part.branch_stack
+            self.navigation.func is not None
+            and self.next_branch not in self.part._branch_stack
             )
         
     def _grow_branch(self):
         """Grow and return a new branch"""
-        from hemlock.models import Branch, Page
+        from hemlock.database.models import Branch, Page
         
-        next_branch = self.next.call(object=self)
+        next_branch = self.navigation.call(object=self)
         if next_branch is None:
             return
+        assert isinstance(next_branch, Branch)
         
         self.next_branch = next_branch
         next_branch.origin_branch = self if isinstance(self, Branch) else None

@@ -17,9 +17,6 @@ from hemlock.database.types import Function, FunctionType
 
 class Validator(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
-    @property
-    def vid(self):
-        return 'v{}'.format(self.id)
     
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     index = db.Column(db.Integer)

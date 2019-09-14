@@ -1,9 +1,6 @@
-##############################################################################
-# Participant model
-# by Dillon Bowen
-# last modified 09/07/2019
-##############################################################################
+"""Participant database models
 
+"""
 from hemlock.factory import attr_settor, db, login
 from hemlock.models.branch import Branch
 from hemlock.models.page import Page

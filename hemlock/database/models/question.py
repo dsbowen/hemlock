@@ -48,8 +48,7 @@ class Question(db.Model, Base):
     def qid(self):
         return 'q{}'.format(self.id)
     
-    # _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
-    # _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     _page_timer_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     index = db.Column(db.Integer)

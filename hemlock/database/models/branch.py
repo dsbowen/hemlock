@@ -1,40 +1,61 @@
-##############################################################################
-# Branch model
-# by Dillon Bowen
-# last modified 09/07/2019
-##############################################################################
+"""Branch database model
 
-from hemlock.factory import attr_settor, db
-from hemlock.models.private.base import Base, iscallable
+Relationships:
+
+part: Participant to whom this Branch belongs
+origin_branch: Branch from which this Branch originated
+next_branch: Branch originating from this Branch
+origin_page: Page from which this Branch originated
+pages: queue of Pages to be displayed
+embedded: set of embedded data Questions
+
+Functions:
+
+navigation: run to create the next Brnach to which the experiment navigates
+"""
+
+from hemlock.app import db
+from hemlock.database.private.base import BranchingBase
+from hemlock.database.types import Function, FunctionType
+
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
 
 
-
-'''
-Relationships:
-    part: participant to whose branch stack this branch belongs
-    pages: queue of pages to be displayed
-    _current_page: head of page queue
-    origin_branch: parent branch from which this branch originated
-    next_branch: child branch which originated from this branch
-    origin_page: parent page from which this branch originated
-    embedded: list of embedded data questions
-
-Columns:
-    next_function: navigation function which grows the next branch
-    next_args: arguments for next function
-'''
-class Branch(db.Model, Base):
+class Branch(db.Model, BranchingBase):
     id = db.Column(db.Integer, primary_key=True)
     
-    _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
-    _part_head_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
+    # _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
+    # _part_head_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     _index = db.Column(db.Integer)
+    
+    _origin_branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    origin_branch = db.relationship(
+        'Branch',
+        back_populates='next_branch',
+        uselist=False,
+        foreign_keys='Branch._origin_branch_id'
+        )
+        
+    _next_branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    next_branch = db.relationship(
+        'Branch',
+        back_populates='origin_branch',
+        uselist=False,
+        remote_side=id,
+        foreign_keys='Branch._next_branch_id'
+        )
+    
+    _origin_page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+    origin_page = db.relationship(
+        'Page', 
+        back_populates='next_branch',
+        foreign_keys='Branch._origin_page_id'
+        )
     
     pages = db.relationship(
         'Page', 
-        backref='_branch', 
+        backref='branch', 
         order_by='Page.index',
         collection_class=ordering_list('index'),
         foreign_keys='Page._branch_id'
@@ -46,29 +67,6 @@ class Branch(db.Model, Base):
         foreign_keys='Page._branch_head_id'
         )
         
-    _origin_branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
-    origin_branch = db.relationship(
-        'Branch',
-        back_populates='next_branch',
-        uselist=False,
-        foreign_keys=_origin_branch_id
-        )
-        
-    next_branch = db.relationship(
-        'Branch',
-        back_populates='origin_branch',
-        uselist=False,
-        remote_side=id,
-        foreign_keys=_origin_branch_id
-        )
-        
-    _origin_page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    origin_page = db.relationship(
-        'Page', 
-        back_populates='next_branch',
-        foreign_keys=_origin_page_id
-        )
-        
     embedded = db.relationship(
         'Question', 
         backref='branch',
@@ -76,26 +74,22 @@ class Branch(db.Model, Base):
         collection_class=ordering_list('index')
         )
         
-    next = db.Column(db.PickleType)
-    next_args = db.Column(db.PickleType)
-    
-    
-    
-    # Initialization
-    def __init__(self, next=None, next_args={}):
+    navigation = db.Column(FunctionType)
+
+    def __init__(self, pages=[], embedded=[], navigation=Function()):
         db.session.add(self)
         db.session.flush([self])
         
-        self.next, self.next_args = next, next_args
+        self.pages = pages
+        self.embedded = embedded
+        self.navigation = navigation
         
+    def _initialize_head_pointer(self):
+        """Initialize head pointer to first page in queue"""
+        self._current_page = self.pages[0]
         
-        
-    ##########################################################################
-    # Navigation functions
-    ##########################################################################
-        
-    # Advance to the next page in queue
     def _forward(self):
+        """Advance forward to the next page in the queue"""
         if self._current_page is None:
             return
         new_head_index = self._current_page.index + 1
@@ -103,9 +97,9 @@ class Branch(db.Model, Base):
             self._current_page = None
             return
         self._current_page = self.pages[new_head_index]
-        
-    # Return to previous page in queue
+    
     def _back(self):
+        """Return to previous page in queue"""
         if not self.pages:
             return
         if self._current_page is None:
@@ -114,22 +108,8 @@ class Branch(db.Model, Base):
         new_head_index = self._current_page.index - 1
         self._current_page = self.pages[new_head_index]
         
-    # Initialize head pointer to first page in queue
-    def _initialize_head_pointer(self):
-        self._current_page = self.pages[0]
-        
-    # Print page queue
-    # for debugging purposes only
-    def _print_page_queue(self):
-        for p in self.pages:
-            if p == self._current_page:
-                print(p, '***')
-            else:
-                print(p)
-        if self._current_page is None:
-            print(None, '***')
-            
-# Validate function attributes are callable (or None)
-@attr_settor.register(Branch, 'next')
-def valid_function(branch, value):
-    return iscallable(value)
+    def print_pages(self):
+        """Print page queue for debugging purposes"""
+        indent = '  '*(0 if self._index is None else self._index)
+        [print(indent, p, '***' if p == self._current_page else '')
+            for p in self.pages+[None]]
