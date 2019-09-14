@@ -7,13 +7,16 @@ Question of certain question types, such as multiple choice, contain a list of C
 3. A label: to identify the Choice when the data are downloaded
 """
 
-from hemlock.factory import db
-from hemlock.models.private import Base
-from hemlock.database_types import Function, FunctionType
+from hemlock.app import db
+from hemlock.database.private import Base
+from hemlock.database.types import Function, FunctionType
 
 
 class Choice(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
+    @property
+    def cid(self):
+        return 'c{}'.format(self.id)
     
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     index = db.Column(db.Integer)

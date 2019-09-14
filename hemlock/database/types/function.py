@@ -47,10 +47,12 @@ class Function(Mutable):
             )
         self._kwargs = value
         
-    def call(self):
+    def call(self, object):
         if self.func is None:
             return
-        return self.func(*self.args, **self.kwargs)
+        if object is None:
+            return self.func(*self.args, **self.kwargs)
+        return self.func(object, *self.args, **self.kwargs)
 
 
 class FunctionType(PickleType):

@@ -1,7 +1,8 @@
 """Hemlock shell context processor"""
 
 from survey import *
-from hemlock.factory import db
+from hemlock.app import db
+
 import pandas as pd
 import numpy as np
 import random

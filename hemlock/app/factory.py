@@ -13,11 +13,11 @@ import os
 # compiler = Compiler()
 # viewer = Viewer()
 # attr_settor = AttrSettor()
+bootstrap = Bootstrap()
 bp = Blueprint('hemlock', __name__)
 db = SQLAlchemy()
 # login = LoginManager()
 # login.login_view = 'hemlock.index'
-bootstrap = Bootstrap()
 
 '''
 Application factory
@@ -60,11 +60,9 @@ def create_app(
     # compiler.init_app(app)
     # viewer.init_app(app)
     # attr_settor.init_app(app)
+    bootstrap.init_app(app)
+    app.register_blueprint(bp)
     db.init_app(app)
     # login.init_app(app)
-    bootstrap.init_app(app)
-    
-    # register the application blueprint
-    app.register_blueprint(bp)
     
     return app

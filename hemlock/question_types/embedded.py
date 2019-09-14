@@ -1,6 +1,6 @@
 """Embedded data"""
 
-from hemlock.models import Question
+from hemlock.database.models import Question
 
 @Question.register(qtype='embedded', registration='html_compiler')
 def embedded_compiler(question):

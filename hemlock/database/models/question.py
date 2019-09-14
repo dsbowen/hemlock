@@ -1,18 +1,39 @@
 """Question database model
 
-A Branch may contain a list of Questions. These Questions do not appear in 
-the survey, but contribute to the Participant's data in the DataStore.
+Relationships:
 
-A Page contains a list of Questions which appear on the survey page.
+branch: the branch to which this question belongs
+page: the page to which this question belongs
+choices: list of Choices (e.g. for single choice questions)
+selected_choices: list of Choices the Participant selected
+nonselected_choices: list of avaialble Choices the Participant did not select
+validators: list of Validators (to validate Participant's response)
 
-Questions of certain types (such as multiple choice) contain a list of 
-Choices. Questions may also contain a list of Validators.
+Public (non-Function) Columns:
+
+all_rows: indicates this Question's data should appear in all dataframe rows 
+    for its Participant
+data: data this Question contributes to its variable
+default: default response (Mutable object)
+error: error message
+init_default: initial default response. If changed, default can be reset to 
+    its initial value with question.reset_default()
+qtype: Question type (must have a registered html compiler)
+text: Question text
+var: name of the variable to which this Question contributes data
+
+Function Columns:
+
+compile: run before html is compiled
+debug: run during debugging
+post: run after data are recorded
 """
 
-from hemlock.factory import db
-from hemlock.models.private import Base
-from hemlock.database_types import Function, FunctionType
+from hemlock.app import db
+from hemlock.database.private import Base
+from hemlock.database.types import Function, FunctionType
 
+from bs4 import BeautifulSoup
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import Mutable, MutableType
@@ -21,44 +42,16 @@ from sqlalchemy_mutable import MutableListType, MutableDictType
 REGISTRATIONS = ['html_compiler', 'response_recorder', 'data_recorder']
 
 
-'''
-Relationships:
-    part: participant to whom this question belongs
-    branch: branch to which this question belongs (embedded data)
-    page: page to which this question belongs
-    choices: list of choices
-    validators: list of validators
-    
-Columns:
-    text: question text
-    all_rows: indicates that question data should appear in all rows
-    qtype: question type
-    var: variable to which this question belongs
-    
-    default: initial default option or participant's response from last post
-    init_default: initial default option
-    default_is_choice: indicates that default option type is Choice
-    
-    compile: function called when page html is compiled
-    compile_args: arguments for compile function
-    post: function called after page is submitted (posted)
-    post_args: arguments for post function
-    debug: debug function called by AI Participant
-    debug_args: arguments for debug function
-    
-    data: question data
-    response: participant's raw response
-    error: error message for invalid participant response
-    vorder: order in which question appeared relative to other questions
-        belonging to the same variable
-'''
 class Question(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
+    @property
+    def qid(self):
+        return 'q{}'.format(self.id)
     
     # _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     # _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
-    # _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    # _page_timer_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+    _page_timer_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     index = db.Column(db.Integer)
     
     choices = db.relationship(
@@ -93,13 +86,15 @@ class Question(db.Model, Base):
     all_rows = db.Column(db.Boolean)
     data = db.Column(db.PickleType)
     _default = db.Column(MutableType)
+    error = db.Column(db.Text)
     init_default = db.Column(MutableType)
     _qtype = db.Column(db.String)
     text = db.Column(db.Text)
     var = db.Column(db.Text)
+    
     compile = db.Column(FunctionType)
-    post = db.Column(FunctionType)
     debug = db.Column(FunctionType)
+    post = db.Column(FunctionType)
     
     @property
     def default(self):
@@ -140,7 +135,8 @@ class Question(db.Model, Base):
         return register
     
     def __init__(
-            self, page=None, branch=None, index=None,
+            self, page=None, branch=None, index=None, 
+            choices=[], validators=[],
             all_rows=False, data=None, default=Mutable(),
             qtype='text', text='', var=None,
             compile=Function(), post=Function(), debug=Function()):
@@ -150,6 +146,8 @@ class Question(db.Model, Base):
         
         self.set_branch(branch, index)
         self.set_page(page, index)
+        self.choices = choices
+        self.validators = validators
         
         self.all_rows = all_rows
         self.data = data
@@ -157,9 +155,10 @@ class Question(db.Model, Base):
         self.qtype = qtype
         self.text = text
         self.var = var
+        
         self.compile = compile
-        self.post = post
         self.debug = debug
+        self.post = post
     
     def set_branch(self, branch, index=None):
         self._set_parent(branch, index, 'branch', 'embedded')
@@ -172,6 +171,11 @@ class Question(db.Model, Base):
     
     def _compile_html(self):
         return self.html_compiler[self.qtype](self)
+    
+    def view_html(self):
+        """View compiled html for debugging purposes"""
+        soup = BeautifulSoup(self._compile_html(), 'html.parser')
+        print(soup.prettify())
 
     def _record_response(self, response):
         """Record Participant response"""

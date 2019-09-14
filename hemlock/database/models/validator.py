@@ -7,16 +7,20 @@ Validators execute a validation function, which takes its Question as its
 first argument. The valiation function returns an error message if the
 Participant's response was invalid. Otherwise, it returns None.
 
-Validation occurs after responses are recorded.
+Validation occurs after response recording and before data recording.
 """
 
-from hemlock.factory import db
-from hemlock.models.private.base import Base
-from hemlock.database_types import Function, FunctionType
+from hemlock.app import db
+from hemlock.database.private import Base
+from hemlock.database.types import Function, FunctionType
 
 
 class Validator(db.Model, Base):
     id = db.Column(db.Integer, primary_key=True)
+    @property
+    def vid(self):
+        return 'v{}'.format(self.id)
+    
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     index = db.Column(db.Integer)
     validation = db.Column(FunctionType)
@@ -36,4 +40,4 @@ class Validator(db.Model, Base):
         Validation function returns an error message if the Participant's
         response was invalid. Otherwise it returns None.
         """
-        return self.validation.call()
+        return self.validation.call(object=self.question)
