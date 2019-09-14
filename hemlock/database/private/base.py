@@ -41,7 +41,7 @@ class BranchingBase(Base):
         """Grow and return a new branch"""
         from hemlock.models import Branch, Page
         
-        next_branch = self.next(*self.next_args, **self.next_kwargs)
+        next_branch = self.next.call(object=self)
         if next_branch is None:
             return
         

@@ -1,5 +1,31 @@
 """Page database model
 
+Relationships:
+
+branch: Branch to which this Page belongs
+next_branch: Branch to which this Page navigates
+back_to: Page to which this Page navigates on 'back'
+forward_to: Page to which this Page navigates on 'forward'
+questions: list of questions
+timer: Question which tracks how long a Participant spent on this page
+
+Public (non-Function) Columns:
+
+back: indicates this Page has a back button
+compiled: indicates that this Page has ever been compiled
+css: list of css files
+direction_from: direction from which this Page is navigating
+direction_to: direction to which this Page was navigated
+forward: indicates this Page has a forward button
+js: list of js files
+terminal: indicates this Page is the last in the experiment
+
+Function Columns:
+
+compile: run before html is compiled
+debug: run during debugging
+next: run to create the next Branch of the experiment
+post: run after data are recorded
 """
 
 from hemlock.app import db
@@ -10,50 +36,22 @@ from hemlock.database.models.question import Question
 
 from bs4 import BeautifulSoup
 from datetime import datetime
-from flask import request
+from flask import request, current_app
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import MutableListType
 
 DIRECTIONS = ['back', 'forward', 'invalid', None]
-CSS = ['bootstrap.min.css', 'default.min.css']
-JS = ['default.min.js']
 
-
-'''
-Relationships:
-    branch: branch to whose queue this page belongs
-    next_branch: child branch which originated from this page
-    questions: list of questions
-    start_time: time at which this page was last rendered
-    timer: question to track time spent on this page
-    forward_to: page to which this page navigates forward
-    back_to: page to which this page navigates back
-
-Columns:
-    back: indicates that page has back button
-    terminal: indicates that page is terminal (last in the survey)
-    
-    compile: function called when page html is compiled
-    compile_args: arguments for compile function
-    post: function called after page is submitted (posted)
-    post_args: arguments for post function
-    next: navigation function which grows the next branch
-    next_args: arguments for next function
-    debug: debug function called by AI Participant
-    debug_args: arguments for debug function
-    
-    compiled: indicates that the page has been compiled
-    direction_to: direction to which this page was navigated
-    direction_from: direction from which the page navigates
-'''
 def default_compile_func(page):
+    """Calls question compile functions in index order"""
     return [q.compile.call(object=q) for q in page.questions]
 
 def default_compile_Function():
     return Function(default_compile_func)
 
 def default_post_func(page):
+    """Calls question post functions in index order"""
     return [q.post.call(object=q) for q in page.questions]
 
 def default_post_Function():
@@ -143,10 +141,10 @@ class Page(db.Model, BranchingBase):
     def __init__(
             self, branch=None, index=None, back_to=None, forward_to=None, 
             questions=[], timer_var=None, all_rows=False,
-            back=False, css=CSS, forward=True, js=JS, terminal=False, 
+            back=False, forward=True, terminal=False,
+            css=None, js=None,        
             compile=default_compile_Function(), 
-            debug=Function(), 
-            next=Function(), 
+            debug=Function(), next=Function(), 
             post=default_post_Function()):
         
         db.session.add(self)
@@ -159,10 +157,11 @@ class Page(db.Model, BranchingBase):
         self.timer = Question(data=0, var=timer_var, all_rows=all_rows)
         
         self.back = back
-        self.css = css
         self.forward = forward
-        self.js = js
         self.terminal = terminal
+        
+        self.css = current_app.css if css is None else css
+        self.js = current_app.js if js is None else js
 
         self.compile = compile
         self.debug = debug
