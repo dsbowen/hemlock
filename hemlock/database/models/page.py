@@ -60,9 +60,7 @@ class Page(db.Model, BranchingBase):
     
     @property
     def part(self):
-        if self.branch is None:
-            return
-        return self.branch.part
+        return self.branch.part if self.branch is not None else None
     
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _branch_head_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
@@ -190,7 +188,7 @@ class Page(db.Model, BranchingBase):
         self.start_time = datetime.utcnow()
         return compile_page_body(self)
         
-    def _view_html(self, direction_to='forward'):
+    def view_html(self, direction_to='forward'):
         """View compiled html for debugging purposes"""
         soup = BeautifulSoup(self._compile_html(direction_to), 'html.parser')
         print(soup.prettify())
@@ -223,13 +221,12 @@ class Page(db.Model, BranchingBase):
         delta = (datetime.utcnow() - self.start_time).total_seconds()
         self.timer.data += delta
     
-    def _print_navigation(self, indent):
+    def view_nav(self, indent):
         """Print self and next branch for debugging purposes"""
-        stars = ''
-        if self == self.branch.current_page:
-            stars = '**'
-        if self == self.part.current_page:
-            stars = '***'
-        print(indent, self, stars)
+        HEAD_PART = '<== head page of participant'
+        HEAD_BRANCH = '<== head page of branch'
+        head_part = HEAD_PART if self == self.part.current_page else ''
+        head_branch = HEAD_BRANCH if self == self.branch.current_page else ''
+        print(indent, self, head_branch, head_part)
         if self.next_branch in self.part.branch_stack:
-            self.next_branch._print_navigation()
+            self.next_branch.view_nav()

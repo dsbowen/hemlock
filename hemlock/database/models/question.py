@@ -171,7 +171,7 @@ class Question(db.Model, Base):
     def _compile_html(self):
         return self.html_compiler[self.qtype](self)
     
-    def _view_html(self):
+    def view_html(self):
         """View compiled html for debugging purposes"""
         soup = BeautifulSoup(self._compile_html(), 'html.parser')
         print(soup.prettify())

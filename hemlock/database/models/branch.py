@@ -79,6 +79,11 @@ class Branch(db.Model, BranchingBase):
         collection_class=ordering_list('index')
         )
         
+    @property
+    def questions(self):
+        page_questions = [q for p in self.pages for q in p.questions]
+        return page_questions + self.embedded
+        
     navigate = db.Column(FunctionType)
 
     def __init__(self, pages=[], embedded=[], navigate=None):
@@ -109,12 +114,16 @@ class Branch(db.Model, BranchingBase):
         new_head_index = self.current_page.index - 1
         self.current_page = self.pages[new_head_index]
         
-    def _print_navigation(self):
+    def view_nav(self):
         """Print page queue for debugging purposes"""
-        stars = '*' if self == self.part.current_branch else ''
-        indent = '    '*(0 if self.index is None else self.index)
-        print(indent, self, stars)
-        [p._print_navigation(indent) for p in self.pages]
-        print(indent, None, '**' if self.current_page is None else '')
+        INDENT = '    '
+        HEAD_PART = '<== head branch of participant'
+        HEAD_BRANCH = '<== head page of branch'
+        indent = INDENT*(0 if self.index is None else self.index)
+        head_part = HEAD_PART if self == self.part.current_branch else ''
+        print(indent, self, head_part)
+        [p.view_nav(indent) for p in self.pages]
+        head_branch = HEAD_BRANCH if None == self.current_page else ''
+        print(indent, None, head_branch)
         if self.next_branch in self.part.branch_stack:
-            self.next_branch._print_navigation()
+            self.next_branch.view_nav()

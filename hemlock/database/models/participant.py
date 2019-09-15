@@ -1,17 +1,20 @@
 """Participant database models
 
 Relationships:
-    _branch_stack: stack of branches to be displayed
-    _current_branch: head of the branch stack
-    _page_htmls: list of page_htmls belonging to the participant
-    _variables: set of variables participant contributes to dataset
+
+branch_stack: stack of branches to be displayed
+current_branch: head of the branch stack
+current_page: head of the page queue of the current branch
+pages: all Pages belonging to the Participant
+question: all Questions belonging to the Participant
     
 Columns:
-    g: participant dictionary
-    meta: participant metadata (e.g. start and end time)
-    _data: dictionary of data participant contributes to dataset
-    _num_rows: number of rows participant contributes to dataset
 
+g: Participant dictionary
+end_time and start_time: times at which the Participant ended and began
+ipv4: IP address (v4)
+status: in progress, timed out, or completed
+updated: indicates Participant data has been updated since last store
 """
 from hemlock.app.factory import db#, login
 from hemlock.database.models.branch import Branch
@@ -45,10 +48,18 @@ class Participant(db.Model, UserMixin):
         uselist=False,
         foreign_keys='Branch._part_head_id'
         )
-        
+    
     @property
     def current_page(self):
         return self.current_branch.current_page
+        
+    @property
+    def pages(self):
+        return [p for b in self.branch_stack for p in b.pages]
+        
+    @property
+    def questions(self):
+        return [q for b in self.branch_stack for q in b.questions]
     
     # _page_htmls = db.relationship(
         # 'PageHtml',
@@ -56,7 +67,7 @@ class Participant(db.Model, UserMixin):
         # lazy='dynamic'
         # )
     
-    g = db.Column(MutableType)
+    g = db.Column(MutableDictType)
     end_time = db.Column(db.DateTime)
     ipv4 = db.Column(db.Text)
     start_time = db.Column(db.DateTime)
@@ -74,15 +85,11 @@ class Participant(db.Model, UserMixin):
             )
         self._status = status
     
-    _data = db.Column(db.PickleType)
-    _num_rows = db.Column(db.Integer, default=0)
-    
     def __init__(self, start, ipv4=None): 
         db.session.add(self)
         db.session.flush([self])
-        # login_user(self)
         
-        self.g = Mutable()
+        self.g = {}
         self.end_time = self.start_time = datetime.utcnow()
         self.ipv4 = ipv4
         self.status = 'in progress'
@@ -172,6 +179,11 @@ class Participant(db.Model, UserMixin):
         self._back_recurse()
     
     def _found_previous_page(self):
+        """Indicate that previous page has been found in backward navigation
+        
+        The previous page has been found when 1) the Page is not None and
+        2) it does not branch off to another Branch in the stack.
+        """
         return (
             self.current_page is not None 
             and self.current_page.next_branch not in self.branch_stack
@@ -183,6 +195,6 @@ class Participant(db.Model, UserMixin):
     def _decrement_head(self):
         self.current_branch = self.branch_stack[self.current_branch.index-1]
     
-    def _print(self):
+    def view_nav(self):
         """Print branch stack for debugging purposes"""
-        self.branch_stack[0]._print_navigation()
+        self.branch_stack[0].view_nav()
