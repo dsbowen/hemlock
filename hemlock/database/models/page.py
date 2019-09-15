@@ -18,6 +18,7 @@ direction_from: direction from which this Page is navigating
 direction_to: direction to which this Page was navigated
 forward: indicates this Page has a forward button
 js: list of js files
+template: name of html template
 terminal: indicates this Page is the last in the experiment
 
 Function Columns:
@@ -107,7 +108,9 @@ class Page(db.Model, BranchingBase):
     _direction_to = db.Column(db.String(8))
     forward = db.Column(db.Boolean)
     js = db.Column(MutableListType)
+    survey_template = db.Column(db.Text)
     terminal = db.Column(db.Boolean)
+    view_template = db.Column(db.Text)
     
     @property
     def direction_from(self):
@@ -139,7 +142,8 @@ class Page(db.Model, BranchingBase):
     def __init__(
             self, branch=None, index=None, back_to=None, forward_to=None, 
             questions=[], timer_var=None, all_rows=False,
-            back=False, css=None, forward=True, terminal=False, js=None,
+            back=False, css=None, forward=True, js=None,
+            survey_template=None, terminal=False, view_template=None, 
             compile=default_compile, debug=None, navigate=None, 
             post=default_post):
         
@@ -155,8 +159,14 @@ class Page(db.Model, BranchingBase):
         self.back = back
         self.css = current_app.css if css is None else css
         self.forward = forward
-        self.terminal = terminal
         self.js = current_app.js if js is None else js
+        self.survey_template = survey_template
+        self.terminal = terminal
+        self.view_template = view_template
+        if survey_template is None:
+            self.survey_template = current_app.survey_template
+        if view_template is None:
+            self.view_template = current_app.view_template
 
         self.compile = compile
         self.debug = debug
@@ -181,8 +191,7 @@ class Page(db.Model, BranchingBase):
     def valid(self):
         return all([q.error is None for q in self.questions])
 
-    def _compile_html(self, direction_to):
-        self.direction_to = direction_to
+    def _compile_page_body(self):
         self.compile(object=self)
         self.compiled = True
         self.start_time = datetime.utcnow()

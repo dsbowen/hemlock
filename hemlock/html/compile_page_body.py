@@ -27,4 +27,4 @@ def compile_page_body(page):
     if page.forward and not page.terminal:
         submit_html += FORWARD_BUTTON
     return PAGE_BODY.format(
-        question_html=question_html, submit_html=submit_html)
+        question_html=question_html, submit_html=submit_html)    

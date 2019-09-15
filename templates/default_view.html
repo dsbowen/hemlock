@@ -1,0 +1,13 @@
+<!-- Default survey viewing template -->
+
+{% extends 'bootstrap/base.html' %}
+
+{% block content %}
+<div class="container h-100">
+<div class="row h-100 justify-content-center align-items-center">
+    <form method="POST" class="submit-once col-12">
+    {{ page_body }}
+    </form>   
+</div>
+</div>
+{% endblock %}

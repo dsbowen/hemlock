@@ -1,8 +1,8 @@
 """Application factory"""
 
 from hemlock.app.config import Config
+# from hemlock.extensions import Viewer
 
-# from hemlock.extensions import Compiler, Viewer, AttrSettor
 from flask import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -12,59 +12,58 @@ import pandas as pd
 import os
 
 default_settings = {
+    'block_duplicate_ips': False,
+    'css': ['css/bootstrap.min.css', 'css/default.min.css'],
+    'js': ['js/default.min.js'],
     'password': '',
     'record_incomplete': True,
-    'block_duplicate_ips': False,
     'screenouts_folder': None,
     'static_folder': 'static',
-    'css': ['bootstrap.min.css', 'default.min.css'],
-    'js': ['default.min.js']
+    'survey_template': 'default_survey.html',
+    'template_folder': 'templates',
+    'view_template': 'default_view.html'
     }
 
-# Create extensions
-# compiler = Compiler()
-# viewer = Viewer()
-# attr_settor = AttrSettor()
+"""Flask and Hemlock extensions"""
 bootstrap = Bootstrap()
 bp = Blueprint('hemlock', __name__)
 db = SQLAlchemy()
-# login = LoginManager()
-# login.login_view = 'hemlock.index'
+login_manager = LoginManager()
+login_manager.login_view = 'hemlock.index'
+# viewer = Viewer()
 
-'''
-Application factory
 
-Arguments:
-    config_class: configures application by object
-    start: starting navigation function in survey
-    password: password for accessing researcher urls
-    record_incomplete: indicates incomplete responses should be recorded
-    block_duplicates: indicates duplicate IP addresses should be blocked
-    block_from_csv: csv file containing IP addresses to block
-    static_folder: folder in which statics are stored
-'''
 def create_app(settings):
-    settings, static_folder = merge_with_default(settings)
-    app = Flask(__name__, static_folder=static_folder)
+    """Application factory
+    
+    Begins with settings and configuration. Then registers blueprint and 
+    extensions.
+    """
+    settings, static, templates = get_settings(settings)
+    app = Flask(__name__, static_folder=static, template_folder=templates)
     [setattr(app, key, value) for key, value in settings.items()]
     app.password_hash = generate_password_hash(app.password)
     app.config.from_object(Config)
     
-    # initialize application features
-    # compiler.init_app(app)
-    # viewer.init_app(app)
-    # attr_settor.init_app(app)
     bootstrap.init_app(app)
     app.register_blueprint(bp)
     db.init_app(app)
-    # login.init_app(app)
+    login_manager.init_app(app)
+    # viewer.init_app(app)
     
     return app
 
-def merge_with_default(settings):
+def get_settings(settings):
+    """Get application settings
+    
+    Overwrite default settings with input settings. Then merge static and 
+    template folders with current working directory. Return these separately,
+    as they need to be passed to the Flask constructor.
+    """
     for key, value in default_settings.items():
         if key not in settings:
             settings[key] = value
-    static_folder = os.path.join(os.getcwd(), settings['static_folder'])
-    settings.pop('static_folder')
-    return settings, static_folder
+    cwd = os.getcwd()
+    static = os.path.join(cwd, settings.pop('static_folder'))
+    templates = os.path.join(cwd, settings.pop('template_folder'))
+    return settings, static, templates

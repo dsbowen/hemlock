@@ -1,0 +1,27 @@
+<!-- Default survey template -->
+
+{% extends 'bootstrap/base.html' %}
+
+{% block styles %}
+    {% for css_file in page.css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename=css_file) }}">
+    {% endfor %}
+{% endblock %}
+
+{% block content %}
+<div class="container h-100">
+<div class="row h-100 justify-content-center align-items-center">
+    <form method="POST" class="submit-once col-12">
+    <page id="{{ page.pid }}"/>
+    {{ page_body }}
+    </form>   
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {% for js_file in page.js %}
+    <script type="text/javascript" src="{{ url_for('static', filename=js_file) }}"></script>
+    {% endfor %}
+{% endblock %}

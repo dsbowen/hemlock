@@ -11,25 +11,16 @@ question: all Questions belonging to the Participant
 Columns:
 
 g: Participant dictionary
-end_time and start_time: times at which the Participant ended and began
-ipv4: IP address (v4)
-status: in progress, timed out, or completed
+meta: dictionary of Participant metadata
 updated: indicates Participant data has been updated since last store
 """
-from hemlock.app.factory import db#, login
+from hemlock.app.factory import db
 from hemlock.database.models.branch import Branch
 
 from datetime import datetime
-from flask_login import UserMixin, login_user
+from flask_login import UserMixin
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import Mutable, MutableType, MutableDictType
-
-STATUS = ['in progress', 'timed out', 'completed']
-
-
-# @login.user_loader
-# def load_user(id):
-    # return Participant.query.get(int(id))
 
 
 class Participant(db.Model, UserMixin):
@@ -68,31 +59,20 @@ class Participant(db.Model, UserMixin):
         # )
     
     g = db.Column(MutableDictType)
-    end_time = db.Column(db.DateTime)
-    ipv4 = db.Column(db.Text)
-    start_time = db.Column(db.DateTime)
-    _status = db.Column(db.String(16))
+    meta = db.Column(MutableDictType)
     updated = db.Column(db.Boolean)
     
-    @property
-    def status(self):
-        return self._status
-    
-    @status.setter
-    def status(self, status):
-        assert status in STATUS, (
-            'Participant status must be one of {}'.format(STATUS)
-            )
-        self._status = status
-    
-    def __init__(self, start, ipv4=None): 
+    def __init__(self, start, meta={}): 
         db.session.add(self)
         db.session.flush([self])
         
         self.g = {}
-        self.end_time = self.start_time = datetime.utcnow()
-        self.ipv4 = ipv4
-        self.status = 'in progress'
+        self.meta = {
+            'end_time': datetime.utcnow(),
+            'start_time': datetime.utcnow(),
+            'status': 'in progress'
+            }
+        self.meta.update(meta)
         self.updated = True
         
         root = Branch(navigate=start)
@@ -101,7 +81,7 @@ class Participant(db.Model, UserMixin):
         self._forward_recurse()
 
     def update_end_time(self):
-        self.end_time = datatime.utcnow()
+        self.meta['end_time'] = datetime.utcnow()
     
     """Forward navigation"""
     def _forward(self, forward_to=None):
