@@ -184,9 +184,12 @@ class Question(db.Model, Base):
         self.response = response
         
     def _validate(self):
-        """Validate Participant response"""
+        """Validate Participant response
+        
+        Keep the error message associated with the first failed validator.
+        """
         for v in self.validators:
-            self.error = v.validate()
+            self.error = v.validate(object=self)
             if self.error is not None:
                 return False
         return True

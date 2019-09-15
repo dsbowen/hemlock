@@ -11,7 +11,7 @@ embedded: set of embedded data Questions
 
 Functions:
 
-navigation: run to create the next Brnach to which the experiment navigates
+navigate: creates the next Branch to which the experiment navigates
 """
 
 from hemlock.app import db
@@ -25,9 +25,9 @@ from sqlalchemy.ext.orderinglist import ordering_list
 class Branch(db.Model, BranchingBase):
     id = db.Column(db.Integer, primary_key=True)
     
-    # _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
-    # _part_head_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
-    _index = db.Column(db.Integer)
+    _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
+    _part_head_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
+    index = db.Column(db.Integer)
     
     _origin_branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     origin_branch = db.relationship(
@@ -60,8 +60,13 @@ class Branch(db.Model, BranchingBase):
         collection_class=ordering_list('index'),
         foreign_keys='Page._branch_id'
         )
+    
+    @property
+    def start_page(self):
+        """Return the start of the page queue"""
+        return self.pages[0] if self.pages else None
         
-    _current_page = db.relationship(
+    current_page = db.relationship(
         'Page', 
         uselist=False,
         foreign_keys='Page._branch_head_id'
@@ -74,42 +79,42 @@ class Branch(db.Model, BranchingBase):
         collection_class=ordering_list('index')
         )
         
-    navigation = db.Column(FunctionType)
+    navigate = db.Column(FunctionType)
 
-    def __init__(self, pages=[], embedded=[], navigation=Function()):
+    def __init__(self, pages=[], embedded=[], navigate=None):
         db.session.add(self)
         db.session.flush([self])
         
         self.pages = pages
         self.embedded = embedded
-        self.navigation = navigation
-        
-    def _initialize_head_pointer(self):
-        """Initialize head pointer to first page in queue"""
-        self._current_page = self.pages[0]
+        self.navigate = navigate
         
     def _forward(self):
         """Advance forward to the next page in the queue"""
-        if self._current_page is None:
+        if self.current_page is None:
             return
-        new_head_index = self._current_page.index + 1
+        new_head_index = self.current_page.index + 1
         if new_head_index == len(self.pages):
-            self._current_page = None
+            self.current_page = None
             return
-        self._current_page = self.pages[new_head_index]
+        self.current_page = self.pages[new_head_index]
     
     def _back(self):
         """Return to previous page in queue"""
         if not self.pages:
             return
-        if self._current_page is None:
-            self._current_page = self.pages[-1]
+        if self.current_page is None:
+            self.current_page = self.pages[-1]
             return
-        new_head_index = self._current_page.index - 1
-        self._current_page = self.pages[new_head_index]
+        new_head_index = self.current_page.index - 1
+        self.current_page = self.pages[new_head_index]
         
-    def print_pages(self):
+    def _print_navigation(self):
         """Print page queue for debugging purposes"""
-        indent = '  '*(0 if self._index is None else self._index)
-        [print(indent, p, '***' if p == self._current_page else '')
-            for p in self.pages+[None]]
+        stars = '*' if self == self.part.current_branch else ''
+        indent = '    '*(0 if self.index is None else self.index)
+        print(indent, self, stars)
+        [p._print_navigation(indent) for p in self.pages]
+        print(indent, None, '**' if self.current_page is None else '')
+        if self.next_branch in self.part.branch_stack:
+            self.next_branch._print_navigation()

@@ -24,7 +24,7 @@ Function Columns:
 
 compile: run before html is compiled
 debug: run during debugging
-navigation: run to create the next Branch to which the experiment navigates
+navigate: run to create the next Branch to which the experiment navigates
 post: run after data are recorded
 """
 
@@ -57,6 +57,12 @@ class Page(db.Model, BranchingBase):
     @property
     def pid(self):
         return 'p{}'.format(self.id)
+    
+    @property
+    def part(self):
+        if self.branch is None:
+            return
+        return self.branch.part
     
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _branch_head_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
@@ -129,14 +135,14 @@ class Page(db.Model, BranchingBase):
     
     compile = db.Column(FunctionType)
     debug = db.Column(FunctionType)
-    navigation = db.Column(FunctionType)
+    navigate = db.Column(FunctionType)
     post = db.Column(FunctionType)
     
     def __init__(
             self, branch=None, index=None, back_to=None, forward_to=None, 
             questions=[], timer_var=None, all_rows=False,
             back=False, css=None, forward=True, terminal=False, js=None,
-            compile=default_compile, debug=None, navigation=None, 
+            compile=default_compile, debug=None, navigate=None, 
             post=default_post):
         
         db.session.add(self)
@@ -156,7 +162,7 @@ class Page(db.Model, BranchingBase):
 
         self.compile = compile
         self.debug = debug
-        self.navigation = navigation
+        self.navigate = navigate
         self.post = post
 
     def set_branch(self, branch, index):
@@ -216,3 +222,14 @@ class Page(db.Model, BranchingBase):
             self.start_time = datetime.utcnow()
         delta = (datetime.utcnow() - self.start_time).total_seconds()
         self.timer.data += delta
+    
+    def _print_navigation(self, indent):
+        """Print self and next branch for debugging purposes"""
+        stars = ''
+        if self == self.branch.current_page:
+            stars = '**'
+        if self == self.part.current_page:
+            stars = '***'
+        print(indent, self, stars)
+        if self.next_branch in self.part.branch_stack:
+            self.next_branch._print_navigation()
