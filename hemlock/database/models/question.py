@@ -138,7 +138,7 @@ class Question(db.Model, Base):
             choices=[], validators=[],
             all_rows=False, data=None, default=Mutable(),
             qtype='text', text='', var=None,
-            compile=Function(), post=Function(), debug=Function()):
+            compile=None, post=None, debug=None):
         
         db.session.add(self)
         db.session.flush([self])
@@ -171,7 +171,7 @@ class Question(db.Model, Base):
     def _compile_html(self):
         return self.html_compiler[self.qtype](self)
     
-    def view_html(self):
+    def _view_html(self):
         """View compiled html for debugging purposes"""
         soup = BeautifulSoup(self._compile_html(), 'html.parser')
         print(soup.prettify())
@@ -183,7 +183,7 @@ class Question(db.Model, Base):
             return response_recorder(self, response)
         self.response = response
         
-    def _validate_response(self):
+    def _validate(self):
         """Validate Participant response"""
         for v in self.validators:
             self.error = v.validate()

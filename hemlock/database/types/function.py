@@ -8,6 +8,15 @@ from sqlalchemy_mutable import Mutable
 
 
 class Function(Mutable):
+    @classmethod
+    def coerce(cls, key, value):
+        if isinstance(value, Function):
+            return value
+        if value is None or callable(value):
+            return Function(value)
+        raise ValueError(
+            'Function attribute must be assigned with callable or Function object')
+            
     def __init__(self, func=None, args=[], kwargs={}):
         super().__init__()
         self.func = func
@@ -47,7 +56,7 @@ class Function(Mutable):
             )
         self._kwargs = value
         
-    def call(self, object):
+    def __call__(self, object=None):
         if self.func is None:
             return
         if object is None:
@@ -56,11 +65,6 @@ class Function(Mutable):
 
 
 class FunctionType(PickleType):
-    @classmethod
-    def coerce(cls, key, value):
-        assert isinstance(value, Function), (
-            'FunctionType attributes must be set to Function objects'
-            )
-        return value
+    pass
     
 Function.associate_with(FunctionType)

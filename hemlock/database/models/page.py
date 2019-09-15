@@ -43,19 +43,13 @@ from sqlalchemy_mutable import MutableListType
 
 DIRECTIONS = ['back', 'forward', 'invalid', None]
 
-def default_compile_func(page):
+def default_compile(page):
     """Calls question compile functions in index order"""
-    return [q.compile.call(object=q) for q in page.questions]
+    return [q.compile(object=q) for q in page.questions]
 
-def default_compile_Function():
-    return Function(default_compile_func)
-
-def default_post_func(page):
+def default_post(page):
     """Calls question post functions in index order"""
-    return [q.post.call(object=q) for q in page.questions]
-
-def default_post_Function():
-    return Function(default_post_func)
+    return [q.post(object=q) for q in page.questions]
 
 
 class Page(db.Model, BranchingBase):
@@ -141,11 +135,9 @@ class Page(db.Model, BranchingBase):
     def __init__(
             self, branch=None, index=None, back_to=None, forward_to=None, 
             questions=[], timer_var=None, all_rows=False,
-            back=False, forward=True, terminal=False,
-            css=None, js=None,        
-            compile=default_compile_Function(), 
-            debug=Function(), navigation=Function(), 
-            post=default_post_Function()):
+            back=False, css=None, forward=True, terminal=False, js=None,
+            compile=default_compile, debug=None, navigation=None, 
+            post=default_post):
         
         db.session.add(self)
         db.session.flush([self])
@@ -157,10 +149,9 @@ class Page(db.Model, BranchingBase):
         self.timer = Question(data=0, var=timer_var, all_rows=all_rows)
         
         self.back = back
+        self.css = current_app.css if css is None else css
         self.forward = forward
         self.terminal = terminal
-        
-        self.css = current_app.css if css is None else css
         self.js = current_app.js if js is None else js
 
         self.compile = compile
@@ -175,10 +166,10 @@ class Page(db.Model, BranchingBase):
         return all([q.response is None for q in self.questions])
         
     def reset_compile(self):
-        compile = default_compile_Function()
+        compile = default_compile
     
     def reset_post(self):
-        post = default_post_Function()
+        post = default_post
         
     def reset_timer(self):
         self.timer.data = 0
@@ -188,12 +179,12 @@ class Page(db.Model, BranchingBase):
 
     def _compile_html(self, direction_to):
         self.direction_to = direction_to
-        self.compile.call(object=self)
+        self.compile(object=self)
         self.compiled = True
         self.start_time = datetime.utcnow()
         return compile_page_body(self)
         
-    def view_html(self, direction_to='forward'):
+    def _view_html(self, direction_to='forward'):
         """View compiled html for debugging purposes"""
         soup = BeautifulSoup(self._compile_html(direction_to), 'html.parser')
         print(soup.prettify())
@@ -213,10 +204,10 @@ class Page(db.Model, BranchingBase):
         
         if self.direction_from == 'back':
             return 'back'
-        if not all([q._validate_response() for q in self.questions]):
+        if not all([q._validate() for q in self.questions]):
             self.direction_from = 'invalid'
             return 'invalid'
-        self.post.call(self)
+        self.post(object=self)
         # self.direction_from is 'forward' unless changed in post function
         return self.direction_from 
         

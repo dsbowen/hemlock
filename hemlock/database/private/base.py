@@ -41,7 +41,7 @@ class BranchingBase(Base):
         """Grow and return a new branch"""
         from hemlock.database.models import Branch, Page
         
-        next_branch = self.navigation.call(object=self)
+        next_branch = self.navigation(object=self)
         if next_branch is None:
             return
         assert isinstance(next_branch, Branch)

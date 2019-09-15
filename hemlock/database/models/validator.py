@@ -20,21 +20,13 @@ class Validator(db.Model, Base):
     
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     index = db.Column(db.Integer)
-    validation = db.Column(FunctionType)
+    validate = db.Column(FunctionType)
     
-    def __init__(self, question=None, index=None, validation=Function()):
+    def __init__(self, question=None, index=None, validate=None):
         db.session.add(self)
         db.session.flush([self])
         self.set_question(question, index)
-        self.validation = validation
+        self.validate = validate
     
     def set_question(self, question, index=None):
         self._set_parent(question, index, 'question', 'validators')
-    
-    def validate(self):
-        """Validate Participant response
-        
-        Validation function returns an error message if the Participant's
-        response was invalid. Otherwise it returns None.
-        """
-        return self.validation.call(object=self.question)
