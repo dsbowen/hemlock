@@ -82,8 +82,9 @@ def initialize_participant(meta):
 def time_out(app, part_id):
     """Time out the Participant for inactivity"""
     with app.app_context():
+        print('time expired')
         part = Participant.query.get(part_id)
-        part.time_limit_exceeded = True
+        part.time_expired = True
         ### STORE DATA HERE
         db.session.commit()
 
@@ -165,40 +166,37 @@ def survey():
     """Main survey route"""
     part = current_user
     page = part.current_page
-    if part.time_limit_exceeded:
-        flash(TIME_LIMIT_EXCEEDED)
-    elif request.method == 'POST':
-        return post(part, page)
-        
-    question_html = page._compile_question_html()
+    
+    if part.time_expired:
+        flash(TIME_EXPIRED)
+        question_html = page.question_html or ''
+    else:
+        if request.method == 'POST':
+            return post(part, page)
+        question_html = page._compile_question_html()
+
     # PageHtml(page_body)
     
-    if page.terminal and not part.meta['Completed']:
+    if page.terminal and not part.completed:
         part.update_end_time()
-        part.meta['Completed'] = 1
+        part.completed = True
         # DataStore.query.first().store(part)
       
     db.session.commit()
     return render_template(
         page.survey_template, page=page, question_html=Markup(question_html))
     
-# Validate and record responses on post request (form submission)
-# update metadata
-# navigate in the specified direction
-# store data in DataStore for all participants (complete and incomplete, id=1)
-# redirect to main survey route
 def post(part, page):
-    direction = page._submit()
-    
     part.update_end_time()
-    part.meta['Completed'] = 0
-        
+    part.completed = False
+    part.updated = True
+    
+    direction = page._submit()        
     if direction == 'forward':
         part._forward(page.forward_to)
     elif direction == 'back':
         part._back(page.back_to)
     part.current_page.direction_to = direction
-    part.updated = True
         
     db.session.commit()
     return redirect(url_for('hemlock.survey'))

@@ -58,16 +58,17 @@ class Participant(db.Model, UserMixin):
         # lazy='dynamic'
         # )
     
-    g = db.Column(MutableDictType)
-    meta = db.Column(MutableDictType)
-    updated = db.Column(db.Boolean)
-    time_limit_exceeded = db.Column(db.Boolean, default=False)
+    g = db.Column(MutableDictType, default={})
+    completed = db.Column(db.Boolean, default=False)
+    meta = db.Column(MutableDictType, default={})
+    updated = db.Column(db.Boolean, default=True)
+    time_expired = db.Column(db.Boolean, default=False)
     
     @property
     def status(self):
-        if self.meta['Completed']:
+        if self.completed:
             return 'completed'
-        if self.time_limit_exceeded:
+        if self.time_expired:
             return 'timed out'
         return 'in progress'
     
@@ -80,14 +81,11 @@ class Participant(db.Model, UserMixin):
         db.session.add(self)
         db.session.flush([self])
         
-        self.g = {}
         self.meta = {
             'EndTime': datetime.utcnow(),
             'StartTime': datetime.utcnow(),
-            'Completed': 0
             }
         self.meta.update(meta)
-        self.updated = True
         
         self.current_branch = root = start()
         self.branch_stack.append(root)

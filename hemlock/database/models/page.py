@@ -96,13 +96,13 @@ class Page(db.Model, BranchingBase):
     
     _back = db.Column(db.Boolean)
     _back_button = db.Column(db.Text)
-    compiled = db.Column(db.Boolean, default=False)
     css = db.Column(MutableListType)
     _direction_from = db.Column(db.String(8))
     _direction_to = db.Column(db.String(8))
     _forward = db.Column(db.Boolean)
     _forward_button = db.Column(db.Text)
     js = db.Column(MutableListType)
+    question_html = db.Column(db.Text)
     survey_template = db.Column(db.Text)
     terminal = db.Column(db.Boolean)
     view_template = db.Column(db.Text)
@@ -225,9 +225,10 @@ class Page(db.Model, BranchingBase):
 
     def _compile_question_html(self):
         self.compile(object=self)
-        self.compiled = True
+        self.question_html = ''.join(
+            [q._compile_html() for q in self.questions])
         self.start_time = datetime.utcnow()
-        return ''.join([q._compile_html() for q in self.questions])
+        return self.question_html
         
     def view_html(self, direction_to='forward'):
         """View compiled html for debugging purposes"""

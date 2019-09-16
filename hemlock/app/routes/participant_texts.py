@@ -1,5 +1,5 @@
 """Texts for participant routes"""
 
-TIME_LIMIT_EXCEEDED = """
+TIME_EXPIRED = """
 You have exceeded your time limit for this experiment
 """

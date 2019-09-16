@@ -9,9 +9,6 @@ def Start(root=None):
     p = Page(b)
     q = Question(p, text='hello world')
     
-    p = Page(b)
-    q = Question(p, text='hello star')
-    
     p = Page(b, terminal=True)
     q = Question(p, text='goodbye moon')
     return b
