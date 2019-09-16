@@ -1,6 +1,6 @@
 """Application factory"""
 
-from hemlock.app.config import Config
+from hemlock.app.settings import default_settings, Config
 # from hemlock.extensions import Viewer
 
 from flask import Flask, Blueprint
@@ -10,19 +10,6 @@ from flask_bootstrap import Bootstrap
 from werkzeug.security import generate_password_hash
 import pandas as pd
 import os
-
-default_settings = {
-    'block_duplicate_ips': False,
-    'css': ['css/bootstrap.min.css', 'css/default.min.css'],
-    'js': ['js/default.min.js'],
-    'password': '',
-    'record_incomplete': True,
-    'screenouts_folder': None,
-    'static_folder': 'static',
-    'survey_template': 'default_survey.html',
-    'template_folder': 'templates',
-    'view_template': 'default_view.html'
-    }
 
 """Flask and Hemlock extensions"""
 bootstrap = Bootstrap()

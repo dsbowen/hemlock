@@ -1,7 +1,7 @@
 """Free response question"""
 
 from hemlock.database.models import Question
-from hemlock.html import *
+from hemlock.question_types.html_texts import *
 
 @Question.register(qtype='free', registration='html_compiler')
 def free_compiler(question):

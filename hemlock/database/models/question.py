@@ -34,6 +34,7 @@ from hemlock.database.private import Base
 from hemlock.database.types import Function, FunctionType
 
 from bs4 import BeautifulSoup
+from flask import current_app
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import Mutable, MutableType
@@ -155,9 +156,9 @@ class Question(db.Model, Base):
         self.text = text
         self.var = var
         
-        self.compile = compile
-        self.debug = debug
-        self.post = post
+        self.compile = compile or current_app.question_compile
+        self.debug = debug or current_app.question_debug
+        self.post = post or current_app.question_post
     
     def set_branch(self, branch, index=None):
         self._set_parent(branch, index, 'branch', 'embedded')

@@ -62,7 +62,12 @@ class Participant(db.Model, UserMixin):
     meta = db.Column(MutableDictType)
     updated = db.Column(db.Boolean)
     
-    def __init__(self, start, meta={}): 
+    def __init__(self, start, meta={}):
+        """Initialize Participant
+        
+        Sets up the global dictionary g and metadata. Then initailizes the
+        root branch.
+        """
         db.session.add(self)
         db.session.flush([self])
         
@@ -75,10 +80,10 @@ class Participant(db.Model, UserMixin):
         self.meta.update(meta)
         self.updated = True
         
-        root = Branch(navigate=start)
+        self.current_branch = root = start()
         self.branch_stack.append(root)
-        self.current_branch = root
-        self._forward_recurse()
+        root.current_page = root.start_page
+        root._isroot = True
 
     def update_end_time(self):
         self.meta['end_time'] = datetime.utcnow()

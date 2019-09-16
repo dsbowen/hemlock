@@ -12,11 +12,13 @@ timer: Question which tracks how long a Participant spent on this page
 Public (non-Function) Columns:
 
 back: indicates this Page has a back button
+back_button: html for back button
 compiled: indicates that this Page has ever been compiled
 css: list of css files
 direction_from: direction from which this Page is navigating
 direction_to: direction to which this Page was navigated
 forward: indicates this Page has a forward button
+forward_button: html for forward button
 js: list of js files
 template: name of html template
 terminal: indicates this Page is the last in the experiment
@@ -30,27 +32,18 @@ post: run after data are recorded
 """
 
 from hemlock.app import db
-from hemlock.html import compile_page_body
 from hemlock.database.private import BranchingBase
 from hemlock.database.types import Function, FunctionType
 from hemlock.database.models.question import Question
 
 from bs4 import BeautifulSoup
 from datetime import datetime
-from flask import request, current_app
+from flask import current_app, Markup, request
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import MutableListType
 
 DIRECTIONS = ['back', 'forward', 'invalid', None]
-
-def default_compile(page):
-    """Calls question compile functions in index order"""
-    return [q.compile(object=q) for q in page.questions]
-
-def default_post(page):
-    """Calls question post functions in index order"""
-    return [q.post(object=q) for q in page.questions]
 
 
 class Page(db.Model, BranchingBase):
@@ -101,16 +94,34 @@ class Page(db.Model, BranchingBase):
         foreign_keys='Question._page_timer_id'
         )
     
-    back = db.Column(db.Boolean)
+    _back = db.Column(db.Boolean)
+    _back_button = db.Column(db.Text)
     compiled = db.Column(db.Boolean, default=False)
     css = db.Column(MutableListType)
     _direction_from = db.Column(db.String(8))
     _direction_to = db.Column(db.String(8))
-    forward = db.Column(db.Boolean)
+    _forward = db.Column(db.Boolean)
+    _forward_button = db.Column(db.Text)
     js = db.Column(MutableListType)
     survey_template = db.Column(db.Text)
     terminal = db.Column(db.Boolean)
     view_template = db.Column(db.Text)
+    
+    @property
+    def back(self):
+        return self._back and not self.first_page()
+    
+    @back.setter
+    def back(self, back):
+        self._back = back
+    
+    @property
+    def back_button(self):
+        return Markup(self._back_button)
+    
+    @back_button.setter
+    def back_button(self, back_button):
+        self._back_button = str(back_button)
     
     @property
     def direction_from(self):
@@ -133,6 +144,22 @@ class Page(db.Model, BranchingBase):
             'Direction must be one of: {}'.format(DIRECTIONS)
             )
         self._direction_to = value
+        
+    @property
+    def forward(self):
+        return self._forward and not self.terminal
+    
+    @forward.setter
+    def forward(self, forward):
+        self._forward = forward
+        
+    @property
+    def forward_button(self):
+        return Markup(self._forward_button)
+    
+    @forward_button.setter
+    def forward_button(self, forward_button):
+        self._forward_button = str(forward_button)
     
     compile = db.Column(FunctionType)
     debug = db.Column(FunctionType)
@@ -142,10 +169,10 @@ class Page(db.Model, BranchingBase):
     def __init__(
             self, branch=None, index=None, back_to=None, forward_to=None, 
             questions=[], timer_var=None, all_rows=False,
-            back=False, css=None, forward=True, js=None,
+            back=None, back_button=None, css=None, 
+            forward=True, forward_button=None, js=None,
             survey_template=None, terminal=False, view_template=None, 
-            compile=default_compile, debug=None, navigate=None, 
-            post=default_post):
+            compile=None, debug=None, navigate=None, post=None):
         
         db.session.add(self)
         db.session.flush([self])
@@ -156,22 +183,20 @@ class Page(db.Model, BranchingBase):
         self.questions = questions
         self.timer = Question(data=0, var=timer_var, all_rows=all_rows)
         
-        self.back = back
-        self.css = current_app.css if css is None else css
+        self.back = back or current_app.back
+        self.back_button = back_button or current_app.back_button
+        self.css = css or current_app.css
         self.forward = forward
-        self.js = current_app.js if js is None else js
-        self.survey_template = survey_template
+        self.forward_button = forward_button or current_app.forward_button
+        self.js = js or current_app.js
+        self.survey_template = survey_template or current_app.survey_template
         self.terminal = terminal
-        self.view_template = view_template
-        if survey_template is None:
-            self.survey_template = current_app.survey_template
-        if view_template is None:
-            self.view_template = current_app.view_template
+        self.view_template = view_template or current_app.view_template
 
-        self.compile = compile
-        self.debug = debug
+        self.compile = compile or current_app.page_compile
+        self.debug = debug or current_app.page_debug
         self.navigate = navigate
-        self.post = post
+        self.post = post or current_app.page_post
 
     def set_branch(self, branch, index):
         self._set_parent(branch, index, 'branch', 'pages')
@@ -190,16 +215,23 @@ class Page(db.Model, BranchingBase):
 
     def valid(self):
         return all([q.error is None for q in self.questions])
+    
+    def first_page(self):
+        """Indicate that this is the first Page in the experiment"""
+        return (
+            self.branch is not None and self.branch._isroot 
+            and self.index == 0
+            )
 
-    def _compile_page_body(self):
+    def _compile_question_html(self):
         self.compile(object=self)
         self.compiled = True
         self.start_time = datetime.utcnow()
-        return compile_page_body(self)
+        return ''.join([q._compile_html() for q in self.questions])
         
     def view_html(self, direction_to='forward'):
         """View compiled html for debugging purposes"""
-        soup = BeautifulSoup(self._compile_html(direction_to), 'html.parser')
+        soup = BeautifulSoup(self._compile_question_html(), 'html.parser')
         print(soup.prettify())
         
     def _submit(self):

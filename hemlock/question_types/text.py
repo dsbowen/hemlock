@@ -1,7 +1,7 @@
 """Text question"""
 
 from hemlock.database.models import Question
-from hemlock.html import *
+from hemlock.question_types.html_texts import *
 
 @Question.register(qtype='text', registration='html_compiler')
 def text_compiler(question):

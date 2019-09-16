@@ -143,7 +143,7 @@ def survey():
     if request.method == 'POST':
         return post(part, page)
         
-    page_body = part.current_page._compile_page_body()
+    question_html = part.current_page._compile_question_html()
     # PageHtml(page_body)
     
     if page.terminal:
@@ -153,7 +153,7 @@ def survey():
       
     db.session.commit()
     return render_template(
-        page.survey_template, page=page, page_body=Markup(page_body))
+        page.survey_template, page=page, question_html=Markup(question_html))
     
 # Validate and record responses on post request (form submission)
 # update metadata
@@ -163,7 +163,7 @@ def survey():
 def post(part, page):
     direction = page._submit()
     
-    part.meta['end_time'] = datetime.utcnow()
+    part.update_end_time()
     part.meta['status'] = 'in progress'
         
     if direction == 'forward':
@@ -171,6 +171,7 @@ def post(part, page):
     elif direction == 'back':
         part._back(page.back_to)
     part.current_page.direction_to = direction
+    part.updated = True
         
     db.session.commit()
     return redirect(url_for('hemlock.survey'))

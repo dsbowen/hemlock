@@ -85,6 +85,7 @@ class Branch(db.Model, BranchingBase):
         return page_questions + self.embedded
         
     navigate = db.Column(FunctionType)
+    _isroot = db.Column(db.Boolean)
 
     def __init__(self, pages=[], embedded=[], navigate=None):
         db.session.add(self)
@@ -93,6 +94,7 @@ class Branch(db.Model, BranchingBase):
         self.pages = pages
         self.embedded = embedded
         self.navigate = navigate
+        self._isroot = False
         
     def _forward(self):
         """Advance forward to the next page in the queue"""

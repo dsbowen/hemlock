@@ -1,7 +1,7 @@
 """Single choice question"""
 
 from hemlock.database.models import Question
-from hemlock.html import *
+from hemlock.question_types.html_texts import *
 
 @Question.register(qtype='single choice', registration='html_compiler')
 def single_choice_compiler(question):
