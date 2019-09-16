@@ -10,9 +10,11 @@
 """
 
 from hemlock.app.factory import db, bp, login_manager
+from hemlock.app.routes.participant_texts import *
 from hemlock.database.models import Participant, Page, Question
 
-from flask import current_app, Markup, redirect, render_template, request, url_for
+from datetime import datetime, timedelta
+from flask import current_app, flash, Markup, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user
 
 """Initial views and functions"""
@@ -50,9 +52,7 @@ def index():
         return redirect(url_for('hemlock.duplicate'))
     Visitors.query.first().append(ipv4)
     '''
-    part = Participant(current_app.start, meta)
-    db.session.commit()
-    login_user(part)
+    initialize_participant(meta)
     return redirect(url_for('hemlock.survey'))
 
 def get_metadata():
@@ -62,6 +62,30 @@ def get_metadata():
     meta['IPv4'] = request.remote_addr if ip is None else ip.split(',')[0]
     meta.update(request.args)
     return meta
+
+def initialize_participant(meta):
+    """Initialize Participant with given metadata
+    
+    If there is a time limit, start the clock.
+    """
+    part = Participant(current_app.start, meta)
+    db.session.commit()
+    login_user(part)
+    if current_app.time_limit is None:
+        return
+    end_time = datetime.now() + current_app.time_limit
+    current_app.apscheduler.add_job(
+        func=time_out, trigger='date', run_date=end_time, 
+        args=(current_app._get_current_object(), part.id), id=str(part.id)
+        )
+        
+def time_out(app, part_id):
+    """Time out the Participant for inactivity"""
+    with app.app_context():
+        part = Participant.query.get(part_id)
+        part.time_limit_exceeded = True
+        ### STORE DATA HERE
+        db.session.commit()
 
 """
 ##############################################################################
@@ -138,17 +162,20 @@ def duplicate():
 @bp.route('/survey', methods=['GET','POST'])
 @login_required
 def survey():
+    """Main survey route"""
     part = current_user
     page = part.current_page
-    if request.method == 'POST':
+    if part.time_limit_exceeded:
+        flash(TIME_LIMIT_EXCEEDED)
+    elif request.method == 'POST':
         return post(part, page)
         
-    question_html = part.current_page._compile_question_html()
+    question_html = page._compile_question_html()
     # PageHtml(page_body)
     
-    if page.terminal:
+    if page.terminal and not part.meta['Completed']:
         part.update_end_time()
-        part.meta['status'] = 'completed'
+        part.meta['Completed'] = 1
         # DataStore.query.first().store(part)
       
     db.session.commit()
@@ -164,7 +191,7 @@ def post(part, page):
     direction = page._submit()
     
     part.update_end_time()
-    part.meta['status'] = 'in progress'
+    part.meta['Completed'] = 0
         
     if direction == 'forward':
         part._forward(page.forward_to)

@@ -61,6 +61,15 @@ class Participant(db.Model, UserMixin):
     g = db.Column(MutableDictType)
     meta = db.Column(MutableDictType)
     updated = db.Column(db.Boolean)
+    time_limit_exceeded = db.Column(db.Boolean, default=False)
+    
+    @property
+    def status(self):
+        if self.meta['Completed']:
+            return 'completed'
+        if self.time_limit_exceeded:
+            return 'timed out'
+        return 'in progress'
     
     def __init__(self, start, meta={}):
         """Initialize Participant
@@ -73,9 +82,9 @@ class Participant(db.Model, UserMixin):
         
         self.g = {}
         self.meta = {
-            'end_time': datetime.utcnow(),
-            'start_time': datetime.utcnow(),
-            'status': 'in progress'
+            'EndTime': datetime.utcnow(),
+            'StartTime': datetime.utcnow(),
+            'Completed': 0
             }
         self.meta.update(meta)
         self.updated = True
@@ -86,7 +95,7 @@ class Participant(db.Model, UserMixin):
         root._isroot = True
 
     def update_end_time(self):
-        self.meta['end_time'] = datetime.utcnow()
+        self.meta['EndTime'] = datetime.utcnow()
     
     """Forward navigation"""
     def _forward(self, forward_to=None):

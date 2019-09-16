@@ -1,4 +1,7 @@
-"""Application default settings and configuration object"""
+"""Application default settings and configuration object
+
+time_limit must be input in 'hh:mm:ss' format.
+"""
 
 import os
 
@@ -40,6 +43,7 @@ default_settings = {
     'static_folder': 'static',
     'survey_template': 'default_survey.html',
     'template_folder': 'templates',
+    'time_limit': None,
     'view_template': 'default_view.html'
     }
 

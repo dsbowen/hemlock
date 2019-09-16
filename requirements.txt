@@ -1,4 +1,5 @@
 flask
+flask-apscheduler
 flask-sqlalchemy
 flask-login
 flask-bootstrap4

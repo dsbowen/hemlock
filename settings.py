@@ -3,5 +3,5 @@
 from survey import *
 
 settings = {
-    'start': Start
+    'start': Start,
     }
