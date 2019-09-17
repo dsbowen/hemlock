@@ -9,6 +9,7 @@ from flask_apscheduler import APScheduler
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from glob import glob
 from werkzeug.security import generate_password_hash
 import pandas as pd
 import os
@@ -32,8 +33,9 @@ def create_app(settings):
     settings, static, templates = get_settings(settings)
     app = Flask(__name__, static_folder=static, template_folder=templates)
     [setattr(app, key, value) for key, value in settings.items()]
-    app.password_hash = generate_password_hash(app.password)
     app.config.from_object(Config)
+    
+    get_screenouts(app)
     
     bootstrap.init_app(app)
     app.register_blueprint(bp)
@@ -59,7 +61,16 @@ def get_settings(settings):
         t = datetime.strptime(settings['time_limit'], '%H:%M:%S')
         settings['time_limit'] = timedelta(
             hours=t.hour, minutes=t.minute, seconds=t.second)
+    settings['password_hash'] = generate_password_hash(
+        settings.pop('password'))
     cwd = os.getcwd()
     static = os.path.join(cwd, settings.pop('static_folder'))
     templates = os.path.join(cwd, settings.pop('template_folder'))
     return settings, static, templates
+
+def get_screenouts(app):
+    """Store screenouts dictionary as application attribute"""
+    app.screenouts_folder = os.path.join(os.getcwd(), app.screenouts_folder)
+    screenout_csvs = glob(app.screenouts_folder+'/*.csv')
+    df = pd.concat([pd.read_csv(csv) for csv in screenout_csvs]).astype(str)
+    app.screenouts = df.to_dict(orient='list')

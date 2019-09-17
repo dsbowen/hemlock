@@ -60,8 +60,10 @@ class Participant(db.Model, UserMixin):
     
     g = db.Column(MutableDictType, default={})
     completed = db.Column(db.Boolean, default=False)
+    end_time = db.Column(db.DateTime)
     meta = db.Column(MutableDictType, default={})
     updated = db.Column(db.Boolean, default=True)
+    start_time = db.Column(db.DateTime)
     time_expired = db.Column(db.Boolean, default=False)
     
     @property
@@ -81,11 +83,8 @@ class Participant(db.Model, UserMixin):
         db.session.add(self)
         db.session.flush([self])
         
-        self.meta = {
-            'EndTime': datetime.utcnow(),
-            'StartTime': datetime.utcnow(),
-            }
-        self.meta.update(meta)
+        self.end_time = self.start_time = datetime.utcnow()
+        self.meta = meta.copy()
         
         self.current_branch = root = start()
         self.branch_stack.append(root)
@@ -93,7 +92,7 @@ class Participant(db.Model, UserMixin):
         root._isroot = True
 
     def update_end_time(self):
-        self.meta['EndTime'] = datetime.utcnow()
+        self.end_time = datetime.utcnow()
     
     """Forward navigation"""
     def _forward(self, forward_to=None):

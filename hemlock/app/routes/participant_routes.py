@@ -7,6 +7,12 @@
     # update metadata and store if page is terminal
     # return rendered page
 # POST: collect and validate responses, advance to next page
+
+screenouts
+    screenouts dict as app attribute
+    when get metadata, check for overlap
+
+then duplicates
 """
 
 from hemlock.app.factory import db, bp, login_manager
@@ -15,7 +21,8 @@ from hemlock.database.models import Participant, Page, Question
 
 from datetime import datetime, timedelta
 from flask import current_app, flash, Markup, redirect, render_template, request, url_for
-from flask_login import current_user, login_required, login_user
+from flask_login import current_user, login_required, login_user, logout_user
+import json
 
 """Initial views and functions"""
 @bp.before_app_first_request
@@ -42,9 +49,14 @@ def index():
             return redirect(url_for('hemlock.survey'))
         return redirect(url_for('hemlock.restart'))
     '''
-    if current_user.is_authenticated:
-        return redirect(url_for('hemlock.survey'))
     meta = get_metadata()
+    if is_screenout(meta):
+        return redirect(url_for('hemlock.screenout'))
+    if current_user.is_authenticated:
+        if current_app.restart_option:
+            return redirect(url_for('hemlock.restart', **meta))
+        return redirect(url_for('hemlock.survey'))
+    
     '''
     duplicate_ipv4 = ipv4 in Visitors.query.first().ipv4
     if (ipv4 in current_app.ipv4_csv
@@ -56,11 +68,21 @@ def index():
     return redirect(url_for('hemlock.survey'))
 
 def get_metadata():
-    """Get IPv4 and other Participant metdata from URL parameters"""
-    meta = {}
+    """Get Participant metadata
+    
+    Metadata defaults to the metadata of the current Participant. E.g.
+    suppose an MTurk worker takes the survey twice in a row. 
+    
+    Metadata is overridden by new URL parameters. E.g. suppose a second
+    MTurk worker takes the survey from the same computer (and browser), with
+    a new workerId parameter passed to the index view.
+    
+    IPv4 is updated for each metadata request.
+    """
+    meta = current_user.meta.copy() if current_user.is_authenticated else {}
+    meta.update(request.args)
     ip = request.environ.get('HTTP_X_FORWARDED_FOR', None)
     meta['IPv4'] = request.remote_addr if ip is None else ip.split(',')[0]
-    meta.update(request.args)
     return meta
 
 def initialize_participant(meta):
@@ -68,9 +90,12 @@ def initialize_participant(meta):
     
     If there is a time limit, start the clock.
     """
+    if current_user.is_authenticated:
+        logout_user()
     part = Participant(current_app.start, meta)
     db.session.commit()
     login_user(part)
+    
     if current_app.time_limit is None:
         return
     end_time = datetime.now() + current_app.time_limit
@@ -80,13 +105,53 @@ def initialize_participant(meta):
         )
         
 def time_out(app, part_id):
-    """Time out the Participant for inactivity"""
+    """Indicate Participant time has expired"""
     with app.app_context():
         print('time expired')
         part = Participant.query.get(part_id)
         part.time_expired = True
         ### STORE DATA HERE
         db.session.commit()
+        
+def render_survey_template(page, question_html):
+    return render_template(
+        page.survey_template, page=page, question_html=Markup(question_html))
+
+"""Screenout and duplicate handling"""
+def is_screenout(meta):
+    """Indicate that this visitor should be screened out"""
+    for var in current_app.screenout_variables:
+        value = meta.get(var)
+        if value is not None and value in current_app.screenouts[var]:
+            return True
+    return False
+
+@bp.route('/screenout')
+def screenout():
+    p = Page(forward=False)
+    q = Question(p, text=SCREENOUT)
+    db.session.delete(p)
+    db.session.delete(q)
+    return render_survey_template(p, p._compile_question_html())
+    
+@bp.route('/restart', methods=['GET','POST'])
+def restart():
+    """Restart option
+    
+    Participants may navigate back to return to the in progress experiment,
+    or forward to restart.
+    """
+    if request.method == 'POST':
+        if request.form.get('direction') == 'back':
+            return redirect(url_for('hemlock.survey'))
+        initialize_participant(get_metadata())
+        return redirect(url_for('hemlock.survey'))
+        
+    p = Page(back=True)
+    q = Question(p, text=RESTART)
+    db.session.delete(p)
+    db.session.delete(q)
+    return render_survey_template(p, p._compile_question_html())
 
 """
 ##############################################################################
@@ -169,7 +234,8 @@ def survey():
     
     if part.time_expired:
         flash(TIME_EXPIRED)
-        question_html = page.question_html or ''
+        # Do not re-compile question html
+        question_html = page.question_html or '' 
     else:
         if request.method == 'POST':
             return post(part, page)
@@ -187,6 +253,12 @@ def survey():
         page.survey_template, page=page, question_html=Markup(question_html))
     
 def post(part, page):
+    """Function to execute on POST request
+    
+    1. Update Participant metadata
+    2. Navigate in specified direction
+    3. Return to survey route with GET request
+    """
     part.update_end_time()
     part.completed = False
     part.updated = True
