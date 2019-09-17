@@ -74,7 +74,7 @@ class Participant(db.Model, UserMixin):
             return 'timed out'
         return 'in progress'
     
-    def __init__(self, start, meta={}):
+    def __init__(self, start_navigation, meta={}):
         """Initialize Participant
         
         Sets up the global dictionary g and metadata. Then initailizes the
@@ -86,7 +86,7 @@ class Participant(db.Model, UserMixin):
         self.end_time = self.start_time = datetime.utcnow()
         self.meta = meta.copy()
         
-        self.current_branch = root = start()
+        self.current_branch = root = start_navigation()
         self.branch_stack.append(root)
         root.current_page = root.start_page
         root._isroot = True

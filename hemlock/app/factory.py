@@ -20,6 +20,7 @@ bp = Blueprint('hemlock', __name__)
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'hemlock.index'
+login_manager.login_message = None
 scheduler = APScheduler()
 # viewer = Viewer()
 
@@ -50,10 +51,16 @@ def create_app(settings):
 def get_settings(settings):
     """Get application settings
     
-    Overwrite default settings with input settings. Then merge static and 
-    template folders with current working directory. Return these separately,
-    as they need to be passed to the Flask constructor.
+    Overwrite default settings with input settings. 
+    
+    Convert time limit to timedelta object. Convert screenout keys, css, and 
+    js to lists.
+    
+    Then merge static and template folders with current working directory. 
+    Return these separately, as they need to be passed to the Flask 
+    constructor.
     """
+    settings = settings.copy()
     for key, value in default_settings.items():
         if key not in settings:
             settings[key] = value
@@ -61,6 +68,14 @@ def get_settings(settings):
         t = datetime.strptime(settings['time_limit'], '%H:%M:%S')
         settings['time_limit'] = timedelta(
             hours=t.hour, minutes=t.minute, seconds=t.second)
+    if settings['duplicate_keys'] is None:
+        settings['duplicate_keys'] = []
+    if isinstance(settings['css'], str):
+        settings['css'] = [settings['css']]
+    if isinstance(settings['js'], str):
+        settings['js'] = [settings['js']]
+    if settings['screenout_keys'] is None:
+        settings['screenout_keys'] = []
     settings['password_hash'] = generate_password_hash(
         settings.pop('password'))
     cwd = os.getcwd()
@@ -70,7 +85,7 @@ def get_settings(settings):
 
 def get_screenouts(app):
     """Store screenouts dictionary as application attribute"""
-    app.screenouts_folder = os.path.join(os.getcwd(), app.screenouts_folder)
-    screenout_csvs = glob(app.screenouts_folder+'/*.csv')
+    app.screenout_folder = os.path.join(os.getcwd(), app.screenout_folder)
+    screenout_csvs = glob(app.screenout_folder+'/*.csv')
     df = pd.concat([pd.read_csv(csv) for csv in screenout_csvs]).astype(str)
     app.screenouts = df.to_dict(orient='list')
