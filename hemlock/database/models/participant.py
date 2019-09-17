@@ -12,15 +12,40 @@ Columns:
 
 g: Participant dictionary
 meta: dictionary of Participant metadata
+status: in progress, completed, or timed out
 updated: indicates Participant data has been updated since last store
 """
 from hemlock.app.factory import db
+from hemlock.database.private import DataStore
+from hemlock.database.types import DataFrame
 from hemlock.database.models.branch import Branch
 
 from datetime import datetime
+from flask import current_app
 from flask_login import UserMixin
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import Mutable, MutableType, MutableDictType
+
+def send_data(func):
+    """Send data to app status tracker and DataStore
+    
+    Update the app's status tracker as a result of an update made to the
+    Participant. If the new status is completed or timed out, send data
+    to DataStore.
+    """
+    def status_update(part, update):
+        old_status = part.status
+        return_val = func(part, update)
+        status_changed = old_status != part.status
+        if not status_changed:
+            return return_val
+        current_app.status_tracker[old_status] -= 1
+        current_app.status_tracker[part.status] += 1
+        if part.status in ['completed', 'timed out']:
+            DataStore.query.first().store(part)
+            part.updated = False
+        return return_val
+    return status_update
 
 
 class Participant(db.Model, UserMixin):
@@ -50,7 +75,9 @@ class Participant(db.Model, UserMixin):
         
     @property
     def questions(self):
-        return [q for b in self.branch_stack for q in b.questions]
+        questions = [q for b in self.branch_stack for q in b.questions]
+        questions.sort(key=lambda q: q.id)
+        return questions
     
     # _page_htmls = db.relationship(
         # 'PageHtml',
@@ -59,12 +86,30 @@ class Participant(db.Model, UserMixin):
         # )
     
     g = db.Column(MutableDictType, default={})
-    completed = db.Column(db.Boolean, default=False)
+    _completed = db.Column(db.Boolean, default=False)
     end_time = db.Column(db.DateTime)
     meta = db.Column(MutableDictType, default={})
     updated = db.Column(db.Boolean, default=True)
     start_time = db.Column(db.DateTime)
-    time_expired = db.Column(db.Boolean, default=False)
+    _time_expired = db.Column(db.Boolean, default=False)
+    
+    @property
+    def completed(self):
+        return self._completed
+        
+    @completed.setter
+    @send_data
+    def completed(self, completed):
+        self._completed = completed
+        
+    @property
+    def time_expired(self):
+        return self._time_expired
+        
+    @time_expired.setter
+    @send_data
+    def time_expired(self, time_expired):
+        self._time_expired = time_expired
     
     @property
     def status(self):
@@ -73,6 +118,15 @@ class Participant(db.Model, UserMixin):
         if self.time_expired:
             return 'timed out'
         return 'in progress'
+
+    @property
+    def data(self):
+        questions = self.questions
+        df = DataFrame()
+        [df.add(data=q._package_data(), all_rows=q.all_rows) 
+            for q in questions]
+        df.pad()
+        return df
     
     def __init__(self, start_navigation, meta={}):
         """Initialize Participant
@@ -82,6 +136,7 @@ class Participant(db.Model, UserMixin):
         """
         db.session.add(self)
         db.session.flush([self])
+        current_app.status_tracker['in progress'] += 1
         
         self.end_time = self.start_time = datetime.utcnow()
         self.meta = meta.copy()

@@ -241,8 +241,9 @@ class Page(db.Model, BranchingBase):
         1. Record responses
         2. If attempting to navigate backward, there is nothing more to do
         3. If attempting to navigate forward, check for valid responses
-        4. If responses are invalid, return this result
-        5. If responses are valid, execute post function before returning
+        4. If responses are invalid, return
+        5. Record data
+        6. Run post function
         """
         self._update_timer()
         self.direction_from = request.form['direction']
@@ -253,6 +254,7 @@ class Page(db.Model, BranchingBase):
         if not all([q._validate() for q in self.questions]):
             self.direction_from = 'invalid'
             return 'invalid'
+        [q._record_data() for q in self.questions]
         self.post(object=self)
         # self.direction_from is 'forward' unless changed in post function
         return self.direction_from 

@@ -1,12 +1,25 @@
-###############################################################################
-# Data Store model
-# by Dillon Bowen
-# last modified 05/02/2019
-###############################################################################
+"""Data store database model"""
 
-from hemlock.factory import db
+from hemlock.app.factory import db
+from hemlock.database.types import DataFrameType
+
 from flask import current_app
-from copy import deepcopy
+
+
+class DataStore(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    data = db.Column(DataFrameType, default={})
+    
+    def __init__(self):
+        db.session.add(self)
+        db.session.flush([self])
+    
+    def store(self, part):
+        self.data.append(part.data)
+        print('datastore stored data is', self.data)
+        
+
+"""
 
 STORE_BATCH_SIZE = 20
 
@@ -209,3 +222,4 @@ class DataStore(db.Model):
 
 class DataStore():
     pass
+"""

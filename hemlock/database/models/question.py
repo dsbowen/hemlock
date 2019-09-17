@@ -89,6 +89,7 @@ class Question(db.Model, Base):
     error = db.Column(db.Text)
     init_default = db.Column(MutableType)
     _qtype = db.Column(db.String)
+    response = db.Column(db.String)
     text = db.Column(db.Text)
     var = db.Column(db.Text)
     
@@ -202,23 +203,21 @@ class Question(db.Model, Base):
             return data_recorder(self)
         self.data = self.response
         
-    # Output the data (both question data and order data)
-    # data consists of:
-    # main data (usually referred to simply as 'data')
-    # page (or branch) order: order in which question appeared its page
-    # variable order: order in which question appeared
-    #   relative to other questions belonging to the same variable
-    # choice order for each choice
-    def _output_data(self):
+    def _package_data(self):
+        """Package data for storing in DataStore
+        
+        Note: <var>Index is the index of the object; its order within its
+        Branch, Page, or Question. <var>Order is the order of the Question
+        relative to other Questions with the same variable.
+        """
         if self.var is None:
             return {}
     
-        data = {
-            self.var: self.data,
-            self.var+'_porder': self.index,
-            self.var+'_vorder': self.vorder}
+        data = {self.var: self.data}
+        if self.index is not None:
+            data[self.var+'Index'] = self.index
             
         for c in self.choices:
-            data['_'.join([self.var, c.label, 'qorder'])] = c.index
+            data[''.join([self.var, c.label, 'Index'])] = c.index
             
         return data

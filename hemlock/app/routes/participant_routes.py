@@ -1,21 +1,6 @@
-"""Routes for experiment Participants
+"""Routes for experiment Participants"""
 
-# Main survey route
-# alternate between GET and POST
-# GET: 
-    # compile current page and store as PageHtml
-    # update metadata and store if page is terminal
-    # return rendered page
-# POST: collect and validate responses, advance to next page
-
-screenouts
-    screenouts dict as app attribute
-    when get metadata, check for overlap
-
-then duplicates
-"""
-
-from hemlock.app.factory import db, bp, login_manager
+from hemlock.app.factory import bp, db
 from hemlock.app.routes.participant_texts import *
 from hemlock.database.models import Participant, Page, Question
 from hemlock.database.private import Metadata
@@ -25,25 +10,13 @@ from flask import current_app, flash, Markup, redirect, render_template, request
 from flask_login import current_user, login_required, login_user, logout_user
 
 """Initial views and functions"""
-@login_manager.user_loader
-def load_user(id):
-    return Participant.query.get(int(id))
-    
-@bp.before_app_first_request
-def before_app_first_request():
-    db.create_all()
-    if not Metadata.query.first():
-        Metadata()
-    db.session.commit()
-    '''
-    if not DataStore.query.all():
-        DataStore()
-    '''
-    
 @bp.route('/')
 @bp.route('/index')
 def index():
-    """Initial view function"""
+    """Initial view function
+    
+    Direct visitors to survey, restart page, or screenout page.
+    """
     meta = get_metadata()
     if is_screenout(meta):
         return redirect(url_for('hemlock.screenout'))
@@ -74,7 +47,7 @@ def initialize_participant(meta):
     if current_user.is_authenticated:
         logout_user()
     part = Participant(start_navigation=current_app.start, meta=meta)
-    Metadata.query.first().add(meta)
+    Metadata.query.first().data.append(meta)
     db.session.commit()
     login_user(part)
     
@@ -91,7 +64,6 @@ def time_out(app, part_id):
     with app.app_context():
         part = Participant.query.get(part_id)
         part.time_expired = True
-        ### STORE DATA HERE
         db.session.commit()
         
 def render_survey_template(page, question_html):
@@ -107,7 +79,7 @@ def is_screenout(meta):
 
 def is_duplicate(meta):
     """Look for a match between visitor metadata and previous participants"""
-    tracked_meta = Metadata.query.first().meta
+    tracked_meta = Metadata.query.first().data
     keys = current_app.duplicate_keys
     return match_found(visitor=meta, tracked=tracked_meta, keys=keys)
 
@@ -178,7 +150,6 @@ def survey():
     if page.terminal and not part.completed:
         part.update_end_time()
         part.completed = True
-        # DataStore.query.first().store(part)
       
     db.session.commit()
     return render_template(

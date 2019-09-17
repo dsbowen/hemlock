@@ -26,7 +26,7 @@ def get_checked(default, choice):
     return ''
 
 @Question.register(qtype='single choice', registration='response_recorder')
-def single_choice_response(question, choice_id):
+def single_choice_response(question, choice_cid):
     """Record response for a single choice question type
     
     If participant did not select a choice, set default to None and return.
@@ -35,11 +35,11 @@ def single_choice_response(question, choice_id):
     2. Set the default choice to the selected choice
     3. Update selected and nonselected choices
     """
-    if choice_id is None:
+    if choice_cid is None:
         question.default.choice = None
         return
     for choice in question.choices:
-        if choice.id == choice_id:
+        if choice.cid == choice_cid:
             selected = choice
             break
     question.response = selected.value

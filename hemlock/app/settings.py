@@ -1,9 +1,14 @@
 """Application default settings and configuration object
 
-time_limit must be input in 'hh:mm:ss' format.
+time_limit and status_logger_period must be in 'hh:mm:ss' format.
 """
 
+from datetime import datetime, timedelta
+from glob import glob
+from werkzeug.security import generate_password_hash
 import os
+import pandas as pd
+
 
 BACK_BUTTON = """
     <button id="back-button" name="direction" type="submit" class="btn btn-outline-primary" style="float: left;" value="back"> 
@@ -43,11 +48,62 @@ default_settings = {
     'screenout_folder': 'screenouts',
     'screenout_keys': ['IPv4', 'workerId'],
     'static_folder': 'static',
+    'status_logger_period': '00:02:00',
     'survey_template': 'default_survey.html',
     'template_folder': 'templates',
     'time_limit': None,
     'view_template': 'default_view.html'
     }
+    
+def get_settings(settings):
+    """Get application settings
+    
+    Overwrite default settings with input settings. Convert settings to list 
+    and timedelta objects as needed.
+    
+    Then merge static and template folders with current working directory. 
+    Return these separately, as they need to be passed to the Flask 
+    constructor.
+    """
+    settings = settings.copy()
+    for key, value in default_settings.items():
+        if key not in settings:
+            settings[key] = value
+    to_list(settings, 'duplicate_keys')
+    to_list(settings, 'css')
+    to_list(settings, 'js')
+    to_list(settings, 'screenout_keys')
+    to_timedelta(settings, 'time_limit')
+    to_timedelta(settings, 'status_logger_period')
+    settings['password_hash'] = generate_password_hash(
+        settings.pop('password'))
+    cwd = os.getcwd()
+    static = os.path.join(cwd, settings.pop('static_folder'))
+    templates = os.path.join(cwd, settings.pop('template_folder'))
+    return settings, static, templates
+    
+def to_list(settings, key):
+    """Convert setting item to list"""
+    item = settings[key]
+    if item is None:
+        settings[key] = []
+    if isinstance(item, str):
+        settings[key] = [item]
+
+def to_timedelta(settings, key):
+    """Convert time expressed as 'hh:mm:ss' to timedelta object"""
+    time_str = settings[key]
+    if time_str is None:
+        return
+    t = datetime.strptime(time_str, '%H:%M:%S')
+    settings[key] = timedelta(hours=t.hour,minutes=t.minute,seconds=t.second)
+
+def get_screenouts(app):
+    """Store screenouts dictionary as application attribute"""
+    app.screenout_folder = os.path.join(os.getcwd(), app.screenout_folder)
+    screenout_csvs = glob(app.screenout_folder+'/*.csv')
+    df = pd.concat([pd.read_csv(csv) for csv in screenout_csvs]).astype(str)
+    app.screenouts = df.to_dict(orient='list')
 
 class Config():
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'

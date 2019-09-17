@@ -81,7 +81,8 @@ class Branch(db.Model, BranchingBase):
         
     @property
     def questions(self):
-        page_questions = [q for p in self.pages for q in p.questions]
+        page_questions = [
+            q for p in self.pages for q in p.questions+[p.timer]]
         return page_questions + self.embedded
         
     navigate = db.Column(FunctionType)
