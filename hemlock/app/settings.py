@@ -3,33 +3,13 @@
 time_limit and status_logger_period must be in 'hh:mm:ss' format.
 """
 
+from hemlock.app.setting_utils import *
+
 from datetime import datetime, timedelta
-from flask import Markup
 from glob import glob
 from werkzeug.security import generate_password_hash
 import os
 import pandas as pd
-
-
-BACK_BUTTON = Markup("""
-    <button id="back-button" name="direction" type="submit" class="btn btn-outline-primary" style="float: left;" value="back"> 
-    << 
-    </button>
-""")
-
-FORWARD_BUTTON = Markup("""
-    <button id="forward-button" name="direction" type="submit" class="btn btn-outline-primary" style="float: right;" value="forward">
-    >> 
-    </button>
-""")
-
-def page_compile(page):
-    """Calls question compile functions in index order"""
-    return [q.compile(object=q) for q in page.questions]
-    
-def page_post(page):
-    """Calls question post functions in index order"""
-    return [q.post(object=q) for q in page.questions]
 
 default_settings = {
     'back': False,
@@ -46,12 +26,15 @@ default_settings = {
     'question_debug': None,
     'question_post': None,
     'restart_option': True,
+    'restart_text': RESTART,
     'screenout_folder': 'screenouts',
     'screenout_keys': ['IPv4', 'workerId'],
+    'screenout_text': SCREENOUT,
     'static_folder': 'static',
     'status_log_period': '00:02:00',
     'survey_template': 'default_survey.html',
     'template_folder': 'templates',
+    'time_expired_text': TIME_EXPIRED,
     'time_limit': None,
     'view_template': 'default_view.html'
     }

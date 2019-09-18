@@ -17,6 +17,7 @@ class DataStore(db.Model):
     
     @classmethod
     def pascal(cls, text):
+        """Convert text to pascal format"""
         text = text.replace('_', ' ')
         return ''.join([l for l in text.title() if not l.isspace()])
     

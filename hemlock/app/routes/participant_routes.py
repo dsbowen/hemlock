@@ -1,7 +1,6 @@
 """Routes for experiment Participants"""
 
 from hemlock.app.factory import bp, db
-from hemlock.app.routes.participant_texts import *
 from hemlock.database.models import Participant, Page, Question
 from hemlock.database.private import DataStore, PageHtml
 
@@ -99,7 +98,7 @@ def match_found(visitor, tracked, keys):
 @bp.route('/screenout')
 def screenout():
     p = Page(forward=False)
-    q = Question(p, text=SCREENOUT)
+    q = Question(p, text=current_app.screenout_text)
     db.session.delete(p)
     db.session.delete(q)
     return p._render_html()
@@ -118,7 +117,7 @@ def restart():
         return redirect(url_for('hemlock.survey'))
         
     p = Page(back=True)
-    q = Question(p, text=RESTART)
+    q = Question(p, text=current_app.restart_text)
     db.session.delete(p)
     db.session.delete(q)
     return p._render_html()
@@ -132,7 +131,7 @@ def survey():
     page = part.current_page
     
     if part.time_expired:
-        flash(TIME_EXPIRED)
+        flash(current_app.time_expired_text)
         # Do not re-compile question html
         question_html = page.question_html or '' 
     else:

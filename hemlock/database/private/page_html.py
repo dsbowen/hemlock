@@ -1,4 +1,8 @@
-"""Page html database model"""
+"""Page html database model
+
+Stores html snapshot of each Page for each Participant. These can be accessed
+in the researcher dashboard.
+"""
 
 from hemlock.app.factory import db
 from hemlock.database.types import HtmlType
@@ -25,14 +29,6 @@ PCT_PADDING = .95
 MAX_CROP = 45
 
 
-
-'''
-Relationships:
-    part: participant to whom the page html belongs
-
-Columns:
-    html: preprocessed or processed html
-'''
 class PageHtml(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
@@ -42,21 +38,23 @@ class PageHtml(db.Model):
     def __init__(self, page):
         self.css = page.css
         self.html = render_template(page.view_template, page=page)
-        self.preprocess_html()
+        self.preprocess()
         
-    # Preprocessing
-    def preprocess_html(self):
+    def preprocess(self):
         self._process(preprocess=True)
         
-    # Main processing
-    # return compiled html
     def process(self):
         self._process()
         return self.html
     
-    # Store all images and videos as base64
-    # convert only media to be copied for survey viewing during preprocessing
     def _process(self, preprocess=False):
+        """Process html
+        
+        Store all images in base64 encoding. Store all videos as thumbnails.
+        
+        Convert only media to be copied for survey viewing during 
+        preprocessing.
+        """
         soup = BeautifulSoup(self.html, 'html.parser')
         images = soup.find_all('img')
         videos = soup.find_all('iframe')
@@ -67,16 +65,17 @@ class PageHtml(db.Model):
         [self.encode_video(soup, v) for v in videos]
         self.html = str(soup)
     
-    # Encode an image in base64
-    # if local, encode using absolute path
-    # if url, encode using content from request
-    # change image source to base64 data
     def encode_image(self, image):
+        """Encode an image as base64 data
+        
+        If the image is local, encode using the absolute path. If the image 
+        is from a URL, encode content from request.
+        """
         src = image['src']
-        if src.startswith('/'):
+        if src.startswith('/'): # local image
             path = os.path.join(os.getcwd(), src[1:]).replace('\\', '/')
             data = b64encode(open(path, 'rb').read()).decode('utf-8')
-        elif src.startswith('http'):
+        elif src.startswith('http'): # from URL
             try:
                 data = b64encode(requests.get(src).content).decode('utf-8')
             except:
@@ -85,8 +84,8 @@ class PageHtml(db.Model):
             return
         image['src'] = 'data:image/png;base64,{}'.format(data)
     
-    # Encode a video as a base64 image
     def encode_video(self, soup, video):
+        """Encode video thumbnail as base64 data"""
         try:
             buffer = BytesIO()
             thumbnail = self.create_thumbnail(video)
@@ -99,11 +98,11 @@ class PageHtml(db.Model):
         image['src'] = 'data:image/png;base64,{}'.format(data)
         video.replace_with(image)
         
-    # Create thumbnail
-    # get raw thumbnail
-    # get play button
-    # paste play button onto thumbnail
     def create_thumbnail(self, video):
+        """Create video thumbnail
+        
+        Get the raw thumbnail image. Then superimpose the YouTube play button.
+        """
         thumbnail = self.get_thumbnail(video)
 
         path = os.path.join(os.getcwd(), 'static/YouTube.png')
@@ -113,16 +112,16 @@ class PageHtml(db.Model):
         thumbnail.paste(play, (0,0), play)
         return thumbnail
     
-    # Get video thumbnail from url
     def get_thumbnail(self, video):
+        """Get the raw video thumbnail from YouTube URL"""
         url = 'https://i4.ytimg.com/vi/{}/0.jpg'.format(video['vid'])
         thumbnail = Image.open(BytesIO(requests.get(url).content))
         thumbnail = self.remove_padding(thumbnail)
         thumbnail = self.fit_aspect(thumbnail)
         return thumbnail
         
-    # Remove black padding from thumbnail
     def remove_padding(self, thumbnail):
+        """Remove black padding from the thumbnail"""
         width, height = thumbnail.size
         temp = np.linalg.norm(np.array(thumbnail)-np.array([0,0,0]), axis=2)
         temp = temp < COLOR_TOLERANCE
@@ -135,8 +134,8 @@ class PageHtml(db.Model):
         thumbnail = thumbnail.crop((0, min_y, thumbnail.size[0], max_y))
         return thumbnail
     
-    # Crop thumbnail to fit aspect ratio
     def fit_aspect(self, thumbnail):
+        """Crop thumbnail to fit aspect ratio"""
         width, height = thumbnail.size
         crop_vertical = width/float(height) < ASPECT_RATIO
         if crop_vertical:
