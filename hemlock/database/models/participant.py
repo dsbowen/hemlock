@@ -39,10 +39,10 @@ def send_data(func):
         status_changed = old_status != part.status
         if not status_changed:
             return return_val
-        current_app.status_tracker[old_status] -= 1
-        current_app.status_tracker[part.status] += 1
+        current_app.current_status[old_status] -= 1
+        current_app.current_status[part.status] += 1
         if part.status in ['completed', 'timed out']:
-            DataStore.query.first().store(part)
+            DataStore.query.first().store_participant(part)
             part.updated = False
         return return_val
     return status_update
@@ -88,7 +88,7 @@ class Participant(db.Model, UserMixin):
     g = db.Column(MutableDictType, default={})
     _completed = db.Column(db.Boolean, default=False)
     end_time = db.Column(db.DateTime)
-    meta = db.Column(MutableDictType, default={})
+    _meta = db.Column(MutableDictType, default={})
     updated = db.Column(db.Boolean, default=True)
     start_time = db.Column(db.DateTime)
     _time_expired = db.Column(db.Boolean, default=False)
@@ -118,28 +118,20 @@ class Participant(db.Model, UserMixin):
         if self.time_expired:
             return 'timed out'
         return 'in progress'
-
-    @property
-    def data(self):
-        questions = self.questions
-        df = DataFrame()
-        [df.add(data=q._package_data(), all_rows=q.all_rows) 
-            for q in questions]
-        df.pad()
-        return df
     
     def __init__(self, start_navigation, meta={}):
         """Initialize Participant
         
-        Sets up the global dictionary g and metadata. Then initailizes the
+        Sets up the global dictionary g and metadata. Then initializes the
         root branch.
         """
         db.session.add(self)
         db.session.flush([self])
-        current_app.status_tracker['in progress'] += 1
+        current_app.current_status[self.status] += 1
         
         self.end_time = self.start_time = datetime.utcnow()
         self.meta = meta.copy()
+        DataStore.query.first().meta.append(meta)
         
         self.current_branch = root = start_navigation()
         self.branch_stack.append(root)
@@ -148,6 +140,73 @@ class Participant(db.Model, UserMixin):
 
     def update_end_time(self):
         self.end_time = datetime.utcnow()
+    
+    """Data packaging"""
+    @property
+    def meta(self):
+        self._meta['ID'] = self.id
+        self._meta['end_time'] = self.end_time
+        self._meta['start_time'] = self.start_time
+        self._meta['status'] = self.status
+        return self._meta
+        
+    @meta.setter
+    def meta(self, meta):
+        self._meta = meta
+    
+    @property
+    def data(self):
+        """Participant data
+        
+        Note that Questions are added to the dataframe in the order in which 
+        they were created (i.e. by id). This is not necessarily the order in 
+        which they appeared to the Participant.
+        """
+        self.set_order_all()
+        questions = self.questions
+        df = DataFrame()
+        df.add(data=self.meta, all_rows=True)
+        [df.add(data=q._package_data(), all_rows=q.all_rows) 
+            for q in questions]
+        df.pad()
+        return df
+    
+    def set_order_all(self):
+        """Set the order for all Questions
+        
+        A Question's order is the order in which it appeared to the 
+        Participant relative to other Questions of the same variable. These 
+        functions walk through the survey and sets the Question order.
+        
+        Note that a Branch's embedded data Questions are set before its 
+        Pages' Questions. A Page's timer is set before its Questions.
+        """
+        var_count = {}
+        self.set_order_branch(self.branch_stack[0], var_count)
+    
+    def set_order_branch(self, branch, var_count):
+        """Set the order for Questions belonging to a given Branch"""
+        [self.set_order_question(q, var_count) for q in branch.embedded]
+        [self.set_order_page(p, var_count) for p in branch.pages]
+        if branch.next_branch in self.branch_stack:
+            self.set_order_branch(branch.next_branch, var_count)
+    
+    def set_order_page(self, page, var_count):
+        """Set the order for Questions belonging to a given Page"""
+        questions = [page.timer]+page.questions
+        [self.set_order_question(q, var_count) for q in questions]
+        if page.next_branch in self.branch_stack:
+            self.set_order_branch(page.next_branch, var_count)
+        
+    def set_order_question(self, question, var_count):
+        """Set the order for a given Question"""
+        var = question.var
+        if var is None:
+            return
+        if var not in var_count:
+            var_count[var] = 0
+        question.order = var_count[var]
+        var_count[var] += 1
     
     """Forward navigation"""
     def _forward(self, forward_to=None):
@@ -235,6 +294,7 @@ class Participant(db.Model, UserMixin):
             and self.current_page.next_branch not in self.branch_stack
             )
 
+    """General navigation and debugging"""
     def _increment_head(self):
         self.current_branch = self.branch_stack[self.current_branch.index+1]
     

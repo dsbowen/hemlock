@@ -88,6 +88,7 @@ class Question(db.Model, Base):
     _default = db.Column(MutableType)
     error = db.Column(db.Text)
     init_default = db.Column(MutableType)
+    order = db.Column(db.Integer)
     _qtype = db.Column(db.String)
     response = db.Column(db.String)
     text = db.Column(db.Text)
@@ -188,7 +189,7 @@ class Question(db.Model, Base):
     def _validate(self):
         """Validate Participant response
         
-        Keep the error message associated with the first failed validator.
+        Keep the error message associated with the first failed Validator.
         """
         for v in self.validators:
             self.error = v.validate(object=self)
@@ -214,6 +215,8 @@ class Question(db.Model, Base):
             return {}
     
         data = {self.var: self.data}
+        if not self.all_rows:
+            data[self.var+'Order'] = self.order
         if self.index is not None:
             data[self.var+'Index'] = self.index
             

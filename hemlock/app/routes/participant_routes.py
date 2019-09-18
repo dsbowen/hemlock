@@ -3,7 +3,7 @@
 from hemlock.app.factory import bp, db
 from hemlock.app.routes.participant_texts import *
 from hemlock.database.models import Participant, Page, Question
-from hemlock.database.private import Metadata
+from hemlock.database.private import DataStore
 
 from datetime import datetime, timedelta
 from flask import current_app, flash, Markup, redirect, render_template, request, url_for
@@ -47,7 +47,6 @@ def initialize_participant(meta):
     if current_user.is_authenticated:
         logout_user()
     part = Participant(start_navigation=current_app.start, meta=meta)
-    Metadata.query.first().data.append(meta)
     db.session.commit()
     login_user(part)
     
@@ -79,7 +78,7 @@ def is_screenout(meta):
 
 def is_duplicate(meta):
     """Look for a match between visitor metadata and previous participants"""
-    tracked_meta = Metadata.query.first().data
+    tracked_meta = DataStore.query.first().meta
     keys = current_app.duplicate_keys
     return match_found(visitor=meta, tracked=tracked_meta, keys=keys)
 

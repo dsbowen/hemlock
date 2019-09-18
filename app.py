@@ -5,6 +5,7 @@ from settings import settings
 
 from hemlock import create_app
 from hemlock.app import db
+from hemlock.database.private import DataStore
 
 app = create_app(settings)
 if __name__ == '__main__':
@@ -13,4 +14,6 @@ if __name__ == '__main__':
 @app.shell_context_processor
 def make_shell_context():
     db.create_all()
+    if not DataStore.query.first():
+        DataStore()
     return globals()

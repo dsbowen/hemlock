@@ -78,7 +78,9 @@ class DataFrame(MutableDict):
         """Remove data between start and end indices"""
         self._changed()
         for var in self.keys():
-            self[var] = self[var][:start] + self[var][end+1:]
+            modified_data = self[var][:start] + self[var][end:]
+            self[var] = Variable(self[var].all_rows)
+            self[var].add(modified_data)
     
     def pad(self):
         """Pad DataFrame so all Variables have the same number of rows"""

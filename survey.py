@@ -11,7 +11,8 @@ def Start(root=None):
     q = Question(p, qtype='single choice', text='ice cream 1', var='IceCream')
     c = Choice(q, text='Chocolate')
     c = Choice(q, text='Vanilla')
-    q = Question(p, qtype='single choice', text='ice cream 2', var='IceCream')
+    q = Question(
+        p, index=1, qtype='single choice', text='ice cream 2', var='IceCream')
     c = Choice(q, text='Strawberry')
     c = Choice(q, text='Cookies and Cream')
     

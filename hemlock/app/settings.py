@@ -48,7 +48,7 @@ default_settings = {
     'screenout_folder': 'screenouts',
     'screenout_keys': ['IPv4', 'workerId'],
     'static_folder': 'static',
-    'status_logger_period': '00:02:00',
+    'status_log_period': '00:02:00',
     'survey_template': 'default_survey.html',
     'template_folder': 'templates',
     'time_limit': None,
@@ -74,7 +74,7 @@ def get_settings(settings):
     to_list(settings, 'js')
     to_list(settings, 'screenout_keys')
     to_timedelta(settings, 'time_limit')
-    to_timedelta(settings, 'status_logger_period')
+    to_timedelta(settings, 'status_log_period')
     settings['password_hash'] = generate_password_hash(
         settings.pop('password'))
     cwd = os.getcwd()

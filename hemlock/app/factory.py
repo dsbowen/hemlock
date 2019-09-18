@@ -30,7 +30,7 @@ def create_app(settings):
     settings, static, templates = get_settings(settings)
     app = Flask(__name__, static_folder=static, template_folder=templates)
     [setattr(app, key, value) for key, value in settings.items()]
-    app.status_tracker = {'completed': 0, 'in progress': 0, 'timed out': 0}
+    app.current_status = {'completed': 0, 'in progress': 0, 'timed out': 0}
     app.config.from_object(Config)
     
     get_screenouts(app)
