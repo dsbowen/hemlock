@@ -10,10 +10,10 @@ from sqlalchemy_mutable import Mutable
 class Function(Mutable):
     @classmethod
     def coerce(cls, key, value):
-        if isinstance(value, Function):
+        if isinstance(value, cls):
             return value
         if value is None or callable(value):
-            return Function(value)
+            return cls(value)
         raise ValueError(
             'Function attribute must be assigned with callable or Function object')
             

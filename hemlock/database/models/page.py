@@ -33,12 +33,11 @@ post: run after data are recorded
 
 from hemlock.app import db
 from hemlock.database.private import BranchingBase
-from hemlock.database.types import Function, FunctionType
+from hemlock.database.types import Function, FunctionType, HtmlType
 from hemlock.database.models.question import Question
 
-from bs4 import BeautifulSoup
 from datetime import datetime
-from flask import current_app, Markup, request
+from flask import current_app, Markup, render_template, request
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import MutableListType
@@ -95,14 +94,14 @@ class Page(db.Model, BranchingBase):
         )
     
     _back = db.Column(db.Boolean)
-    _back_button = db.Column(db.Text)
+    back_button = db.Column(HtmlType)
     css = db.Column(MutableListType)
     _direction_from = db.Column(db.String(8))
     _direction_to = db.Column(db.String(8))
     _forward = db.Column(db.Boolean)
-    _forward_button = db.Column(db.Text)
+    forward_button = db.Column(HtmlType)
     js = db.Column(MutableListType)
-    question_html = db.Column(db.Text)
+    question_html = db.Column(HtmlType)
     survey_template = db.Column(db.Text)
     terminal = db.Column(db.Boolean)
     view_template = db.Column(db.Text)
@@ -114,14 +113,6 @@ class Page(db.Model, BranchingBase):
     @back.setter
     def back(self, back):
         self._back = back
-    
-    @property
-    def back_button(self):
-        return Markup(self._back_button)
-    
-    @back_button.setter
-    def back_button(self, back_button):
-        self._back_button = str(back_button)
     
     @property
     def direction_from(self):
@@ -152,14 +143,6 @@ class Page(db.Model, BranchingBase):
     @forward.setter
     def forward(self, forward):
         self._forward = forward
-        
-    @property
-    def forward_button(self):
-        return Markup(self._forward_button)
-    
-    @forward_button.setter
-    def forward_button(self, forward_button):
-        self._forward_button = str(forward_button)
     
     compile = db.Column(FunctionType)
     debug = db.Column(FunctionType)
@@ -225,15 +208,23 @@ class Page(db.Model, BranchingBase):
 
     def _compile_question_html(self):
         self.compile(object=self)
-        self.question_html = ''.join(
-            [q._compile_html() for q in self.questions])
+        self.question_html = Markup(''.join(
+            [q._compile_html() for q in self.questions]))
         self.start_time = datetime.utcnow()
         return self.question_html
         
+    def _render_html(self):
+        """Render html from survey template
+        
+        Compile question html if this has not been done already.
+        """
+        if self.question_html is None:
+            self._compile_question_html()
+        return render_template(self.survey_template, page=self)        
+        
     def view_html(self, direction_to='forward'):
         """View compiled html for debugging purposes"""
-        soup = BeautifulSoup(self._compile_question_html(), 'html.parser')
-        print(soup.prettify())
+        print(self._render_html())
         
     def _submit(self):
         """Operations executed on page submission

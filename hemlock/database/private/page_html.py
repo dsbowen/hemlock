@@ -1,18 +1,17 @@
-##############################################################################
-# Page Html model
-# by Dillon Bowen
-# last modified 09/06/2019
-##############################################################################
+"""Page html database model"""
 
-import numpy as np
-import requests
-import os
-from hemlock.factory import db
-from bs4 import BeautifulSoup
+from hemlock.app.factory import db
+from hemlock.database.types import HtmlType
+
 from base64 import b64encode
-from PIL import Image, ImageOps
-from io import BytesIO
+from bs4 import BeautifulSoup
+from flask import render_template
 from flask_login import current_user
+from io import BytesIO
+from PIL import Image, ImageOps
+import numpy as np
+import os
+import requests
 
 # Video aspect ratio
 ASPECT_RATIO = 16/9.0
@@ -37,13 +36,12 @@ Columns:
 class PageHtml(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
-    html = db.Column(db.String)
+    css = db.Column(db.PickleType)
+    html = db.Column(HtmlType)
     
-    # Store compiled html and add to participant
-    # preprocess the html
-    def __init__(self, html):
-        self.html = html
-        self.part = current_user
+    def __init__(self, page):
+        self.css = page.css
+        self.html = render_template(page.view_template, page=page)
         self.preprocess_html()
         
     # Preprocessing

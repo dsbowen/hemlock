@@ -79,11 +79,7 @@ class Participant(db.Model, UserMixin):
         questions.sort(key=lambda q: q.id)
         return questions
     
-    # _page_htmls = db.relationship(
-        # 'PageHtml',
-        # backref='part',
-        # lazy='dynamic'
-        # )
+    _page_htmls = db.relationship('PageHtml', backref='part', lazy='dynamic')
     
     g = db.Column(MutableDictType, default={})
     _completed = db.Column(db.Boolean, default=False)

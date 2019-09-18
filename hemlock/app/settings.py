@@ -4,23 +4,24 @@ time_limit and status_logger_period must be in 'hh:mm:ss' format.
 """
 
 from datetime import datetime, timedelta
+from flask import Markup
 from glob import glob
 from werkzeug.security import generate_password_hash
 import os
 import pandas as pd
 
 
-BACK_BUTTON = """
+BACK_BUTTON = Markup("""
     <button id="back-button" name="direction" type="submit" class="btn btn-outline-primary" style="float: left;" value="back"> 
     << 
     </button>
-"""
+""")
 
-FORWARD_BUTTON = """
+FORWARD_BUTTON = Markup("""
     <button id="forward-button" name="direction" type="submit" class="btn btn-outline-primary" style="float: right;" value="forward">
     >> 
     </button>
-"""
+""")
 
 def page_compile(page):
     """Calls question compile functions in index order"""

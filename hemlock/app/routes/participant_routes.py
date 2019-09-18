@@ -3,7 +3,7 @@
 from hemlock.app.factory import bp, db
 from hemlock.app.routes.participant_texts import *
 from hemlock.database.models import Participant, Page, Question
-from hemlock.database.private import DataStore
+from hemlock.database.private import DataStore, PageHtml
 
 from datetime import datetime, timedelta
 from flask import current_app, flash, Markup, redirect, render_template, request, url_for
@@ -64,10 +64,6 @@ def time_out(app, part_id):
         part = Participant.query.get(part_id)
         part.time_expired = True
         db.session.commit()
-        
-def render_survey_template(page, question_html):
-    return render_template(
-        page.survey_template, page=page, question_html=Markup(question_html))
 
 """Screenout and duplicate handling"""
 def is_screenout(meta):
@@ -106,7 +102,7 @@ def screenout():
     q = Question(p, text=SCREENOUT)
     db.session.delete(p)
     db.session.delete(q)
-    return render_survey_template(p, p._compile_question_html())
+    return p._render_html()
     
 @bp.route('/restart', methods=['GET','POST'])
 def restart():
@@ -125,7 +121,7 @@ def restart():
     q = Question(p, text=RESTART)
     db.session.delete(p)
     db.session.delete(q)
-    return render_survey_template(p, p._compile_question_html())
+    return p._render_html()
 
 """Main survey view function"""
 @bp.route('/survey', methods=['GET','POST'])
@@ -143,16 +139,14 @@ def survey():
         if request.method == 'POST':
             return post(part, page)
         question_html = page._compile_question_html()
-
-    # PageHtml(page_body)
+    PageHtml(page) # Store page html and css for viewing
     
     if page.terminal and not part.completed:
         part.update_end_time()
         part.completed = True
       
     db.session.commit()
-    return render_template(
-        page.survey_template, page=page, question_html=Markup(question_html))
+    return page._render_html()
     
 def post(part, page):
     """Function to execute on POST request
