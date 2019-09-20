@@ -218,7 +218,7 @@ class Page(db.Model, BranchingBase):
         
         Compile question html if this has not been done already.
         """
-        if self.question_html is None:
+        if self.question_html == 'None':
             self._compile_question_html()
         return render_template(self.survey_template, page=self)        
         

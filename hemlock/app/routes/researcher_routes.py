@@ -1,9 +1,55 @@
-##############################################################################
-# Researcher URL routes for Hemlock survey
-# by Dillon Bowen
-# last modified 08/30/2019
-##############################################################################
+"""Researcher routes"""
 
+from hemlock.app.factory import bp, db
+from hemlock.app.routes.researcher_texts import *
+from hemlock.database.models import Page, Question, Validator
+
+from flask import current_app, flash, redirect, request, session, url_for
+from functools import wraps
+from werkzeug.security import check_password_hash
+
+@bp.route('/login', methods=['GET','POST'])
+def login():
+    if request.method == 'POST':
+        login_page = Page.query.get(session['login_page_id'])
+        session['logged_in'] = login_page._submit() == 'forward'
+        if session['logged_in']:
+            requested = request.args.get('requested') or 'participants'
+            return redirect(url_for('hemlock.{}'.format(requested)))
+    else:
+        login_page = Page()
+        q = Question(login_page, qtype='free', text=PASSWORD_PROMPT)
+        Validator(q, validate=check_password)
+        session['login_page_id'] = login_page.id
+    db.session.commit()
+    return login_page._render_html()
+
+def check_password(question):
+    password = '' if question.response is None else question.response
+    if not check_password_hash(current_app.password_hash, password):
+        return PASSWORD_INCORRECT
+
+def researcher_login_required(func):
+    @wraps(func)
+    def login_requirement():
+        if 'logged_in' not in session or not session['logged_in']:
+            session.pop('_flashes', None)
+            flash(LOGIN_REQUIRED)
+            return redirect(url_for('hemlock.login', requested=func.__name__))
+        return func()
+    return login_requirement
+    
+@bp.route('/participants', methods=['GET','POST'])
+@researcher_login_required
+def participants():
+    return 'participants page'
+    
+@bp.route('/download', methods=['GET','POST'])
+@researcher_login_required
+def download():
+    return 'download'
+
+"""
 # hemlock database, application blueprint, and models
 from hemlock.factory import viewer, db, bp
 from hemlock.models import Participant, Page, Question
@@ -146,3 +192,4 @@ def get_response(data, filename):
     resp.headers['Content-Disposition'] = disposition
     resp.headers['Content-Type'] = 'text/csv'
     return resp
+"""

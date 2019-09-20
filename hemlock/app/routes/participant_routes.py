@@ -10,7 +10,6 @@ from flask_login import current_user, login_required, login_user, logout_user
 
 """Initial views and functions"""
 @bp.route('/')
-@bp.route('/index')
 def index():
     """Initial view function
     
