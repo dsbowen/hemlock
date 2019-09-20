@@ -9,7 +9,8 @@ def free_compiler(question):
     label = get_label(question)
     default = get_default(question.default)
     content = FREE_INPUT.format(qid=question.qid, default=default)
-    return QDIV.format(classes=classes, label=label, content=content)
+    return QDIV.format(
+        qid=question.qid, classes=classes, label=label, content=content)
 
 def get_default(default):
     if hasattr(default, 'value') and default.value is not None:

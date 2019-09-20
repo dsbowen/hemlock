@@ -15,7 +15,7 @@ def get_label(question):
 
 """Questions"""
 QDIV = '''
-    <div class="{classes}">
+    <div id="{qid}" class="{classes}">
     {label}
     {content}
     </div>

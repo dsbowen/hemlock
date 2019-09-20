@@ -6,13 +6,19 @@ from flask_login import current_user
     
 def Start(root=None):
     b = Branch()
-    p = Page(b, timer_var='v1', all_rows=True)
-    q = Question(p, qtype='free', text='name', var='Name', all_rows=True)
-    v = Validator(q, validate=require)
+    p = Page(b)
+    q = Question(p, qtype='single choice', text='test')
+    q.interval = Interval(func=random_number, seconds=2)
+    Choice(q, text='Yes')
+    Choice(q, text='No')
     
     p = Page(b, terminal=True)
     q = Question(p, text='goodbye moon')
     return b
+    
+from random import random
+def random_number(question):
+    question.text = str(random())
 
 def require(question):
     if question.response is None:

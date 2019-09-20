@@ -9,7 +9,8 @@ def single_choice_compiler(question):
     qlabel = get_label(question)
     content = ''.join([
         choice_div(question, choice) for choice in question.choices])
-    return QDIV.format(classes=classes, label=qlabel, content=content)
+    return QDIV.format(
+        qid=question.qid, classes=classes, label=qlabel, content=content)
     
 def choice_div(question, choice):
     """<div> tag for choice"""

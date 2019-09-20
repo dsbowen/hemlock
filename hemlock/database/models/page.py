@@ -36,6 +36,7 @@ from hemlock.database.private import BranchingBase
 from hemlock.database.types import Function, FunctionType, HtmlType
 from hemlock.database.models.question import Question
 
+from bs4 import BeautifulSoup
 from datetime import datetime
 from flask import current_app, Markup, render_template, request
 from flask_login import current_user
@@ -102,6 +103,7 @@ class Page(db.Model, BranchingBase):
     forward_button = db.Column(HtmlType)
     js = db.Column(MutableListType)
     question_html = db.Column(HtmlType)
+    question_js = db.Column(HtmlType)
     survey_template = db.Column(db.Text)
     terminal = db.Column(db.Boolean)
     view_template = db.Column(db.Text)
@@ -210,21 +212,28 @@ class Page(db.Model, BranchingBase):
         self.compile(object=self)
         self.question_html = Markup(''.join(
             [q._compile_html() for q in self.questions]))
+        self.question_js = Markup(''.join(
+            [q._compile_js() for q in self.questions]))
         self.start_time = datetime.utcnow()
-        return self.question_html
         
     def _render_html(self):
         """Render html from survey template
         
         Compile question html if this has not been done already.
         """
-        if self.question_html == 'None':
+        if self.question_html is None:
             self._compile_question_html()
         return render_template(self.survey_template, page=self)        
         
-    def view_html(self, direction_to='forward'):
+    def view_html(self):
         """View compiled html for debugging purposes"""
-        print(self._render_html())
+        soup = BeautifulSoup(self.question_html, 'html.parser')
+        print(soup.prettify())
+    
+    def view_js(self):
+        """View compiled javascript"""
+        soup = BeautifulSoup(self.question_js, 'html.parser')
+        print(soup.prettify())
         
     def _submit(self):
         """Operations executed on page submission

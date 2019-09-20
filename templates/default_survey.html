@@ -40,4 +40,5 @@
     {% for js_file in page.js %}
     <script type="text/javascript" src="{{ url_for('static', filename=js_file) }}"></script>
     {% endfor %}
+    {{ page.question_js }}
 {% endblock %}

@@ -5,8 +5,18 @@ from hemlock.database.models import Participant, Page, Question
 from hemlock.database.private import DataStore, PageHtml
 
 from datetime import datetime, timedelta
-from flask import current_app, flash, Markup, redirect, render_template, request, url_for
+from flask import current_app, flash, jsonify, Markup, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
+
+@bp.route('/_interval', methods=['POST'])
+def _interval():
+    print('interval')
+    print('question id is', request.form['question_id'])
+    q = Question.query.get(request.form['question_id'])
+    print('question is', q)
+    q.interval(object=q)
+    print(q._compile_html())
+    return jsonify({'html':Markup(q._compile_html())})
 
 """Initial views and functions"""
 @bp.route('/')

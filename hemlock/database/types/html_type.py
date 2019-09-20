@@ -11,7 +11,7 @@ class HtmlType(TypeDecorator):
     impl = Text
 
     def process_bind_param(self, value, dialect):
-        return str(value)
+        return str(value) if value is not None else None
     
     def process_result_value(self, value, dialect):
-        return Markup(value)
+        return Markup(value) if value is not None else None

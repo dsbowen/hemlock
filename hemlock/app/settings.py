@@ -24,6 +24,7 @@ default_settings = {
     'password': '',
     'question_compile': None,
     'question_debug': None,
+    'question_interval': None,
     'question_post': None,
     'restart_option': True,
     'restart_text': RESTART,
