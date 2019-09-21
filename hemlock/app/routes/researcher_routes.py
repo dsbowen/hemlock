@@ -3,6 +3,7 @@
 from hemlock.app.factory import bp, db
 from hemlock.app.routes.researcher_texts import *
 from hemlock.database.models import Page, Question, Validator
+from hemlock.database.private import DataStore
 
 from flask import current_app, flash, redirect, request, session, url_for
 from functools import wraps
@@ -42,7 +43,15 @@ def researcher_login_required(func):
 @bp.route('/participants', methods=['GET','POST'])
 @researcher_login_required
 def participants():
-    return 'participants page'
+    p = Page(forward=False)
+    p.js.append(current_app.socket_js)
+    p.js.append('js/participants.min.js')
+    q = Question(p)
+    q.text = PARTICIPANTS.format(**DataStore.query.first().current_status)
+    db.session.delete(p)
+    db.session.delete(q)
+    db.session.commit()
+    return p._render_html()
     
 @bp.route('/download', methods=['GET','POST'])
 @researcher_login_required

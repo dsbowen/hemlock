@@ -1,5 +1,10 @@
 """Application factory"""
 
+# TODO: js and css convert to url for or not automatically
+# current status should be tracked in datastore, not app
+# clean up participants page
+
+
 from hemlock.app.settings import get_settings, get_screenouts, Config
 # from hemlock.extensions import Viewer
 
@@ -8,6 +13,7 @@ from flask import Flask, Blueprint
 from flask_apscheduler import APScheduler
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
+from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 
 """Flask and Hemlock extensions"""
@@ -18,6 +24,7 @@ login_manager = LoginManager()
 login_manager.login_view = 'hemlock.index'
 login_manager.login_message = None
 scheduler = APScheduler()
+socketio = SocketIO()
 # viewer = Viewer()
 
 
@@ -30,7 +37,6 @@ def create_app(settings):
     settings, static, templates = get_settings(settings)
     app = Flask(__name__, static_folder=static, template_folder=templates)
     [setattr(app, key, value) for key, value in settings.items()]
-    app.current_status = {'completed': 0, 'in progress': 0, 'timed out': 0}
     app.config.from_object(Config)
     
     get_screenouts(app)
@@ -41,6 +47,7 @@ def create_app(settings):
     login_manager.init_app(app)
     scheduler.init_app(app)
     scheduler.start()
+    socketio.init_app(app)
     # viewer.init_app(app)
     
     return app

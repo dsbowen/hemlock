@@ -1,8 +1,9 @@
 flask
 flask-apscheduler
-flask-sqlalchemy
-flask-login
 flask-bootstrap4
+flask-login
+flask-socketio
+flask-sqlalchemy
 sqlalchemy
 sqlalchemy-mutable
 gunicorn

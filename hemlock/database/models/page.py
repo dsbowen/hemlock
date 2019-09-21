@@ -38,7 +38,7 @@ from hemlock.database.models.question import Question
 
 from bs4 import BeautifulSoup
 from datetime import datetime
-from flask import current_app, Markup, render_template, request
+from flask import current_app, Markup, render_template, request, url_for
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import MutableListType
@@ -103,7 +103,6 @@ class Page(db.Model, BranchingBase):
     forward_button = db.Column(HtmlType)
     js = db.Column(MutableListType)
     question_html = db.Column(HtmlType)
-    question_js = db.Column(HtmlType)
     survey_template = db.Column(db.Text)
     terminal = db.Column(db.Boolean)
     view_template = db.Column(db.Text)
@@ -212,8 +211,6 @@ class Page(db.Model, BranchingBase):
         self.compile(object=self)
         self.question_html = Markup(''.join(
             [q._compile_html() for q in self.questions]))
-        self.question_js = Markup(''.join(
-            [q._compile_js() for q in self.questions]))
         self.start_time = datetime.utcnow()
         
     def _render_html(self):
@@ -228,11 +225,6 @@ class Page(db.Model, BranchingBase):
     def view_html(self):
         """View compiled html for debugging purposes"""
         soup = BeautifulSoup(self.question_html, 'html.parser')
-        print(soup.prettify())
-    
-    def view_js(self):
-        """View compiled javascript"""
-        soup = BeautifulSoup(self.question_js, 'html.parser')
         print(soup.prettify())
         
     def _submit(self):

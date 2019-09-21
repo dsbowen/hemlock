@@ -1,19 +1,29 @@
 """Data store database model"""
 
-from hemlock.app.factory import db
+from hemlock.app.factory import db, socketio
 from hemlock.database.types import DataFrameType
 
 from datetime import datetime
-from flask import current_app
 from sqlalchemy_mutable import MutableDictType
 import pandas as pd
+
+STATUS = ['completed', 'in_progress', 'timed_out']
+DEFAULT_STATUS = {s: 0 for s in STATUS}
 
 
 class DataStore(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    _current_status = db.Column(MutableDictType, default=DEFAULT_STATUS)
     data = db.Column(DataFrameType, default={})
     meta = db.Column(DataFrameType, default={})
     status_log = db.Column(DataFrameType, default={})
+    
+    @property
+    def current_status(self):
+        """Add total Participants and time stamp to _current_status"""
+        current_status = self._current_status.copy()
+        current_status['total'] = sum([current_status[s] for s in STATUS])
+        return current_status
     
     @classmethod
     def pascal(cls, text):
@@ -27,15 +37,29 @@ class DataStore(db.Model):
         self.log_status()
     
     def log_status(self):
-        """Add time stamp and update status log"""
-        current_status = current_app.current_status.copy()
+        """Append current status to the status log"""
+        current_status = self.current_status
         current_status['time'] = datetime.utcnow()
         self.status_log.append(current_status)
+    
+    def update_status(self, part):
+        """Update current status
+        
+        Store Participant data on completion and time out.
+        """
+        if part.previous_status is not None:
+            self._current_status[part.previous_status] -= 1
+        self._current_status[part.status] += 1
+        socketio.emit(
+            'status-update', self.current_status, namespace='/socket_url')
+        if part.status in ['completed', 'timed_out']:
+            self.store_participant(part)
     
     def store_participant(self, part):
         """Store data for given Participant"""
         self.remove_participant(part)
         self.data.append(part.data)
+        part.updated = False
         
     def remove_participant(self, part):
         """Remove data for given Participant"""

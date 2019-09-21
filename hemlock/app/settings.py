@@ -31,6 +31,7 @@ default_settings = {
     'screenout_folder': 'screenouts',
     'screenout_keys': ['IPv4', 'workerId'],
     'screenout_text': SCREENOUT,
+    'socket_js': '//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js',
     'static_folder': 'static',
     'status_log_period': '00:02:00',
     'survey_template': 'default_survey.html',

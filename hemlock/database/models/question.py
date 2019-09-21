@@ -31,7 +31,7 @@ post: run after data are recorded
 
 from hemlock.app import db
 from hemlock.database.private import Base
-from hemlock.database.types import FunctionType, IntervalType
+from hemlock.database.types import FunctionType
 
 from bs4 import BeautifulSoup
 from flask import current_app
@@ -96,7 +96,6 @@ class Question(db.Model, Base):
     
     compile = db.Column(FunctionType)
     debug = db.Column(FunctionType)
-    interval = db.Column(IntervalType)
     post = db.Column(FunctionType)
     
     @property
@@ -177,32 +176,9 @@ class Question(db.Model, Base):
     def _compile_html(self):
         return self.html_compiler[self.qtype](self)
     
-    def _compile_js(self):
-        js_compiler = self.js_compiler.get(self.qtype)
-        if js_compiler is not None:
-            return js_compiler[self.qtype](self)
-        return """
-<script>
-$(document).ready( function() {{
-    setInterval( function() {{ 
-        $.post('/_interval', {{ 
-            question_id: '{id}' 
-        }}).done( function(response) {{
-            $('#{qid}').html(response['html'])
-        }});
-        }}, {milliseconds});
-}});
-</script>
-""".format(
-    id=self.id, qid=self.qid, milliseconds=self.interval.seconds*1000)
-    
     def view_html(self):
         """View compiled html for debugging purposes"""
         soup = BeautifulSoup(self._compile_html(), 'html.parser')
-        print(soup.prettify())
-    
-    def view_js(self):
-        soup = BeautifulSoup(self._compile_js(), 'html.parser')
         print(soup.prettify())
 
     def _record_response(self, response):

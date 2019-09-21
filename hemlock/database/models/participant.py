@@ -21,29 +21,22 @@ from hemlock.database.types import DataFrame
 from hemlock.database.models.branch import Branch
 
 from datetime import datetime
-from flask import current_app
 from flask_login import UserMixin
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import Mutable, MutableType, MutableDictType
 
 def send_data(func):
-    """Send data to app status tracker and DataStore
+    """Send data to the DataStore
     
-    Update the app's status tracker as a result of an update made to the
-    Participant. If the new status is completed or timed out, send data
-    to DataStore.
+    Begin by recording the Participant's previous status. If the status has
+    changed as a result of the update, register the change in the DataStore.
     """
     def status_update(part, update):
-        old_status = part.status
+        part.previous_status = part.status
         return_val = func(part, update)
-        status_changed = old_status != part.status
-        if not status_changed:
+        if part.previous_status == part.status:
             return return_val
-        current_app.current_status[old_status] -= 1
-        current_app.current_status[part.status] += 1
-        if part.status in ['completed', 'timed out']:
-            DataStore.query.first().store_participant(part)
-            part.updated = False
+        DataStore.query.first().update_status(part)
         return return_val
     return status_update
 
@@ -85,6 +78,7 @@ class Participant(db.Model, UserMixin):
     _completed = db.Column(db.Boolean, default=False)
     end_time = db.Column(db.DateTime)
     _meta = db.Column(MutableDictType, default={})
+    previous_status = db.Column(db.String(16))
     updated = db.Column(db.Boolean, default=True)
     start_time = db.Column(db.DateTime)
     _time_expired = db.Column(db.Boolean, default=False)
@@ -112,8 +106,8 @@ class Participant(db.Model, UserMixin):
         if self.completed:
             return 'completed'
         if self.time_expired:
-            return 'timed out'
-        return 'in progress'
+            return 'timed_out'
+        return 'in_progress'
     
     def __init__(self, start_navigation, meta={}):
         """Initialize Participant
@@ -123,7 +117,7 @@ class Participant(db.Model, UserMixin):
         """
         db.session.add(self)
         db.session.flush([self])
-        current_app.current_status[self.status] += 1
+        DataStore.query.first().update_status(self)
         
         self.end_time = self.start_time = datetime.utcnow()
         self.meta = meta.copy()
