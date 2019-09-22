@@ -6,7 +6,7 @@ flask-bootstrap4
 flask-login
 flask-socketio
 flask-sqlalchemy
-gunicorn
+gunicorn==18.0
 imgkit
 numpy
 pandas
