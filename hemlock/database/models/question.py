@@ -1,12 +1,27 @@
 """Question database model
 
+Each Question executes 6 tasks:
+
+1. Compile function: The Question executes a function immediately before its 
+html is compiled.
+2. Compile html: The Question compiles html for the client. This html will 
+be inserted into its Page's html when the Participant accesses it, along 
+with the html from other Questions on that Page.
+3. Record response: The Question records the Participant's response.
+4. Validate response: The Question checks whether the Participant's response 
+was valid by checking with each of its Validators.
+5. Record data: Having received a valid response, the Question records its 
+data. This is usually the raw response or a transformation thereof.
+6. Package data: The Question packages its data for insertion into the 
+DataStore.
+
 Relationships:
 
 branch: the branch to which this question belongs
 page: the page to which this question belongs
 choices: list of Choices (e.g. for single choice questions)
 selected_choices: list of Choices the Participant selected
-nonselected_choices: list of avaialble Choices the Participant did not select
+nonselected_choices: list of available Choices the Participant did not select
 validators: list of Validators (to validate Participant's response)
 
 Public (non-Function) Columns:
@@ -37,14 +52,14 @@ from bs4 import BeautifulSoup
 from flask import current_app
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy_mutable import Mutable, MutableType
-from sqlalchemy_mutable import MutableListType, MutableDictType
+from sqlalchemy_mutable import Mutable, MutableType, MutableListType, MutableDictType
 
-REGISTRATIONS = ['html_compiler', 'response_recorder', 'data_recorder']
+REGISTRATIONS = [
+    'html_compiler', 'response_recorder', 'data_recorder', 'data_packer']
 
 
 class Question(db.Model, Base):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)    
     @property
     def qid(self):
         return 'q{}'.format(self.id)
@@ -84,13 +99,13 @@ class Question(db.Model, Base):
         )
         
     all_rows = db.Column(db.Boolean)
-    data = db.Column(db.PickleType)
+    data = db.Column(MutableType)
     _default = db.Column(MutableType)
     error = db.Column(db.Text)
     init_default = db.Column(MutableType)
     order = db.Column(db.Integer)
     _qtype = db.Column(db.String)
-    response = db.Column(db.String)
+    response = db.Column(MutableType, default=Mutable())
     text = db.Column(db.Text)
     var = db.Column(db.Text)
     
@@ -120,14 +135,12 @@ class Question(db.Model, Base):
             )
         self._qtype = qtype
     
-    """
-    Register question types with html compilers, response recorders, and
-    data recorders
-    """
+    """Register question types"""
     html_compiler = {}
     js_compiler = {}
     response_recorder = {}
     data_recorder = {}
+    data_packer = {}
 
     @classmethod
     def register(cls, qtype, registration):
@@ -140,7 +153,7 @@ class Question(db.Model, Base):
     def __init__(
             self, page=None, branch=None, index=None, 
             choices=[], validators=[],
-            all_rows=False, data=None, default=Mutable(),
+            all_rows=False, data=Mutable(), default=Mutable(),
             qtype='text', text='', var=None,
             compile=None, debug=None, interval=None, post=None):
         
@@ -216,7 +229,8 @@ class Question(db.Model, Base):
         if self.var is None:
             return {}
     
-        data = {self.var: self.data}
+        packer = self.data_packer.get(self.qtype)
+        data = self._default_packer() if packer is None else packer(self)
         if not self.all_rows:
             data[self.var+'Order'] = self.order
         if self.index is not None:
@@ -226,3 +240,9 @@ class Question(db.Model, Base):
             data[''.join([self.var, c.label, 'Index'])] = c.index
             
         return data
+    
+    def _default_packer(self):
+        """Default data packer"""
+        if hasattr(self.data, 'value'):
+            return {self.var: self.data.value}
+        return {self.var: None}

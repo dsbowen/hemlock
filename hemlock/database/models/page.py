@@ -165,7 +165,8 @@ class Page(db.Model, BranchingBase):
         self.back_to = back_to
         self.forward_to = forward_to
         self.questions = questions
-        self.timer = Question(data=0, var=timer_var, all_rows=all_rows)
+        self.timer = Question(var=timer_var, all_rows=all_rows)
+        self.timer.data.value = 0
         
         self.back = back or current_app.back
         self.back_button = back_button or current_app.back_button
@@ -195,7 +196,7 @@ class Page(db.Model, BranchingBase):
         post = default_post
         
     def reset_timer(self):
-        self.timer.data = 0
+        self.timer.data.value = 0
 
     def valid(self):
         return all([q.error is None for q in self.questions])
@@ -239,7 +240,8 @@ class Page(db.Model, BranchingBase):
         """
         self._update_timer()
         self.direction_from = request.form['direction']
-        [q._record_response(request.form.get(q.qid)) for q in self.questions]
+        [q._record_response(request.form.getlist(q.qid)) 
+            for q in self.questions]
         
         if self.direction_from == 'back':
             return 'back'
@@ -255,7 +257,7 @@ class Page(db.Model, BranchingBase):
         if self.start_time is None:
             self.start_time = datetime.utcnow()
         delta = (datetime.utcnow() - self.start_time).total_seconds()
-        self.timer.data += delta
+        self.timer.data.value += delta
     
     def view_nav(self, indent):
         """Print self and next branch for debugging purposes"""

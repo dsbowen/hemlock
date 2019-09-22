@@ -19,5 +19,5 @@ def get_default(default):
 
 @Question.register(qtype='free', registration='response_recorder')
 def free_response(question, response):
-    response = None if response == '' else response
-    question.response = question.default.value = response
+    response = None if not response else response[0]
+    question.response.value = question.default.value = response

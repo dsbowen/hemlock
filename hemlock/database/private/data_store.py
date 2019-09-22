@@ -52,7 +52,6 @@ class DataStore(db.Model):
             self._current_status[part.previous_status] -= 1
         self._current_status[part.status] += 1
         current_status = json.dumps(self.current_status)
-        print('emitting json', current_status)
         socketio.emit('json', current_status, namespace='/participants-nsp')
         if part.status in ['completed', 'timed_out']:
             self.store_participant(part)
