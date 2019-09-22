@@ -5,6 +5,7 @@ from hemlock.database.types import DataFrameType
 
 from datetime import datetime
 from sqlalchemy_mutable import MutableDictType
+import json
 import pandas as pd
 
 STATUS = ['completed', 'in_progress', 'timed_out']
@@ -50,8 +51,9 @@ class DataStore(db.Model):
         if part.previous_status is not None:
             self._current_status[part.previous_status] -= 1
         self._current_status[part.status] += 1
-        socketio.emit(
-            'status-update', self.current_status, namespace='/socket_url')
+        current_status = json.dumps(self.current_status)
+        print('emitting json', current_status)
+        socketio.emit('json', current_status, namespace='/participants-nsp')
         if part.status in ['completed', 'timed_out']:
             self.store_participant(part)
     
