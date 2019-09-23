@@ -14,26 +14,19 @@ def get_label(question):
     error = '' if error is None else ERROR.format(error=error)
     return QLABEL.format(qid=question.qid, text=error+question.text)
 
-QDIV = '''
-    <div id="{qid}" class="{classes}">
-    {label}
-    {content}
-    </div>
-'''
+QDIV = """
+        <div id="{qid}" class="{classes}">{label}{content}
+        </div>"""
 
-ERROR = '''
-    <span style="color:red">{error}</span>
-'''
+ERROR = """<span style="color:red">{error}</span>"""
 
-QLABEL = '''
-    <label class="w-100" for="{qid}">
-    {text}
-    </label>
-'''
+QLABEL = """
+            <label class="w-100" for="{qid}">
+            {text}
+            </label>"""
 
-FREE_INPUT = '''
-    <input type="text" class="form-control" id="{qid}" name="{qid}" value="{default}">
-'''
+FREE_INPUT = """
+            <input type="text" class="form-control" id="{qid}" name="{qid}" value="{default}">"""
 
 """Choices"""
 def get_choice_content(question, choice_class, input_type):
@@ -61,19 +54,14 @@ def get_checked(default, choice):
         return 'checked'
     return ''
 
-CDIV = '''
-    <div class="{classes}">
-    {input}
-    {label}      
-    </div>
-'''
+CDIV = """
+            <div class="{classes}">{input}{label}      
+            </div>"""
 
-CHOICE_INPUT = '''
-    <input id="{cid}" value="{cid}" name="{qid}" class="custom-control-input" type="{type}" {checked}>
-    '''
+CHOICE_INPUT = """
+                <input id="{cid}" value="{cid}" name="{qid}" class="custom-control-input" type="{type}" {checked}>"""
 
-CHOICE_LABEL = '''
-    <label class="custom-control-label w-100 choice" for="{cid}">
-    {text}
-    </label>
-'''
+CHOICE_LABEL = """
+                <label class="custom-control-label w-100 choice" for="{cid}">
+                {text}
+                </label>"""

@@ -2,46 +2,50 @@
 
 {% extends 'bootstrap/base.html' %}
 
-{% block styles %}
-    {% for css_file in page.css %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename=css_file) }}">
-    {% endfor %}
-{% endblock %}
+{%- block styles -%}
+    {%- for css_file in page.css -%}
+        {%- if not css_file.startswith('/') -%}
+            {%- set css_file = url_for('static', filename=css_file) -%}
+        {% endif %}
+    <link rel="stylesheet" type="text/css" href="{{ css_file }}"/>
+    {%- endfor -%}
+{%- endblock -%}
 
-{% block content %}
-<div class="container h-100">
-<div class="row h-100 justify-content-center align-items-center">
-<form method="POST" class="submit-once col-12">
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-danger" style="text-align:center;">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
+{%- block content -%}
+    <div class="container h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+    <form method="POST" class="submit-once col-12">
+    
+    {%- with messages = get_flashed_messages() -%}
+    {%- if messages -%}
+    {%- for message in messages %}
+        <div class="alert alert-danger" style="text-align:center;">
+        {{ message }}
+        </div>
+    {% endfor -%}
+    {%- endif -%}
+    {%- endwith %}
+        <page id="{{ page.pid }}"/>
+        {{- page.question_html }}
+        <br/>
+        {%- if page.back -%}
+            {{- page.back_button -}}
+        {%- endif -%}
+        {%- if page.forward -%}
+            {{- page.forward_button -}}
+        {%- endif %}
+        <br style="line-height:3;"></br>
+    </form>
+    </div>
+    </div>
+{%- endblock -%}
 
-    <page id="{{ page.pid }}"/>
-    {{ page.question_html }}
-    <br/>
-    {% if page.back %}
-        {{ page.back_button }}
-    {% endif %}
-    {% if page.forward %}
-        {{ page.forward_button }}
-    {% endif %}
-    <br style="line-height:3;"></br>
-</form>   
-</div>
-</div>
-{% endblock %}
-
-{% block scripts %}
-    {{ super() }}
-    {% for js_file in page.js %}
-        {% if not js_file.startswith('//') %}
-            {% set js_file = url_for('static', filename=js_file) %}
+{%- block scripts -%}
+    {{- super() -}}
+    {%- for js_file in page.js -%}
+        {%- if not js_file.startswith('/') -%}
+            {%- set js_file = url_for('static', filename=js_file) -%}
         {% endif %}
     <script type="text/javascript" src="{{ js_file }}"></script>
-    {% endfor %}
-    {{ page.question_js }}
-{% endblock %}
+    {%- endfor -%}
+{%- endblock -%}

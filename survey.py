@@ -7,6 +7,9 @@ from flask_login import current_user
 def Start(root=None):
     b = Branch()
     p = Page(b)
+    q = Question(p, text='Intro')
+    
+    p = Page(b)
     q = Question(p, qtype='free', text='free response question')
     print('free id is', q.id)
     
