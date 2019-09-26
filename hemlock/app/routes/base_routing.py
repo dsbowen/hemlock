@@ -32,6 +32,7 @@ def create_researcher_navbar():
     navbar = Navbar(brand='Hemlock')
     Navitem(navbar, url='participants', label='Participants')
     Navitem(navbar, url='download', label='Download')
+    Navitem(navbar, url='logout', label='Logout')
     return navbar
 
 def log_current_status(app):

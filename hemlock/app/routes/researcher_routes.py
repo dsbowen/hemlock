@@ -66,6 +66,11 @@ def download():
     db.session.commit()
     return p._render_html()
 
+@bp.route('/logout')
+def logout():
+    session['logged_in'] = False
+    return redirect(url_for('hemlock.login'))
+
 """
 # hemlock database, application blueprint, and models
 from hemlock.factory import viewer, db, bp
