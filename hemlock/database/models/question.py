@@ -33,7 +33,7 @@ default: default response (Mutable object)
 error: error message
 init_default: initial default response. If changed, default can be reset to 
     its initial value with question.reset_default()
-qtype: Question type (must have a registered html compiler)
+type: Question type (must have a registered html compiler)
 text: Question text
 var: name of the variable to which this Question contributes data
 
@@ -165,7 +165,7 @@ class Question(db.Model, Base, MutableModelBase):
 
     def _record_response(self, response):
         """Record Participant response"""
-        response_recorder = self.response_recorder.get(self.qtype)
+        response_recorder = self.response_recorder.get(self.type)
         if response_recorder is not None:
             return response_recorder(self, response)
         self.response = response
@@ -183,7 +183,7 @@ class Question(db.Model, Base, MutableModelBase):
     
     def _record_data(self):
         """Record Question data"""
-        data_recorder = self.data_recorder.get(self.qtype)
+        data_recorder = self.data_recorder.get(self.type)
         if data_recorder is not None:
             return data_recorder(self)
         self.data = self.response
@@ -198,7 +198,7 @@ class Question(db.Model, Base, MutableModelBase):
         if self.var is None:
             return {}
     
-        packer = self.data_packer.get(self.qtype)
+        packer = self.data_packer.get(self.type)
         data = {self.var: self.data} if packer is None else packer(self)
         if not self.all_rows:
             data[self.var+'Order'] = self.order

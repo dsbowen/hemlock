@@ -1,7 +1,7 @@
 """Base routing functions"""
 
 from hemlock.app.factory import bp, db, login_manager
-from hemlock.database.models import Participant
+from hemlock.database.models import Participant, Navbar, Navitem
 from hemlock.database.private import DataStore
 
 from flask import current_app
@@ -19,12 +19,20 @@ def init_app():
     db.create_all()
     if not DataStore.query.first():
         DataStore()
+    if not Navbar.query.first():
+        create_researcher_navbar()
     db.session.commit()
     current_app.apscheduler.add_job(
         func=log_current_status, trigger='interval',
         seconds=current_app.status_log_period.seconds,
         args=[current_app._get_current_object()], id='log_status'
         )
+
+def create_researcher_navbar():
+    navbar = Navbar(brand='Hemlock')
+    Navitem(navbar, url='participants', label='Participants')
+    Navitem(navbar, url='download', label='Download')
+    return navbar
 
 def log_current_status(app):
     with app.app_context():

@@ -3,7 +3,7 @@
 from hemlock.app import db
 from hemlock.database.private import Base
 
-from flask import request, url_for 
+from flask import request
 
 
 class Navitem(db.Model, Base):
@@ -32,16 +32,17 @@ class Navitem(db.Model, Base):
         self._set_parent(nav, index, 'nav', 'navitems')
 
 
-DEFAULT_NAVITEM = """
-        <li class="nav-item {active}">
-            <a class="nav-link" href="{url}">{label}</a>
-        </li>"""
+DEFAULT_NAVITEM = (
+                """<li class="nav-item {active}">
+                    <a class="nav-link" href="{url}">{label}</a>
+                </li>"""
+)
 
 @Navitem.register(type='default', registration='html_compiler')
 def default_compiler(navitem):
     url = navitem._get_url()
     try:
-        url_rule = request.url_rule
+        url_rule = str(request.url_rule)
     except: # Excpetion will be called when running in shell
         url_rule = None
     active = 'active' if url == url_rule else ''

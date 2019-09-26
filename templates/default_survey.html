@@ -12,7 +12,9 @@
 {%- endblock -%}
 
 {%- block navbar %}
-{{- page.nav._compile_html() -}}
+    {%- if page.nav is not none -%}
+        {{- page.nav._compile_html() -}}
+    {%- endif -%}
 {%- endblock -%}
 
 {%- block content -%}

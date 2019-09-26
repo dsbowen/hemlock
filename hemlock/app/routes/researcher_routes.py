@@ -2,34 +2,13 @@
 
 from hemlock.app.factory import bp, db
 from hemlock.app.routes.researcher_texts import *
-from hemlock.database.models import Page, Question, Validator
+from hemlock.database.models import Navbar, Page, Question, Choice, Validator
 from hemlock.database.private import DataStore
 
 from flask import current_app, flash, Markup, redirect, request, session, url_for
 from functools import wraps
 from werkzeug.security import check_password_hash
 
-RESEARCHER_NAVBAR = Markup(
-"""
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">Hemlock</a>
-        
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{participants}">Participants</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-""".format(
-    participants='/participants'
-    )
-)
 
 @bp.route('/login', methods=['GET','POST'])
 def login():
@@ -40,8 +19,8 @@ def login():
             requested = request.args.get('requested') or 'participants'
             return redirect(url_for('hemlock.{}'.format(requested)))
     else:
-        login_page = Page(back=False)
-        q = Question(login_page, qtype='free', text=PASSWORD_PROMPT)
+        login_page = Page(back=False, forward_button=LOGIN_BUTTON)
+        q = Question(login_page, type='free', text=PASSWORD_PROMPT)
         Validator(q, validate=check_password)
         session['login_page_id'] = login_page.id
     db.session.commit()
@@ -65,21 +44,27 @@ def researcher_login_required(func):
 @bp.route('/participants', methods=['GET','POST'])
 @researcher_login_required
 def participants():
-    p = Page(back=False, forward=False)
-    # p.navbar = RESEARCHER_NAVBAR
+    p = Page(nav=Navbar.query.first(), back=False, forward=False)
     p.js.append(current_app.socket_js)
     p.js.append('js/participants.min.js')
     q = Question(p)
     q.text = PARTICIPANTS.format(**DataStore.query.first().current_status)
     db.session.delete(p)
-    db.session.delete(q)
     db.session.commit()
     return p._render_html()
     
 @bp.route('/download', methods=['GET','POST'])
 @researcher_login_required
 def download():
-    return 'download'
+    p = Page(nav=Navbar.query.first(), back=False)
+    p.forward_button=DOWNLOAD_BUTTON
+    q = Question(p, type='multi choice', text=DOWNLOAD)
+    Choice(q, text="Metadata")
+    Choice(q, text="Status log")
+    Choice(q, text="Dataframe")
+    db.session.delete(p)
+    db.session.commit()
+    return p._render_html()
 
 """
 # hemlock database, application blueprint, and models
@@ -183,7 +168,7 @@ def survey_view():
         error = None
         
     p = Page()
-    q = Question(p, '<p>Participant ID</p>', qtype='free')
+    q = Question(p, '<p>Participant ID</p>', type='free')
     q.error(error)
     return render_template('page.html', page=Markup(p._compile_html()))
 
@@ -209,7 +194,7 @@ def password():
         return redirect(url_for(requested_url, password=password))
         
     p = Page()
-    Question(p, 'Password', qtype='free')
+    Question(p, 'Password', type='free')
     return render_template('page.html', page=Markup(p._compile_html()))
     
 # Create response csv from data dictionary in format {'key':[values]}

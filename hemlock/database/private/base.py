@@ -7,6 +7,7 @@ inserting new branches to a Participant's branch_stack.
 from hemlock.app.factory import db
 
 from bs4 import BeautifulSoup
+from flask import url_for
 
 
 class Base():
@@ -58,7 +59,10 @@ class Base():
             return '#'
         if self.url.startswith('http'):
             return self.url
-        return url_for(self.url)
+        try:
+            return url_for('hemlock.'+self.url)
+        except: # Exception raised in shell
+            return '#' 
 
 
 class BranchingBase(Base):

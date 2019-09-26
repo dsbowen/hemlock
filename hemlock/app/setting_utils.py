@@ -16,11 +16,14 @@ BACK_BUTTON = Markup("""
         </button>"""
 )
 
-FORWARD_BUTTON = Markup("""
-        <button id="forward-button" name="direction" type="submit" class="btn btn-outline-primary" style="float: right;" value="forward">
-        >> 
+FORWARD_BUTTON_GENERIC = (
+        """<button id="forward-button" name="direction" type="submit" class="btn btn-outline-primary {classes}" style="float: right;" value="forward">
+        {text}
         </button>"""
 )
+
+FORWARD_BUTTON = Markup(
+    FORWARD_BUTTON_GENERIC.format(classes='', text='>>'))
 
 def page_compile(page):
     """Calls question compile functions in index order"""

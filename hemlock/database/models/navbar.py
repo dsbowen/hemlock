@@ -34,8 +34,8 @@ class Navbar(db.Model, Base):
         self.type = type
 
 
-DEFAULT_NAVBAR = """
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+DEFAULT_NAVBAR = (
+    """<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         {brand}
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -46,11 +46,13 @@ DEFAULT_NAVBAR = """
             </ul>
         </div>
     </nav>"""
+)
         
-BRAND = """
-        <a class="navbar-brand" href="{url}">
+BRAND = (
+        """<a class="navbar-brand" href="{url}">
         {brand}
         </a>"""
+)
 
 @Navbar.register(type='default', registration='html_compiler')
 def default_compiler(navbar):
