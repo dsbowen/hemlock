@@ -5,9 +5,31 @@ from hemlock.app.routes.researcher_texts import *
 from hemlock.database.models import Page, Question, Validator
 from hemlock.database.private import DataStore
 
-from flask import current_app, flash, redirect, request, session, url_for
+from flask import current_app, flash, Markup, redirect, request, session, url_for
 from functools import wraps
 from werkzeug.security import check_password_hash
+
+RESEARCHER_NAVBAR = Markup(
+"""
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Hemlock</a>
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{participants}">Participants</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+""".format(
+    participants='/participants'
+    )
+)
 
 @bp.route('/login', methods=['GET','POST'])
 def login():
@@ -18,7 +40,7 @@ def login():
             requested = request.args.get('requested') or 'participants'
             return redirect(url_for('hemlock.{}'.format(requested)))
     else:
-        login_page = Page()
+        login_page = Page(back=False)
         q = Question(login_page, qtype='free', text=PASSWORD_PROMPT)
         Validator(q, validate=check_password)
         session['login_page_id'] = login_page.id
@@ -43,7 +65,8 @@ def researcher_login_required(func):
 @bp.route('/participants', methods=['GET','POST'])
 @researcher_login_required
 def participants():
-    p = Page(forward=False)
+    p = Page(back=False, forward=False)
+    # p.navbar = RESEARCHER_NAVBAR
     p.js.append(current_app.socket_js)
     p.js.append('js/participants.min.js')
     q = Question(p)

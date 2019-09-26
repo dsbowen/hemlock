@@ -4,8 +4,35 @@ Defines generic Base class and BranchingBase with methods for growing and
 inserting new branches to a Participant's branch_stack.
 """
 
+from hemlock.app.factory import db
+
+from bs4 import BeautifulSoup
+
+
 class Base():
-    """Generic base class for public database models"""  
+    """Generic base class for public database models"""
+    @property
+    def type(self):
+        return self._type
+    
+    @type.setter
+    def type(self, type):
+        assert type in self.html_compiler, (
+            'Type does not have an associated html compiler'
+            )
+        self._type = type
+        
+    @classmethod
+    def register(cls, type, registration):
+        assert registration in cls.REGISTRATIONS
+        def register(func):
+            getattr(cls, registration)[type] = func
+            return func
+        return register
+    
+    def __init__(self):
+        db.session.add(self)
+        db.session.flush([self])
     
     def _set_parent(self, parent, index, parent_attr, child_attr):
         """Set model parent
@@ -17,6 +44,21 @@ class Base():
             self.__setattr__(parent_attr, parent)
         else:
             getattr(parent, child_attr).insert(index, self)
+    
+    def _compile_html(self):
+        return self.html_compiler[self.type](self)
+    
+    def view_html(self):
+        """View compiled html for debugging purposes"""
+        soup = BeautifulSoup(self._compile_html(), 'html.parser')
+        print(soup.prettify())
+    
+    def _get_url(self):
+        if self.url is None:
+            return '#'
+        if self.url.startswith('http'):
+            return self.url
+        return url_for(self.url)
 
 
 class BranchingBase(Base):

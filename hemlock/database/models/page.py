@@ -79,6 +79,8 @@ class Page(db.Model, BranchingBase):
         uselist=False, 
         foreign_keys='Page._forward_to_id')
     
+    _navbar_id = db.Column(db.Integer, db.ForeignKey('navbar.id'))
+    
     questions = db.relationship(
         'Question', 
         backref='page',
@@ -152,22 +154,22 @@ class Page(db.Model, BranchingBase):
     
     def __init__(
             self, branch=None, index=None, back_to=None, forward_to=None, 
-            questions=[], timer_var=None, all_rows=False,
+            nav=None, questions=[], timer_var=None, all_rows=False,
             back=None, back_button=None, css=None, 
             forward=True, forward_button=None, js=None,
             survey_template=None, terminal=False, view_template=None, 
             compile=None, debug=None, navigate=None, post=None):
         
-        db.session.add(self)
-        db.session.flush([self])
+        BranchingBase.__init__(self)
         
         self.set_branch(branch, index)
         self.back_to = back_to
         self.forward_to = forward_to
+        self.nav = nav or current_app.nav
         self.questions = questions
         self.timer = Question(all_rows=all_rows, data=0, var=timer_var)
         
-        self.back = back or current_app.back
+        self.back = current_app.back if back is None else back
         self.back_button = back_button or current_app.back_button
         self.css = css or current_app.css
         self.forward = forward
@@ -182,7 +184,7 @@ class Page(db.Model, BranchingBase):
         self.navigate = navigate
         self.post = post or current_app.page_post
 
-    def set_branch(self, branch, index):
+    def set_branch(self, branch, index=None):
         self._set_parent(branch, index, 'branch', 'pages')
     
     def blank(self):

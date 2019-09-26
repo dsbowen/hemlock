@@ -48,14 +48,10 @@ from hemlock.app import db
 from hemlock.database.private import Base
 from hemlock.database.types import FunctionType
 
-from bs4 import BeautifulSoup
 from flask import current_app
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import Mutable, MutableType, MutableModelBase, MutableListType, MutableDictType
-
-REGISTRATIONS = [
-    'html_compiler', 'response_recorder', 'data_recorder', 'data_packer']
 
 
 class Question(db.Model, Base, MutableModelBase):
@@ -104,7 +100,7 @@ class Question(db.Model, Base, MutableModelBase):
     error = db.Column(db.Text)
     init_default = db.Column(MutableType)
     order = db.Column(db.Integer)
-    _qtype = db.Column(db.String)
+    _type = db.Column(db.String)
     response = db.Column(MutableType, default=Mutable())
     text = db.Column(db.Text)
     var = db.Column(db.Text)
@@ -124,41 +120,22 @@ class Question(db.Model, Base, MutableModelBase):
             self.init_default = default
         self._default = default
     
-    @property
-    def qtype(self):
-        return self._qtype
-    
-    @qtype.setter
-    def qtype(self, qtype):
-        assert qtype in self.html_compiler, (
-            'Question type does not have an associated html compiler'
-            )
-        self._qtype = qtype
-    
     """Register question types"""
+    REGISTRATIONS = [
+        'html_compiler', 'response_recorder', 'data_recorder', 'data_packer']
     html_compiler = {}
     js_compiler = {}
     response_recorder = {}
     data_recorder = {}
     data_packer = {}
-
-    @classmethod
-    def register(cls, qtype, registration):
-        assert registration in REGISTRATIONS
-        def register(func):
-            getattr(cls, registration)[qtype] = func
-            return func
-        return register
     
     def __init__(
             self, page=None, branch=None, index=None, 
             choices=[], validators=[],
             all_rows=False, data=None, default=None,
-            qtype='text', text='', var=None,
+            type='text', text='', var=None,
             compile=None, debug=None, interval=None, post=None):
-        
-        db.session.add(self)
-        db.session.flush([self])
+        Base.__init__(self)
         
         self.set_branch(branch, index)
         self.set_page(page, index)
@@ -168,7 +145,7 @@ class Question(db.Model, Base, MutableModelBase):
         self.all_rows = all_rows
         self.data = data
         self.default = default
-        self.qtype = qtype
+        self.type = type
         self.text = text
         self.var = var
         
@@ -185,14 +162,6 @@ class Question(db.Model, Base, MutableModelBase):
         
     def reset_default(self):
         self.default = self.init_default
-    
-    def _compile_html(self):
-        return self.html_compiler[self.qtype](self)
-    
-    def view_html(self):
-        """View compiled html for debugging purposes"""
-        soup = BeautifulSoup(self._compile_html(), 'html.parser')
-        print(soup.prettify())
 
     def _record_response(self, response):
         """Record Participant response"""

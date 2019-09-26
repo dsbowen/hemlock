@@ -3,12 +3,12 @@
 from hemlock.database.models import Question
 from hemlock.question_types.html_texts import *
 
-@Question.register(qtype='single choice', registration='html_compiler')
+@Question.register(type='single choice', registration='html_compiler')
 def single_choice_compiler(question):
     return get_choice_qdiv(
         question, choice_class=['custom-radio'], input_type='radio')
 
-@Question.register(qtype='single choice', registration='response_recorder')
+@Question.register(type='single choice', registration='response_recorder')
 def single_choice_response(question, choice_cid):
     """Record response for a single choice question type
     
@@ -31,7 +31,7 @@ def single_choice_response(question, choice_cid):
     question.nonselected_choices = [
         c for c in question.choices if c != selected]
 
-@Question.register(qtype='single choice', registration='data_recorder')
+@Question.register(type='single choice', registration='data_recorder')
 def single_choice_data(question):
     response = question.response
     question.data = None if response is None else response.value

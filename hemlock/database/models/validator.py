@@ -23,8 +23,7 @@ class Validator(db.Model, Base):
     validate = db.Column(FunctionType)
     
     def __init__(self, question=None, index=None, validate=None):
-        db.session.add(self)
-        db.session.flush([self])
+        Base.__init__(self)
         self.set_question(question, index)
         self.validate = validate
     

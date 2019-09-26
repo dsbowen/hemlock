@@ -18,6 +18,7 @@ default_settings = {
     'css': ['css/bootstrap.min.css', 'css/default.min.css'],
     'forward_button': FORWARD_BUTTON,
     'js': 'js/default.min.js',
+    'nav': None,
     'page_compile': page_compile,
     'page_debug': None,
     'page_post': page_post,

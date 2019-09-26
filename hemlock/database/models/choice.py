@@ -34,9 +34,7 @@ class Choice(db.Model, Base):
             self, question=None, index=None,
             text='', value=None, label=None,
             debug=Function()):
-        
-        db.session.add(self)
-        db.session.flush([self])
+        Base.__init__(self)
         
         self.set_question(question, index)
         self.set_all(text)

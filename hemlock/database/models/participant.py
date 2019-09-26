@@ -16,7 +16,7 @@ status: in progress, completed, or timed out
 updated: indicates Participant data has been updated since last store
 """
 from hemlock.app.factory import db
-from hemlock.database.private import DataStore
+from hemlock.database.private import Base, DataStore
 from hemlock.database.types import DataFrame
 from hemlock.database.models.branch import Branch
 
@@ -115,8 +115,7 @@ class Participant(db.Model, UserMixin):
         Sets up the global dictionary g and metadata. Then initializes the
         root branch.
         """
-        db.session.add(self)
-        db.session.flush([self])
+        Base.__init__(self)
         ds = DataStore.query.first()
         ds.meta.append(meta)
         ds.update_status(self)

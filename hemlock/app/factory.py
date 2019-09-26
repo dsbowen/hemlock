@@ -1,10 +1,5 @@
 """Application factory"""
 
-# TODO: js and css convert to url for or not automatically
-# current status should be tracked in datastore, not app
-# clean up participants page
-
-
 from hemlock.app.settings import get_settings, get_screenouts, Config
 # from hemlock.extensions import Viewer
 
@@ -26,7 +21,6 @@ login_manager.login_message = None
 scheduler = APScheduler()
 socketio = SocketIO()
 # viewer = Viewer()
-
 
 def create_app(settings):
     """Application factory

@@ -6,24 +6,24 @@ from flask_login import current_user
     
 def Start(root=None):
     b = Branch()
-    p = Page(b)
+    n = Navbar(brand='Hello World')
+    i = Navitem(n, label='FontAwesome', url='https://fontawesome.com/icons?d=gallery&s=duotone')
+    
+    p = Page(b, nav=n)
     q = Question(p, text='Intro')
     
     p = Page(b)
-    q = Question(p, var='free', qtype='free', text='free response question')
-    print('free id is', q.id)
+    q = Question(p, var='free', type='free', text='free response question')
     
     q = Question(
-        p, var='single', qtype='single choice', text='single choice question')
+        p, var='single', type='single choice', text='single choice question')
     Choice(q, text='Yes')
     Choice(q, text='No')
-    print('single id is', q.id)
     
     q = Question(
-        p, var='multi', qtype='multi choice', text='multi choice question')
+        p, var='multi', type='multi choice', text='multi choice question')
     Choice(q, text='Yes')
     Choice(q, text='No')
-    print('multi id is', q.id)
     
     p = Page(b, terminal=True)
     q = Question(p, text='goodbye moon')

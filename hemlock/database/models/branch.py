@@ -89,8 +89,7 @@ class Branch(db.Model, BranchingBase):
     _isroot = db.Column(db.Boolean)
 
     def __init__(self, pages=[], embedded=[], navigate=None):
-        db.session.add(self)
-        db.session.flush([self])
+        BranchingBase.__init__(self)
         
         self.pages = pages
         self.embedded = embedded
