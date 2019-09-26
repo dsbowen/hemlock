@@ -52,13 +52,13 @@ from bs4 import BeautifulSoup
 from flask import current_app
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy_mutable import Mutable, MutableType, MutableListType, MutableDictType
+from sqlalchemy_mutable import Mutable, MutableType, MutableModelBase, MutableListType, MutableDictType
 
 REGISTRATIONS = [
     'html_compiler', 'response_recorder', 'data_recorder', 'data_packer']
 
 
-class Question(db.Model, Base):
+class Question(db.Model, Base, MutableModelBase):
     id = db.Column(db.Integer, primary_key=True)    
     @property
     def qid(self):
@@ -153,7 +153,7 @@ class Question(db.Model, Base):
     def __init__(
             self, page=None, branch=None, index=None, 
             choices=[], validators=[],
-            all_rows=False, data=Mutable(), default=Mutable(),
+            all_rows=False, data=None, default=None,
             qtype='text', text='', var=None,
             compile=None, debug=None, interval=None, post=None):
         
@@ -230,7 +230,7 @@ class Question(db.Model, Base):
             return {}
     
         packer = self.data_packer.get(self.qtype)
-        data = self._default_packer() if packer is None else packer(self)
+        data = {self.var: self.data} if packer is None else packer(self)
         if not self.all_rows:
             data[self.var+'Order'] = self.order
         if self.index is not None:
@@ -240,9 +240,3 @@ class Question(db.Model, Base):
             data[''.join([self.var, c.label, 'Index'])] = c.index
             
         return data
-    
-    def _default_packer(self):
-        """Default data packer"""
-        if hasattr(self.data, 'value'):
-            return {self.var: self.data.value}
-        return {self.var: None}

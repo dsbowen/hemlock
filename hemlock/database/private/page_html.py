@@ -5,7 +5,7 @@ in the researcher dashboard.
 """
 
 from hemlock.app.factory import db
-from hemlock.database.types import HtmlType
+from hemlock.database.types import MarkupType
 
 from base64 import b64encode
 from bs4 import BeautifulSoup
@@ -33,7 +33,7 @@ class PageHtml(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     css = db.Column(db.PickleType)
-    html = db.Column(HtmlType)
+    html = db.Column(MarkupType)
     
     def __init__(self, page):
         self.css = page.css

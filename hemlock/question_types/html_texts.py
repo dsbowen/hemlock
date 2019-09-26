@@ -29,6 +29,14 @@ FREE_INPUT = """
             <input type="text" class="form-control" id="{qid}" name="{qid}" value="{default}">"""
 
 """Choices"""
+def get_choice_qdiv(question, choice_class, input_type):
+    """Get question <div> for choice questions"""
+    classes = get_classes(question)
+    qlabel = get_label(question)
+    content = get_choice_content(question, choice_class, input_type)
+    return QDIV.format(
+        qid=question.qid, classes=classes, label=qlabel, content=content)
+
 def get_choice_content(question, choice_class, input_type):
     """Get the content of a choice question"""
     return ''.join([choice_div(choice, choice_class, input_type) 
@@ -49,10 +57,14 @@ def get_choice_classes(classes):
     return "custom-control "+' '.join(classes)
 
 def get_checked(default, choice):
-    """Determine whether choice is the default (checked)"""
-    if hasattr(default, 'choices') and choice in default.choices:
-        return 'checked'
-    return ''
+    """Determine whether choice is the default (checked)
+    
+    For multi choice, default is a list of choices. For single choice, 
+    default is a choice.
+    """
+    if isinstance(default, list):
+        return 'checked' if choice in default else ''
+    return 'checked' if choice == default else ''
 
 CDIV = """
             <div class="{classes}">{input}{label}      

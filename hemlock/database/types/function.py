@@ -15,10 +15,13 @@ class Function(Mutable):
         if value is None or callable(value):
             return cls(value)
         raise ValueError(
-            'Function attribute must be assigned with callable or Function object')
-            
+            'Function attribute must be assigned with callable or Function object'
+            )
+        
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls)
+        
     def __init__(self, func=None, args=[], kwargs={}):
-        super().__init__()
         self.func = func
         self.args = args
         self.kwargs = kwargs

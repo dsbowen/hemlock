@@ -1,4 +1,4 @@
-"""DataFrame column type and object"""
+"""DataFrame mutable object and column type"""
 
 from sqlalchemy import PickleType
 from sqlalchemy_mutable import MutableList, MutableDict
@@ -9,7 +9,7 @@ class Variable(MutableList):
         """
         all_rows indicates that all rows belonging to this variable should be the same.
         """
-        super().__init__()
+        self._python_type = None
         self.all_rows = all_rows
         
     def add(self, entry):

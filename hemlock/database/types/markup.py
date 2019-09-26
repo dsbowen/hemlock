@@ -1,4 +1,4 @@
-"""Html database type
+"""Markup database type
 
 Converts to string on bind. Returns Markup on process result.
 """
@@ -7,7 +7,7 @@ from flask import Markup
 from sqlalchemy.types import Text, TypeDecorator
 
 
-class HtmlType(TypeDecorator):
+class MarkupType(TypeDecorator):
     impl = Text
 
     def process_bind_param(self, value, dialect):

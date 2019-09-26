@@ -23,7 +23,7 @@ from hemlock.database.models.branch import Branch
 from datetime import datetime
 from flask_login import UserMixin
 from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy_mutable import Mutable, MutableType, MutableDictType
+from sqlalchemy_mutable import MutableDictType
 
 def send_data(func):
     """Send data to the DataStore
@@ -117,11 +117,12 @@ class Participant(db.Model, UserMixin):
         """
         db.session.add(self)
         db.session.flush([self])
-        DataStore.query.first().update_status(self)
+        ds = DataStore.query.first()
+        ds.meta.append(meta)
+        ds.update_status(self)
         
         self.end_time = self.start_time = datetime.utcnow()
         self.meta = meta.copy()
-        DataStore.query.first().meta.append(meta)
         
         self.current_branch = root = start_navigation()
         self.branch_stack.append(root)

@@ -33,7 +33,7 @@ post: run after data are recorded
 
 from hemlock.app import db
 from hemlock.database.private import BranchingBase
-from hemlock.database.types import Function, FunctionType, HtmlType
+from hemlock.database.types import Function, FunctionType, MarkupType
 from hemlock.database.models.question import Question
 
 from bs4 import BeautifulSoup
@@ -95,14 +95,14 @@ class Page(db.Model, BranchingBase):
         )
     
     _back = db.Column(db.Boolean)
-    back_button = db.Column(HtmlType)
+    back_button = db.Column(MarkupType)
     css = db.Column(MutableListType)
     _direction_from = db.Column(db.String(8))
     _direction_to = db.Column(db.String(8))
     _forward = db.Column(db.Boolean)
-    forward_button = db.Column(HtmlType)
+    forward_button = db.Column(MarkupType)
     js = db.Column(MutableListType)
-    question_html = db.Column(HtmlType)
+    question_html = db.Column(MarkupType)
     survey_template = db.Column(db.Text)
     terminal = db.Column(db.Boolean)
     view_template = db.Column(db.Text)
@@ -165,8 +165,7 @@ class Page(db.Model, BranchingBase):
         self.back_to = back_to
         self.forward_to = forward_to
         self.questions = questions
-        self.timer = Question(var=timer_var, all_rows=all_rows)
-        self.timer.data.value = 0
+        self.timer = Question(all_rows=all_rows, data=0, var=timer_var)
         
         self.back = back or current_app.back
         self.back_button = back_button or current_app.back_button
@@ -196,7 +195,7 @@ class Page(db.Model, BranchingBase):
         post = default_post
         
     def reset_timer(self):
-        self.timer.data.value = 0
+        self.timer.data = 0
 
     def valid(self):
         return all([q.error is None for q in self.questions])
@@ -257,7 +256,7 @@ class Page(db.Model, BranchingBase):
         if self.start_time is None:
             self.start_time = datetime.utcnow()
         delta = (datetime.utcnow() - self.start_time).total_seconds()
-        self.timer.data.value += delta
+        self.timer.data += delta
     
     def view_nav(self, indent):
         """Print self and next branch for debugging purposes"""
