@@ -1,9 +1,4 @@
-/*****************************************************************************
-Default css file
-by Dillon Bowen
-created 07/27/2019
-last modified 07/31/2019
-*****************************************************************************/
+/* Default css file */
 
 /* Set body and html to viewport width */
 body, html {
@@ -28,11 +23,14 @@ div.error {
     border-radius: 3px;
     background-clip: padding-box;
 }
-.choice-hover {
+input:hover + label {
     background-color: lightgray;
 }
-input[type="radio"]:checked + label {
+input:checked + label {
     background-color: darkgray;
+}
+input[type="checkbox"]:checked:hover + label {
+    background-color: #BEBEBE;
 }
 
 /* Object alignment */

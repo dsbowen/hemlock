@@ -31,4 +31,6 @@ def multi_choice_data(question):
 @Question.register(qtype='multi choice', registration='data_packer')
 def multi_choice_pack(question):
     var = question.var
+    if question.data is None:
+        return {var+choice.value: None for choice in question.choices}
     return {var+key: question.data[key] for key in question.data.keys()}

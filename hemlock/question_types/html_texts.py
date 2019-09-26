@@ -33,28 +33,20 @@ def get_choice_qdiv(question, choice_class, input_type):
     """Get question <div> for choice questions"""
     classes = get_classes(question)
     qlabel = get_label(question)
-    content = get_choice_content(question, choice_class, input_type)
+    content = ''.join([choice_div(choice, choice_class, input_type) 
+        for choice in question.choices])
     return QDIV.format(
         qid=question.qid, classes=classes, label=qlabel, content=content)
-
-def get_choice_content(question, choice_class, input_type):
-    """Get the content of a choice question"""
-    return ''.join([choice_div(choice, choice_class, input_type) 
-        for choice in question.choices])
     
 def choice_div(choice, choice_classes, input_type):
     """<div> tag for choice"""
     question = choice.question
-    classes = get_choice_classes(choice_classes)
+    classes = 'custom-control '+' '.join(choice_classes)
     checked = get_checked(question.default, choice)
     input = CHOICE_INPUT.format(
         cid=choice.cid, qid=question.qid, type=input_type, checked=checked)
     label = CHOICE_LABEL.format(cid=choice.cid, text=choice.text)
     return CDIV.format(classes=classes, input=input, label=label)
-
-def get_choice_classes(classes):
-    """Add custom-control to choice classes"""
-    return "custom-control "+' '.join(classes)
 
 def get_checked(default, choice):
     """Determine whether choice is the default (checked)
@@ -63,7 +55,8 @@ def get_checked(default, choice):
     default is a choice.
     """
     if isinstance(default, list):
-        return 'checked' if choice in default else ''
+        default = [choice.id for choice in default]
+        return 'checked' if choice.id in default else ''
     return 'checked' if choice == default else ''
 
 CDIV = """
