@@ -1,37 +1,27 @@
 """Base classes for public database models
 
-Defines generic Base class and BranchingBase with methods for growing and
-inserting new branches to a Participant's branch_stack.
+Base is a generic base class for all Hemlock models. 
+
+BranchingBase contains methods for growing and inserting new branches to a 
+Participant's branch_stack. 
+
+CompileBase contains convenience methods for models which compile html.
 """
 
 from hemlock.app.factory import db
 
 from bs4 import BeautifulSoup
-from flask import url_for
+from flask import Markup
 
 
 class Base():
-    """Generic base class for public database models"""
     @property
-    def type(self):
-        return self._type
-    
-    @type.setter
-    def type(self, type):
-        assert type in self.html_compiler, (
-            'Type does not have an associated html compiler'
-            )
-        self._type = type
-        
-    @classmethod
-    def register(cls, type, registration):
-        assert registration in cls.REGISTRATIONS
-        def register(func):
-            getattr(cls, registration)[type] = func
-            return func
-        return register
+    def model_id(self):
+        """ID for distinguishing models"""
+        return type(self).__name__+'-'+str(self.id)
     
     def __init__(self, *args, **kwargs):
+        """Add and flush all models on construction"""
         db.session.add(self)
         db.session.flush([self])
         super().__init__(*args, **kwargs)
@@ -46,24 +36,6 @@ class Base():
             self.__setattr__(parent_attr, parent)
         else:
             getattr(parent, child_attr).insert(index, self)
-    
-    def _compile_html(self):
-        return self.html_compiler[self.type](self)
-    
-    def view_html(self):
-        """View compiled html for debugging purposes"""
-        soup = BeautifulSoup(self._compile_html(), 'html.parser')
-        print(soup.prettify())
-    
-    def _get_url(self):
-        if self.url is None:
-            return '#'
-        if self.url.startswith('http'):
-            return self.url
-        try:
-            return url_for('hemlock.'+self.url)
-        except: # Exception raised in shell
-            return '#' 
 
 
 class BranchingBase(Base):
@@ -98,3 +70,22 @@ class BranchingBase(Base):
         next_branch.origin_page = self if isinstance(self, Page) else None
         next_branch.current_page = next_branch.start_page
         return next_branch
+
+
+class CompileBase(Base):
+    def render(self, html=None):
+        """Return Markup of compiled html"""
+        return Markup(self._get_pretty_soup(html))
+    
+    def view_html(self, html=None):
+        """View compiled html"""
+        print(self._get_pretty_soup(html))
+    
+    def _get_pretty_soup(self, html=None):
+        """Get and prettify compiled html
+        
+        CompileBase expects Models which inherit it to have a compile_html() method. The compile_html() method returns raw html.
+        """
+        html = self.compile_html() if html is None else html
+        soup = BeautifulSoup(html, 'html.parser')
+        return(soup.prettify())

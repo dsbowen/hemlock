@@ -15,6 +15,7 @@ meta: dictionary of Participant metadata
 status: in progress, completed, or timed out
 updated: indicates Participant data has been updated since last store
 """
+
 from hemlock.app.factory import db
 from hemlock.database.private import Base, DataStore
 from hemlock.database.types import DataFrame
@@ -157,8 +158,7 @@ class Participant(UserMixin, Base, db.Model):
         questions = self.questions
         df = DataFrame()
         df.add(data=self.meta, all_rows=True)
-        [df.add(data=q._package_data(), all_rows=q.all_rows) 
-            for q in questions]
+        [df.add(data=q.pack_data(), all_rows=q.all_rows) for q in questions]
         df.pad()
         return df
     

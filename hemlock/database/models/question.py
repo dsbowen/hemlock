@@ -12,7 +12,7 @@ with the html from other Questions on that Page.
 was valid by checking with each of its Validators.
 5. Record data: Having received a valid response, the Question records its 
 data. This is usually the raw response or a transformation thereof.
-6. Package data: The Question packages its data for insertion into the 
+6. Pack data: The Question packages its data for insertion into the 
 DataStore.
 
 Relationships:
@@ -33,7 +33,6 @@ default: default response (Mutable object)
 error: error message
 init_default: initial default response. If changed, default can be reset to 
     its initial value with question.reset_default()
-type: Question type (must have a registered html compiler)
 text: Question text
 var: name of the variable to which this Question contributes data
 
@@ -45,7 +44,7 @@ post: run after data are recorded
 """
 
 from hemlock.app import db
-from hemlock.database.private import Base
+from hemlock.database.private import CompileBase
 from hemlock.database.types import FunctionType
 
 from flask import current_app
@@ -54,11 +53,13 @@ from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import Mutable, MutableType, MutableModelBase, MutableListType, MutableDictType
 
 
-class Question(MutableModelBase, Base, db.Model):
-    id = db.Column(db.Integer, primary_key=True)    
-    @property
-    def qid(self):
-        return 'q{}'.format(self.id)
+class Question(MutableModelBase, CompileBase, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(50))
+    __mapper_args__ = {
+        'polymorphic_identity': 'question',
+        'polymorphic_on': type
+        }
     
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
@@ -100,8 +101,7 @@ class Question(MutableModelBase, Base, db.Model):
     error = db.Column(db.Text)
     init_default = db.Column(MutableType)
     order = db.Column(db.Integer)
-    _type = db.Column(db.String)
-    response = db.Column(MutableType, default=Mutable())
+    response = db.Column(MutableType)
     text = db.Column(db.Text)
     var = db.Column(db.Text)
     
@@ -120,21 +120,11 @@ class Question(MutableModelBase, Base, db.Model):
             self.init_default = default
         self._default = default
     
-    """Register question types"""
-    REGISTRATIONS = [
-        'html_compiler', 'response_recorder', 'data_recorder', 'data_packer']
-    html_compiler = {}
-    js_compiler = {}
-    response_recorder = {}
-    data_recorder = {}
-    data_packer = {}
-    
     def __init__(
             self, page=None, branch=None, index=None, 
             choices=[], validators=[],
-            all_rows=False, data=None, default=None,
-            type='text', text='', var=None,
-            compile=None, debug=None, interval=None, post=None):
+            all_rows=False, data=None, default=None, text=None, var=None,
+            compile=None, debug=None, post=None):
         self.set_branch(branch, index)
         self.set_page(page, index)
         self.choices = choices
@@ -143,13 +133,11 @@ class Question(MutableModelBase, Base, db.Model):
         self.all_rows = all_rows
         self.data = data
         self.default = default
-        self.type = type
         self.text = text
         self.var = var
         
         self.compile = compile or current_app.question_compile
         self.debug = debug or current_app.question_debug
-        self.interval = interval or current_app.question_interval
         self.post = post or current_app.question_post
         
         super().__init__()
@@ -163,14 +151,10 @@ class Question(MutableModelBase, Base, db.Model):
     def reset_default(self):
         self.default = self.init_default
 
-    def _record_response(self, response):
-        """Record Participant response"""
-        response_recorder = self.response_recorder.get(self.type)
-        if response_recorder is not None:
-            return response_recorder(self, response)
+    def record_response(self, response):
         self.response = response
         
-    def _validate(self):
+    def validate(self):
         """Validate Participant response
         
         Keep the error message associated with the first failed Validator.
@@ -181,31 +165,31 @@ class Question(MutableModelBase, Base, db.Model):
                 return False
         return True
     
-    def _record_data(self):
-        """Record Question data"""
-        data_recorder = self.data_recorder.get(self.type)
-        if data_recorder is not None:
-            return data_recorder(self)
+    def record_data(self):
         self.data = self.response
         
-    def _package_data(self):
-        """Package data for storing in DataStore
+    def pack_data(self, data=None):
+        """Pack data for storing in DataStore
         
         Note: <var>Index is the index of the object; its order within its
         Branch, Page, or Question. <var>Order is the order of the Question
         relative to other Questions with the same variable.
+        
+        The optional `data` argument is prepacked data from the question type.
         """
         if self.var is None:
             return {}
-    
-        packer = self.data_packer.get(self.type)
-        data = {self.var: self.data} if packer is None else packer(self)
+        data = {self.var: self.data} if data is None else data
         if not self.all_rows:
             data[self.var+'Order'] = self.order
         if self.index is not None:
             data[self.var+'Index'] = self.index
-            
         for c in self.choices:
             data[''.join([self.var, c.label, 'Index'])] = c.index
-            
         return data
+    
+        
+class Text(Question):
+    id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
+    
+    __mapper_args__ = {'polymorphic_identity': 'text'}

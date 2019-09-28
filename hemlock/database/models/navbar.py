@@ -3,7 +3,6 @@
 from hemlock.app import db
 from hemlock.database.private import Base
 
-from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_nav import BrandMixin, DropdownitemMixin, NavbarMixin, NavitemMixin
 
 

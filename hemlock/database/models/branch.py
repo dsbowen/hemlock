@@ -7,7 +7,7 @@ origin_branch: Branch from which this Branch originated
 next_branch: Branch originating from this Branch
 origin_page: Page from which this Branch originated
 pages: queue of Pages to be displayed
-embedded: set of embedded data Questions
+embedded: list of embedded data Questions
 
 Functions:
 

@@ -16,6 +16,7 @@ default_settings = {
     'back_button': BACK_BUTTON,
     'duplicate_keys': ['IPv4', 'workerId'],
     'css': ['css/bootstrap.min.css', 'css/default.min.css'],
+    'forward': True,
     'forward_button': FORWARD_BUTTON,
     'js': 'js/default.min.js',
     'nav': None,

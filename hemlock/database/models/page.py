@@ -32,7 +32,7 @@ post: run after data are recorded
 """
 
 from hemlock.app import db
-from hemlock.database.private import BranchingBase
+from hemlock.database.private import BranchingBase, CompileBase
 from hemlock.database.types import Function, FunctionType, MarkupType
 from hemlock.database.models.question import Question
 
@@ -46,11 +46,8 @@ from sqlalchemy_mutable import MutableListType
 DIRECTIONS = ['back', 'forward', 'invalid', None]
 
 
-class Page(BranchingBase, db.Model):
+class Page(BranchingBase, CompileBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    @property
-    def pid(self):
-        return 'p{}'.format(self.id)
     
     @property
     def part(self):
@@ -71,13 +68,15 @@ class Page(BranchingBase, db.Model):
     back_to = db.relationship(
         'Page', 
         uselist=False, 
-        foreign_keys='Page._back_to_id')
+        foreign_keys='Page._back_to_id'
+        )
         
     _forward_to_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     forward_to = db.relationship(
         'Page', 
         uselist=False, 
-        foreign_keys='Page._forward_to_id')
+        foreign_keys='Page._forward_to_id'
+        )
     
     _navbar_id = db.Column(db.Integer, db.ForeignKey('navbar.id'))
     
@@ -158,10 +157,7 @@ class Page(BranchingBase, db.Model):
             back=None, back_button=None, css=None, 
             forward=True, forward_button=None, js=None,
             survey_template=None, terminal=False, view_template=None, 
-            compile=None, debug=None, navigate=None, post=None):
-        
-        BranchingBase.__init__(self)
-        
+            compile=None, debug=None, navigate=None, post=None):        
         self.set_branch(branch, index)
         self.back_to = back_to
         self.forward_to = forward_to
@@ -169,10 +165,10 @@ class Page(BranchingBase, db.Model):
         self.questions = questions
         self.timer = Question(all_rows=all_rows, data=0, var=timer_var)
         
-        self.back = current_app.back if back is None else back
+        self.back = back if back is not None else current_app.back
         self.back_button = back_button or current_app.back_button
         self.css = css or current_app.css
-        self.forward = forward
+        self.forward = forward if forward is not None else current_app.forward
         self.forward_button = forward_button or current_app.forward_button
         self.js = js or current_app.js
         self.survey_template = survey_template or current_app.survey_template
@@ -183,11 +179,13 @@ class Page(BranchingBase, db.Model):
         self.debug = debug or current_app.page_debug
         self.navigate = navigate
         self.post = post or current_app.page_post
+        
+        super().__init__()
 
     def set_branch(self, branch, index=None):
         self._set_parent(branch, index, 'branch', 'pages')
     
-    def blank(self):
+    def is_blank(self):
         return all([q.response is None for q in self.questions])
         
     def reset_compile(self):
@@ -199,7 +197,7 @@ class Page(BranchingBase, db.Model):
     def reset_timer(self):
         self.timer.data = 0
 
-    def valid(self):
+    def is_valid(self):
         return all([q.error is None for q in self.questions])
     
     def first_page(self):
@@ -209,25 +207,21 @@ class Page(BranchingBase, db.Model):
             and self.index == 0
             )
 
-    def _compile_question_html(self):
+    def compile_html(self):
+        """Compile question html"""
         self.compile(object=self)
-        self.question_html = Markup(''.join(
-            [q._compile_html() for q in self.questions]))
+        question_html = ''.join([q.compile_html() for q in self.questions])
         self.start_time = datetime.utcnow()
-        
-    def _render_html(self):
+        return question_html
+    
+    def render_template(self, recompile=True):
         """Render html from survey template
         
         Compile question html if this has not been done already.
         """
-        if self.question_html is None:
-            self._compile_question_html()
+        if self.question_html is None or recompile:
+            self.question_html = self.render()
         return render_template(self.survey_template, page=self)        
-        
-    def view_html(self):
-        """View compiled html for debugging purposes"""
-        soup = BeautifulSoup(self.question_html, 'html.parser')
-        print(soup.prettify())
         
     def _submit(self):
         """Operations executed on page submission
@@ -241,15 +235,15 @@ class Page(BranchingBase, db.Model):
         """
         self._update_timer()
         self.direction_from = request.form['direction']
-        [q._record_response(request.form.getlist(q.qid)) 
+        [q.record_response(request.form.getlist(q.qid)) 
             for q in self.questions]
         
         if self.direction_from == 'back':
             return 'back'
-        if not all([q._validate() for q in self.questions]):
+        if not all([q.validate() for q in self.questions]):
             self.direction_from = 'invalid'
             return 'invalid'
-        [q._record_data() for q in self.questions]
+        [q.record_data() for q in self.questions]
         self.post(object=self)
         # self.direction_from is 'forward' unless changed in post function
         return self.direction_from 

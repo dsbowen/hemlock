@@ -11,12 +11,11 @@ from hemlock.app import db
 from hemlock.database.private import Base
 from hemlock.database.types import Function, FunctionType
 
+from sqlalchemy_mutable import MutableType
+
 
 class Choice(Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    @property
-    def cid(self):
-        return 'c{}'.format(self.id)
     
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     index = db.Column(db.Integer)
@@ -26,14 +25,13 @@ class Choice(Base, db.Model):
     _nonselected_index = db.Column(db.Integer)
     
     text = db.Column(db.Text)
-    value = db.Column(db.PickleType)
     label = db.Column(db.Text)
+    value = db.Column(MutableType)
     debug = db.Column(FunctionType)
     
     def __init__(
             self, question=None, index=None,
-            text='', value=None, label=None,
-            debug=Function()):
+            text=None, label=None, value=None, debug=None):
         Base.__init__(self)
         
         self.set_question(question, index)
@@ -47,4 +45,7 @@ class Choice(Base, db.Model):
         
     def set_all(self, text):
         """Set text, value, and label to the same value"""
-        self.text = self.value = self.label = text
+        self.text = self.label = self.value = text
+    
+    def compile_html(self):
+        pass
