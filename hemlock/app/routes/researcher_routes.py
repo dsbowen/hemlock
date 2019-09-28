@@ -41,10 +41,13 @@ def researcher_login_required(func):
         return func()
     return login_requirement
     
+def researcher_navbar():
+    return Navbar.query.filter_by(name='researcher_navbar').first()
+    
 @bp.route('/participants', methods=['GET','POST'])
 @researcher_login_required
 def participants():
-    p = Page(nav=Navbar.query.first(), back=False, forward=False)
+    p = Page(nav=researcher_navbar(), back=False, forward=False)
     p.js.append(current_app.socket_js)
     p.js.append('js/participants.min.js')
     q = Question(p)
@@ -56,7 +59,7 @@ def participants():
 @bp.route('/download', methods=['GET','POST'])
 @researcher_login_required
 def download():
-    p = Page(nav=Navbar.query.first(), back=False)
+    p = Page(nav=researcher_navbar(), back=False)
     p.forward_button=DOWNLOAD_BUTTON
     q = Question(p, type='multi choice', text=DOWNLOAD)
     Choice(q, text="Metadata")

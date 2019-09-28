@@ -41,7 +41,7 @@ def send_data(func):
     return status_update
 
 
-class Participant(db.Model, UserMixin):
+class Participant(UserMixin, Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     branch_stack = db.relationship(
@@ -114,8 +114,7 @@ class Participant(db.Model, UserMixin):
         
         Sets up the global dictionary g and metadata. Then initializes the
         root branch.
-        """
-        Base.__init__(self)
+        """        
         ds = DataStore.query.first()
         ds.meta.append(meta)
         ds.update_status(self)
@@ -127,6 +126,8 @@ class Participant(db.Model, UserMixin):
         self.branch_stack.append(root)
         root.current_page = root.start_page
         root._isroot = True
+        
+        super().__init__()
 
     def update_end_time(self):
         self.end_time = datetime.utcnow()

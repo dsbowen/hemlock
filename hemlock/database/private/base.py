@@ -31,9 +31,10 @@ class Base():
             return func
         return register
     
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         db.session.add(self)
         db.session.flush([self])
+        super().__init__(*args, **kwargs)
     
     def _set_parent(self, parent, index, parent_attr, child_attr):
         """Set model parent

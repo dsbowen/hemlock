@@ -46,7 +46,7 @@ from sqlalchemy_mutable import MutableListType
 DIRECTIONS = ['back', 'forward', 'invalid', None]
 
 
-class Page(db.Model, BranchingBase):
+class Page(BranchingBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     @property
     def pid(self):

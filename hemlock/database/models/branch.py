@@ -22,7 +22,7 @@ from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
 
 
-class Branch(db.Model, BranchingBase):
+class Branch(BranchingBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
@@ -88,13 +88,12 @@ class Branch(db.Model, BranchingBase):
     navigate = db.Column(FunctionType)
     _isroot = db.Column(db.Boolean)
 
-    def __init__(self, pages=[], embedded=[], navigate=None):
-        BranchingBase.__init__(self)
-        
+    def __init__(self, pages=[], embedded=[], navigate=None):       
         self.pages = pages
         self.embedded = embedded
         self.navigate = navigate
         self._isroot = False
+        super().__init__()
         
     def _forward(self):
         """Advance forward to the next page in the queue"""

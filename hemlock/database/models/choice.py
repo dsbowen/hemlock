@@ -12,7 +12,7 @@ from hemlock.database.private import Base
 from hemlock.database.types import Function, FunctionType
 
 
-class Choice(db.Model, Base):
+class Choice(Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     @property
     def cid(self):

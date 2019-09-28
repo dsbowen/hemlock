@@ -17,6 +17,4 @@ def make_shell_context():
     db.create_all()
     if not DataStore.query.first():
         DataStore()
-    if not Navbar.query.first():
-        create_researcher_navbar()
     return globals()

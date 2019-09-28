@@ -17,3 +17,4 @@ requests
 selenium
 sqlalchemy
 sqlalchemy-mutable
+sqlalchemy-nav

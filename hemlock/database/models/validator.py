@@ -15,7 +15,7 @@ from hemlock.database.private import Base
 from hemlock.database.types import Function, FunctionType
 
 
-class Validator(db.Model, Base):
+class Validator(Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
@@ -23,9 +23,9 @@ class Validator(db.Model, Base):
     validate = db.Column(FunctionType)
     
     def __init__(self, question=None, index=None, validate=None):
-        Base.__init__(self)
         self.set_question(question, index)
         self.validate = validate
+        super().__init__()
     
     def set_question(self, question, index=None):
         self._set_parent(question, index, 'question', 'validators')

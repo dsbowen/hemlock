@@ -54,7 +54,7 @@ from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import Mutable, MutableType, MutableModelBase, MutableListType, MutableDictType
 
 
-class Question(db.Model, Base, MutableModelBase):
+class Question(MutableModelBase, Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)    
     @property
     def qid(self):
@@ -135,8 +135,6 @@ class Question(db.Model, Base, MutableModelBase):
             all_rows=False, data=None, default=None,
             type='text', text='', var=None,
             compile=None, debug=None, interval=None, post=None):
-        Base.__init__(self)
-        
         self.set_branch(branch, index)
         self.set_page(page, index)
         self.choices = choices
@@ -153,6 +151,8 @@ class Question(db.Model, Base, MutableModelBase):
         self.debug = debug or current_app.question_debug
         self.interval = interval or current_app.question_interval
         self.post = post or current_app.question_post
+        
+        super().__init__()
     
     def set_branch(self, branch, index=None):
         self._set_parent(branch, index, 'branch', 'embedded')

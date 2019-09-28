@@ -6,10 +6,8 @@ from flask_login import current_user
     
 def Start(root=None):
     b = Branch()
-    n = Navbar(brand='Hello World')
-    i = Navitem(n, label='FontAwesome', url='https://fontawesome.com/icons?d=gallery&s=duotone')
     
-    p = Page(b, nav=n)
+    p = Page(b)
     q = Question(p, text='Intro')
     
     p = Page(b)
