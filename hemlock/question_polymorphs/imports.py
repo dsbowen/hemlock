@@ -1,4 +1,7 @@
-"""Html texts for Hemlock native question types"""
+"""Question polymorph imports"""
+
+from hemlock.app.factory import db
+from hemlock.database.models import Question
 
 """Question"""
 def get_classes(question):
@@ -12,21 +15,31 @@ def get_label(question):
     """Get question label"""
     error = question.error
     error = '' if error is None else ERROR.format(error=error)
-    return QLABEL.format(qid=question.qid, text=error+question.text)
+    text = question.text if question.text is not None else ''
+    return QLABEL.format(id=question.model_id, text=error+text)
 
 QDIV = """
-        <div id="{qid}" class="{classes}">{label}{content}
-        </div>"""
+<div id="{id}" class="{classes}">
+    {label}
+    {content}
+</div>
+"""
 
-ERROR = """<span style="color:red">{error}</span>"""
+ERROR = """
+<span style="color:red">
+    {error}
+</span>
+"""
 
 QLABEL = """
-            <label class="w-100" for="{qid}">
-            {text}
-            </label>"""
+<label class="w-100" for="{id}">
+    {text}
+</label>
+"""
 
 FREE_INPUT = """
-            <input type="text" class="form-control" id="{qid}" name="{qid}" value="{default}">"""
+<input type="text" class="form-control" id="{id}" name="{id}" value="{default}">
+"""
 
 """Choices"""
 def get_choice_qdiv(question, choice_class, input_type):

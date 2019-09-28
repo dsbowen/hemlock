@@ -74,18 +74,10 @@ class BranchingBase(Base):
 
 class CompileBase(Base):
     def render(self, html=None):
-        """Return Markup of compiled html"""
-        return Markup(self._get_pretty_soup(html))
-    
-    def view_html(self, html=None):
-        """View compiled html"""
-        print(self._get_pretty_soup(html))
-    
-    def _get_pretty_soup(self, html=None):
         """Get and prettify compiled html
         
         CompileBase expects Models which inherit it to have a compile_html() method. The compile_html() method returns raw html.
         """
         html = self.compile_html() if html is None else html
         soup = BeautifulSoup(html, 'html.parser')
-        return(soup.prettify())
+        return soup.prettify()

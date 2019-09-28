@@ -1,7 +1,8 @@
 """Routes for experiment Participants"""
 
 from hemlock.app.factory import bp, db
-from hemlock.database.models import Participant, Page, Question
+from hemlock.database.models import Participant, Page
+from hemlock.question_polymorphs import Text
 from hemlock.database.private import DataStore, PageHtml
 
 from datetime import datetime, timedelta
@@ -97,10 +98,10 @@ def match_found(visitor, tracked, keys):
 @bp.route('/screenout')
 def screenout():
     p = Page(forward=False)
-    q = Question(p, text=current_app.screenout_text)
+    q = Text(p, text=current_app.screenout_text)
     db.session.delete(p)
     db.session.delete(q)
-    return p._render_html()
+    return p.compile_html()
     
 @bp.route('/restart', methods=['GET','POST'])
 def restart():
@@ -116,10 +117,10 @@ def restart():
         return redirect(url_for('hemlock.survey'))
         
     p = Page(back=True)
-    q = Question(p, text=current_app.restart_text)
+    q = Text(p, text=current_app.restart_text)
     db.session.delete(p)
     db.session.delete(q)
-    return p._render_html()
+    return p.compile_html()
 
 """Main survey view function"""
 @bp.route('/survey', methods=['GET','POST'])
@@ -131,12 +132,8 @@ def survey():
     
     if part.time_expired:
         flash(current_app.time_expired_text)
-        # Do not re-compile question html
-        question_html = page.question_html or '' 
-    else:
-        if request.method == 'POST':
-            return post(part, page)
-        question_html = page._compile_question_html()
+    elif request.method == 'POST':
+        return post(part, page)
     PageHtml(page) # Store page html and css for viewing
     
     if page.terminal and not part.completed:
@@ -144,7 +141,8 @@ def survey():
         part.completed = True
       
     db.session.commit()
-    return page._render_html()
+    # Do not recompile if time has expired
+    return page.compile_html(recompile = not part.time_expired)
     
 def post(part, page):
     """Function to execute on POST request

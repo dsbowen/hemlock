@@ -36,7 +36,6 @@ from hemlock.database.private import BranchingBase, CompileBase
 from hemlock.database.types import Function, FunctionType, MarkupType
 from hemlock.database.models.question import Question
 
-from bs4 import BeautifulSoup
 from datetime import datetime
 from flask import current_app, Markup, render_template, request, url_for
 from flask_login import current_user
@@ -182,6 +181,7 @@ class Page(BranchingBase, CompileBase, db.Model):
         
         super().__init__()
 
+    """API methods"""
     def set_branch(self, branch, index=None):
         self._set_parent(branch, index, 'branch', 'pages')
     
@@ -207,21 +207,15 @@ class Page(BranchingBase, CompileBase, db.Model):
             and self.index == 0
             )
 
-    def compile_html(self):
+    """Methods executed during study"""
+    def compile_html(self, recompile=True):
         """Compile question html"""
-        self.compile(object=self)
-        question_html = ''.join([q.compile_html() for q in self.questions])
-        self.start_time = datetime.utcnow()
-        return question_html
-    
-    def render_template(self, recompile=True):
-        """Render html from survey template
-        
-        Compile question html if this has not been done already.
-        """
         if self.question_html is None or recompile:
-            self.question_html = self.render()
-        return render_template(self.survey_template, page=self)        
+            self.compile(object=self)
+            self.question_html = Markup(''.join(
+                [q.compile_html() for q in self.questions]))
+        self.start_time = datetime.utcnow()
+        return self.render(render_template(self.survey_template, page=self))
         
     def _submit(self):
         """Operations executed on page submission
@@ -235,7 +229,7 @@ class Page(BranchingBase, CompileBase, db.Model):
         """
         self._update_timer()
         self.direction_from = request.form['direction']
-        [q.record_response(request.form.getlist(q.qid)) 
+        [q.record_response(request.form.getlist(q.model_id)) 
             for q in self.questions]
         
         if self.direction_from == 'back':

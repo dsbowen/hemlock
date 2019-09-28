@@ -2,7 +2,8 @@
 
 from hemlock.app.factory import bp, db
 from hemlock.app.routes.researcher_texts import *
-from hemlock.database.models import Navbar, Page, Question, Choice, Validator
+from hemlock.database.models import Navbar, Page, Choice, Validator
+from hemlock.question_polymorphs import Text
 from hemlock.database.private import DataStore
 
 from flask import current_app, flash, Markup, redirect, request, session, url_for
@@ -20,11 +21,11 @@ def login():
             return redirect(url_for('hemlock.{}'.format(requested)))
     else:
         login_page = Page(back=False, forward_button=LOGIN_BUTTON)
-        q = Question(login_page, type='free', text=PASSWORD_PROMPT)
+        q = Free(login_page, text=PASSWORD_PROMPT)
         Validator(q, validate=check_password)
         session['login_page_id'] = login_page.id
     db.session.commit()
-    return login_page._render_html()
+    return login_page.compile_html()
 
 def check_password(question):
     password = '' if question.response is None else question.response
@@ -54,20 +55,20 @@ def participants():
     q.text = PARTICIPANTS.format(**DataStore.query.first().current_status)
     db.session.delete(p)
     db.session.commit()
-    return p._render_html()
+    return p.compile_html()
     
 @bp.route('/download', methods=['GET','POST'])
 @researcher_login_required
 def download():
     p = Page(nav=researcher_navbar(), back=False)
     p.forward_button=DOWNLOAD_BUTTON
-    q = Question(p, type='multi choice', text=DOWNLOAD)
+    # q = MultiChoice(p, text=DOWNLOAD)
     Choice(q, text="Metadata")
     Choice(q, text="Status log")
     Choice(q, text="Dataframe")
     db.session.delete(p)
     db.session.commit()
-    return p._render_html()
+    return p.compile_html()
 
 @bp.route('/logout')
 def logout():

@@ -18,6 +18,7 @@ DataStore.
 Relationships:
 
 branch: the branch to which this question belongs
+nav: navigation bar
 page: the page to which this question belongs
 choices: list of Choices (e.g. for single choice questions)
 selected_choices: list of Choices the Participant selected
@@ -61,7 +62,6 @@ class Question(MutableModelBase, CompileBase, db.Model):
         'polymorphic_on': type
         }
     
-    _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     _page_timer_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     index = db.Column(db.Integer)
@@ -121,11 +121,9 @@ class Question(MutableModelBase, CompileBase, db.Model):
         self._default = default
     
     def __init__(
-            self, page=None, branch=None, index=None, 
-            choices=[], validators=[],
+            self, page=None, index=None, choices=[], validators=[],
             all_rows=False, data=None, default=None, text=None, var=None,
             compile=None, debug=None, post=None):
-        self.set_branch(branch, index)
         self.set_page(page, index)
         self.choices = choices
         self.validators = validators
@@ -142,14 +140,20 @@ class Question(MutableModelBase, CompileBase, db.Model):
         
         super().__init__()
     
-    def set_branch(self, branch, index=None):
-        self._set_parent(branch, index, 'branch', 'embedded')
-        
+    """API methods"""
     def set_page(self, page, index=None):
         self._set_parent(page, index, 'page', 'questions')
         
     def reset_default(self):
         self.default = self.init_default
+    
+    """Methods executed during study"""
+    def compile_html(self):
+        """
+        Question types are responsible for implementing their own html 
+        compiler.
+        """
+        raise NotImplementedError('Question must have a compile_html method')
 
     def record_response(self, response):
         self.response = response
@@ -187,9 +191,3 @@ class Question(MutableModelBase, CompileBase, db.Model):
         for c in self.choices:
             data[''.join([self.var, c.label, 'Index'])] = c.index
         return data
-    
-        
-class Text(Question):
-    id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
-    
-    __mapper_args__ = {'polymorphic_identity': 'text'}

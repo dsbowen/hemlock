@@ -5,4 +5,4 @@ from hemlock.database import *
 # from hemlock import participant_routes
 # from hemlock import researcher_routes
 # from hemlock.tools import *
-import hemlock.question_types
+from hemlock.question_polymorphs import *

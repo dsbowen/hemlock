@@ -73,9 +73,9 @@ class Branch(BranchingBase, db.Model):
         )
         
     embedded = db.relationship(
-        'Question', 
+        'Embedded', 
         backref='branch',
-        order_by='Question.index',
+        order_by='Embedded.index',
         collection_class=ordering_list('index')
         )
         
