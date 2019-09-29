@@ -8,13 +8,14 @@ class Free(Question):
     __mapper_args__ = {'polymorphic_identity': 'free'}
     
     def compile_html(self):
-        classes = get_classes(self)
-        label = get_label(self)
         default = self.default or ''
         content = FREE_INPUT.format(id=self.model_id, default=default)
-        return QDIV.format(
-            id=self.model_id, classes=classes, label=label, content=content)
+        return super().compile_html(content=content)
     
     def record_response(self, response):
         response = None if not response else response[0]
         self.response = self.default = response
+
+FREE_INPUT = """
+<input type="text" class="form-control" id="{id}" name="{id}" value="{default}">
+"""

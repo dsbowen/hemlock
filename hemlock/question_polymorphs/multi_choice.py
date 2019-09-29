@@ -1,36 +1,45 @@
 """Multiple choice question"""
 
-from hemlock.database.models import Question
-from hemlock.question_types.html_texts import *
+from hemlock.question_polymorphs.imports import *
 
-@Question.register(type='multi choice', registration='html_compiler')
-def multi_choice_compiler(question):
-    return get_choice_qdiv(
-        question, choice_class=['custom-checkbox'], input_type='checkbox')
+CHOICE_DIV_CLASSES = ['custom-control', 'custom-checkbox']
+INPUT_TYPE = 'checkbox'
 
-@Question.register(type='multi choice', registration='response_recorder')
-def multi_choice_response(question, choice_cids):
-    selected, nonselected = [], []
-    for choice in question.choices:
-        if choice.cid in choice_cids:
-            selected.append(choice)
-        else:
-            nonselected.append(choice)
-    question.response = selected.copy()
-    question.default = selected.copy()
-    question.selected_choices = selected.copy()
-    question.nonselected_choices = nonselected
+
+class MultiChoice(Question):
+    id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
+    __mapper_args__ = {'polymorphic_identity': 'multichoice'}
     
-@Question.register(type='multi choice', registration='data_recorder')
-def multi_choice_data(question):
-    data = {}
-    for choice in question.choices:
-        data[choice.value] = int(choice in question.response)
-    question.data = data
-
-@Question.register(type='multi choice', registration='data_packer')
-def multi_choice_pack(question):
-    var = question.var
-    if question.data is None:
-        return {var+choice.value: None for choice in question.choices}
-    return {var+key: question.data[key] for key in question.data.keys()}
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.choice_div_classes:
+            self.choice_div_classes = CHOICE_DIV_CLASSES
+        if self.choice_input_type is None:
+            self.choice_input_type = INPUT_TYPE
+    
+    def compile_html(self):
+        content = ''.join([choice.compile_html() for choice in self.choices])
+        return super().compile_html(content=content)
+    
+    def record_response(self, choice_model_ids):
+        selected, nonselected = [], []
+        for choice in self.choices:
+            if choice.model_id in choice_model_ids:
+                selected.append(choice)
+            else:
+                nonselected.append(choice)
+        self.response = selected.copy()
+        self.default = selected.copy()
+        self.selected_choices = selected.copy()
+        self.nonselected_choices = nonselected
+    
+    def record_data(self):
+        """Record data using one-hot encoding"""
+        self.data = {c.value: int(c in self.response) for c in self.choices}
+    
+    def pack_data(self):
+        var = self.var
+        if self.data is None:
+            return {var+choice.value: None for choice in self.choices}
+        packed_data = {var+key: self.data[key] for key in self.data.keys()}
+        return super().pack_data(packed_data)

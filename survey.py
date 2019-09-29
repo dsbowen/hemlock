@@ -13,15 +13,13 @@ def Start(root=None):
     p = Page(b)
     q = Free(p, var='free', text='free response question')
     
-    # q = Question(
-        # p, var='single', type='single choice', text='single choice question')
-    # Choice(q, text='Yes')
-    # Choice(q, text='No')
+    q = SingleChoice(p, var='single', text='single choice question')
+    Choice(q, text='Yes')
+    Choice(q, text='No')
     
-    # q = Question(
-        # p, var='multi', type='multi choice', text='multi choice question')
-    # Choice(q, text='Yes')
-    # Choice(q, text='No')
+    q = MultiChoice(p, var='multi', text='multi choice question')
+    Choice(q, text='Yes')
+    Choice(q, text='No')
     
     p = Page(b, terminal=True)
     q = Text(p, text='goodbye moon')

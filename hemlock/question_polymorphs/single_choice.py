@@ -1,37 +1,48 @@
 """Single choice question"""
 
-from hemlock.database.models import Question
-from hemlock.question_types.html_texts import *
+from hemlock.question_polymorphs.imports import *
 
-@Question.register(type='single choice', registration='html_compiler')
-def single_choice_compiler(question):
-    return get_choice_qdiv(
-        question, choice_class=['custom-radio'], input_type='radio')
+from sqlalchemy_mutable import MutableListType
 
-@Question.register(type='single choice', registration='response_recorder')
-def single_choice_response(question, choice_cid):
-    """Record response for a single choice question type
+CHOICE_DIV_CLASSES = ['custom-control', 'custom-radio']
+INPUT_TYPE = 'radio'
+
+
+class SingleChoice(Question):
+    id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
+    __mapper_args__ = {'polymorphic_identity': 'singlechoice'}
     
-    If participant did not select a choice, set default to None and return.
-    Otherwise:
-    1. Set question response to the value of the selected choice
-    2. Set the default choice to the selected choice
-    3. Update selected and nonselected choices
-    """
-    if choice_cid:
-        choice_cid = choice_cid[0]
-        for choice in question.choices:
-            if choice.cid == choice_cid:
-                selected = choice
-                break
-    else:
-        selected = None    
-    question.response = question.default = selected
-    question.selected_choices = [] if selected is None else [selected]
-    question.nonselected_choices = [
-        c for c in question.choices if c != selected]
-
-@Question.register(type='single choice', registration='data_recorder')
-def single_choice_data(question):
-    response = question.response
-    question.data = None if response is None else response.value
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.choice_div_classes:
+            self.choice_div_classes = CHOICE_DIV_CLASSES
+        if self.choice_input_type is None:
+            self.choice_input_type = INPUT_TYPE
+    
+    def compile_html(self):
+        content = ''.join([choice.compile_html() for choice in self.choices])
+        return super().compile_html(content=content)
+    
+    def record_response(self, choice_model_id):
+        """Record response
+        
+        Response is a choice model id or None.
+        1. Set question response to the value of the selected choice
+        2. Set the default choice to the selected choice
+        3. Update selected and nonselected choices
+        """
+        if choice_model_id:
+            choice_model_id = choice_model_id[0]
+            for choice in self.choices:
+                if choice.model_id == choice_model_id:
+                    selected = choice
+                    break
+        else:
+            selected = None    
+        self.response = self.default = selected
+        self.selected_choices = [] if selected is None else [selected]
+        self.nonselected_choices = [
+            c for c in self.choices if c != selected]
+    
+    def record_data(self):
+        self.data = None if self.response is None else self.response.value

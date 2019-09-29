@@ -48,4 +48,40 @@ class Choice(Base, db.Model):
         self.text = self.label = self.value = text
     
     def compile_html(self):
-        pass
+        question=self.question
+        classes = ' '.join(question.choice_div_classes)
+        checked = 'checked' if self.is_default() else ''
+        input = INPUT.format(
+            cid=self.model_id, qid=question.model_id,
+            type=question.choice_input_type, checked=checked
+            )
+        label = LABEL.format(cid=self.model_id, text=self.text)
+        return DIV.format(classes=classes, input=input, label=label)
+    
+    def is_default(self):
+        """Indicate if self is a default choice
+        
+        Question default is assumed to a be a choice or list of choices.
+        """
+        default = self.question.default
+        if isinstance(default, list):
+            return self in default
+        return self == default
+
+DIV = """
+<div class="{classes}">
+    {input}
+    {label}      
+</div>
+"""
+
+INPUT = """
+<input id="{cid}" value="{cid}" name="{qid}" class="custom-control-input" type="{type}" {checked}>
+"""
+
+LABEL = """
+<label class="custom-control-label w-100 choice" for="{cid}">
+    {text}
+</label>
+"""
+        

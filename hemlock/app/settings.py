@@ -26,6 +26,7 @@ default_settings = {
     'password': '',
     'question_compile': None,
     'question_debug': None,
+    'question_div_classes': ['form-group', 'question'],
     'question_interval': None,
     'question_post': None,
     'restart_option': True,

@@ -66,6 +66,8 @@ class Question(MutableModelBase, CompileBase, db.Model):
     _page_timer_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     index = db.Column(db.Integer)
     
+    choice_div_classes = db.Column(MutableListType)
+    choice_input_type = db.Column(db.String(50))
     choices = db.relationship(
         'Choice', 
         backref='question',
@@ -98,6 +100,7 @@ class Question(MutableModelBase, CompileBase, db.Model):
     all_rows = db.Column(db.Boolean)
     data = db.Column(MutableType)
     _default = db.Column(MutableType)
+    div_classes = db.Column(MutableListType)
     error = db.Column(db.Text)
     init_default = db.Column(MutableType)
     order = db.Column(db.Integer)
@@ -121,16 +124,20 @@ class Question(MutableModelBase, CompileBase, db.Model):
         self._default = default
     
     def __init__(
-            self, page=None, index=None, choices=[], validators=[],
-            all_rows=False, data=None, default=None, text=None, var=None,
-            compile=None, debug=None, post=None):
+            self, page=None, index=None, validators=[],
+            choice_div_classes=[], choice_input_type=None, choices=[], 
+            all_rows=False, data=None, default=None, div_classes=[], 
+            text=None, var=None, compile=None, debug=None, post=None):
         self.set_page(page, index)
+        self.choice_div_classes = choice_div_classes
+        self.choice_input_type = choice_input_type
         self.choices = choices
         self.validators = validators
         
         self.all_rows = all_rows
         self.data = data
         self.default = default
+        self.div_classes = div_classes or current_app.question_div_classes
         self.text = text
         self.var = var
         
@@ -148,12 +155,31 @@ class Question(MutableModelBase, CompileBase, db.Model):
         self.default = self.init_default
     
     """Methods executed during study"""
-    def compile_html(self):
+    def compile_html(self, content=''):
+        """HTML compiler"""
+        div_classes = self.get_div_classes()
+        label = self.get_label()
+        return DIV.format(
+            id=self.model_id, classes=div_classes, 
+            label=label, content=content
+            )
+    
+    def get_div_classes(self):
+        """Get question <div> classes
+        
+        Add the error class if the response was invalid.
         """
-        Question types are responsible for implementing their own html 
-        compiler.
-        """
-        raise NotImplementedError('Question must have a compile_html method')
+        div_classes = ' '.join(self.div_classes)
+        if self.error is not None:
+            return div_clases + ' error'
+        return div_classes
+    
+    def get_label(self):
+        """Get the question label"""
+        error = self.error
+        error = '' if error is None else ERROR.format(error=error)
+        text = self.text if self.text is not None else ''
+        return LABEL.format(id=self.model_id, text=error+text)
 
     def record_response(self, response):
         self.response = response
@@ -191,3 +217,22 @@ class Question(MutableModelBase, CompileBase, db.Model):
         for c in self.choices:
             data[''.join([self.var, c.label, 'Index'])] = c.index
         return data
+
+DIV = """
+<div id="{id}" class="{classes}">
+    {label}
+    {content}
+</div>
+"""
+
+ERROR = """
+<span style="color:red">
+    {error}
+</span>
+"""
+
+LABEL = """
+<label class="w-100" for="{id}">
+    {text}
+</label>
+"""
