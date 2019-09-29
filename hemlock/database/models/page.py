@@ -190,6 +190,9 @@ class Page(BranchingBase, CompileBase, db.Model):
         
     def reset_compile(self):
         compile = default_compile
+        
+    def reset_default(self):
+        [q.reset_default() for q in self.questions]
     
     def reset_post(self):
         post = default_post

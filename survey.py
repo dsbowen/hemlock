@@ -14,12 +14,13 @@ def Start(root=None):
     q = Free(p, var='free', text='free response question')
     
     q = SingleChoice(p, var='single', text='single choice question')
-    Choice(q)
+    Choice(q, text='Yes')
     Choice(q, text='No')
     
     q = MultiChoice(p, var='multi', text='multi choice question')
-    Choice(q)
-    Choice(q, text='No')
+    Choice(q, text='Red')
+    Choice(q, text='Blue')
+    Choice(q, text='Yellow')
     
     p = Page(b, terminal=True)
     q = Text(p, text='goodbye moon')

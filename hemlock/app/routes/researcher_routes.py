@@ -3,7 +3,7 @@
 from hemlock.app.factory import bp, db
 from hemlock.app.routes.researcher_texts import *
 from hemlock.database.models import Navbar, Page, Choice, Validator
-from hemlock.question_polymorphs import Text
+from hemlock.question_polymorphs import Free, MultiChoice, Text
 from hemlock.database.private import DataStore
 
 from flask import current_app, flash, Markup, redirect, request, session, url_for
@@ -51,10 +51,8 @@ def participants():
     p = Page(nav=researcher_navbar(), back=False, forward=False)
     p.js.append(current_app.socket_js)
     p.js.append('js/participants.min.js')
-    q = Question(p)
+    q = Text(p)
     q.text = PARTICIPANTS.format(**DataStore.query.first().current_status)
-    db.session.delete(p)
-    db.session.commit()
     return p.compile_html()
     
 @bp.route('/download', methods=['GET','POST'])
@@ -62,12 +60,10 @@ def participants():
 def download():
     p = Page(nav=researcher_navbar(), back=False)
     p.forward_button=DOWNLOAD_BUTTON
-    # q = MultiChoice(p, text=DOWNLOAD)
+    q = MultiChoice(p, text=DOWNLOAD)
     Choice(q, text="Metadata")
-    Choice(q, text="Status log")
+    Choice(q, text="Status Log")
     Choice(q, text="Dataframe")
-    db.session.delete(p)
-    db.session.commit()
     return p.compile_html()
 
 @bp.route('/logout')
