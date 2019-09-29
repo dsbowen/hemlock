@@ -8,13 +8,13 @@ Question of certain question types, such as multiple choice, contain a list of C
 """
 
 from hemlock.app import db
-from hemlock.database.private import Base
+from hemlock.database.private import CompileBase
 from hemlock.database.types import Function, FunctionType
 
 from sqlalchemy_mutable import MutableType
 
 
-class Choice(Base, db.Model):
+class Choice(CompileBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
@@ -32,13 +32,12 @@ class Choice(Base, db.Model):
     def __init__(
             self, question=None, index=None,
             text=None, label=None, value=None, debug=None):
-        Base.__init__(self)
-        
         self.set_question(question, index)
         self.set_all(text)
         self.value = value if value is not None else self.value
         self.label = label if label is not None else self.label
         self.debug = debug
+        super().__init__()
 
     def set_question(self, question, index=None):
         self._set_parent(question, index, 'question', 'choices')
@@ -55,7 +54,8 @@ class Choice(Base, db.Model):
             cid=self.model_id, qid=question.model_id,
             type=question.choice_input_type, checked=checked
             )
-        label = LABEL.format(cid=self.model_id, text=self.text)
+        text = self.text or ''
+        label = LABEL.format(cid=self.model_id, text=text)
         return DIV.format(classes=classes, input=input, label=label)
     
     def is_default(self):

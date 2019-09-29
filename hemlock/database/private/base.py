@@ -81,3 +81,6 @@ class CompileBase(Base):
         html = self.compile_html() if html is None else html
         soup = BeautifulSoup(html, 'html.parser')
         return soup.prettify()
+    
+    def view_html(self, html=None):
+        print(self.render(html))

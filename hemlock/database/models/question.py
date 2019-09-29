@@ -215,7 +215,8 @@ class Question(MutableModelBase, CompileBase, db.Model):
         if self.index is not None:
             data[self.var+'Index'] = self.index
         for c in self.choices:
-            data[''.join([self.var, c.label, 'Index'])] = c.index
+            if c.label is not None:
+                data[''.join([self.var, c.label, 'Index'])] = c.index
         return data
 
 DIV = """

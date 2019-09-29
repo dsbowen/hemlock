@@ -35,11 +35,13 @@ class MultiChoice(Question):
     
     def record_data(self):
         """Record data using one-hot encoding"""
-        self.data = {c.value: int(c in self.response) for c in self.choices}
+        self.data = {c.value: int(c in self.response) 
+            for c in self.choices if c.value is not None}
     
     def pack_data(self):
         var = self.var
         if self.data is None:
-            return {var+choice.value: None for choice in self.choices}
+            packed_data = {var+c.value: None 
+                for c in self.choices if c.value is not None}
         packed_data = {var+key: self.data[key] for key in self.data.keys()}
         return super().pack_data(packed_data)
