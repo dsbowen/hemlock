@@ -2,8 +2,10 @@
 
 from hemlock import *
 from texts import *
+
 from flask_login import current_user
-    
+from random import shuffle
+
 def Start(root=None):
     b = Branch()
     
@@ -18,6 +20,7 @@ def Start(root=None):
     Choice(q, text='No')
     
     q = MultiChoice(p, var='multi', text='multi choice question')
+    q.compile = rerandomize
     Choice(q, text='Red')
     Choice(q, text='Blue')
     Choice(q, text='Yellow')
@@ -26,6 +29,5 @@ def Start(root=None):
     q = Text(p, text='goodbye moon')
     return b
 
-def require(question):
-    if question.response is None:
-        return '<p>Response required</p>'
+def rerandomize(question):
+    shuffle(question.choices)
