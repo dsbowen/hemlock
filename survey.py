@@ -23,7 +23,8 @@ def Start(root=None):
     q.compile = rerandomize
     Choice(q, text='Red')
     Choice(q, text='Blue')
-    Choice(q, text='Yellow')
+    y = Choice(q, text='Yellow')
+    q.default = [y]
     
     p = Page(b, terminal=True)
     q = Text(p, text='goodbye moon')
