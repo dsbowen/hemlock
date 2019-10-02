@@ -3,3 +3,4 @@ data.db
 test.py
 tmp
 *.log
+.hemlock-venv
