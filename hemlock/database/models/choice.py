@@ -9,7 +9,6 @@ Question of certain question types, such as multiple choice, contain a list of C
 
 from hemlock.app import db
 from hemlock.database.private import CompileBase
-from hemlock.database.types import Function, FunctionType
 
 from sqlalchemy_mutable import MutableType
 
@@ -27,7 +26,6 @@ class Choice(CompileBase, db.Model):
     text = db.Column(db.Text)
     label = db.Column(db.Text)
     value = db.Column(MutableType)
-    debug = db.Column(FunctionType)
     
     def __init__(
             self, question=None, index=None,
@@ -36,7 +34,6 @@ class Choice(CompileBase, db.Model):
         self.set_all(text)
         self.value = value if value is not None else self.value
         self.label = label if label is not None else self.label
-        self.debug = debug
         super().__init__()
 
     def set_question(self, question, index=None):

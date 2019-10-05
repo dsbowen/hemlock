@@ -22,6 +22,7 @@ def Start(root=None):
     
     q = MultiChoice(p, var='multi', text='multi choice question')
     GetFunction(q, rerandomize)
+    GetFunction(q, clear_response)
     Choice(q, text='Red')
     Choice(q, text='Blue')
     Choice(q, text='Yellow')
@@ -36,3 +37,6 @@ def require(question):
 
 def rerandomize(question):
     shuffle(question.choices)
+
+def clear_response(question):
+    question.response = None

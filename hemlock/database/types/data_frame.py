@@ -11,6 +11,7 @@ class Variable(MutableList):
         """
         self._python_type = None
         self.all_rows = all_rows
+        super().__init__()
         
     def add(self, entry):
         """Add an entry (or list of entries) to the variable"""
