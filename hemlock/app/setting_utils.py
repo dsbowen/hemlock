@@ -28,10 +28,10 @@ FORWARD_BUTTON_GENERIC = """
 
 FORWARD_BUTTON = Markup(FORWARD_BUTTON_GENERIC.format(classes='', text='>>'))
 
-def page_compile(page):
+def default_get_function(page):
     """Calls question compile functions in index order"""
-    return [q.compile(object=q) for q in page.questions]
+    return [get_f() for q in page.questions for get_f in q.get_functions]
     
-def page_post(page):
+def default_post_function(page):
     """Calls question post functions in index order"""
-    return [q.post(object=q) for q in page.questions]
+    return [post_f() for q in page.questions for post_f in q.post_functions]

@@ -45,16 +45,15 @@ post: run after data are recorded
 """
 
 from hemlock.app import db
-from hemlock.database.private import CompileBase
-from hemlock.database.types import FunctionType
+from hemlock.database.private import CompileBase, FunctionBase
 
 from flask import current_app
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy_mutable import Mutable, MutableType, MutableModelBase, MutableListType, MutableDictType
+from sqlalchemy_mutable import Mutable, MutableType, MutableModelBase, MutableListType
 
 
-class Question(MutableModelBase, CompileBase, db.Model):
+class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(50))
     __mapper_args__ = {
@@ -90,49 +89,57 @@ class Question(MutableModelBase, CompileBase, db.Model):
         foreign_keys='Choice._nonselected_id'
         )
         
-    validators = db.relationship(
+    _get_functions = db.relationship(
+        'GetFunction',
+        backref='question',
+        order_by='GetFunction.index',
+        collection_class=ordering_list('index')
+    )
+
+    _validators = db.relationship(
         'Validator', 
         backref='question', 
         order_by='Validator.index',
         collection_class=ordering_list('index')
         )
+    
+    _post_functions = db.relationship(
+        'PostFunction',
+        backref='question',
+        order_by='PostFunction.index',
+        collection_class=ordering_list('index')
+    )
         
     all_rows = db.Column(db.Boolean)
     data = db.Column(MutableType)
-    _default = db.Column(MutableType)
+    default = db.Column(MutableType)
     div_classes = db.Column(MutableListType)
     error = db.Column(db.Text)
-    init_default = db.Column(MutableType)
     order = db.Column(db.Integer)
     response = db.Column(MutableType)
     text = db.Column(db.Text)
     var = db.Column(db.Text)
     
-    compile = db.Column(FunctionType)
-    debug = db.Column(FunctionType)
-    post = db.Column(FunctionType)
-    
-    @property
-    def default(self):
-        return self._default
-    
-    @default.setter
-    def default(self, default):
-        """Set initial default the first time default is set"""
-        if self.init_default is None:
-            self.init_default = default
-        self._default = default
-    
     def __init__(
-            self, page=None, index=None, validators=[],
+            self, page=None, index=None,
+            get_functions=[], validators=[], post_functions=[],
             choice_div_classes=[], choice_input_type=None, choices=[], 
             all_rows=False, data=None, default=None, div_classes=[], 
-            text=None, var=None, compile=None, debug=None, post=None):
+            text=None, var=None, debug=None
+            ):
         self.set_page(page, index)
         self.choice_div_classes = choice_div_classes
         self.choice_input_type = choice_input_type
         self.choices = choices
-        self.validators = validators
+        self.get_functions = (
+            get_functions or current_app.question_get_functions
+        )
+        self.validators = (
+            validators or current_app.question_validators
+        )
+        self.post_functions = (
+            post_functions or current_app.question_post_functions
+        )
         
         self.all_rows = all_rows
         self.data = data
@@ -141,18 +148,11 @@ class Question(MutableModelBase, CompileBase, db.Model):
         self.text = text
         self.var = var
         
-        self.compile = compile or current_app.question_compile
-        self.debug = debug or current_app.question_debug
-        self.post = post or current_app.question_post
-        
         super().__init__()
     
     """API methods"""
     def set_page(self, page, index=None):
         self._set_parent(page, index, 'page', 'questions')
-        
-    def reset_default(self):
-        self.default = self.init_default
     
     """Methods executed during study"""
     def compile_html(self, content=''):
@@ -171,7 +171,7 @@ class Question(MutableModelBase, CompileBase, db.Model):
         """
         div_classes = ' '.join(self.div_classes)
         if self.error is not None:
-            return div_clases + ' error'
+            return div_classes + ' error'
         return div_classes
     
     def get_label(self):
@@ -182,15 +182,15 @@ class Question(MutableModelBase, CompileBase, db.Model):
         return LABEL.format(id=self.model_id, text=error+text)
 
     def record_response(self, response):
-        self.response = response
+        return
         
     def validate(self):
         """Validate Participant response
         
         Keep the error message associated with the first failed Validator.
         """
-        for v in self.validators:
-            self.error = v.validate(object=self)
+        for validator in self.validators:
+            self.error = validator()
             if self.error is not None:
                 return False
         return True

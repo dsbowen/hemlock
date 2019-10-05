@@ -7,8 +7,5 @@ class Text(Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'text'}
     
-    def record_response(self, response):
-        return
-    
     def record_data(self):
         return

@@ -2,7 +2,7 @@
 
 from hemlock.app.factory import bp, db
 from hemlock.app.routes.researcher_texts import *
-from hemlock.database.models import Navbar, Page, Choice, Validator
+from hemlock.database import Navbar, Page, Choice, Validator
 from hemlock.question_polymorphs import Free, MultiChoice, Text
 from hemlock.database.private import DataStore
 

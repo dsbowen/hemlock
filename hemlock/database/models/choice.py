@@ -63,11 +63,8 @@ class Choice(CompileBase, db.Model):
         
         Question default is assumed to a be a choice or list of choices.
         """
-        default = self.question.default
-        print('question default is', default)
+        default = self.question.response or self.question.default
         if isinstance(default, list):
-            print('default is list')
-            print('self', self, 'is in list', self in default)
             return self in default
         return self == default
 

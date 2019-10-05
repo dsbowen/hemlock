@@ -39,7 +39,7 @@ class SingleChoice(Question):
                     break
         else:
             selected = None    
-        self.response = self.default = selected
+        self.response = selected
         self.selected_choices = [] if selected is None else [selected]
         self.nonselected_choices = [
             c for c in self.choices if c != selected]

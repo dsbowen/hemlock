@@ -29,7 +29,6 @@ class MultiChoice(Question):
             else:
                 nonselected.append(choice)
         self.response = selected.copy()
-        self.default = selected.copy()
         self.selected_choices = selected.copy()
         self.nonselected_choices = nonselected
     

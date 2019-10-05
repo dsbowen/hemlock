@@ -8,13 +8,12 @@ class Free(Question):
     __mapper_args__ = {'polymorphic_identity': 'free'}
     
     def compile_html(self):
-        default = self.default or ''
+        default = self.response or self.default or ''
         content = FREE_INPUT.format(id=self.model_id, default=default)
         return super().compile_html(content=content)
     
     def record_response(self, response):
-        response = None if not response else response[0]
-        self.response = self.default = response
+        self.response = None if response == [''] else response[0]
 
 FREE_INPUT = """
 <input type="text" class="form-control" id="{id}" name="{id}" value="{default}">

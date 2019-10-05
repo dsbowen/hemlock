@@ -8,15 +8,11 @@ next_branch: Branch originating from this Branch
 origin_page: Page from which this Branch originated
 pages: queue of Pages to be displayed
 embedded: list of embedded data Questions
-
-Functions:
-
-navigate: creates the next Branch to which the experiment navigates
+navigator: Function model for growing a new Branch
 """
 
 from hemlock.app import db
-from hemlock.database.private.base import BranchingBase
-from hemlock.database.types import Function, FunctionType
+from hemlock.database.private import BranchingBase
 
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
@@ -85,13 +81,13 @@ class Branch(BranchingBase, db.Model):
             q for p in self.pages for q in p.questions+[p.timer]]
         return page_questions + self.embedded
         
-    navigate = db.Column(FunctionType)
-    _isroot = db.Column(db.Boolean)
+    _navigator = db.relationship('Navigator', backref='branch', uselist=False)
+    is_root = db.Column(db.Boolean)
 
-    def __init__(self, pages=[], embedded=[], navigate=None):       
+    def __init__(self, pages=[], embedded=[], navigator=None):       
         self.pages = pages
         self.embedded = embedded
-        self.navigate = navigate
+        self.navigator = navigator
         self._isroot = False
         super().__init__()
         

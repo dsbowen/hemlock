@@ -126,7 +126,7 @@ class Participant(UserMixin, Base, db.Model):
         self.current_branch = root = start_navigation()
         self.branch_stack.append(root)
         root.current_page = root.start_page
-        root._isroot = True
+        root.is_root = True
         
         super().__init__()
 

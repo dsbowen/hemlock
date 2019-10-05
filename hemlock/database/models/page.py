@@ -33,7 +33,7 @@ post: run after data are recorded
 
 from hemlock.app import db
 from hemlock.database.private import BranchingBase, CompileBase
-from hemlock.database.types import Function, FunctionType, MarkupType
+from hemlock.database.types import  MarkupType
 from hemlock.database.models.question import Question
 
 from datetime import datetime
@@ -94,6 +94,22 @@ class Page(BranchingBase, CompileBase, db.Model):
         foreign_keys='Question._page_timer_id'
         )
     
+    _get_functions = db.relationship(
+        'GetFunction',
+        backref='page',
+        order_by='GetFunction.index',
+        collection_class=ordering_list('index')
+    )
+
+    _post_functions = db.relationship(
+        'PostFunction',
+        backref='page',
+        order_by='PostFunction.index',
+        collection_class=ordering_list('index')
+    )
+
+    _navigator = db.relationship('Navigator', backref='page', uselist=False)
+    
     _back = db.Column(db.Boolean)
     back_button = db.Column(MarkupType)
     css = db.Column(MutableListType)
@@ -145,18 +161,15 @@ class Page(BranchingBase, CompileBase, db.Model):
     def forward(self, forward):
         self._forward = forward
     
-    compile = db.Column(FunctionType)
-    debug = db.Column(FunctionType)
-    navigate = db.Column(FunctionType)
-    post = db.Column(FunctionType)
-    
     def __init__(
             self, branch=None, index=None, back_to=None, forward_to=None, 
             nav=None, questions=[], timer_var=None, all_rows=False,
+            get_functions=[], post_functions=[], navigator=None, 
             back=None, back_button=None, css=None, 
             forward=True, forward_button=None, js=None,
             survey_template=None, terminal=False, view_template=None, 
-            compile=None, debug=None, navigate=None, post=None):        
+            debug=None
+            ):        
         self.set_branch(branch, index)
         self.back_to = back_to
         self.forward_to = forward_to
@@ -174,10 +187,13 @@ class Page(BranchingBase, CompileBase, db.Model):
         self.terminal = terminal
         self.view_template = view_template or current_app.view_template
 
-        self.compile = compile or current_app.page_compile
+        self.get_functions = get_functions or current_app.page_get_functions
+        self.post_functions = (
+            post_functions or current_app.page_post_functions
+        )
+        self.navigator = navigator
+
         self.debug = debug or current_app.page_debug
-        self.navigate = navigate
-        self.post = post or current_app.page_post
         
         super().__init__()
 
@@ -185,18 +201,10 @@ class Page(BranchingBase, CompileBase, db.Model):
     def set_branch(self, branch, index=None):
         self._set_parent(branch, index, 'branch', 'pages')
     
-    def is_blank(self):
-        return all([q.response is None for q in self.questions])
-        
-    def reset_compile(self):
-        compile = default_compile
-        
-    def reset_default(self):
-        [q.reset_default() for q in self.questions]
-    
-    def reset_post(self):
-        post = default_post
-        
+    def clear_responses(self):
+        for q in self.questions:
+            q.response = None
+
     def reset_timer(self):
         self.timer.data = 0
 
@@ -206,15 +214,15 @@ class Page(BranchingBase, CompileBase, db.Model):
     def first_page(self):
         """Indicate that this is the first Page in the experiment"""
         return (
-            self.branch is not None and self.branch._isroot 
+            self.branch is not None and self.branch.is_root 
             and self.index == 0
-            )
+        )
 
     """Methods executed during study"""
     def compile_html(self, recompile=True):
         """Compile question html"""
         if self.question_html is None or recompile:
-            self.compile(object=self)
+            [get_f() for get_f in self.get_functions]
             self.question_html = Markup(''.join(
                 [q.compile_html() for q in self.questions]))
         self.start_time = datetime.utcnow()
@@ -241,7 +249,7 @@ class Page(BranchingBase, CompileBase, db.Model):
             self.direction_from = 'invalid'
             return 'invalid'
         [q.record_data() for q in self.questions]
-        self.post(object=self)
+        [post_f() for post_f in self.post_functions]
         # self.direction_from is 'forward' unless changed in post function
         return self.direction_from 
         

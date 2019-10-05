@@ -14,21 +14,25 @@ def Start(root=None):
     
     p = Page(b)
     q = Free(p, var='free', text='free response question')
+    Validator(q, require)
     
     q = SingleChoice(p, var='single', text='single choice question')
     Choice(q, text='Yes')
     Choice(q, text='No')
     
     q = MultiChoice(p, var='multi', text='multi choice question')
-    q.compile = rerandomize
+    GetFunction(q, rerandomize)
     Choice(q, text='Red')
     Choice(q, text='Blue')
-    y = Choice(q, text='Yellow')
-    q.default = [y]
+    Choice(q, text='Yellow')
     
     p = Page(b, terminal=True)
     q = Text(p, text='goodbye moon')
     return b
+
+def require(question):
+    if question.response is None:
+        return 'Hey, answer the damn question!'
 
 def rerandomize(question):
     shuffle(question.choices)
