@@ -23,7 +23,6 @@
         {
             "plan": "heroku-postgresql:hobby-dev"
         },
-        "redis",
         {
             "plan": "heroku-redis:hobby-dev"
         }
