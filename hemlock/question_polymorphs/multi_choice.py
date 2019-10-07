@@ -34,7 +34,9 @@ class MultiChoice(Question):
     
     def record_data(self):
         """Record data using one-hot encoding"""
-        self.data = None if self.response is None
+        if self.response is None:
+            self.data = None
+            return
         self.data = {c.value: int(c in self.response) 
             for c in self.choices if c.value is not None}
     
