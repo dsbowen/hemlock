@@ -112,6 +112,7 @@ class Page(BranchingBase, CompileBase, db.Model):
     
     _back = db.Column(db.Boolean)
     back_button = db.Column(MarkupType)
+    cache_compile = db.Column(db.Boolean)
     compile_worker = db.Column(db.Boolean)
     compiled = db.Column(db.Boolean, default=False)
     css = db.Column(MutableListType)
@@ -123,6 +124,7 @@ class Page(BranchingBase, CompileBase, db.Model):
     loading_template = db.Column(db.String)
     question_html = db.Column(MarkupType)
     submit_worker = db.Column(db.Boolean)
+    submitted = db.Column(db.Boolean)
     survey_template = db.Column(db.String)
     terminal = db.Column(db.Boolean)
     view_template = db.Column(db.String)
@@ -169,10 +171,10 @@ class Page(BranchingBase, CompileBase, db.Model):
             self, branch=None, index=None, back_to=None, forward_to=None, 
             nav=None, questions=[], timer_var=None, all_rows=False,
             get_functions=[], post_functions=[], navigator=None, 
-            back=None, back_button=None, compile_worker=False, css=None, 
-            forward=True, forward_button=None, js=None, loading_template=None,
-            submit_worker=False, survey_template=None, terminal=False, 
-            view_template=None, debug=None
+            back=None, back_button=None, cache_compile=False, 
+            compile_worker=False, css=None, forward=True, forward_button=None, 
+            js=None, loading_template=None, submit_worker=False, 
+            survey_template=None, terminal=False, view_template=None
             ):        
         self.set_branch(branch, index)
         self.back_to = back_to
@@ -183,6 +185,7 @@ class Page(BranchingBase, CompileBase, db.Model):
         
         self.back = back if back is not None else current_app.back
         self.back_button = back_button or current_app.back_button
+        self.cache_compile = cache_compile
         self.compile_worker = compile_worker
         self.css = css or current_app.css
         self.forward = forward if forward is not None else current_app.forward
@@ -201,8 +204,6 @@ class Page(BranchingBase, CompileBase, db.Model):
             post_functions or current_app.page_post_functions
         )
         self.navigator = navigator
-
-        self.debug = debug or current_app.page_debug
         
         super().__init__()
 
@@ -229,21 +230,42 @@ class Page(BranchingBase, CompileBase, db.Model):
 
     """Methods executed during study"""
     def compile(self):
+        """Compile page html
+        
+        1. Execute get functions
+        2. Compile and join question html
+        3. If compile results are cached, remove compile worker and functions
+        4. Indicate that page has been compiled
+        """
         [get_function() for get_function in self.get_functions]
         self.question_html = Markup(''.join(
             [q.compile_html() for q in self.questions]
         ))
+        if self.cache_compile:
+            self.compile_worker = False
+            self.get_functions.clear()
+        self.compiled = True
     
     def render(self):
         self.start_time = datetime.utcnow()
         html = render_template(self.survey_template, page=self)
         return super().render(html)
     
-    def render_loading(self):
+    def render_loading(self, method_name):
+        """Render loading template
+
+        Send compile or submit method to task queue, then render loading page.
+        """
+        assert method_name in ['compile', 'submit']
+        current_app.task_queue.enqueue(
+            'hemlock.app.tasks.model_method',
+            model_class=Page, id=self.id, method_name=method_name,
+            namespace='/'+self.model_id
+        )
         html = render_template(self.loading_template, page=self)
         return super().render(html)
         
-    def _submit(self):
+    def submit(self):
         """Operations executed on page submission
         
         1. Record responses

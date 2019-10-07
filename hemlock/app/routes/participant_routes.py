@@ -121,25 +121,6 @@ def restart():
     return p.render()
 
 """Main survey view function"""
-# def survey():
-#     """Main survey route"""
-#     part = current_user
-#     page = part.current_page
-    
-#     if part.time_expired:
-#         flash(current_app.time_expired_text)
-#     elif request.method == 'POST':
-#         return post(part, page)
-#     # PageHtml(page) # Store page html and css for viewing
-    
-#     if page.terminal and not part.completed:
-#         part.update_end_time()
-#         part.completed = True
-      
-#     db.session.commit()
-#     # Do not recompile if time has expired
-#     return page.compile_html(recompile = not part.time_expired)
-
 @bp.route('/survey', methods=['GET','POST'])
 @login_required
 def survey():
@@ -155,14 +136,10 @@ def survey():
     return post(part, page)
 
 def get(part, page):
-    print('get')
+    """Executed on GET request"""
     if not page.compiled:
         if page.compile_worker:
-            current_app.task_queue.enqueue(
-                'hemlock.app.task_wrapper.task_wrapper',
-                page_id=page.id
-            )
-            return page.render_loading()
+            return page.render_loading(method_name='compile')
         page.compile()
     page.compiled = False
     if page.terminal and not part.completed:
@@ -172,7 +149,7 @@ def get(part, page):
     return page.render()
     
 def post(part, page):
-    """Function to execute on POST request
+    """Executed on POST request
     
     1. Update Participant metadata
     2. Navigate in specified direction
@@ -182,7 +159,7 @@ def post(part, page):
     part.completed = False
     part.updated = True
     
-    direction = page._submit()        
+    direction = page.submit()        
     if direction == 'forward':
         part._forward(page.forward_to)
     elif direction == 'back':
