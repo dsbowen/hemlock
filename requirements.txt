@@ -13,7 +13,9 @@ pandas
 pillow
 psycopg2
 python-docx
+redis
 requests
+rq
 selenium
 sqlalchemy
 sqlalchemy-mutable
