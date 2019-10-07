@@ -12,7 +12,7 @@ def Start(root=None):
     p = Page(b)
     q = Text(p, text='Intro')
     
-    p = Page(b)
+    p = Page(b, compile_worker=True)
     q = Free(p, var='free', text='free response question')
     Validator(q, require)
     

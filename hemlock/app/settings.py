@@ -19,6 +19,7 @@ default_settings = {
     'forward': True,
     'forward_button': FORWARD_BUTTON,
     'js': 'js/default.min.js',
+    'loading_template': 'default_loading.html',
     'nav': None,
     'page_get_functions': [default_get_function],
     'page_post_functions': [default_post_function],
@@ -100,7 +101,8 @@ class Config():
     SQLALCHEMY_DATABASE_URI = (
         os.environ.get('DATABASE_URL') 
         or 'sqlite:///'+os.path.join(os.getcwd(), 'data.db')
-        )
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
     WKHTMLTOIMAGE = os.environ.get('WKHTMLTOIMAGE')
     

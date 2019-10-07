@@ -1,0 +1,43 @@
+<!-- Default survey template -->
+
+{% extends 'bootstrap/base.html' %}
+
+{% block styles %}
+    {% for css_file in page.css %}
+        {% if not css_file.startswith('/') %}
+            {% set css_file = url_for('static', filename=css_file) %}
+        {% endif %}
+        <link rel="stylesheet" type="text/css" href="{{ css_file }}"/>
+    {% endfor %}
+{% endblock %}
+
+{% block content %}
+<div class="container h-100">
+<div class="row h-100 justify-content-center align-items-center">
+    <div class="alert alert-success w-100" style="text-align:center;">
+        Loading
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='js/default.min.js') }}"></script>
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+        var socket = io.connect($SOCKET_URL+"/{{ page.model_id }}");
+        socket.on("connect", function() {
+            console.log("Socket connected");
+        });
+        socket.on("job_started", function() {
+            console.log("Job started");
+        });
+        socket.on("job_finished", function(page) {
+            console.log("Job finished");
+            window.location.replace("{{ url_for('hemlock.survey') }}");
+        });
+    });
+</script>
+{% endblock %}

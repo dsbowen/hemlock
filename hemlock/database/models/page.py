@@ -112,16 +112,20 @@ class Page(BranchingBase, CompileBase, db.Model):
     
     _back = db.Column(db.Boolean)
     back_button = db.Column(MarkupType)
+    compile_worker = db.Column(db.Boolean)
+    compiled = db.Column(db.Boolean, default=False)
     css = db.Column(MutableListType)
     _direction_from = db.Column(db.String(8))
     _direction_to = db.Column(db.String(8))
     _forward = db.Column(db.Boolean)
     forward_button = db.Column(MarkupType)
     js = db.Column(MutableListType)
+    loading_template = db.Column(db.String)
     question_html = db.Column(MarkupType)
-    survey_template = db.Column(db.Text)
+    submit_worker = db.Column(db.Boolean)
+    survey_template = db.Column(db.String)
     terminal = db.Column(db.Boolean)
-    view_template = db.Column(db.Text)
+    view_template = db.Column(db.String)
     
     @property
     def back(self):
@@ -165,10 +169,10 @@ class Page(BranchingBase, CompileBase, db.Model):
             self, branch=None, index=None, back_to=None, forward_to=None, 
             nav=None, questions=[], timer_var=None, all_rows=False,
             get_functions=[], post_functions=[], navigator=None, 
-            back=None, back_button=None, css=None, 
-            forward=True, forward_button=None, js=None,
-            survey_template=None, terminal=False, view_template=None, 
-            debug=None
+            back=None, back_button=None, compile_worker=False, css=None, 
+            forward=True, forward_button=None, js=None, loading_template=None,
+            submit_worker=False, survey_template=None, terminal=False, 
+            view_template=None, debug=None
             ):        
         self.set_branch(branch, index)
         self.back_to = back_to
@@ -179,10 +183,15 @@ class Page(BranchingBase, CompileBase, db.Model):
         
         self.back = back if back is not None else current_app.back
         self.back_button = back_button or current_app.back_button
+        self.compile_worker = compile_worker
         self.css = css or current_app.css
         self.forward = forward if forward is not None else current_app.forward
         self.forward_button = forward_button or current_app.forward_button
         self.js = js or current_app.js
+        self.loading_template = (
+            loading_template or current_app.loading_template
+        )
+        self.submit_worker = submit_worker
         self.survey_template = survey_template or current_app.survey_template
         self.terminal = terminal
         self.view_template = view_template or current_app.view_template
@@ -219,14 +228,20 @@ class Page(BranchingBase, CompileBase, db.Model):
         )
 
     """Methods executed during study"""
-    def compile_html(self, recompile=True):
-        """Compile question html"""
-        if self.question_html is None or recompile:
-            [get_f() for get_f in self.get_functions]
-            self.question_html = Markup(''.join(
-                [q.compile_html() for q in self.questions]))
+    def compile(self):
+        [get_function() for get_function in self.get_functions]
+        self.question_html = Markup(''.join(
+            [q.compile_html() for q in self.questions]
+        ))
+    
+    def render(self):
         self.start_time = datetime.utcnow()
-        return self.render(render_template(self.survey_template, page=self))
+        html = render_template(self.survey_template, page=self)
+        return super().render(html)
+    
+    def render_loading(self):
+        html = render_template(self.loading_template, page=self)
+        return super().render(html)
         
     def _submit(self):
         """Operations executed on page submission

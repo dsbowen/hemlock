@@ -99,9 +99,8 @@ def match_found(visitor, tracked, keys):
 def screenout():
     p = Page(forward=False)
     q = Text(p, text=current_app.screenout_text)
-    db.session.delete(p)
-    db.session.delete(q)
-    return p.compile_html()
+    p.compile()
+    return p.render()
     
 @bp.route('/restart', methods=['GET','POST'])
 def restart():
@@ -118,31 +117,59 @@ def restart():
         
     p = Page(back=True)
     q = Text(p, text=current_app.restart_text)
-    db.session.delete(p)
-    db.session.delete(q)
-    return p.compile_html()
+    p.compile()
+    return p.render()
 
 """Main survey view function"""
+# def survey():
+#     """Main survey route"""
+#     part = current_user
+#     page = part.current_page
+    
+#     if part.time_expired:
+#         flash(current_app.time_expired_text)
+#     elif request.method == 'POST':
+#         return post(part, page)
+#     # PageHtml(page) # Store page html and css for viewing
+    
+#     if page.terminal and not part.completed:
+#         part.update_end_time()
+#         part.completed = True
+      
+#     db.session.commit()
+#     # Do not recompile if time has expired
+#     return page.compile_html(recompile = not part.time_expired)
+
 @bp.route('/survey', methods=['GET','POST'])
 @login_required
 def survey():
-    """Main survey route"""
+    assert request.method in ['GET','POST']
     part = current_user
     page = part.current_page
-    
+
     if part.time_expired:
         flash(current_app.time_expired_text)
-    elif request.method == 'POST':
-        return post(part, page)
-    PageHtml(page) # Store page html and css for viewing
-    
+        return page.render()
+    if request.method == 'GET':
+        return get(part, page)
+    return post(part, page)
+
+def get(part, page):
+    print('get')
+    if not page.compiled:
+        if page.compile_worker:
+            current_app.task_queue.enqueue(
+                'hemlock.app.task_wrapper.task_wrapper',
+                page_id=page.id
+            )
+            return page.render_loading()
+        page.compile()
+    page.compiled = False
     if page.terminal and not part.completed:
         part.update_end_time()
         part.completed = True
-      
     db.session.commit()
-    # Do not recompile if time has expired
-    return page.compile_html(recompile = not part.time_expired)
+    return page.render()
     
 def post(part, page):
     """Function to execute on POST request
