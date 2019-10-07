@@ -12,7 +12,9 @@ pandas
 pillow
 python-docx
 python-dotenv
+redis
 requests
+rq
 selenium
 sqlalchemy
 sqlalchemy-mutable
