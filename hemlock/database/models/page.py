@@ -94,17 +94,28 @@ class Page(BranchingBase, CompileBase, db.Model):
         foreign_keys='Question._page_timer_id'
         )
     
-    _get_functions = db.relationship(
-        'GetFunction',
+    """Function relationships and workers"""
+    cache_compile = db.Column(db.Boolean)
+    compile_worker = db.Column(db.Boolean)
+    _compile_finished = db.Column(db.Boolean, default=False)
+    _compile_functions = db.relationship(
+        'CompileFunction',
         backref='page',
-        order_by='GetFunction.index',
+        order_by='CompileFunction.index',
         collection_class=ordering_list('index')
     )
 
-    _post_functions = db.relationship(
-        'PostFunction',
+    _request_method = db.Column(db.String(8))
+    _response_recorder_finished = db.Column(db.Boolean, default=False)
+    validator_worker = db.Column(db.Boolean)
+    _validator_finished = db.Column(db.Boolean, default=False)
+
+    submit_worker = db.Column(db.Boolean)
+    _submit_finished = db.Column(db.Boolean, default=False)
+    _submit_functions = db.relationship(
+        'SubmitFunction',
         backref='page',
-        order_by='PostFunction.index',
+        order_by='SubmitFunction.index',
         collection_class=ordering_list('index')
     )
 
@@ -112,9 +123,6 @@ class Page(BranchingBase, CompileBase, db.Model):
     
     _back = db.Column(db.Boolean)
     back_button = db.Column(MarkupType)
-    cache_compile = db.Column(db.Boolean)
-    compile_worker = db.Column(db.Boolean)
-    compiled = db.Column(db.Boolean, default=False)
     css = db.Column(MutableListType)
     _direction_from = db.Column(db.String(8))
     _direction_to = db.Column(db.String(8))
@@ -123,8 +131,6 @@ class Page(BranchingBase, CompileBase, db.Model):
     js = db.Column(MutableListType)
     loading_template = db.Column(db.String)
     question_html = db.Column(MarkupType)
-    submit_worker = db.Column(db.Boolean)
-    submitted = db.Column(db.Boolean)
     survey_template = db.Column(db.String)
     terminal = db.Column(db.Boolean)
     view_template = db.Column(db.String)
@@ -170,10 +176,12 @@ class Page(BranchingBase, CompileBase, db.Model):
     def __init__(
             self, branch=None, index=None, back_to=None, forward_to=None, 
             nav=None, questions=[], timer_var=None, all_rows=False,
-            get_functions=[], post_functions=[], navigator=None, 
-            back=None, back_button=None, cache_compile=False, 
-            compile_worker=False, css=None, forward=True, forward_button=None, 
-            js=None, loading_template=None, submit_worker=False, 
+            cache_compile=False, compile_worker=False, compile_functions=[],
+            validator_worker=False, submit_worker=False, submit_functions=[], 
+            navigator_worker=False, navigator=None, 
+            back=None, back_button=None, 
+            css=None, forward=True, forward_button=None, 
+            js=None, loading_template=None, 
             survey_template=None, terminal=False, view_template=None
             ):        
         self.set_branch(branch, index)
@@ -182,11 +190,22 @@ class Page(BranchingBase, CompileBase, db.Model):
         self.nav = nav or current_app.nav
         self.questions = questions
         self.timer = Question(all_rows=all_rows, data=0, var=timer_var)
+
+        self.cache_compile = cache_compile
+        self.compile_worker = compile_worker
+        self.compile_functions = (
+            compile_functions or current_app.page_compile_functions
+        )
+        self.validator_worker = validator_worker
+        self.submit_worker = submit_worker
+        self.submit_functions = (
+            submit_functions or current_app.page_submit_functions
+        )
+        self.navigator_worker = False
+        self.navigator = navigator
         
         self.back = back if back is not None else current_app.back
         self.back_button = back_button or current_app.back_button
-        self.cache_compile = cache_compile
-        self.compile_worker = compile_worker
         self.css = css or current_app.css
         self.forward = forward if forward is not None else current_app.forward
         self.forward_button = forward_button or current_app.forward_button
@@ -194,17 +213,9 @@ class Page(BranchingBase, CompileBase, db.Model):
         self.loading_template = (
             loading_template or current_app.loading_template
         )
-        self.submit_worker = submit_worker
         self.survey_template = survey_template or current_app.survey_template
         self.terminal = terminal
         self.view_template = view_template or current_app.view_template
-
-        self.get_functions = get_functions or current_app.page_get_functions
-        self.post_functions = (
-            post_functions or current_app.page_post_functions
-        )
-        self.navigator = navigator
-        
         super().__init__()
 
     """API methods"""
@@ -229,72 +240,69 @@ class Page(BranchingBase, CompileBase, db.Model):
         )
 
     """Methods executed during study"""
-    def compile(self):
-        """Compile page html
-        
-        1. Execute get functions
-        2. Compile and join question html
-        3. If compile results are cached, remove compile worker and functions
-        4. Indicate that page has been compiled
+    def render(self):
+        self.start_time = datetime.utcnow()
+        html = render_template(self.survey_template, page=self)
+        return super().render(html)
+
+    def render_loading(self, method_name):
+        """Render loading template
+
+        Send method to task queue, then render loading page.
         """
-        [get_function() for get_function in self.get_functions]
+        db.session.commit()
+        current_app.task_queue.enqueue(
+            'hemlock.app.tasks.model_method',
+            model_class=type(self),
+            id=self.id,
+            method_name=method_name,
+            namespace='/'+self.model_id
+        )
+        html = render_template(self.loading_template, page=self)
+        return super().render(html)
+
+    def compile(self):
+        """Compile html
+        
+        1. Execute compile functions
+        2. Compile and join question html
+        3. If compile results are cached, remove get worker and functions
+        4. Indicate that compile function has completed
+        """
+        [compile_function() for compile_function in self.compile_functions]
         self.question_html = Markup(''.join(
             [q.compile_html() for q in self.questions]
         ))
         if self.cache_compile:
             self.compile_worker = False
-            self.get_functions.clear()
-        self.compiled = True
-    
-    def render(self):
-        self.start_time = datetime.utcnow()
-        html = render_template(self.survey_template, page=self)
-        return super().render(html)
-    
-    def render_loading(self, method_name):
-        """Render loading template
+            self.compile_functions.clear()
+        self._compile_finished = True
 
-        Send compile or submit method to task queue, then render loading page.
-        """
-        assert method_name in ['compile', 'submit']
-        current_app.task_queue.enqueue(
-            'hemlock.app.tasks.model_method',
-            model_class=Page, id=self.id, method_name=method_name,
-            namespace='/'+self.model_id
-        )
-        html = render_template(self.loading_template, page=self)
-        return super().render(html)
-        
-    def submit(self):
-        """Operations executed on page submission
-        
-        1. Record responses
-        2. If attempting to navigate backward, there is nothing more to do
-        3. If attempting to navigate forward, check for valid responses
-        4. If responses are invalid, return
-        5. Record data
-        6. Run post function
-        """
+    def record_response(self):
         self._update_timer()
+        self._request_method = 'POST'
         self.direction_from = request.form['direction']
         [q.record_response(request.form.getlist(q.model_id)) 
             for q in self.questions]
-        
-        if self.direction_from == 'back':
-            return 'back'
-        if not all([q.validate() for q in self.questions]):
-            self.direction_from = 'invalid'
-            return 'invalid'
-        [q.record_data() for q in self.questions]
-        [post_f() for post_f in self.post_functions]
-        # self.direction_from is 'forward' unless changed in post function
-        return self.direction_from 
-        
+        self._response_recorder_finished = True
+    
     def _update_timer(self):
         if self.start_time is None:
             self.start_time = datetime.utcnow()
         delta = (datetime.utcnow() - self.start_time).total_seconds()
         self.timer.data += delta
+    
+    def validate(self):
+        """Validate responses"""
+        if not all ([q.validate() for q in self.questions]):
+            self.direction_from = 'invalid'
+        self._validator_finished = True
+    
+    def submit(self):
+        """Submit page"""
+        [q.record_data() for q in self.questions]
+        [submit_function() for submit_function in self.submit_functions]
+        self._submit_finished = True
     
     def view_nav(self, indent):
         """Print self and next branch for debugging purposes"""

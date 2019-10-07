@@ -12,7 +12,7 @@ def Start(root=None):
     p = Page(b)
     q = Text(p, text='Intro')
     
-    p = Page(b, compile_worker=True)
+    p = Page(b, compile_worker=True, validator_worker=True, submit_worker=True)
     q = Free(p, var='free', text='free response question')
     Validator(q, require)
     
@@ -21,8 +21,8 @@ def Start(root=None):
     Choice(q, text='No')
     
     q = MultiChoice(p, var='multi', text='multi choice question')
-    GetFunction(q, rerandomize)
-    GetFunction(q, clear_response)
+    CompileFunction(q, rerandomize)
+    CompileFunction(q, clear_response)
     Choice(q, text='Red')
     Choice(q, text='Blue')
     Choice(q, text='Yellow')

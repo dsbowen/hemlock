@@ -121,50 +121,68 @@ def restart():
     return p.render()
 
 """Main survey view function"""
-@bp.route('/survey', methods=['GET','POST'])
+@bp.route('/survey/', methods=['GET','POST'])
 @login_required
 def survey():
-    assert request.method in ['GET','POST']
     part = current_user
     page = part.current_page
-
     if part.time_expired:
         flash(current_app.time_expired_text)
         return page.render()
-    if request.method == 'GET':
-        return get(part, page)
-    return post(part, page)
-
+    if request.method == 'POST' or page._request_method == 'POST':
+        return post(part, page)
+    return get(part, page)
+    
 def get(part, page):
     """Executed on GET request"""
-    if not page.compiled:
+    if not page._compile_finished:
         if page.compile_worker:
             return page.render_loading(method_name='compile')
         page.compile()
-    page.compiled = False
+    page._compile_finished = False
     if page.terminal and not part.completed:
         part.update_end_time()
         part.completed = True
     db.session.commit()
     return page.render()
-    
+
 def post(part, page):
-    """Executed on POST request
-    
-    1. Update Participant metadata
-    2. Navigate in specified direction
-    3. Return to survey route with GET request
-    """
-    part.update_end_time()
-    part.completed = False
-    part.updated = True
-    
-    direction = page.submit()        
-    if direction == 'forward':
-        part._forward(page.forward_to)
-    elif direction == 'back':
+    record_response(part, page)
+    if page.direction_from == 'back':
+        return navigate(part, page)
+    return validate(part, page)
+
+def record_response(part, page):
+    if not page._response_recorder_finished:
+        part.update_end_time()
+        part.completed = False
+        part.updated = True
+        page.record_response()
+
+def validate(part, page):
+    if not page._validator_finished:
+        if page.validator_worker:
+            return page.render_loading(method_name='validate')
+        page.validate()
+    if page.direction_from == 'invalid':
+        return navigate(part, page)
+    return submit(part, page)
+
+def submit(part, page):
+    if not page._submit_finished:
+        if page.submit_worker:
+            return page.render_loading(method_name='submit')
+        page.submit()
+    return navigate(part, page)
+
+def navigate(part, page):
+    if page.direction_from == 'back':
         part._back(page.back_to)
-    part.current_page.direction_to = direction
-        
+    elif page.direction_from == 'forward':
+        part._forward(page.forward_to)
+    page._request_method = None
+    page._response_recorder_finished = False
+    page._validator_finished = False
+    page._submit_finished = False
     db.session.commit()
     return redirect(url_for('hemlock.survey'))

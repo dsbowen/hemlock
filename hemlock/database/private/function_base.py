@@ -1,19 +1,19 @@
 """Base classes for models which use Function models"""
 
 from hemlock.database.private.base import Base
-from hemlock.database.private.function_models import FunctionMixin, GetFunction, Validator, PostFunction, Navigator
+from hemlock.database.private.function_models import *
 
 
 class FunctionBase(Base):
     """Base for classes with relationships to Function models"""
     @property
-    def get_functions(self):
-        return self._get_functions
+    def compile_functions(self):
+        return self._compile_functions
     
-    @get_functions.setter
-    def get_functions(self, get_functions):
-        self._get_functions = self._to_function_models(
-            get_functions, GetFunction
+    @compile_functions.setter
+    def compile_functions(self, compile_functions):
+        self._compile_functions = self._to_function_models(
+            compile_functions, CompileFunction
         )
     
     @property
@@ -25,13 +25,13 @@ class FunctionBase(Base):
         self._validators = self._to_function_models(validators, Validator)
     
     @property
-    def post_functions(self):
-        return self._post_functions
+    def submit_functions(self):
+        return self._submit_functions
     
-    @post_functions.setter
-    def post_functions(self, post_functions):
-        self._post_functions = self._to_function_models(
-            post_functions, PostFunction
+    @submit_functions.setter
+    def submit_functions(self, submit_functions):
+        self._submit_functions = self._to_function_models(
+            submit_functions, SubmitFunction
         )
     
     @property

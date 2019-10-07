@@ -89,10 +89,10 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
         foreign_keys='Choice._nonselected_id'
         )
         
-    _get_functions = db.relationship(
-        'GetFunction',
+    _compile_functions = db.relationship(
+        'CompileFunction',
         backref='question',
-        order_by='GetFunction.index',
+        order_by='CompileFunction.index',
         collection_class=ordering_list('index')
     )
 
@@ -103,10 +103,10 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
         collection_class=ordering_list('index')
         )
     
-    _post_functions = db.relationship(
-        'PostFunction',
+    _submit_functions = db.relationship(
+        'SubmitFunction',
         backref='question',
-        order_by='PostFunction.index',
+        order_by='SubmitFunction.index',
         collection_class=ordering_list('index')
     )
         

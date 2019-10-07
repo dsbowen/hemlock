@@ -34,9 +34,11 @@
         socket.on("job_started", function() {
             console.log("Job started");
         });
-        socket.on("job_finished", function(page) {
+        socket.on("job_finished", function() {
             console.log("Job finished");
-            window.location.replace("{{ url_for('hemlock.survey') }}");
+            window.location.replace(
+                "{{ url_for('hemlock.survey') }}"
+            );
         });
     });
 </script>

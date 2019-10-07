@@ -72,13 +72,13 @@ class FunctionMixin():
         return self.func(parent, *self.args, **self.kwargs)
 
 
-class GetFunction(FunctionMixin, Base, db.Model):
+class CompileFunction(FunctionMixin, Base, db.Model):
     pass
 
 class Validator(FunctionMixin, Base, db.Model):
     pass
 
-class PostFunction(FunctionMixin, Base, db.Model):
+class SubmitFunction(FunctionMixin, Base, db.Model):
     pass
 
 class Navigator(FunctionMixin, Base, db.Model):
