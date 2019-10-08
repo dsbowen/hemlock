@@ -42,6 +42,8 @@ class MultiChoice(Question):
     
     def pack_data(self):
         var = self.var
+        if var is None:
+            return super().pack_data()
         if self.data is None:
             packed_data = {var+c.value: None 
                 for c in self.choices if c.value is not None}
