@@ -18,8 +18,7 @@ default_settings = {
     'css': ['css/bootstrap.min.css', 'css/default.min.css'],
     'forward': True,
     'forward_button': FORWARD_BUTTON,
-    'js': 'js/default.min.js',
-    'loading_template': 'default_loading.html',
+    'js': ['js/default.min.js'],
     'nav': None,
     'page_compile_functions': [default_compile_function],
     'page_submit_functions': [default_submit_function],
@@ -43,7 +42,11 @@ default_settings = {
     'template_folder': 'templates',
     'time_expired_text': TIME_EXPIRED,
     'time_limit': None,
-    'view_template': 'default_view.html'
+    'view_template': 'default_view.html',
+    'worker_css': ['css/bootstrap.min.css', 'css/default.min.css'],
+    'worker_js': ['js/default.min.js'],
+    'worker_template': 'default_worker.html',
+    'worker_content': WORKER_CONTENT
     }
     
 def get_settings(settings):

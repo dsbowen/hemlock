@@ -1,4 +1,23 @@
-"""Routes for experiment Participants"""
+"""Routes for experiment Participants
+
+Workers integrate with the main survey route as follows:
+1. Based on the request method, the survey view function returns a get() or 
+post() function.
+2. If a subroutine of the get() or post() function requires a worker, the
+function sends the subroutine to a Redis queue and renders a temporary loading
+page.
+3. The loading page connects a socket listening on a dedicated namespace for 
+the page which called the worker.
+4. A worker grabs the subroutine from the Redis queue and executes it. When
+finished, the page to which the subroutine belongs stores an indicator that
+the job has finished.
+5. When the worker finishes executing the subroutine, it emits a 
+'job_finished' message on the dedicated namespace.
+6. Upon receiving the 'job_finished' message, the socket calls a function to
+replace the window location with a new call to the survey route. Because the
+page now indicates that the subroutine has finished, it knows not to execute
+the subroutine again on the new request.
+"""
 
 from hemlock.app.factory import bp, db, socketio
 from hemlock.database.models import Participant, Page
@@ -29,6 +48,7 @@ def index():
         return redirect(url_for('hemlock.restart', **meta))
     if duplicate:
         return redirect(url_for('hemlock.screenout'))
+
     initialize_participant(meta)
     return redirect(url_for('hemlock.survey'))
 
@@ -122,74 +142,21 @@ def restart():
     return p.render()
 
 """Main survey view function"""
-@bp.route('/survey/', methods=['GET','POST'])
+@bp.route('/survey', methods=['GET','POST'])
 @login_required
 def survey():
-    part = current_user
-    page = part.current_page
-    if part.time_expired:
-        flash(current_app.time_expired_text)
-        return page.render()
-    if request.method == 'POST' or page._request_method == 'POST':
-        return post(part, page)
-    return get(part, page)
-    
-def get(part, page):
-    """Executed on GET request"""
-    if not page._compile_finished:
-        if page.compile_worker:
-            return page.render_loading(method_name='compile')
-        page.compile()
-    page._compile_finished = False
-    if page.terminal and not part.completed:
-        part.update_end_time()
-        part.completed = True
-    db.session.commit()
-    return page.render()
+    """Main survey route
 
-def post(part, page):
-    record_response(part, page)
-    if page.direction_from == 'back':
-        return navigate(part, page)
-    return validate(part, page)
-
-def record_response(part, page):
-    if not page._response_recorder_finished:
-        part.update_end_time()
-        part.completed = False
-        part.updated = True
-        page.record_response()
-
-def validate(part, page):
-    if not page._validator_finished:
-        if page.validator_worker:
-            return page.render_loading(method_name='validate')
-        page.validate()
-    if page.direction_from == 'invalid':
-        return navigate(part, page)
-    return submit(part, page)
-
-def submit(part, page):
-    if not page._submit_finished:
-        if page.submit_worker:
-            return page.render_loading(method_name='submit')
-        page.submit()
-    return navigate(part, page)
-
-def navigate(part, page):
-    if page.direction_from == 'back':
-        part._back(page.back_to)
-    elif page.direction_from == 'forward':
-        part._forward(page.forward_to)
-    page._request_method = None
-    page._response_recorder_finished = False
-    page._validator_finished = False
-    page._submit_finished = False
-    db.session.commit()
-    return redirect(url_for('hemlock.survey'))
+    If time has expired, render the current page with a time expired message. 
+    Otherwise, return a function for a GET or POST request. Note that a POST 
+    request may be 'in progress' due to callbacks from the Redis queue. In 
+    progress POST requests are indicated by page._request_methd.
+    """
+    return current_user._navigate()
 
 @bp.route('/check_job_status')
 def check_job_status():
+    """Check the status of a job"""
     job_id = request.args.get('job_id')
     job = rq.job.Job.fetch(job_id, connection=current_app.redis)
     return {'job_finished': job.is_finished}

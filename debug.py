@@ -1,17 +1,17 @@
-##############################################################################
-# Test a Hemlock survey
-# by Dillon Bowen
-# last modified 07/24/2019
-##############################################################################
+"""Hemlock debugger"""
 
+from app import app
 from hemlock.debug import main, AIParticipantBase
 from unittest import TestCase
 
 NUM_BATCHES = 1
 BATCH_SIZE = 1
 
+app.app_context().push()
+
+
 class AIParticipant(AIParticipantBase, TestCase):
-    SURVEY_URL = 'https://test235711.herokuapp.com'
+    SURVEY_URL = 'http://localhost:5000'
 
     def custom_debug_example(self, question):
         question.send_keys('hello world')

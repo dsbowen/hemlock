@@ -6,3 +6,4 @@ from hemlock.database.models.navbar import Navbar, Brand, Navitem, Dropdownitem
 from hemlock.database.models.page import Page
 from hemlock.database.models.question import Question
 from hemlock.database.models.choice import Choice
+from hemlock.database.models.workers import CompileWorker, ValidatorWorker, SubmitWorker, NavigatorWorker

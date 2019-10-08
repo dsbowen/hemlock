@@ -1,9 +1,6 @@
-##############################################################################
-# AI Participant Base class
-# by Dillon Bowen
-# last modified 07/24/2019
-##############################################################################
+"""AI Participant base class"""
 
+from app import app
 from hemlock.debug.debug_classes import DebugPage
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -14,6 +11,9 @@ import warnings
 import sys
 
 DATA_TYPES = ['_letters', '_numeric', '_integer']
+
+app.app_context().push()
+
 
 class AIParticipantBase():
     P_REFRESH = 0.1
@@ -35,13 +35,15 @@ class AIParticipantBase():
         
     # Test survey with AI participant
     def test(self):
+        print('testing')
         self.driver.get(self.SURVEY_URL)
         h1 = None
         completed = False
-        while not completed:
-            self._internal_server_error()
-            DebugPage(self).debug()
-            completed = self._navigate()
+        print('testing')
+        # while not completed:
+        #     self._internal_server_error()
+            # DebugPage(self).debug()
+            # completed = self._navigate()
                 
     # Assert heading is not internal server error
     def _internal_server_error(self):

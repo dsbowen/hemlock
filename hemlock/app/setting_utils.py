@@ -28,6 +28,12 @@ FORWARD_BUTTON_GENERIC = """
 
 FORWARD_BUTTON = Markup(FORWARD_BUTTON_GENERIC.format(classes='', text='>>'))
 
+WORKER_CONTENT = Markup("""
+<div class="alert alert-success w-100" style="text-align:center;">
+    Loading
+</div>
+""")
+
 def default_compile_function(page):
     """Calls question compile functions in index order"""
     return [

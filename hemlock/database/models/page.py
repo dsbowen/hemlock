@@ -40,7 +40,7 @@ from datetime import datetime
 from flask import current_app, Markup, render_template, request, url_for
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy_mutable import MutableListType
+from sqlalchemy_mutable import MutableListType, MutableDictType
 
 DIRECTIONS = ['back', 'forward', 'invalid', None]
 
@@ -95,31 +95,55 @@ class Page(BranchingBase, CompileBase, db.Model):
         )
     
     """Function relationships and workers"""
-    cache_compile = db.Column(db.Boolean)
-    compile_worker = db.Column(db.Boolean)
-    _compile_finished = db.Column(db.Boolean, default=False)
+    compile_finished = db.Column(db.Boolean)
+    post_request = db.Column(db.Boolean)
+    record_response_finished = db.Column(db.Boolean)
+    validate_finished = db.Column(db.Boolean)
+    submit_finished = db.Column(db.Boolean)
+    navigate_finished = db.Column(db.Boolean)
+
     _compile_functions = db.relationship(
         'CompileFunction',
         backref='page',
         order_by='CompileFunction.index',
         collection_class=ordering_list('index')
     )
+    compile_worker = db.relationship(
+        'CompileWorker', 
+        backref='page', 
+        uselist=False
+    )
+    cache_compile = db.Column(db.Boolean)
 
-    _request_method = db.Column(db.String(8))
-    _response_recorder_finished = db.Column(db.Boolean, default=False)
-    validator_worker = db.Column(db.Boolean)
-    _validator_finished = db.Column(db.Boolean, default=False)
+    validator_worker = db.relationship(
+        'ValidatorWorker',
+        backref='page',
+        uselist=False
+    )
 
-    submit_worker = db.Column(db.Boolean)
-    _submit_finished = db.Column(db.Boolean, default=False)
     _submit_functions = db.relationship(
         'SubmitFunction',
         backref='page',
         order_by='SubmitFunction.index',
         collection_class=ordering_list('index')
     )
+    submit_worker = db.relationship(
+        'SubmitWorker',
+        backref='page',
+        uselist=False
+    )
 
-    _navigator = db.relationship('Navigator', backref='page', uselist=False)
+    _navigator_finished = db.Column(db.Boolean, default=False)
+    _navigator = db.relationship(
+        'Navigator', 
+        backref='page', 
+        uselist=False
+    )
+    navigator_worker = db.relationship(
+        'NavigatorWorker',
+        backref='page', 
+        uselist=False
+    )
     
     _back = db.Column(db.Boolean)
     back_button = db.Column(MarkupType)
@@ -129,7 +153,6 @@ class Page(BranchingBase, CompileBase, db.Model):
     _forward = db.Column(db.Boolean)
     forward_button = db.Column(MarkupType)
     js = db.Column(MutableListType)
-    loading_template = db.Column(db.String)
     question_html = db.Column(MarkupType)
     survey_template = db.Column(db.String)
     terminal = db.Column(db.Boolean)
@@ -176,12 +199,11 @@ class Page(BranchingBase, CompileBase, db.Model):
     def __init__(
             self, branch=None, index=None, back_to=None, forward_to=None, 
             nav=None, questions=[], timer_var=None, all_rows=False,
-            cache_compile=False, compile_worker=False, compile_functions=[],
-            validator_worker=False, submit_worker=False, submit_functions=[], 
-            navigator_worker=False, navigator=None, 
-            back=None, back_button=None, 
-            css=None, forward=True, forward_button=None, 
-            js=None, loading_template=None, 
+            cache_compile=False, compile_worker=None, compile_functions=[],
+            validator_worker=None, submit_worker=None, submit_functions=[], 
+            navigator_worker=None, navigator=None,
+            back=None, back_button=None, css=None, 
+            forward=True, forward_button=None, js=None, loading_template=None,
             survey_template=None, terminal=False, view_template=None
             ):        
         self.set_branch(branch, index)
@@ -191,6 +213,7 @@ class Page(BranchingBase, CompileBase, db.Model):
         self.questions = questions
         self.timer = Question(all_rows=all_rows, data=0, var=timer_var)
 
+        self.reset_nav_status()
         self.cache_compile = cache_compile
         self.compile_worker = compile_worker
         self.compile_functions = (
@@ -201,7 +224,7 @@ class Page(BranchingBase, CompileBase, db.Model):
         self.submit_functions = (
             submit_functions or current_app.page_submit_functions
         )
-        self.navigator_worker = False
+        self.navigator_worker = navigator_worker
         self.navigator = navigator
         
         self.back = back if back is not None else current_app.back
@@ -210,9 +233,6 @@ class Page(BranchingBase, CompileBase, db.Model):
         self.forward = forward if forward is not None else current_app.forward
         self.forward_button = forward_button or current_app.forward_button
         self.js = js or current_app.js
-        self.loading_template = (
-            loading_template or current_app.loading_template
-        )
         self.survey_template = survey_template or current_app.survey_template
         self.terminal = terminal
         self.view_template = view_template or current_app.view_template
@@ -229,6 +249,14 @@ class Page(BranchingBase, CompileBase, db.Model):
     def reset_timer(self):
         self.timer.data = 0
 
+    def reset_nav_status(self):
+        self.compile_finished = False
+        self.post_request = False
+        self.record_response_finished = True
+        self.validate_finished = True
+        self.submit_finished = True
+        self.navigate_finished = True
+
     def is_valid(self):
         return all([q.error is None for q in self.questions])
     
@@ -240,27 +268,6 @@ class Page(BranchingBase, CompileBase, db.Model):
         )
 
     """Methods executed during study"""
-    def render(self):
-        self.start_time = datetime.utcnow()
-        html = render_template(self.survey_template, page=self)
-        return super().render(html)
-
-    def render_loading(self, method_name):
-        """Render loading template
-
-        Send method to task queue, then render loading page.
-        """
-        db.session.commit()
-        job = current_app.task_queue.enqueue(
-            'hemlock.app.tasks.model_method',
-            model_class=type(self),
-            id=self.id,
-            method_name=method_name,
-            namespace='/'+self.model_id
-        )
-        html = render_template(self.loading_template, page=self, job=job)
-        return super().render(html)
-
     def compile(self):
         """Compile html
         
@@ -274,9 +281,14 @@ class Page(BranchingBase, CompileBase, db.Model):
             [q.compile_html() for q in self.questions]
         ))
         if self.cache_compile:
-            self.compile_worker = False
+            self.compile_worker = None
             self.compile_functions.clear()
-        self._compile_finished = True
+        self.update_route_status('render')
+    
+    def render(self):
+        self.start_time = datetime.utcnow()
+        html = render_template(self.survey_template, page=self)
+        return super().render(html)
 
     def record_response(self):
         self._update_timer()
@@ -284,7 +296,7 @@ class Page(BranchingBase, CompileBase, db.Model):
         self.direction_from = request.form['direction']
         [q.record_response(request.form.getlist(q.model_id)) 
             for q in self.questions]
-        self._response_recorder_finished = True
+        self.update_route_status('validate')
     
     def _update_timer(self):
         if self.start_time is None:
@@ -296,13 +308,17 @@ class Page(BranchingBase, CompileBase, db.Model):
         """Validate responses"""
         if not all ([q.validate() for q in self.questions]):
             self.direction_from = 'invalid'
-        self._validator_finished = True
+        self.update_route_status('submit')
     
     def submit(self):
         """Submit page"""
         [q.record_data() for q in self.questions]
         [submit_function() for submit_function in self.submit_functions]
-        self._submit_finished = True
+        self.update_route_status('navigate')
+    
+    def update_route_status(self, status):
+        if self.part is not None:
+            self.part.route_status = status
     
     def view_nav(self, indent):
         """Print self and next branch for debugging purposes"""

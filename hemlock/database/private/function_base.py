@@ -84,4 +84,4 @@ class BranchingBase(FunctionBase):
         next_branch.origin_branch = self if isinstance(self, Branch) else None
         next_branch.origin_page = self if isinstance(self, Page) else None
         next_branch.current_page = next_branch.start_page
-        return next_branch
+        self._navigator_finished = True

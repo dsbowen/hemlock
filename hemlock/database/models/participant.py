@@ -17,7 +17,7 @@ updated: indicates Participant data has been updated since last store
 """
 
 from hemlock.app.factory import db
-from hemlock.database.private import Base, DataStore
+from hemlock.database.private import Base, DataStore, RouteHandlerMixin
 from hemlock.database.types import DataFrame
 from hemlock.database.models.branch import Branch
 
@@ -42,7 +42,7 @@ def send_data(func):
     return status_update
 
 
-class Participant(UserMixin, Base, db.Model):
+class Participant(UserMixin, RouteHandlerMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     branch_stack = db.relationship(
@@ -74,7 +74,8 @@ class Participant(UserMixin, Base, db.Model):
         return questions
     
     _page_htmls = db.relationship('PageHtml', backref='part', lazy='dynamic')
-    
+
+    _forward_to_id = db.Column(db.Integer)
     g = db.Column(MutableDictType, default={})
     _completed = db.Column(db.Boolean, default=False)
     end_time = db.Column(db.DateTime)
@@ -200,24 +201,34 @@ class Participant(UserMixin, Base, db.Model):
         var_count[var] += 1
     
     """Forward navigation"""
-    def _forward(self, forward_to=None):
+    def forward(self, forward_to=None):
         """Advance forward to specified Page"""
-        if forward_to is None:
+        if self._forward_to_id is None:
             return self._forward_one()
-        while self.current_page.id != forward_to.id:
-            self._forward_one()
+        while self.current_page.id != self._forward_to_id:
+            loading_page = self._forward_one()
+            if loading_page is not None:
+                return loading_page
     
     def _forward_one(self):
         """Advance forward one page"""
-        if self.current_page._eligible_to_insert_branch():
-            self._insert_branch(self.current_page)
+        if self.current_page is not None and self.current_page._eligible_to_insert_branch():
+            loading_page = self._insert_branch(self.current_page)
+            if loading_page is not None:
+                return loading_page
         else:
             self.current_branch._forward()
-        self._forward_recurse()
+        return self._forward_recurse()
     
     def _insert_branch(self, origin):
         """Grow and insert new Branch to branch_stack"""
-        next_branch = origin._grow_branch()
+        if not origin._navigator_finished:
+            if origin.navigator_worker is not None:
+                print('sending task')
+                return origin.navigator_worker()
+            origin._grow_branch()
+        origin._navigator_finished = False
+        next_branch = origin.next_branch
         self.branch_stack.insert(self.current_branch.index+1, next_branch)
         self._increment_head()
         
@@ -229,14 +240,16 @@ class Participant(UserMixin, Base, db.Model):
         if self.current_page is not None:
             return
         if self.current_branch._eligible_to_insert_branch():
-            self._insert_branch(self.current_branch)
+            loading_page = self._insert_branch(self.current_branch)
+            if loading_page is not None:
+                return loading_page
         else:
             self._decrement_head()
             self.current_branch._forward()
-        self._forward_recurse()
+        return self._forward_recurse()
     
     """Backward navigation"""
-    def _back(self, back_to=None):
+    def back(self, back_to=None):
         """Navigate backward to specified Page"""
         if back_to is None:
             return self._back_one()

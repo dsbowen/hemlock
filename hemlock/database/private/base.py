@@ -11,7 +11,7 @@ CompileBase contains convenience methods for models which compile html.
 from hemlock.app import db
 
 from bs4 import BeautifulSoup
-from flask import Markup
+from flask import Markup, current_app, render_template
 
 
 class Base():
@@ -36,6 +36,25 @@ class Base():
             self.__setattr__(parent_attr, parent)
         else:
             getattr(parent, child_attr).insert(index, self)
+    
+    def render(self, html):
+        return BeautifulSoup(html, 'html.parser').prettify()
+
+    def render_loading(self, method_name, args=[], kwargs={}):
+        db.session.commit()
+        job = current_app.task_queue.enqueue(
+            'hemlock.app.tasks.model_method',
+            kwargs={
+                'model_class': type(self),
+                'id': self.id,
+                'method_name': method_name,
+                'args': args,
+                'kwargs': kwargs,
+                'namespace': '/'+self.model_id
+            }
+        )
+        html = render_template(self.loading_template, model=self, job=job)
+        return BeautifulSoup(html, 'html.parser').prettify()
 
 
 class CompileBase(Base):
@@ -45,8 +64,7 @@ class CompileBase(Base):
         CompileBase expects Models which inherit it to have a compile_html() method. The compile_html() method returns raw html.
         """
         html = self.compile_html() if html is None else html
-        soup = BeautifulSoup(html, 'html.parser')
-        return soup.prettify()
+        return BeautifulSoup(html, 'html.parser').prettify()
     
     def view_html(self, html=None):
         print(self.render(html))

@@ -81,14 +81,29 @@ class Branch(BranchingBase, db.Model):
             q for p in self.pages for q in p.questions+[p.timer]]
         return page_questions + self.embedded
         
-    _navigator = db.relationship('Navigator', backref='branch', uselist=False)
+    _navigator_finished = db.Column(db.Boolean, default=False)
+    _navigator = db.relationship(
+        'Navigator', 
+        backref='branch', 
+        uselist=False
+    )
+    navigator_worker = db.relationship(
+        'NavigatorWorker',
+        backref='branch', 
+        uselist=False
+    )
+    loading_template = db.Column(db.String)
     is_root = db.Column(db.Boolean)
 
-    def __init__(self, pages=[], embedded=[], navigator=None):       
+    def __init__(
+                self, pages=[], embedded=[], 
+                navigator=None, navigator_worker=None,
+            ):       
         self.pages = pages
         self.embedded = embedded
         self.navigator = navigator
-        self._isroot = False
+        self.navigator_worker = navigator_worker
+        self.is_root = False
         super().__init__()
         
     def _forward(self):
