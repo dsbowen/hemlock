@@ -251,14 +251,14 @@ class Page(BranchingBase, CompileBase, db.Model):
         Send method to task queue, then render loading page.
         """
         db.session.commit()
-        current_app.task_queue.enqueue(
+        job = current_app.task_queue.enqueue(
             'hemlock.app.tasks.model_method',
             model_class=type(self),
             id=self.id,
             method_name=method_name,
             namespace='/'+self.model_id
         )
-        html = render_template(self.loading_template, page=self)
+        html = render_template(self.loading_template, page=self, job=job)
         return super().render(html)
 
     def compile(self):

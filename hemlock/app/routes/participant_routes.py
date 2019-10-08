@@ -1,6 +1,6 @@
 """Routes for experiment Participants"""
 
-from hemlock.app.factory import bp, db
+from hemlock.app.factory import bp, db, socketio
 from hemlock.database.models import Participant, Page
 from hemlock.question_polymorphs import Text
 from hemlock.database.private import DataStore, PageHtml
@@ -8,6 +8,7 @@ from hemlock.database.private import DataStore, PageHtml
 from datetime import datetime, timedelta
 from flask import current_app, flash, jsonify, Markup, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
+import rq
 
 """Initial views and functions"""
 @bp.route('/')
@@ -186,3 +187,9 @@ def navigate(part, page):
     page._submit_finished = False
     db.session.commit()
     return redirect(url_for('hemlock.survey'))
+
+@bp.route('/check_job_status')
+def check_job_status():
+    job_id = request.args.get('job_id')
+    job = rq.job.Job.fetch(job_id, connection=current_app.redis)
+    return {'job_finished': job.is_finished}

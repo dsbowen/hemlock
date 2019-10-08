@@ -26,20 +26,31 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
 <script src="{{ url_for('static', filename='js/default.min.js') }}"></script>
 <script type="text/javascript" charset="utf-8">
-    $(document).ready(function(){
-        var socket = io.connect($SOCKET_URL+"/{{ page.model_id }}");
-        socket.on("connect", function() {
-            console.log("Socket connected");
-        });
-        socket.on("job_started", function() {
-            console.log("Job started");
-        });
-        socket.on("job_finished", function() {
-            console.log("Job finished");
-            window.location.replace(
-                "{{ url_for('hemlock.survey') }}"
-            );
+$(document).ready(function() {
+    var socket = io.connect($SOCKET_URL+"/{{ page.model_id }}");
+    var job_status_url = (
+        "{{ url_for('hemlock.check_job_status', job_id=job.get_id()) }}"
+    );
+    socket.on("connect", function() {
+        console.log("Socket connected");
+        $.get(job_status_url, function(e) {
+            if (e.job_finished) {
+                console.log("Job finished")
+                window.location.replace(
+                    "{{ url_for('hemlock.survey') }}"
+                );
+            };
         });
     });
+    socket.on("job_started", function() {
+        console.log("Job started");
+    });
+    socket.on("job_finished", function() {
+        console.log("Job finished");
+        window.location.replace(
+            "{{ url_for('hemlock.survey') }}"
+        );
+    });
+});
 </script>
 {% endblock %}
