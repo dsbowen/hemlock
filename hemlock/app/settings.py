@@ -6,6 +6,7 @@ time_limit and status_logger_period must be in 'hh:mm:ss' format.
 from hemlock.app.setting_utils import *
 
 from datetime import datetime, timedelta
+from flask import Markup
 from glob import glob
 from werkzeug.security import generate_password_hash
 import os
@@ -22,14 +23,15 @@ default_settings = {
     'nav': None,
     'page_compile_functions': [default_compile_function],
     'page_submit_functions': [default_submit_function],
-    'page_debug': None,
+    'page_validate_functions': [default_validate_function],
+    # 'page_debug': None,
     'password': '',
-    'question_get_functions': [],
-    'question_post_functions': [],
-    'question_validators': [],
-    'question_debug': None,
+    'question_compile_functions': [],
     'question_div_classes': ['form-group', 'question'],
-    'question_interval': None,
+    'question_submit_functions': [],
+    'question_validate_functions': [],
+    # 'question_debug': None,
+    # 'question_interval': None,
     'restart_option': True,
     'restart_text': RESTART,
     'screenout_folder': 'screenouts',
@@ -47,7 +49,7 @@ default_settings = {
     'worker_js': ['js/default.min.js'],
     'worker_template': 'default_worker.html',
     'worker_content': WORKER_CONTENT
-    }
+}
     
 def get_settings(settings):
     """Get application settings
@@ -67,10 +69,15 @@ def get_settings(settings):
     to_list(settings, 'css')
     to_list(settings, 'js')
     to_list(settings, 'screenout_keys')
+    to_list(settings, 'worker_js')
+    to_Markup(settings, 'back_button')
+    to_Markup(settings, 'forward_button')
+    to_Markup(settings, 'worker_content')
     to_timedelta(settings, 'time_limit')
     to_timedelta(settings, 'status_log_period')
     settings['password_hash'] = generate_password_hash(
-        settings.pop('password'))
+        settings.pop('password')
+    )
     cwd = os.getcwd()
     static = os.path.join(cwd, settings.pop('static_folder'))
     templates = os.path.join(cwd, settings.pop('template_folder'))
@@ -83,6 +90,12 @@ def to_list(settings, key):
         settings[key] = []
     if isinstance(item, str):
         settings[key] = [item]
+
+def to_Markup(settings, key):
+    """Convert setting item to Markup"""
+    item = settings[key]
+    if not isinstance(item, Markup):
+        settings[key] = Markup(item)
 
 def to_timedelta(settings, key):
     """Convert time expressed as 'hh:mm:ss' to timedelta object"""
@@ -100,7 +113,8 @@ def get_screenouts(app):
     app.screenouts = df.to_dict(orient='list')
 
 class Config():
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
+    """Application configuration object"""
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'secret-key'
     SQLALCHEMY_DATABASE_URI = (
         os.environ.get('DATABASE_URL') 
         or 'sqlite:///'+os.path.join(os.getcwd(), 'data.db')
@@ -108,4 +122,3 @@ class Config():
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
     WKHTMLTOIMAGE = os.environ.get('WKHTMLTOIMAGE')
-    

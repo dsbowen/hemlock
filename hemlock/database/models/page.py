@@ -95,13 +95,6 @@ class Page(BranchingBase, CompileBase, db.Model):
         )
     
     """Function relationships and workers"""
-    compile_finished = db.Column(db.Boolean)
-    post_request = db.Column(db.Boolean)
-    record_response_finished = db.Column(db.Boolean)
-    validate_finished = db.Column(db.Boolean)
-    submit_finished = db.Column(db.Boolean)
-    navigate_finished = db.Column(db.Boolean)
-
     _compile_functions = db.relationship(
         'CompileFunction',
         backref='page',
@@ -115,7 +108,13 @@ class Page(BranchingBase, CompileBase, db.Model):
     )
     cache_compile = db.Column(db.Boolean)
 
-    validator_worker = db.relationship(
+    _validate_functions = db.relationship(
+        'ValidateFunction',
+        backref='page',
+        order_by='ValidateFunction.index',
+        collection_class=ordering_list('index')
+    )
+    validate_worker = db.relationship(
         'ValidatorWorker',
         backref='page',
         uselist=False
@@ -134,12 +133,12 @@ class Page(BranchingBase, CompileBase, db.Model):
     )
 
     _navigator_finished = db.Column(db.Boolean, default=False)
-    _navigator = db.relationship(
-        'Navigator', 
+    _navigate_function = db.relationship(
+        'NavigateFunction', 
         backref='page', 
         uselist=False
     )
-    navigator_worker = db.relationship(
+    navigate_worker = db.relationship(
         'NavigatorWorker',
         backref='page', 
         uselist=False
@@ -150,10 +149,12 @@ class Page(BranchingBase, CompileBase, db.Model):
     css = db.Column(MutableListType)
     _direction_from = db.Column(db.String(8))
     _direction_to = db.Column(db.String(8))
+    error = db.Column(db.Text)
     _forward = db.Column(db.Boolean)
     forward_button = db.Column(MarkupType)
     js = db.Column(MutableListType)
-    question_html = db.Column(MarkupType)
+    _nav_html = db.Column(MarkupType)
+    _question_html = db.Column(MarkupType)
     survey_template = db.Column(db.String)
     terminal = db.Column(db.Boolean)
     view_template = db.Column(db.String)
@@ -203,9 +204,9 @@ class Page(BranchingBase, CompileBase, db.Model):
             validator_worker=None, submit_worker=None, submit_functions=[], 
             navigator_worker=None, navigator=None,
             back=None, back_button=None, css=None, 
-            forward=True, forward_button=None, js=None, loading_template=None,
+            forward=True, forward_button=None, js=None,
             survey_template=None, terminal=False, view_template=None
-            ):        
+        ):        
         self.set_branch(branch, index)
         self.back_to = back_to
         self.forward_to = forward_to
@@ -249,14 +250,6 @@ class Page(BranchingBase, CompileBase, db.Model):
     def reset_timer(self):
         self.timer.data = 0
 
-    def reset_nav_status(self):
-        self.compile_finished = False
-        self.post_request = False
-        self.record_response_finished = True
-        self.validate_finished = True
-        self.submit_finished = True
-        self.navigate_finished = True
-
     def is_valid(self):
         return all([q.error is None for q in self.questions])
     
@@ -268,35 +261,34 @@ class Page(BranchingBase, CompileBase, db.Model):
         )
 
     """Methods executed during study"""
-    def compile(self):
+    def _compile(self):
         """Compile html
         
         1. Execute compile functions
-        2. Compile and join question html
+        2. Compile message and question html
         3. If compile results are cached, remove get worker and functions
-        4. Indicate that compile function has completed
         """
         [compile_function() for compile_function in self.compile_functions]
-        self.question_html = Markup(''.join(
-            [q.compile_html() for q in self.questions]
+        self._nav_html = self.nav.render() if self.nav is not None else ''
+        self._question_html = Markup(''.join(
+            [q._compile() for q in self.questions]
         ))
         if self.cache_compile:
             self.compile_worker = None
             self.compile_functions.clear()
-        self.update_route_status('render')
+        self._update_route_status('render')
     
-    def render(self):
+    def _render(self):
         self.start_time = datetime.utcnow()
         html = render_template(self.survey_template, page=self)
-        return super().render(html)
+        return super()._render(html)
 
-    def record_response(self):
+    def _record_response(self):
         self._update_timer()
-        self._request_method = 'POST'
         self.direction_from = request.form['direction']
-        [q.record_response(request.form.getlist(q.model_id)) 
+        [q._record_response(request.form.getlist(q.model_id)) 
             for q in self.questions]
-        self.update_route_status('validate')
+        self._update_route_status('validate')
     
     def _update_timer(self):
         if self.start_time is None:
@@ -304,21 +296,26 @@ class Page(BranchingBase, CompileBase, db.Model):
         delta = (datetime.utcnow() - self.start_time).total_seconds()
         self.timer.data += delta
     
-    def validate(self):
+    def _validate(self):
         """Validate responses"""
-        if not all ([q.validate() for q in self.questions]):
-            self.direction_from = 'invalid'
+        for validate_function in self.validate_functions:
+            self.error = validate_function()
+            if self.error is not None:
+                self.direction_from = 'invalid'
+                return False
         self.update_route_status('submit')
+        return True
     
-    def submit(self):
+    def _submit(self):
         """Submit page"""
-        [q.record_data() for q in self.questions]
+        [q._record_data() for q in self.questions]
         [submit_function() for submit_function in self.submit_functions]
         self.update_route_status('navigate')
     
-    def update_route_status(self, status):
+    def _update_route_status(self, status):
+        """Update route status of participant"""
         if self.part is not None:
-            self.part.route_status = status
+            self.part._route_status = status
     
     def view_nav(self, indent):
         """Print self and next branch for debugging purposes"""

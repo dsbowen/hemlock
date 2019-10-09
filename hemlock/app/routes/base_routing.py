@@ -1,7 +1,7 @@
 """Base routing functions"""
 
 from hemlock.app.factory import bp, db, login_manager
-from hemlock.database.models import Participant, Navbar, Brand, Navitem, Dropdownitem
+from hemlock.database import Participant, Navbar, Brand, Navitem, Dropdownitem
 from hemlock.database.private import DataStore
 
 from flask import current_app, url_for
@@ -26,19 +26,33 @@ def init_app():
         func=log_current_status, trigger='interval',
         seconds=current_app.status_log_period.seconds,
         args=[current_app._get_current_object()], id='log_status'
-        )
+    )
 
 def create_researcher_navbar():
+    """Create researcher navigation bar"""
     navbar = Navbar(name='researcher_navbar')
     Brand(bar=navbar, label='Hemlock')
     Navitem(
-        bar=navbar, url=url_for('hemlock.participants'), label='Participants')
-    Navitem(bar=navbar, url=url_for('hemlock.download'), label='Download')
-    Navitem(bar=navbar, url=url_for('hemlock.logout'), label='Logout')
+        bar=navbar, url=url_for('hemlock.participants'), label='Participants'
+    )
+    Navitem(
+        bar=navbar, url=url_for('hemlock.download'), label='Download'
+    )
+    Navitem(
+        bar=navbar, url=url_for('hemlock.logout'), label='Logout'
+    )
     return navbar
 
 def log_current_status(app):
+    """Log participants' status"""
     with app.app_context():
         ds = DataStore.query.first()
         ds.log_status()
         db.session.commit()
+
+@bp.route('/check_job_status')
+def check_job_status():
+    """Check the status of a job in the Redis queue"""
+    job_id = request.args.get('job_id')
+    job = rq.job.Job.fetch(job_id, connection=current_app.redis)
+    return {'job_finished': job.is_finished}

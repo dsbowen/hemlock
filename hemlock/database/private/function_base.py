@@ -54,11 +54,12 @@ class FunctionBase(Base):
         return [self._to_function_model(f, model) for f in funcs]
 
 
-class BranchingBase(FunctionBase):
+class BranchingMixin(FunctionBase):
     """Base class for Branch and Page models
     
     Defines additional methods for growing new branches.
     """
+    _navigate_finished = db.Column(db.Boolean, default=False)
     
     def _eligible_to_insert_branch(self):
         """Indicate that object is eligible to grow and insert next branch

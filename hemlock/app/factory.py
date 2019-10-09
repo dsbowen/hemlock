@@ -14,7 +14,6 @@ from redis import Redis
 from rq import Queue
 import eventlet
 
-"""Flask and Hemlock extensions"""
 bootstrap = Bootstrap()
 bp = Blueprint('hemlock', __name__)
 db = SQLAlchemy()
@@ -29,8 +28,7 @@ socketio = SocketIO(async_mode='eventlet')
 def create_app(settings):
     """Application factory
     
-    Begins with settings and configuration. Then registers blueprint and 
-    extensions.
+    First configure the application. Then initialize extensions.
     """
     settings, static, templates = get_settings(settings)
     app = Flask(__name__, static_folder=static, template_folder=templates)
@@ -38,11 +36,10 @@ def create_app(settings):
     app.config.from_object(Config)
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = Queue('hemlock-task-queue', connection=app.redis)
-    
+    app.register_blueprint(bp)
     get_screenouts(app)
     
     bootstrap.init_app(app)
-    app.register_blueprint(bp)
     db.init_app(app)
     login_manager.init_app(app)
     scheduler.init_app(app)

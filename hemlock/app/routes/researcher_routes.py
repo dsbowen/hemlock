@@ -2,52 +2,70 @@
 
 from hemlock.app.factory import bp, db
 from hemlock.app.routes.researcher_texts import *
-from hemlock.database import Navbar, Page, Choice, Validator
-from hemlock.question_polymorphs import Free, MultiChoice, Text
+from hemlock.database import Navbar, Page, Choice, Validate
 from hemlock.database.private import DataStore
+from hemlock.question_polymorphs import Free, MultiChoice, Text
 
-from flask import current_app, flash, Markup, redirect, request, session, url_for
+from flask import Markup, current_app, redirect, request, session, url_for
 from functools import wraps
 from werkzeug.security import check_password_hash
 
-
+"""Researcher login"""
 @bp.route('/login', methods=['GET','POST'])
 def login():
+    """Login view function"""
+    login_page = get_login_page()
     if request.method == 'POST':
-        login_page = Page.query.get(session['login_page_id'])
-        session['logged_in'] = login_page._submit() == 'forward'
+        session['logged_in'] = login_page._validate()
         if session['logged_in']:
             requested = request.args.get('requested') or 'participants'
             return redirect(url_for('hemlock.{}'.format(requested)))
-    else:
-        login_page = Page(back=False, forward_button=LOGIN_BUTTON)
-        q = Free(login_page, text=PASSWORD_PROMPT)
-        Validator(q, validate=check_password)
-        session['login_page_id'] = login_page.id
+    login_page._compile()
     db.session.commit()
-    return login_page.compile_html()
+    return login_page._render()
 
-def check_password(question):
-    password = '' if question.response is None else question.response
+def get_login_page():
+    """Get login page
+
+    Create login page if one does not exist already.
+    """
+    if 'login_page_id' in session:
+        return Page.query.get(session['login_page_id'])
+    login_page = Page(back=False, forward_button=LOGIN_BUTTON)
+    Validate(login_page, check_password)
+    Free(login_page, text=PASSWORD_PROMPT)
+    session['login_page_id'] = login_page.id
+    return login_page
+
+def check_password(login_page):
+    """Check the input password against researcher password"""
+    q = login_page.questions[0]
+    password = '' if q.response is None else q.response
     if not check_password_hash(current_app.password_hash, password):
         return PASSWORD_INCORRECT
 
 def researcher_login_required(func):
+    """Decorator requiring researcher login"""
     @wraps(func)
     def login_requirement():
         if 'logged_in' not in session or not session['logged_in']:
-            session.pop('_flashes', None)
-            flash(LOGIN_REQUIRED)
+            get_login_page().error = LOGIN_REQUIRED
+            db.session.commit()
             return redirect(url_for('hemlock.login', requested=func.__name__))
         return func()
     return login_requirement
     
+"""Researcher dashboard"""
 def researcher_navbar():
     return Navbar.query.filter_by(name='researcher_navbar').first()
     
 @bp.route('/participants', methods=['GET','POST'])
 @researcher_login_required
 def participants():
+    """View participant's status
+
+    This page displays streamed data on participant status.
+    """
     p = Page(nav=researcher_navbar(), back=False, forward=False)
     p.js.append(current_app.socket_js)
     p.js.append('js/participants.min.js')
@@ -58,8 +76,9 @@ def participants():
 @bp.route('/download', methods=['GET','POST'])
 @researcher_login_required
 def download():
+    """Download data"""
     p = Page(nav=researcher_navbar(), back=False)
-    p.forward_button=DOWNLOAD_BUTTON
+    p.forward_button = DOWNLOAD_BUTTON
     q = MultiChoice(p, text=DOWNLOAD)
     Choice(q, text="Metadata")
     Choice(q, text="Status Log")
@@ -67,6 +86,7 @@ def download():
     return p.compile_html()
 
 @bp.route('/logout')
+@reseacher_login_required
 def logout():
     session['logged_in'] = False
     return redirect(url_for('hemlock.login'))

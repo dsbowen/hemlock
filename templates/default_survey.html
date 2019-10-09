@@ -21,18 +21,13 @@
 <div class="container h-100">
 <div class="row h-100 justify-content-center align-items-center">
 <form method="POST" class="submit-once col-12">
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-danger" style="text-align:center;">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
     <page id="{{ page.model_id }}"/>
+    {% if page.error is not none %}
+        <div class="alert alert-danger w-100" style="text-align:center;">
+            {{ page.error }}
+        </div>
+    {% endif %}
+
     {{ page.question_html }}
     <br/>
     {% if page.back %}

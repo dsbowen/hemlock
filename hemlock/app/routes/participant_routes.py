@@ -1,22 +1,12 @@
-"""Routes for experiment Participants
+"""Routes for participants
 
-Workers integrate with the main survey route as follows:
-1. Based on the request method, the survey view function returns a get() or 
-post() function.
-2. If a subroutine of the get() or post() function requires a worker, the
-function sends the subroutine to a Redis queue and renders a temporary loading
-page.
-3. The loading page connects a socket listening on a dedicated namespace for 
-the page which called the worker.
-4. A worker grabs the subroutine from the Redis queue and executes it. When
-finished, the page to which the subroutine belongs stores an indicator that
-the job has finished.
-5. When the worker finishes executing the subroutine, it emits a 
-'job_finished' message on the dedicated namespace.
-6. Upon receiving the 'job_finished' message, the socket calls a function to
-replace the window location with a new call to the survey route. Because the
-page now indicates that the subroutine has finished, it knows not to execute
-the subroutine again on the new request.
+This file is responsible for the participant's initial view code s, as well 
+as screenout and duplicate handling. On a request to the index route, it 
+determines whether participants are screened out, redirected to the restart 
+page, or redirected to the main survey route. The main survey route is handled 
+by the RouteHandlerMixin.
+
+See hemlock/database/private/route_handler_mixin.py
 """
 
 from hemlock.app.factory import bp, db, socketio
@@ -25,7 +15,7 @@ from hemlock.question_polymorphs import Text
 from hemlock.database.private import DataStore, PageHtml
 
 from datetime import datetime, timedelta
-from flask import current_app, flash, jsonify, Markup, redirect, render_template, request, url_for
+from flask import Markup, current_app, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 import rq
 
@@ -76,7 +66,7 @@ def initialize_participant(meta):
     current_app.apscheduler.add_job(
         func=time_out, trigger='date', run_date=end_time, 
         args=(current_app._get_current_object(), part.id), id=str(part.id)
-        )
+    )
         
 def time_out(app, part_id):
     """Indicate Participant time has expired"""
@@ -99,11 +89,11 @@ def is_duplicate(meta):
     return match_found(visitor=meta, tracked=tracked_meta, keys=keys)
 
 def match_found(visitor, tracked, keys):
-    """Indicate that this visitor should be screened out
+    """Indicate visitor metadata matches tracked metadata on one or more keys
     
     This function compares the metadata of a visitor (visitor) to a dict
     of tracked metadata (tracked). Tracked metadata may be from screenouts 
-    or previous study participants. 
+    or previous study participants.
     
     Keys specifies the keys on which to look for a match between the visitor 
     metadata and tracked metadata.
@@ -112,7 +102,8 @@ def match_found(visitor, tracked, keys):
         visitor_val = visitor.get(key)
         tracked_vals = tracked.get(key)
         if (visitor_val is not None and tracked_vals is not None 
-            and visitor_val in tracked_vals):
+            and visitor_val in tracked_vals
+        ):
             return True
     return False
 
@@ -124,6 +115,7 @@ def screenout():
     return p.render()
     
 @bp.route('/restart', methods=['GET','POST'])
+@login_required
 def restart():
     """Restart option
     
@@ -145,18 +137,4 @@ def restart():
 @bp.route('/survey', methods=['GET','POST'])
 @login_required
 def survey():
-    """Main survey route
-
-    If time has expired, render the current page with a time expired message. 
-    Otherwise, return a function for a GET or POST request. Note that a POST 
-    request may be 'in progress' due to callbacks from the Redis queue. In 
-    progress POST requests are indicated by page._request_methd.
-    """
-    return current_user._navigate()
-
-@bp.route('/check_job_status')
-def check_job_status():
-    """Check the status of a job"""
-    job_id = request.args.get('job_id')
-    job = rq.job.Job.fetch(job_id, connection=current_app.redis)
-    return {'job_finished': job.is_finished}
+    return current_user._survey_route()

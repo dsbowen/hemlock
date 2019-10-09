@@ -1,6 +1,24 @@
 """Route handler mixin
 
 Handles main survey routing. Subclassed by Participant
+
+Workers integrate with the main survey route as follows:
+1. Based on the request method, the survey view function returns a get() or 
+post() function.
+2. If a subroutine of the get() or post() function requires a worker, the
+function sends the subroutine to a Redis queue and renders a temporary loading
+page.
+3. The loading page connects a socket listening on a dedicated namespace for 
+the page which called the worker.
+4. A worker grabs the subroutine from the Redis queue and executes it. When
+finished, the page to which the subroutine belongs stores an indicator that
+the job has finished.
+5. When the worker finishes executing the subroutine, it emits a 
+'job_finished' message on the dedicated namespace.
+6. Upon receiving the 'job_finished' message, the socket calls a function to
+replace the window location with a new call to the survey route. Because the
+page now indicates that the subroutine has finished, it knows not to execute
+the subroutine again on the new request.
 """
 
 from hemlock.app import db
@@ -16,7 +34,7 @@ class RouteHandlerMixin(Base):
         self.route_status = 'compile'
         super().__init__(*args, **kwargs)
 
-    def _navigate(self):
+    def _survey_route(self):
         if self.time_expired:
             flash(current_app.time_expired_text)
             return self.current_page.render()

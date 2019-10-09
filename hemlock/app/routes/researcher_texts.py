@@ -1,17 +1,18 @@
+"""Texts for researcher routes"""
 
-
-from hemlock.app.setting_utils import FORWARD_BUTTON_GENERIC
+from hemlock.app.setting_utils import FORWARD_BUTTON_TEMPLATE
 
 from flask import Markup
 
 PASSWORD_PROMPT = '<p>Please enter your password.</p>'
 
-PASSWORD_INCORRECT = '<p>The password you entered was incorrect.</p>'
+PASSWORD_INCORRECT = 'The password you entered was incorrect.'
 
 LOGIN_REQUIRED = 'Login required to access this page.'
 
 LOGIN_BUTTON = Markup(
-    FORWARD_BUTTON_GENERIC.format(classes='w-100', text='Login'))
+    FORWARD_BUTTON_TEMPLATE.format(classes='w-100', text='Login')
+)
 
 PARTICIPANTS = """
 <table align="center" style="width:50%">
@@ -41,4 +42,5 @@ PARTICIPANTS = """
 DOWNLOAD = "<p>Select files to download.</p>"
 
 DOWNLOAD_BUTTON = Markup(
-    FORWARD_BUTTON_GENERIC.format(classes='w-100', text='Download'))
+    FORWARD_BUTTON_TEMPLATE.format(classes='w-100', text='Download')
+)

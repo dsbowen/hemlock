@@ -1,7 +1,8 @@
 """Choice database model
 
-Question of certain question types, such as multiple choice, contain a list of Choices. Each choice specifies:
-    
+Certain Question polymorphs, such as MultiChoice, contain a list of Choices. 
+
+Each choice specifies:    
 1. A text: to be displayed on the page
 2. A value: stored as the Question's data by default
 3. A label: to identify the Choice when the data are downloaded
@@ -29,7 +30,8 @@ class Choice(CompileBase, db.Model):
     
     def __init__(
             self, question=None, index=None,
-            text=None, label=None, value=None, debug=None):
+            text=None, label=None, value=None
+        ):
         self.set_question(question, index)
         self.set_all(text)
         self.value = value if value is not None else self.value
@@ -43,27 +45,29 @@ class Choice(CompileBase, db.Model):
         """Set text, value, and label to the same value"""
         self.text = self.label = self.value = text
     
-    def compile_html(self):
-        question=self.question
-        classes = ' '.join(question.choice_div_classes)
-        checked = 'checked' if self.is_default() else ''
-        input = INPUT.format(
-            cid=self.model_id, qid=question.model_id,
-            type=question.choice_input_type, checked=checked
-            )
-        text = self.text or ''
-        label = LABEL.format(cid=self.model_id, text=text)
-        return DIV.format(classes=classes, input=input, label=label)
-    
     def is_default(self):
         """Indicate if self is a default choice
-        
-        Question default is assumed to a be a choice or list of choices.
+
+        Default is assumed to a be a choice or list of choices.
         """
         default = self.question.response or self.question.default
         if isinstance(default, list):
             return self in default
         return self == default
+
+    def _compile(self):
+        """Compile html"""
+        question = self.question
+        classes = ' '.join(question.choice_div_classes)
+        checked = 'checked' if self.is_default() else ''
+        input = INPUT.format(
+            choice_id=self.model_id, question_id=question.model_id,
+            type=question.choice_input_type, checked=checked
+        )
+        text = self.text or ''
+        label = LABEL.format(choice_id=self.model_id, text=text)
+        return DIV.format(classes=classes, input=input, label=label)
+
 
 DIV = """
 <div class="{classes}">
@@ -73,12 +77,11 @@ DIV = """
 """
 
 INPUT = """
-<input id="{cid}" value="{cid}" name="{qid}" class="custom-control-input" type="{type}" {checked}>
+<input id="{choice_id}" value="{choice_id}" name="{question_id}" class="custom-control-input" type="{type}" {checked}>
 """
 
 LABEL = """
-<label class="custom-control-label w-100 choice" for="{cid}">
+<label class="custom-control-label w-100 choice" for="{choice_id}">
     {text}
 </label>
-"""
-        
+"""       
