@@ -36,12 +36,6 @@ init_default: initial default response. If changed, default can be reset to
     its initial value with question.reset_default()
 text: Question text
 var: name of the variable to which this Question contributes data
-
-Function Columns:
-
-compile: run before html is compiled
-debug: run during debugging
-post: run after data are recorded
 """
 
 from hemlock.app import db
@@ -61,6 +55,7 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
         'polymorphic_on': type
         }
     
+    """Relationships to primary models"""
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     _page_timer_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     index = db.Column(db.Integer)
@@ -73,43 +68,45 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
         order_by='Choice.index',
         collection_class=ordering_list('index'),
         foreign_keys='Choice._question_id'
-        )
+    )
     
     selected_choices = db.relationship(
         'Choice',
         order_by='Choice._selected_index',
         collection_class=ordering_list('_selected_index'),
         foreign_keys='Choice._selected_id'
-        )
+    )
     
     nonselected_choices = db.relationship(
         'Choice',
         order_by='Choice._nonselected_index',
         collection_class=ordering_list('_nonselected_index'),
         foreign_keys='Choice._nonselected_id'
-        )
-        
-    _compile_functions = db.relationship(
+    )
+    
+    """Relationships to function models"""
+    compile_functions = db.relationship(
         'CompileFunction',
         backref='question',
         order_by='CompileFunction.index',
         collection_class=ordering_list('index')
     )
 
-    _validators = db.relationship(
-        'Validator', 
+    validate_functions = db.relationship(
+        'Validate', 
         backref='question', 
-        order_by='Validator.index',
-        collection_class=ordering_list('index')
-        )
-    
-    _submit_functions = db.relationship(
-        'SubmitFunction',
-        backref='question',
-        order_by='SubmitFunction.index',
+        order_by='Validate.index',
         collection_class=ordering_list('index')
     )
-        
+    
+    submit_functions = db.relationship(
+        'Submit',
+        backref='question',
+        order_by='Submit.index',
+        collection_class=ordering_list('index')
+    )
+    
+    """Columns"""
     all_rows = db.Column(db.Boolean)
     data = db.Column(MutableType)
     default = db.Column(MutableType)
@@ -122,23 +119,24 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
     
     def __init__(
             self, page=None, index=None,
-            get_functions=[], validators=[], post_functions=[],
-            choice_div_classes=[], choice_input_type=None, choices=[], 
+            choice_div_classes=[], choice_input_type=None, choices=[],
+            compile_functions=[], validate_functions=[], submit_functions=[],
             all_rows=False, data=None, default=None, div_classes=[], 
             text=None, var=None, debug=None
-            ):
+        ):
         self.set_page(page, index)
         self.choice_div_classes = choice_div_classes
         self.choice_input_type = choice_input_type
         self.choices = choices
-        self.get_functions = (
-            get_functions or current_app.question_get_functions
+
+        self.compile_functions = (
+            compile_functions or current_app.question_compile_functions
         )
-        self.validators = (
-            validators or current_app.question_validators
+        self.validate_functions = (
+            validate_functions or current_app.question_validate_functions
         )
-        self.post_functions = (
-            post_functions or current_app.question_post_functions
+        self.submit_functions = (
+            submit_functions or current_app.question_submit_functions
         )
         
         self.all_rows = all_rows
@@ -155,16 +153,16 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
         self._set_parent(page, index, 'page', 'questions')
     
     """Methods executed during study"""
-    def compile_html(self, content=''):
+    def _compile(self, content=''):
         """HTML compiler"""
-        div_classes = self.get_div_classes()
-        label = self.get_label()
+        div_classes = self._compile_div_classes()
+        label = self._compile_label()
         return DIV.format(
             id=self.model_id, classes=div_classes, 
             label=label, content=content
-            )
+        )
     
-    def get_div_classes(self):
+    def _compile_div_classes(self):
         """Get question <div> classes
         
         Add the error class if the response was invalid.
@@ -174,38 +172,45 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
             return div_classes + ' error'
         return div_classes
     
-    def get_label(self):
+    def _compile_label(self):
         """Get the question label"""
         error = self.error
         error = '' if error is None else ERROR.format(error=error)
         text = self.text if self.text is not None else ''
         return LABEL.format(id=self.model_id, text=error+text)
 
-    def record_response(self, response):
+    def _record_response(self, response):
         return
         
-    def validate(self):
+    def _validate(self):
         """Validate Participant response
         
-        Keep the error message associated with the first failed Validator.
+        Check validate functions one at a time. If any yields an error 
+        message (i.e. error is not None), indicate the response was invalid 
+        and return False. Otherwise, return True.
         """
-        for validator in self.validators:
-            self.error = validator()
+        for validate_function in self.validate_functions:
+            self.error = validate_function()
             if self.error is not None:
                 return False
         return True
     
-    def record_data(self):
+    def _submit(self):
+        """Submit response
+
+        The question submit method will usually be used for data recording.
+        """
         self.data = self.response
         
-    def pack_data(self, data=None):
+    def _pack_data(self, data=None):
         """Pack data for storing in DataStore
         
         Note: <var>Index is the index of the object; its order within its
         Branch, Page, or Question. <var>Order is the order of the Question
         relative to other Questions with the same variable.
         
-        The optional `data` argument is prepacked data from the question type.
+        The optional `data` argument is prepacked data from the question 
+        polymorph.
         """
         if self.var is None:
             return {}

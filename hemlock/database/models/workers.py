@@ -24,6 +24,7 @@ class WorkerMixin(Base):
     args = db.Column(MutableListType)
     kwargs = db.Column(MutableDictType)
     css = db.Column(MutableListType)
+    job_in_progress = db.Column(db.Boolean, default=False)
     js = db.Column(MutableListType)
     template = db.Column(db.String)
     content = db.Column(MarkupType)
@@ -32,7 +33,9 @@ class WorkerMixin(Base):
     def parent(self):
         if hasattr(self, 'branch') and self.branch is not None:
             return self.branch
-        return self.page
+        if hasattr(self, 'page') and self.page is not None:
+            return self.page
+        return None
 
     def __init__(
             self, method_name=None, args=[], kwargs={}, 
@@ -48,13 +51,20 @@ class WorkerMixin(Base):
         self.template = template or current_app.worker_template
         self.content = content or current_app.worker_content
         super().__init__()
+
+    def perform_job(self):
+        result = getattr(self.parent, self.method_name)()
+        self.job_in_progress = False
+        return result
     
     def __call__(self):
         db.session.commit()
-        job = current_app.task_queue.enqueue(
-            'hemlock.app.tasks.worker',
-            kwargs={'worker_class': type(self), 'worker_id': self.id}
-        )
+        if not self.job_in_progress:
+            job = current_app.task_queue.enqueue(
+                'hemlock.app.tasks.worker',
+                kwargs={'worker_class': type(self), 'worker_id': self.id}
+            )
+            self.job_in_progress = True
         html = render_template(self.template, worker=self, job=job)
         return self.render(html)
 
@@ -62,21 +72,21 @@ class WorkerMixin(Base):
 class CompileWorker(WorkerMixin, db.Model):
     def __init__(self, page=None, *args, **kwargs):
         self.page = page
-        self.method_name = 'compile'
+        self.method_name = '_compile'
         super().__init__(*args, **kwargs)
 
 
 class ValidatorWorker(WorkerMixin, db.Model):
     def __init__(self, page=None, *args, **kwargs):
         self.page = page
-        self.method_name = 'validate'
+        self.method_name = '_validate'
         super().__init__(*args, **kwargs)
 
 
 class SubmitWorker(WorkerMixin, db.Model):
     def __init__(self, page=None, *args, **kwargs):
         self.page = page
-        self.method_name = 'submit'
+        self.method_name = '_submit'
         super().__init__(*args, **kwargs)
 
 
@@ -84,5 +94,5 @@ class NavigatorWorker(WorkerMixin, db.Model):
     def __init__(self, branch=None, page=None, *args, **kwargs):
         self.branch = branch
         self.page = page
-        self.method_name = '_grow_branch'
+        self.method_name = 'navigate_function'
         super().__init__(*args, **kwargs)

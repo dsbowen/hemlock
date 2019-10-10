@@ -85,7 +85,7 @@ class Branch(BranchingMixin, db.Model):
         ]
         return self.embedded + page_questions
         
-    navigate = db.relationship(
+    navigate_function = db.relationship(
         'Navigate',
         backref='branch', 
         uselist=False
@@ -100,11 +100,11 @@ class Branch(BranchingMixin, db.Model):
 
     def __init__(
                 self, pages=[], embedded=[], 
-                navigate=None, navigate_worker=None,
+                navigate_function=None, navigate_worker=None,
             ):       
         self.pages = pages
         self.embedded = embedded
-        self.navigate = navigate
+        self.navigate_function = navigate_function
         self.navigate_worker = navigate_worker
         self.is_root = False
         super().__init__()

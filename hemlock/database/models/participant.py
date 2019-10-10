@@ -17,7 +17,7 @@ updated: indicates Participant data has been updated since last store
 """
 
 from hemlock.app.factory import db
-from hemlock.database.private import Base, DataStore, RouteHandlerMixin
+from hemlock.database.private import Base, DataStore, RouterMixin
 from hemlock.database.types import DataFrame
 from hemlock.database.models.branch import Branch
 
@@ -42,7 +42,7 @@ def send_data(func):
     return status_update
 
 
-class Participant(UserMixin, RouteHandlerMixin, db.Model):
+class Participant(UserMixin, RouterMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     branch_stack = db.relationship(
@@ -51,13 +51,13 @@ class Participant(UserMixin, RouteHandlerMixin, db.Model):
         order_by='Branch.index',
         collection_class=ordering_list('index'),
         foreign_keys='Branch._part_id'
-        )
+    )
         
     current_branch = db.relationship(
         'Branch',
         uselist=False,
         foreign_keys='Branch._part_head_id'
-        )
+    )
     
     @property
     def current_page(self):
@@ -155,7 +155,7 @@ class Participant(UserMixin, RouteHandlerMixin, db.Model):
         they were created (i.e. by id). This is not necessarily the order in 
         which they appeared to the Participant.
         """
-        self.set_order_all()
+        self._set_order_all()
         questions = self.questions
         df = DataFrame()
         df.add(data=self.meta, all_rows=True)
@@ -163,7 +163,7 @@ class Participant(UserMixin, RouteHandlerMixin, db.Model):
         df.pad()
         return df
     
-    def set_order_all(self):
+    def _set_order_all(self):
         """Set the order for all Questions
         
         A Question's order is the order in which it appeared to the 
@@ -174,23 +174,23 @@ class Participant(UserMixin, RouteHandlerMixin, db.Model):
         Pages' Questions. A Page's timer is set before its Questions.
         """
         var_count = {}
-        self.set_order_branch(self.branch_stack[0], var_count)
+        self._set_order_branch(self.branch_stack[0], var_count)
     
-    def set_order_branch(self, branch, var_count):
+    def _set_order_branch(self, branch, var_count):
         """Set the order for Questions belonging to a given Branch"""
-        [self.set_order_question(q, var_count) for q in branch.embedded]
-        [self.set_order_page(p, var_count) for p in branch.pages]
+        [self._set_order_question(q, var_count) for q in branch.embedded]
+        [self._set_order_page(p, var_count) for p in branch.pages]
         if branch.next_branch in self.branch_stack:
-            self.set_order_branch(branch.next_branch, var_count)
+            self._set_order_branch(branch.next_branch, var_count)
     
-    def set_order_page(self, page, var_count):
+    def _set_order_page(self, page, var_count):
         """Set the order for Questions belonging to a given Page"""
         questions = [page.timer]+page.questions
-        [self.set_order_question(q, var_count) for q in questions]
+        [self._set_order_question(q, var_count) for q in questions]
         if page.next_branch in self.branch_stack:
-            self.set_order_branch(page.next_branch, var_count)
+            self._set_order_branch(page.next_branch, var_count)
         
-    def set_order_question(self, question, var_count):
+    def _set_order_question(self, question, var_count):
         """Set the order for a given Question"""
         var = question.var
         if var is None:
@@ -199,112 +199,3 @@ class Participant(UserMixin, RouteHandlerMixin, db.Model):
             var_count[var] = 0
         question.order = var_count[var]
         var_count[var] += 1
-    
-    """Forward navigation"""
-    def forward(self, forward_to=None):
-        """Advance forward to specified Page"""
-        if self._forward_to_id is None:
-            return self._forward_one()
-        while self.current_page.id != self._forward_to_id:
-            loading_page = self._forward_one()
-            if loading_page is not None:
-                return loading_page
-    
-    def _forward_one(self):
-        """Advance forward one page"""
-        if self.current_page is not None and self.current_page._eligible_to_insert_branch():
-            loading_page = self._insert_branch(self.current_page)
-            if loading_page is not None:
-                return loading_page
-        else:
-            self.current_branch._forward()
-        return self._forward_recurse()
-    
-    def _insert_branch(self, origin):
-        """Grow and insert new Branch to branch_stack"""
-        if not origin._navigator_finished:
-            if origin.navigator_worker is not None:
-                print('sending task')
-                return origin.navigator_worker()
-            origin._grow_branch()
-        origin._navigator_finished = False
-        next_branch = origin.next_branch
-        self.branch_stack.insert(self.current_branch.index+1, next_branch)
-        self._increment_head()
-        
-    def _forward_recurse(self):
-        """Recursive forward function
-        
-        Advance forward until the next Page is found (i.e. is not None).
-        """
-        if self.current_page is not None:
-            return
-        if self.current_branch._eligible_to_insert_branch():
-            loading_page = self._insert_branch(self.current_branch)
-            if loading_page is not None:
-                return loading_page
-        else:
-            self._decrement_head()
-            self.current_branch._forward()
-        return self._forward_recurse()
-    
-    """Backward navigation"""
-    def back(self, back_to=None):
-        """Navigate backward to specified Page"""
-        if back_to is None:
-            return self._back_one()
-        while self.current_page.id != back_to.id:
-            self._back_one()
-            
-    def _back_one(self):
-        """Navigate backward one Page"""      
-        if self.current_page == self.current_branch.start_page:
-            self._remove_branch()
-        else:
-            self.current_branch._back()
-        self._back_recurse()
-        
-    def _remove_branch(self):
-        """Remove current branch from the branch stack"""
-        self._decrement_head()
-        self.branch_stack.pop(self.current_branch.index+1)
-        
-    def _back_recurse(self):
-        """Recursive back function
-        
-        Navigate backward until previous Page is found.
-        """
-        if self._found_previous_page():
-            return
-        if self.current_page is None:
-            if self.current_branch.next_branch in self.branch_stack:
-                self._increment_head()
-            elif not self.current_branch.pages:
-                self._remove_branch()
-            else:
-                self.current_branch._back()
-        else:
-            self._increment_head()
-        self._back_recurse()
-    
-    def _found_previous_page(self):
-        """Indicate that previous page has been found in backward navigation
-        
-        The previous page has been found when 1) the Page is not None and
-        2) it does not branch off to another Branch in the stack.
-        """
-        return (
-            self.current_page is not None 
-            and self.current_page.next_branch not in self.branch_stack
-            )
-
-    """General navigation and debugging"""
-    def _increment_head(self):
-        self.current_branch = self.branch_stack[self.current_branch.index+1]
-    
-    def _decrement_head(self):
-        self.current_branch = self.branch_stack[self.current_branch.index-1]
-    
-    def view_nav(self):
-        """Print branch stack for debugging purposes"""
-        self.branch_stack[0].view_nav()
