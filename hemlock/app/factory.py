@@ -10,6 +10,7 @@ from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
+from flask_worker import Manager
 from redis import Redis
 from rq import Queue
 import eventlet
@@ -23,6 +24,7 @@ login_manager.login_message = None
 scheduler = APScheduler()
 eventlet.monkey_patch(socket=True)
 socketio = SocketIO(async_mode='eventlet')
+manager = Manager(db=db, socketio=socketio)
 # viewer = Viewer()
 
 def create_app(settings):
@@ -45,6 +47,7 @@ def create_app(settings):
     scheduler.init_app(app)
     scheduler.start()
     socketio.init_app(app, message_queue=app.config['REDIS_URL'])
+    manager.init_app(app)
     # viewer.init_app(app)
     
     return app

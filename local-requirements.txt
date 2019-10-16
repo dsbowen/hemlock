@@ -6,6 +6,7 @@ flask-bootstrap4
 flask-login
 flask-socketio
 flask-sqlalchemy
+flask-worker
 imgkit
 numpy
 pandas
