@@ -5,7 +5,7 @@
 {% block styles %}
     {% for css_file in page.css %}
         {% if not css_file.startswith('/') %}
-            {% set css_file = url_for('static', filename=css_file) %}
+            {% set css_file = url_for('hemlock.static', filename=css_file) %}
         {% endif %}
         <link rel="stylesheet" type="text/css" href="{{ css_file }}"/>
     {% endfor %}
@@ -46,7 +46,7 @@
     {{ super() }}
     {% for js_file in page.js %}
         {% if not js_file.startswith('/') %}
-            {% set js_file = url_for('static', filename=js_file) %}
+            {% set js_file = url_for('hemlock.static', filename=js_file) %}
         {% endif %}
         <script type="text/javascript" src="{{ js_file }}"></script>
     {% endfor %}

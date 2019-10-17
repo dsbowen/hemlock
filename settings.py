@@ -3,7 +3,9 @@
 from survey import Start
 
 settings = {
-    'back': True,
     'duplicate_keys': [],
-    'start': Start
+    'start': Start,
+    'page_settings': {
+        'back': True
+    }
 }

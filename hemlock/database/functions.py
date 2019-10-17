@@ -91,11 +91,11 @@ class Navigate(FunctionMixin, Base, db.Model):
         next_branch = super().__call__()
         assert isinstance(next_branch, Branch)
         if self.parent is not None:
-            self._set_relationships(self.parent)
+            self._set_relationships(self.parent, next_branch)
         next_branch.current_page = next_branch.start_page
         return next_branch
 
-    def _set_relationships(self, parent):
+    def _set_relationships(self, parent, next_branch):
         """Set relationships between next_branch and its origin"""
         parent.next_branch = next_branch
         if isinstance(parent, Branch):

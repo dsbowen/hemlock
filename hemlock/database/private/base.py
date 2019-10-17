@@ -56,7 +56,8 @@ class BranchingBase(Base):
         the next branch is not already in the branch_stack.
         """
         return (
-            self.navigator and self.next_branch not in self.part.branch_stack
+            self.navigate_function is not None 
+            and self.next_branch not in self.part.branch_stack
         )
 
 

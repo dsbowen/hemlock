@@ -8,14 +8,28 @@ from random import shuffle
 
 def Start():
     b = Branch()
-    p = Page(b)
-    Compile(p, complex_task, args=[5])
-    CompileWorker(p)
-    q = Text(p, text='Hello World')
+    p1 = Page(b)
+    Navigate(p1, Branch2)
+    NavigateWorker(p1)
+    q = Text(p1, text='Hello World')
+
+    p2 = Page(b)
+    q = Text(p2, text='goodbye world')
+
+    p1.forward_to = p2
+
     return b
 
-import time
-def complex_task(page, seconds):
-    for i in range(seconds):
-        print(100.0*i/seconds)
-        time.sleep(1)
+def Branch2(root):
+    b = Branch()
+    Navigate(b, Branch3)
+    NavigateWorker(b)
+    p = Page(b)
+    q = Text(p, text='hello moon')
+    return b
+
+def Branch3(root):
+    b = Branch()
+    p = Page(b)
+    q = Text(p, text='hello star')
+    return b

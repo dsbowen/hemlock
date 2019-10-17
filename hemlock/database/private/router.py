@@ -15,7 +15,7 @@ backward and forward navigation.
 
 from hemlock.app import db
 
-from flask import current_app, request
+from flask import current_app, request, redirect, url_for
 from flask_worker import RouterMixin as RouterMixinBase
 from flask_worker import set_route
 
@@ -211,8 +211,8 @@ class Navigator(RouterMixin, db.Model):
     def insert_branch(self, origin):
         """Grow and insert new branch into the branch stack"""
         return self.run_worker(
-            origin.navigate_function, origin.navigate_worker, self._insert_branch,
-            args=[origin]
+            origin.navigate_function, origin.navigate_worker, 
+            self._insert_branch, args=[origin]
         )
     
     def _insert_branch(self, origin):
@@ -230,7 +230,7 @@ class Navigator(RouterMixin, db.Model):
         if self.page is not None:
             return
         if self.branch._eligible_to_insert_branch():
-            return self.insert_branch(branch)
+            return self.insert_branch(self.branch)
         self.decrement_head()
         self.branch._forward()
         return self.forward_recurse()
@@ -239,7 +239,7 @@ class Navigator(RouterMixin, db.Model):
     def back(self, back_to=None):
         """Navigate backward to specified Page"""
         if back_to is None:
-            return self._back_one()
+            return self.back_one()
         while self.current_page != back_to:
             self.back_one()
             

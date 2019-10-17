@@ -1,20 +1,30 @@
 """Worker models"""
 
 from hemlock.app import db
+from hemlock.database import Branch, Page
+from hemlock.database.private import Base
 
 from flask_worker import WorkerMixin as WorkerBaseMixin
+from sqlalchemy.ext.declarative import declared_attr
 
 
-class WorkerMixin(WorkerBaseMixin, db.Model):
+class WorkerMixin(WorkerBaseMixin, Base):
     id = db.Column(db.Integer, primary_key=True)
-    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+
+    @declared_attr
+    def _page_id(self):
+        return db.Column(db.Integer, db.ForeignKey('page.id'))
 
     @property
     def employer(self):
         return self.page
 
-    def __init__(self, page=None, *args, **kwargs):
-        self.page = page
+    @employer.setter
+    def employer(self, value):
+        self.page = value
+
+    def __init__(self, employer=None, *args, **kwargs):
+        self.employer = employer
         super().__init__(*args, **kwargs)
 
 
@@ -32,12 +42,21 @@ class SubmitWorker(WorkerMixin, db.Model):
 
 class NavigateWorker(WorkerMixin, db.Model):
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
-    method_name = '_navigate'
+    method_name = 'navigate_function'
 
     @property
     def employer(self):
         return self.branch if self.branch is not None else self.page
 
-    def __init__(self, branch=None, *args, **kwargs):
-        self.branch = branch
-        super().__init__(*args, **kwargs)
+    @employer.setter
+    def employer(self, value):
+        if isinstance(value, Branch):
+            self.branch = value
+            self.page = None
+        elif isinstance(value, Page):
+            self.branch = None
+            self.page = value
+        elif value is None:
+            self.branch = self.page = None
+        else:
+            raise ValueError('Employer must be a Branch or Page')
