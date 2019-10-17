@@ -29,8 +29,12 @@ class Base():
     def __init__(self, settings={}, *args, **kwargs):
         """Add and flush all models on construction"""
         for name, value in settings.items():
-            if not hasattr(self, name) or not getattr(self, name):
+            if not hasattr(self, name):
                 setattr(self, name, value)
+            else:
+                attr = getattr(self, name)
+                if not attr and attr is not False:
+                    setattr(self, name, value)
         super().__init__(*args, **kwargs)
         db.session.add(self)
         db.session.flush([self])

@@ -7,13 +7,9 @@ body, html {
 }
 
 /* Question div formatting */
-div.question {
-    padding: 0px 5px;
-}
 div.error {
-    padding: 15px 5px;
     border-radius: 5px;
-    background-color: gainsboro;
+    background-color: rgb(232,232,232);
 }
 
 /* Choice formatting */

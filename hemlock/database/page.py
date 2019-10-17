@@ -28,6 +28,7 @@ terminal: indicates this Page is the last in the experiment
 from hemlock.app import db
 from hemlock.database.private import BranchingBase, CompileBase, FunctionBase
 from hemlock.database.types import  MarkupType
+from hemlock.tools.static import render_css, render_js
 
 from datetime import datetime
 from flask import Markup, current_app, render_template, request, url_for
@@ -88,6 +89,12 @@ class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
         uselist=False,
         foreign_keys='Question._page_timer_id'
     )
+
+    @property
+    def questions_with_timer(self):
+        if self.timer is None:
+            return self.questions
+        return [self.timer]+self.questions
     
     """Relationships to function models and workers"""
     cache_compile = db.Column(db.Boolean)
@@ -278,6 +285,14 @@ class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
         self.start_time = datetime.utcnow()
         html = render_template(self.survey_template, page=self)
         return super()._render(html)
+
+    @property
+    def _css(self):
+        return render_css(self)
+
+    @property
+    def _js(self):
+        return render_js(self)
 
     def _record_response(self):
         """Record participant response

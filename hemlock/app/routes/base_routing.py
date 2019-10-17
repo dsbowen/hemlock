@@ -4,7 +4,7 @@ from hemlock.app.factory import bp, db, login_manager
 from hemlock.database import Participant, Navbar, Brand, Navitem, Dropdownitem
 from hemlock.database.private import DataStore
 
-from flask import current_app, url_for
+from flask import current_app, session, url_for
 
 @login_manager.user_loader
 def load_user(id):
@@ -16,6 +16,7 @@ def init_app():
     
     Additionally, set a scheduler job to log the status periodically.
     """
+    session.pop('login_page_id', None)
     db.create_all()
     if not DataStore.query.first():
         DataStore()

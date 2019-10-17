@@ -81,7 +81,7 @@ class Branch(BranchingBase, FunctionBase, db.Model):
     @property
     def questions(self):
         page_questions = [
-            q for p in self.pages for q in [p.timer]+p.questions
+            q for p in self.pages for q in p.questions_with_timer
         ]
         return self.embedded + page_questions
         

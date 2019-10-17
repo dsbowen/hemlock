@@ -5,6 +5,7 @@ from hemlock.app.routes.researcher_texts import *
 from hemlock.database import Navbar, Page, Choice, Validate
 from hemlock.database.private import DataStore
 from hemlock.question_polymorphs import Free, MultiChoice, Text
+from hemlock.tools import Static
 
 from flask import Markup, current_app, redirect, request, session, url_for
 from functools import wraps
@@ -16,6 +17,7 @@ def login():
     """Login view function"""
     login_page = get_login_page()
     if request.method == 'POST':
+        login_page._record_response()
         session['logged_in'] = login_page._validate()
         if session['logged_in']:
             requested = request.args.get('requested') or 'participants'
@@ -68,10 +70,11 @@ def participants():
     """
     p = Page(nav=researcher_navbar(), back=False, forward=False)
     p.js.append(current_app.socket_js)
-    p.js.append('js/participants.min.js')
+    p.js.append(Static(filename='js/participants.min.js',blueprint='hemlock'))
     q = Text(p)
     q.text = PARTICIPANTS.format(**DataStore.query.first().current_status)
-    return p.compile_html()
+    p._compile()
+    return p._render()
     
 @bp.route('/download', methods=['GET','POST'])
 @researcher_login_required
@@ -83,7 +86,8 @@ def download():
     Choice(q, text="Metadata")
     Choice(q, text="Status Log")
     Choice(q, text="Dataframe")
-    return p.compile_html()
+    p._compile()
+    return p._render()
 
 @bp.route('/logout')
 @researcher_login_required

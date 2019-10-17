@@ -149,15 +149,11 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
     
     """Methods executed during study"""
     def _compile(self, content=''):
-        """HTML compiler"""
-        div_classes = self._compile_div_classes()
-        label = self._compile_label()
-        return DIV.format(
-            id=self.model_id, classes=div_classes, 
-            label=label, content=content
-        )
-    
-    def _compile_div_classes(self):
+        """Compile question <div>"""
+        return DIV.format(q=self, content=content)
+
+    @property
+    def _div_classes(self):
         """Get question <div> classes
         
         Add the error class if the response was invalid.
@@ -166,13 +162,14 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
         if self.error is not None:
             return div_classes + ' error'
         return div_classes
-    
-    def _compile_label(self):
-        """Get the question label"""
-        error = self.error
-        error = '' if error is None else ERROR.format(error=error)
-        text = self.text if self.text is not None else ''
-        return LABEL.format(id=self.model_id, text=error+text)
+
+    @property
+    def _text(self):
+        return self.text if self.text is not None else ''
+
+    @property
+    def _error(self):
+        return self.error if self.error is not None else ''
 
     def _record_response(self, response):
         return
@@ -220,20 +217,11 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
         return data
 
 DIV = """
-<div id="{id}" class="{classes}">
-    {label}
+<div id="{q.model_id}" class="{q._div_classes}">
+    <label class="w-100" for="{q.model_id}">
+        <span style="color:red">{q._error}</span>
+        {q._text}
+    </label>
     {content}
 </div>
-"""
-
-ERROR = """
-<span style="color:red">
-    {error}
-</span>
-"""
-
-LABEL = """
-<label class="w-100" for="{id}">
-    {text}
-</label>
 """

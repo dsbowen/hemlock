@@ -4,7 +4,7 @@ from hemlock.question_polymorphs.imports import *
 
 from sqlalchemy_mutable import MutableListType
 
-CHOICE_DIV_CLASSES = ['custom-control', 'custom-radio']
+DIV_CLASSES = ['custom-control', 'custom-radio']
 INPUT_TYPE = 'radio'
 
 
@@ -14,10 +14,8 @@ class SingleChoice(Question):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not self.choice_div_classes:
-            self.choice_div_classes = CHOICE_DIV_CLASSES
-        if self.choice_input_type is None:
-            self.choice_input_type = INPUT_TYPE
+        self.choice_div_classes = self.choice_div_classes or DIV_CLASSES
+        self.choice_input_type = self.choice_input_type or INPUT_TYPE
     
     def _compile(self):
         content = ''.join([choice._compile() for choice in self.choices])

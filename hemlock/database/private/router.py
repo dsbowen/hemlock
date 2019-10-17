@@ -115,11 +115,24 @@ class Router(RouterMixin, db.Model):
         page = self.page
         if page.direction_from == 'invalid':
             return self.redirect()
-        self.navigator.reset() # In preparation for forward navigation
         return self.run_worker(
-            page._submit, page.submit_worker, self.forward, 
-            args=[page.forward_to]
+            page._submit, page.submit_worker, self.forward_prep, 
         )
+
+    def forward_prep(self):
+        """Prepare for forward navigation
+        
+        Check if direction_from has been changed by submit functions. If so, 
+        navigate appropriately. Otherwise, reset the navigator in preparation 
+        for forward navigation.
+        """
+        page = self.page
+        if page.direction_from == 'back':
+            self.navigator.back(page.back_to)
+        if page.direction_from in ['back', 'invalid']:
+            return self.redirect()
+        self.navigator.reset()
+        return self.forward(page.forward_to)
     
     @set_route
     def forward(self, forward_to):

@@ -166,7 +166,7 @@ class Participant(UserMixin, Base, db.Model):
         questions = self.questions
         df = DataFrame()
         df.add(data=self.meta, all_rows=True)
-        [df.add(data=q.pack_data(), all_rows=q.all_rows) for q in questions]
+        [df.add(data=q._pack_data(), all_rows=q.all_rows) for q in questions]
         df.pad()
         return df
     
@@ -192,7 +192,7 @@ class Participant(UserMixin, Base, db.Model):
     
     def _set_order_page(self, page, var_count):
         """Set the order for Questions belonging to a given Page"""
-        questions = [page.timer]+page.questions
+        questions = page.questions_with_timer
         [self._set_order_question(q, var_count) for q in questions]
         if page.next_branch in self.branch_stack:
             self._set_order_branch(page.next_branch, var_count)

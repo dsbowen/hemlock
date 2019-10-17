@@ -4,6 +4,7 @@ time_limit and status_logger_period must be in 'hh:mm:ss' format.
 """
 
 from hemlock.app.setting_utils import *
+from hemlock.tools import Static
 
 from datetime import datetime, timedelta
 from flask import Markup
@@ -27,29 +28,28 @@ default_settings = {
     'time_expired_text': TIME_EXPIRED,
     'time_limit': None,
     'manager_settings': {
-        'app_import': None,
-        'loading_img': None,
-        'template': 'loading.html'
+        'blueprint': 'hemlock'
     },
     'page_settings': {
         'back': False,
         'back_button': BACK_BUTTON,
-        'compile_functions': [compile_function],
-        'css': ['css/bootstrap.min.css', 'css/default.min.css'],
+        'compile_functions': compile_function,
+        'css': [
+            Static(filename='css/bootstrap.min.css', blueprint='hemlock'), 
+            Static(filename='css/default.min.css', blueprint='hemlock')
+        ],
         'forward': True,
         'forward_button': FORWARD_BUTTON,
-        'js': ['js/default.min.js'],
-        'nav': None,
-        'submit_function': [submit_function],
+        'js': [
+            Static(filename='js/default.min.js', blueprint='hemlock')
+        ],
+        'submit_function': submit_function,
         'survey_template': 'survey.html',
-        'validate_function': [validate_function],
+        'validate_function': validate_function,
         'view_tempalte': 'view.html'
     },
     'question_settings': {
-        'div_classes': ['form-group', 'question'],
-        'compile_functions': [],
-        'submit_functions': [],
-        'validate_functions': []
+        'div_classes': ['form-group']
     }
 }
     

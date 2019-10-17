@@ -56,32 +56,25 @@ class Choice(CompileBase, db.Model):
         return self == default
 
     def _compile(self):
-        """Compile html"""
-        question = self.question
-        classes = ' '.join(question.choice_div_classes)
-        checked = 'checked' if self.is_default() else ''
-        input = INPUT.format(
-            choice_id=self.model_id, question_id=question.model_id,
-            type=question.choice_input_type, checked=checked
-        )
-        text = self.text or ''
-        label = LABEL.format(choice_id=self.model_id, text=text)
-        return DIV.format(classes=classes, input=input, label=label)
+        return DIV.format(c=self, q=self.question)
 
+    @property
+    def _div_classes(self):
+        return ' '.join(self.question.choice_div_classes)
+
+    @property
+    def _checked(self):
+        return 'checked' if self.is_default() else ''
+
+    @property
+    def _text(self):
+        return self.text if self.text is not None else ''
 
 DIV = """
-<div class="{classes}">
-    {input}
-    {label}      
+<div class="{c._div_classes}">
+    <input id="{c.model_id}" value="{c.model_id}" name="{q.model_id}" class="custom-control-input" type="{q.choice_input_type}" {c._checked}>
+    <label class="custom-control-label w-100 choice" for="{c.model_id}">
+        {c._text}
+    </label>     
 </div>
-"""
-
-INPUT = """
-<input id="{choice_id}" value="{choice_id}" name="{question_id}" class="custom-control-input" type="{type}" {checked}>
-"""
-
-LABEL = """
-<label class="custom-control-label w-100 choice" for="{choice_id}">
-    {text}
-</label>
-"""       
+"""     
