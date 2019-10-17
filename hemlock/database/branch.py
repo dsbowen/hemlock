@@ -15,13 +15,13 @@ is_root: indicates that this is the Participant's root branch
 """
 
 from hemlock.app import db
-from hemlock.database.private import BranchingMixin
+from hemlock.database.private import BranchingBase, FunctionBase
 
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
 
 
-class Branch(BranchingMixin, db.Model):
+class Branch(BranchingBase, FunctionBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
@@ -104,6 +104,7 @@ class Branch(BranchingMixin, db.Model):
             ):       
         self.pages = pages
         self.embedded = embedded
+        self._set_function_relationships()
         self.navigate_function = navigate_function
         self.navigate_worker = navigate_worker
         self.is_root = False

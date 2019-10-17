@@ -19,11 +19,11 @@ class SingleChoice(Question):
         if self.choice_input_type is None:
             self.choice_input_type = INPUT_TYPE
     
-    def compile_html(self):
-        content = ''.join([choice.compile_html() for choice in self.choices])
-        return super().compile_html(content=content)
+    def _compile(self):
+        content = ''.join([choice._compile() for choice in self.choices])
+        return super()._compile(content=content)
     
-    def record_response(self, choice_model_id):
+    def _record_response(self, choice_model_id):
         """Record response
         
         Response is a choice model id or None.
@@ -44,5 +44,5 @@ class SingleChoice(Question):
         self.nonselected_choices = [
             c for c in self.choices if c != selected]
     
-    def record_data(self):
+    def _submit(self):
         self.data = None if self.response is None else self.response.value

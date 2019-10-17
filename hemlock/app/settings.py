@@ -13,25 +13,8 @@ import os
 import pandas as pd
 
 default_settings = {
-    'back': False,
-    'back_button': BACK_BUTTON,
     'duplicate_keys': ['IPv4', 'workerId'],
-    'css': ['css/bootstrap.min.css', 'css/default.min.css'],
-    'forward': True,
-    'forward_button': FORWARD_BUTTON,
-    'js': ['js/default.min.js'],
-    'nav': None,
-    'page_compile_functions': [default_compile_function],
-    'page_submit_functions': [default_submit_function],
-    'page_validate_functions': [default_validate_function],
-    # 'page_debug': None,
     'password': '',
-    'question_compile_functions': [],
-    'question_div_classes': ['form-group', 'question'],
-    'question_submit_functions': [],
-    'question_validate_functions': [],
-    # 'question_debug': None,
-    # 'question_interval': None,
     'restart_option': True,
     'restart_text': RESTART,
     'screenout_folder': 'screenouts',
@@ -40,15 +23,34 @@ default_settings = {
     'socket_js': '//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js',
     'static_folder': 'static',
     'status_log_period': '00:02:00',
-    'survey_template': 'default_survey.html',
     'template_folder': 'templates',
     'time_expired_text': TIME_EXPIRED,
     'time_limit': None,
-    'view_template': 'default_view.html',
-    'worker_css': ['css/bootstrap.min.css', 'css/default.min.css'],
-    'worker_js': ['js/default.min.js'],
-    'worker_template': 'default_worker.html',
-    'worker_content': WORKER_CONTENT
+    'manager_settings': {
+        'app_import': None,
+        'loading_img': None,
+        'template': 'loading.html'
+    },
+    'page_settings': {
+        'back': False,
+        'back_button': BACK_BUTTON,
+        'compile_functions': [compile_function],
+        'css': ['css/bootstrap.min.css', 'css/default.min.css'],
+        'forward': True,
+        'forward_button': FORWARD_BUTTON,
+        'js': ['js/default.min.js'],
+        'nav': None,
+        'submit_function': [submit_function],
+        'survey_template': 'survey.html',
+        'validate_function': [validate_function],
+        'view_tempalte': 'view.html'
+    },
+    'question_settings': {
+        'div_classes': ['form-group', 'question'],
+        'compile_functions': [],
+        'submit_functions': [],
+        'validate_functions': []
+    }
 }
     
 def get_settings(settings):
@@ -61,35 +63,29 @@ def get_settings(settings):
     Return these separately, as they need to be passed to the Flask 
     constructor.
     """
-    settings = settings.copy()
-    for key, value in default_settings.items():
-        if key not in settings:
-            settings[key] = value
-    to_list(settings, 'duplicate_keys')
-    to_list(settings, 'css')
-    to_list(settings, 'js')
-    to_list(settings, 'screenout_keys')
-    to_list(settings, 'worker_js')
-    to_Markup(settings, 'back_button')
-    to_Markup(settings, 'forward_button')
-    to_Markup(settings, 'worker_content')
+    override_default_settings(settings, default_settings)
+
     to_timedelta(settings, 'time_limit')
     to_timedelta(settings, 'status_log_period')
-    settings['password_hash'] = generate_password_hash(
-        settings.pop('password')
-    )
+
+    page_settings = settings['page_settings']
+    to_Markup(page_settings, 'back_button')
+    to_Markup(page_settings, 'forward_button')
+
+    password = settings.pop('password')
+    settings['password_hash'] = generate_password_hash(password)
     cwd = os.getcwd()
     static = os.path.join(cwd, settings.pop('static_folder'))
     templates = os.path.join(cwd, settings.pop('template_folder'))
     return settings, static, templates
-    
-def to_list(settings, key):
-    """Convert setting item to list"""
-    item = settings[key]
-    if item is None:
-        settings[key] = []
-    if isinstance(item, str):
-        settings[key] = [item]
+
+def override_default_settings(settings, default_settings):
+    """Recursively override settings"""
+    for key, value in default_settings.items():
+        if key not in settings:
+            settings[key] = value
+        elif isinstance(settings[key], dict):
+            override_default_settings(settings[key], value)
 
 def to_Markup(settings, key):
     """Convert setting item to Markup"""

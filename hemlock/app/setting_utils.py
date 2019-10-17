@@ -28,29 +28,21 @@ FORWARD_BUTTON_TEMPLATE = """
 
 FORWARD_BUTTON = FORWARD_BUTTON_TEMPLATE.format(classes='', text='>>')
 
-WORKER_CONTENT_TEMPLATE = """
-<div class="{classes} alert alert-success w-100" style="text-align:center;">
-    {text}
-</div>
-"""
-
-WORKER_CONTENT = WORKER_CONTENT_TEMPLATE.format(classes='', text='Loading')
-
-def default_compile_function(page):
+def compile_function(page):
     """Call question compile functions in index order"""
     [
         compile_function() 
         for q in page.questions for compile_function in q.compile_functions
     ]
 
-def default_validate_function(page):
+def validate_function(page):
     """Call question validate functions in index order"""
     [
         validate_function() 
         for q in page.questions for validate_function in q.validate_functions
     ]
     
-def default_submit_function(page):
+def submit_function(page):
     """Call question submit functions in index order"""
     [
         submit_function() 

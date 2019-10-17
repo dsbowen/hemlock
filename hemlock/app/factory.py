@@ -16,7 +16,13 @@ from rq import Queue
 import eventlet
 
 bootstrap = Bootstrap()
-bp = Blueprint('hemlock', __name__)
+bp = Blueprint(
+    'hemlock', 
+    __name__,
+    template_folder='templates',
+    static_folder='static',
+    static_url_path='/static/hemlock'
+)
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'hemlock.index'
@@ -47,7 +53,7 @@ def create_app(settings):
     scheduler.init_app(app)
     scheduler.start()
     socketio.init_app(app, message_queue=app.config['REDIS_URL'])
-    manager.init_app(app)
+    manager.init_app(app, **app.manager_settings)
     # viewer.init_app(app)
     
     return app

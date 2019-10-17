@@ -26,8 +26,7 @@ terminal: indicates this Page is the last in the experiment
 """
 
 from hemlock.app import db
-from hemlock.database.models.question import Question
-from hemlock.database.private import BranchingBase, CompileBase
+from hemlock.database.private import BranchingBase, CompileBase, FunctionBase
 from hemlock.database.types import  MarkupType
 
 from datetime import datetime
@@ -39,7 +38,7 @@ from sqlalchemy_mutable import MutableListType, MutableDictType
 DIRECTIONS = ['back', 'forward', 'invalid', None]
 
 
-class Page(BranchingBase, CompileBase, db.Model):
+class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     """Relationships to primary models"""
@@ -129,7 +128,7 @@ class Page(BranchingBase, CompileBase, db.Model):
     )
 
     navigate_function = db.relationship(
-        'NavigateFunction', 
+        'Navigate', 
         backref='page', 
         uselist=False
     )
@@ -207,36 +206,32 @@ class Page(BranchingBase, CompileBase, db.Model):
         self.set_branch(branch, index)
         self.back_to = back_to
         self.forward_to = forward_to
-        self.nav = nav or current_app.nav
+        self.nav = nav
         self.questions = questions
         self.timer = timer
         
+        self._set_function_relationships()
         self.cache_compile = cache_compile
-        self.compile_functions = (
-            compile_functions or current_app.page_compile_functions
-        )
+        self.compile_functions = compile_functions
         self.compile_worker = compile_worker
-        self.validate_functions = (
-            validate_functions or current_app.page_validate_functions
-        )
+        self.validate_functions = validate_functions
         self.validate_worker = validate_worker
-        self.submit_functions = (
-            submit_functions or current_app.page_submit_functions
-        )
+        self.submit_functions = submit_functions
         self.submit_worker = submit_worker
         self.navigate_function = navigate_function
         self.navigate_worker = navigate_worker
         
-        self.back = current_app.back if back is None else back
-        self.back_button = back_button or current_app.back_button
-        self.css = css or current_app.css
-        self.forward = current_app.forward if forward is None else forward
-        self.forward_button = forward_button or current_app.forward_button
-        self.js = js or current_app.js
-        self.survey_template = survey_template or current_app.survey_template
+        self.back = back
+        self.back_button = back_button
+        self.css = css
+        self.forward = forward
+        self.forward_button = forward_button
+        self.js = js
+        self.survey_template = survey_template
         self.terminal = terminal
-        self.view_template = view_template or current_app.view_template
-        super().__init__()
+        self.view_template = view_template
+        
+        super().__init__(current_app.page_settings)
 
     """API methods"""
     def set_branch(self, branch, index=None):
@@ -277,7 +272,6 @@ class Page(BranchingBase, CompileBase, db.Model):
         if self.cache_compile:
             self.compile_functions.clear()
             self.compile_worker = None
-        self._update_router('_render')
     
     def _render(self):
         """Render page"""
@@ -299,7 +293,6 @@ class Page(BranchingBase, CompileBase, db.Model):
         self.direction_from = request.form['direction']
         [q._record_response(request.form.getlist(q.model_id)) 
             for q in self.questions]
-        self._update_router('_validate')
     
     def _validate(self):
         """Validate response
@@ -315,7 +308,6 @@ class Page(BranchingBase, CompileBase, db.Model):
                 self.direction_from = 'invalid'
                 valid = False
                 break
-        self._update_router('_submit')
         return valid
     
     def _submit(self):
@@ -325,12 +317,6 @@ class Page(BranchingBase, CompileBase, db.Model):
         """
         [q._submit() for q in self.questions]
         [submit_function() for submit_function in self.submit_functions]
-        self._update_router('_navigate')
-    
-    def _update_router(self, route):
-        """Update participant's route handler"""
-        if self.part is not None:
-            self.part._route = route
     
     def _view_nav(self, indent):
         """Print self and next branch for debugging purposes"""

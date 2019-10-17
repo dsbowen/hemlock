@@ -3,14 +3,14 @@
 This file is responsible for the participant's initial view code s, as well 
 as screenout and duplicate handling. On a request to the index route, it 
 determines whether participants are screened out, redirected to the restart 
-page, or redirected to the main survey route. The main survey route is handled 
-by the RouteHandlerMixin.
+page, or redirected to the main survey route. 
 
-See hemlock/database/private/route_handler_mixin.py
+The main survey route is handled by the participant's router. 
+See hemlock/database/private/routing.py
 """
 
 from hemlock.app.factory import bp, db, socketio
-from hemlock.database.models import Participant, Page
+from hemlock.database import Participant, Page
 from hemlock.question_polymorphs import Text
 from hemlock.database.private import DataStore, PageHtml
 
@@ -111,8 +111,8 @@ def match_found(visitor, tracked, keys):
 def screenout():
     p = Page(forward=False)
     q = Text(p, text=current_app.screenout_text)
-    p.compile()
-    return p.render()
+    p._compile()
+    return p._render()
     
 @bp.route('/restart', methods=['GET','POST'])
 @login_required
@@ -130,11 +130,11 @@ def restart():
         
     p = Page(back=True)
     q = Text(p, text=current_app.restart_text)
-    p.compile()
-    return p.render()
+    p._compile()
+    return p._render()
 
 """Main survey view function"""
 @bp.route('/survey', methods=['GET','POST'])
 @login_required
 def survey():
-    return current_user._survey_route()
+    return current_user._router.route()

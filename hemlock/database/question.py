@@ -53,7 +53,7 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
     __mapper_args__ = {
         'polymorphic_identity': 'question',
         'polymorphic_on': type
-        }
+    }
     
     """Relationships to primary models"""
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
@@ -86,9 +86,9 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
     
     """Relationships to function models"""
     compile_functions = db.relationship(
-        'CompileFunction',
+        'Compile',
         backref='question',
-        order_by='CompileFunction.index',
+        order_by='Compile.index',
         collection_class=ordering_list('index')
     )
 
@@ -122,31 +122,26 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
             choice_div_classes=[], choice_input_type=None, choices=[],
             compile_functions=[], validate_functions=[], submit_functions=[],
             all_rows=False, data=None, default=None, div_classes=[], 
-            text=None, var=None, debug=None
+            text=None, var=None
         ):
         self.set_page(page, index)
         self.choice_div_classes = choice_div_classes
         self.choice_input_type = choice_input_type
         self.choices = choices
 
-        self.compile_functions = (
-            compile_functions or current_app.question_compile_functions
-        )
-        self.validate_functions = (
-            validate_functions or current_app.question_validate_functions
-        )
-        self.submit_functions = (
-            submit_functions or current_app.question_submit_functions
-        )
+        self._set_function_relationships()
+        self.compile_functions = compile_functions
+        self.validate_functions = validate_functions
+        self.submit_functions = submit_functions
         
         self.all_rows = all_rows
         self.data = data
         self.default = default
-        self.div_classes = div_classes or current_app.question_div_classes
+        self.div_classes = div_classes
         self.text = text
         self.var = var
         
-        super().__init__()
+        super().__init__(current_app.question_settings)
     
     """API methods"""
     def set_page(self, page, index=None):

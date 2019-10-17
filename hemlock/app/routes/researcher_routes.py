@@ -86,7 +86,7 @@ def download():
     return p.compile_html()
 
 @bp.route('/logout')
-@reseacher_login_required
+@researcher_login_required
 def logout():
     session['logged_in'] = False
     return redirect(url_for('hemlock.login'))

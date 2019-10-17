@@ -6,7 +6,8 @@ Each participant has a main Router. The Router has two 'tracks'. When the
 participant requests a new page, the router moves through the 'request' 
 track. The request track compiles and renders a new survey page. When the 
 participant submits a page, the router moves through the 'submit' track. The 
-submit track records the participant's response, validates it, submits it, navigates forward, and redirects with a new page request.
+submit track records the participant's response, validates it, submits it, 
+navigates forward, and redirects with a new page request.
 
 The secondary Navigator router is nested in the main Router. It handles 
 backward and forward navigation.
@@ -14,7 +15,7 @@ backward and forward navigation.
 
 from hemlock.app import db
 
-from flask import current_app
+from flask import current_app, request
 from flask_worker import RouterMixin as RouterMixinBase
 from flask_worker import set_route
 
@@ -23,7 +24,9 @@ class RouterMixin(RouterMixinBase):
     def run_worker(self, func, worker, next_route, args=[], kwargs={}):
         """Run worker overload"""
         if worker is not None:
-            return super().run_worker(worker, next_route, args, kwargs)
+            page = super().run_worker(worker, next_route, args, kwargs)
+            worker.reset()
+            return page
         func()
         return next_route(*args, **kwargs)
 
@@ -208,7 +211,7 @@ class Navigator(RouterMixin, db.Model):
     def insert_branch(self, origin):
         """Grow and insert new branch into the branch stack"""
         return self.run_worker(
-            origin.navigate, origin.navigate_worker, self._insert_branch,
+            origin.navigate_function, origin.navigate_worker, self._insert_branch,
             args=[origin]
         )
     

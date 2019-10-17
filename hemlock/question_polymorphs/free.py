@@ -7,12 +7,12 @@ class Free(Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'free'}
     
-    def compile_html(self):
+    def _compile(self):
         default = self.response or self.default or ''
         content = FREE_INPUT.format(id=self.model_id, default=default)
-        return super().compile_html(content=content)
+        return super()._compile(content=content)
     
-    def record_response(self, response):
+    def _record_response(self, response):
         self.response = None if response == [''] else response[0]
 
 FREE_INPUT = """

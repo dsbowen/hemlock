@@ -16,10 +16,9 @@ status: in progress, completed, or timed out
 updated: indicates Participant data has been updated since last store
 """
 
-from hemlock.app.factory import db
-from hemlock.database.private import Base, DataStore, RouterMixin
+from hemlock.app import db
+from hemlock.database.private import Base, DataStore, Router
 from hemlock.database.types import DataFrame
-from hemlock.database.models.branch import Branch
 
 from datetime import datetime
 from flask_login import UserMixin
@@ -42,8 +41,14 @@ def send_data(func):
     return status_update
 
 
-class Participant(UserMixin, RouterMixin, db.Model):
+class Participant(UserMixin, Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)
+
+    _router = db.relationship(
+        'Router',
+        backref='part',
+        uselist=False
+    )
     
     branch_stack = db.relationship(
         'Branch',
@@ -76,7 +81,7 @@ class Participant(UserMixin, RouterMixin, db.Model):
     _page_htmls = db.relationship('PageHtml', backref='part', lazy='dynamic')
 
     _forward_to_id = db.Column(db.Integer)
-    g = db.Column(MutableDictType, default={})
+    g = db.Column(MutableDictType)
     _completed = db.Column(db.Boolean, default=False)
     end_time = db.Column(db.DateTime)
     _meta = db.Column(MutableDictType, default={})
@@ -120,9 +125,11 @@ class Participant(UserMixin, RouterMixin, db.Model):
         ds = DataStore.query.first()
         ds.meta.append(meta)
         ds.update_status(self)
-        
+
+        self._router = Router()
         self.end_time = self.start_time = datetime.utcnow()
         self.meta = meta.copy()
+        self.g = {}
         
         self.current_branch = root = start_navigation()
         self.branch_stack.append(root)

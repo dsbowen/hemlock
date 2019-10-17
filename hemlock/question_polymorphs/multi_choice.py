@@ -17,11 +17,11 @@ class MultiChoice(Question):
         if self.choice_input_type is None:
             self.choice_input_type = INPUT_TYPE
     
-    def compile_html(self):
-        content = ''.join([choice.compile_html() for choice in self.choices])
-        return super().compile_html(content=content)
+    def _compile(self):
+        content = ''.join([choice._compile() for choice in self.choices])
+        return super()._compile(content=content)
     
-    def record_response(self, choice_model_ids):
+    def _record_response(self, choice_model_ids):
         selected, nonselected = [], []
         for choice in self.choices:
             if choice.model_id in choice_model_ids:
@@ -32,15 +32,16 @@ class MultiChoice(Question):
         self.selected_choices = selected.copy()
         self.nonselected_choices = nonselected
     
-    def record_data(self):
+    def _submit(self):
         """Record data using one-hot encoding"""
         if self.response is None:
             self.data = None
             return
         self.data = {c.value: int(c in self.response) 
-            for c in self.choices if c.value is not None}
+            for c in self.choices if c.value is not None
+        }
     
-    def pack_data(self):
+    def _pack_data(self):
         var = self.var
         if var is None:
             return super().pack_data()

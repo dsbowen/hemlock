@@ -5,7 +5,7 @@ from hemlock.app import db
 from flask_worker import WorkerMixin as WorkerBaseMixin
 
 
-class WorkerMixin(WorkerMixinBase, db.Model):
+class WorkerMixin(WorkerBaseMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
 
@@ -30,7 +30,7 @@ class SubmitWorker(WorkerMixin, db.Model):
     method_name = '_submit'
 
 
-class NavigatorWorker(WorkerMixin, db.Model):
+class NavigateWorker(WorkerMixin, db.Model):
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     method_name = '_navigate'
 

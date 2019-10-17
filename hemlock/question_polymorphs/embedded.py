@@ -16,11 +16,11 @@ class Embedded(Question):
     def set_branch(self, branch, index=None):
         self._set_parent(branch, index, 'branch', 'embedded')
     
-    def compile_html(self):
+    def _compile(self):
         return ''
     
-    def record_response(self, response):
+    def _record_response(self, response):
         return
         
-    def record_data(self):
+    def _submit(self):
         return
