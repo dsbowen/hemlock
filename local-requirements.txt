@@ -8,13 +8,12 @@ flask-login
 flask-socketio
 flask-sqlalchemy
 flask-worker
-gunicorn==18.0
 imgkit
 numpy
 pandas
 pillow
-psycopg2
 python-docx
+python-dotenv
 redis
 requests
 rq
