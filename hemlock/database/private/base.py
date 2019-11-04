@@ -12,10 +12,13 @@ Function models.
 """
 
 from hemlock.app import db
-from hemlock.database.private.function_mixin import FunctionMixin
+from hemlock.tools import Static
 
 from bs4 import BeautifulSoup
+from flask import current_app
+from sqlalchemy import Column
 from sqlalchemy.inspection import inspect
+from sqlalchemy_mutable import MutableListType
 
 
 class Base():
@@ -26,18 +29,20 @@ class Base():
         id = '-'.join([str(key) for key in id]) if id is not None else ''
         return type(self).__name__+'-'+str(id)
     
-    def __init__(self, settings={}, *args, **kwargs):
+    def __init__(self, default_settings=[], **kwargs):
         """Add and flush all models on construction"""
-        for name, value in settings.items():
-            if not hasattr(self, name):
-                setattr(self, name, value)
-            else:
-                attr = getattr(self, name)
-                if not attr and attr is not False:
-                    setattr(self, name, value)
-        super().__init__(*args, **kwargs)
+        settings = {}
+        [settings.update(self.app_settings(ds)) for ds in default_settings]
+        settings.update(kwargs)
+        [setattr(self, key, val) for key, val in settings.items()]
         db.session.add(self)
         db.session.flush([self])
+        super().__init__()
+
+    def app_settings(self, settings_name):
+        if settings_name is not None and hasattr(current_app, settings_name):
+            return getattr(current_app, settings_name)
+        return {}
     
     def _set_parent(self, parent, index, parent_attr, child_attr):
         """Set model parent
@@ -66,80 +71,27 @@ class BranchingBase(Base):
 
 
 class CompileBase(Base):
-    def _render(self, html=None):
-        """Get and prettify compiled html
-        
-        CompileBase expects Models which inherit it to have a _compile method.
-        """
-        html = self._compile() if html is None else html
+    css = Column(MutableListType)
+    js = Column(MutableListType)
+
+    @property
+    def _css(self):
+        return ''.join([
+            sheet.as_css() if isinstance(sheet, Static) else sheet
+            for sheet in self.css
+        ])
+
+    @property
+    def _js(self):
+        return ' '.join([
+            script.as_js() if isinstance(script, Static) else script
+            for script in self.js
+        ])
+
+    def _prettify(self, html):
+        """Prettify compiled html"""
         return BeautifulSoup(html, 'html.parser').prettify()
     
     def view_html(self, html=None):
-        print(self.render(html))
-
-
-class FunctionBase(Base):
-    """Function base mixin
-
-    Models with relationships to Function models should inherit this base. 
-    They should call _set_function_relationships before any function 
-    attributes are set.
-    
-    Users can then set function attributes to functions instead of Function 
-    models. When set to functions, FunctionBase will automatically convert the
-    functions to Function models.
-
-    e.g. the following commands are equivalent:
-    model.function = function 
-    model.function = Function(parent=model, func=function)
-
-    Similar logic applies to lists.
-    """
-
-    _function_relationships = db.Column(db.PickleType)
-    
-    def __setattr__(self, name, value):
-        """
-        Convert value to Function model if setting a function relationship
-        """
-        if name == '_sa_instance_state':
-            return super().__setattr__(name, value)
-        function_relationships = self._function_relationships or []
-        if name in function_relationships:
-            relationship = inspect(self).mapper.relationships[name]
-            model_class = relationship.mapper.class_
-            if relationship.uselist:
-                value = value if isinstance(value, list) else [value]
-                value = self._to_function_models(value, model_class)
-            else:
-                value = self._to_function_model(value, model_class)
-        return super().__setattr__(name, value)
-
-    def _to_function_models(self, funcs, model_class):
-        """Convert a list of functions to Function models"""
-        models = [self._to_function_model(f, model_class) for f in funcs]
-        return [m for m in models if m is not None]
-    
-    def _to_function_model(self, func, model_class):
-        """Convert a single function to a Function model"""
-        if isinstance(func, model_class):
-            return func
-        if callable(func):
-            return model_class(self, func)
-        if func is None:
-            return None
-        raise ValueError(
-            'Function relationships requre Function models or callables'
-        )
-
-    def _set_function_relationships(self):
-        """Find and store all function relationships
-        
-        Models which inherit from FunctionModelBase should call this 
-        before function attributes are assigned.
-        """
-        relationships = inspect(self).mapper.relationships
-        self._function_relationships = [
-            r.key for r in relationships 
-            if FunctionMixin in r.mapper.class_.__mro__
-        ]
+        html = html or self._render()
+        print(self._prettify(html))

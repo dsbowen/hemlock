@@ -11,6 +11,7 @@ Each choice specifies:
 from hemlock.app import db
 from hemlock.database.private import CompileBase
 
+from flask import current_app
 from sqlalchemy_mutable import MutableType
 
 
@@ -28,15 +29,9 @@ class Choice(CompileBase, db.Model):
     label = db.Column(db.Text)
     value = db.Column(MutableType)
     
-    def __init__(
-            self, question=None, index=None,
-            text=None, label=None, value=None
-        ):
-        self.set_question(question, index)
-        self.set_all(text)
-        self.value = value if value is not None else self.value
-        self.label = label if label is not None else self.label
-        super().__init__()
+    def __init__(self, question=None, **kwargs):
+        self.set_all(kwargs.pop('text', None))
+        super().__init__(['choice_settings'], question=question, **kwargs)
 
     def set_question(self, question, index=None):
         self._set_parent(question, index, 'question', 'choices')

@@ -11,9 +11,10 @@ workflow.
 
 from hemlock.app import db
 from hemlock.database import Branch, Page, Question
-from hemlock.database.private import Base, FunctionMixin
+from hemlock.database.private import Base
 
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy_function import FunctionMixin
 from sqlalchemy_mutable import MutableListType, MutableDictType
 
 
@@ -46,21 +47,22 @@ class FunctionMixin_Page_or_Question(FunctionMixin, Base):
 
 
 class Compile(FunctionMixin_Page_or_Question, db.Model):
-    pass
+    id = db.Column(db.Integer, primary_key=True)
 
 
 class Validate(FunctionMixin_Page_or_Question, db.Model):
-    pass
+    id = db.Column(db.Integer, primary_key=True)
 
 
 class Submit(FunctionMixin_Page_or_Question, db.Model):
-    pass
+    id = db.Column(db.Integer, primary_key=True)
 
 
 class Navigate(FunctionMixin, Base, db.Model):
     """
     A Navigate function can have either a branch or page as its parent. 
     """
+    id = db.Column(db.Integer, primary_key=True)
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
 

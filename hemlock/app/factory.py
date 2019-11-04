@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from flask import Flask, Blueprint
 from flask_apscheduler import APScheduler
 from flask_bootstrap import Bootstrap
+from flask_download_btn import DownloadBtnManager
 from flask_login import LoginManager
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
@@ -24,6 +25,7 @@ bp = Blueprint(
     static_url_path='/hemlock/static'
 )
 db = SQLAlchemy()
+download_btn_manager = DownloadBtnManager(db=db)
 login_manager = LoginManager()
 login_manager.login_view = 'hemlock.index'
 login_manager.login_message = None
@@ -40,7 +42,7 @@ def create_app(settings):
     """
     settings, static, templates = get_settings(settings)
     app = Flask(__name__, static_folder=static, template_folder=templates)
-    [setattr(app, key, value) for key, value in settings.items()]
+    app.__dict__.update(settings)
     app.config.from_object(Config)
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = Queue('hemlock-task-queue', connection=app.redis)
@@ -49,6 +51,7 @@ def create_app(settings):
     
     bootstrap.init_app(app)
     db.init_app(app)
+    download_btn_manager.init_app(app, **app.download_btn_settings)
     login_manager.init_app(app)
     scheduler.init_app(app)
     scheduler.start()

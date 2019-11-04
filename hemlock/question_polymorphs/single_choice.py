@@ -4,22 +4,17 @@ from hemlock.question_polymorphs.imports import *
 
 from sqlalchemy_mutable import MutableListType
 
-DIV_CLASSES = ['custom-control', 'custom-radio']
-INPUT_TYPE = 'radio'
-
 
 class SingleChoice(Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'singlechoice'}
     
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.choice_div_classes = self.choice_div_classes or DIV_CLASSES
-        self.choice_input_type = self.choice_input_type or INPUT_TYPE
-    
-    def _compile(self):
+    def __init__(self, page=None, **kwargs):
+        super().__init__(['single_choice_settings'], page, **kwargs)
+
+    def _render(self):
         content = ''.join([choice._compile() for choice in self.choices])
-        return super()._compile(content=content)
+        return super()._render(content=content)
     
     def _record_response(self, choice_model_id):
         """Record response
@@ -42,5 +37,5 @@ class SingleChoice(Question):
         self.nonselected_choices = [
             c for c in self.choices if c != selected]
     
-    def _submit(self):
+    def _record_data(self):
         self.data = None if self.response is None else self.response.value

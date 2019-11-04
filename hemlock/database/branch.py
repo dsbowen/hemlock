@@ -15,10 +15,12 @@ is_root: indicates that this is the Participant's root branch
 """
 
 from hemlock.app import db
-from hemlock.database.private import BranchingBase, FunctionBase
+from hemlock.database.private import BranchingBase
 
+from flask import current_app
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy_function import FunctionBase
 
 
 class Branch(BranchingBase, FunctionBase, db.Model):
@@ -98,17 +100,10 @@ class Branch(BranchingBase, FunctionBase, db.Model):
 
     is_root = db.Column(db.Boolean)
 
-    def __init__(
-                self, pages=[], embedded=[], 
-                navigate_function=None, navigate_worker=None,
-            ):       
-        self.pages = pages
-        self.embedded = embedded
+    def __init__(self, **kwargs):   
         self._set_function_relationships()
-        self.navigate_function = navigate_function
-        self.navigate_worker = navigate_worker
         self.is_root = False
-        super().__init__()
+        super().__init__(['branch_settings'], **kwargs)
         
     def _forward(self):
         """Advance forward to the next page in the queue"""

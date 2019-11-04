@@ -4,7 +4,7 @@ from hemlock.app.factory import bp, db
 from hemlock.app.routes.researcher_texts import *
 from hemlock.database import Navbar, Page, Choice, Validate
 from hemlock.database.private import DataStore
-from hemlock.question_polymorphs import Free, MultiChoice, Text
+from hemlock.question_polymorphs import Download, HandleForm, CreateFile, Free, MultiChoice, Text
 from hemlock.tools import Static
 
 from flask import Markup, current_app, redirect, request, session, url_for
@@ -80,14 +80,56 @@ def participants():
 @researcher_login_required
 def download():
     """Download data"""
-    p = Page(nav=researcher_navbar(), back=False)
-    p.forward_button = DOWNLOAD_BUTTON
-    q = MultiChoice(p, text=DOWNLOAD)
-    Choice(q, text="Metadata")
-    Choice(q, text="Status Log")
-    Choice(q, text="Dataframe")
+    p = Page(nav=researcher_navbar(), back=False, forward=False)
+    files_q = MultiChoice(p, text=DOWNLOAD)
+    Choice(files_q, text='Metadata', value='meta')
+    Choice(files_q, text='Status Log', value='status')
+    Choice(files_q, text='Dataframe', value='data')
+    btn = Download(p, text='Download')
+    HandleForm(btn, select_files, args=[files_q])
     p._compile()
+    db.session.commit()
     return p._render()
+
+def select_files(btn, response, files_q):
+    files_q._record_response(response.getlist(files_q.model_id))
+    files_q._record_data()
+    data = files_q.data
+    btn.filenames.clear()
+    btn.create_file_functions.clear()
+    if data.get('meta'):
+        btn.filenames.append('tmp/Metadata.csv')
+        CreateFile(btn, create_meta)
+    if data.get('status'):
+        btn.filenames.append('tmp/StatusLog.csv')
+        CreateFile(btn, create_status)
+    if data.get('data'):
+        btn.filenames.append('tmp/Data.csv')
+        CreateFile(btn, create_data)
+
+def create_meta(btn):
+    stage = 'Preparing Metadata'
+    print(stage)
+    yield btn.reset(stage, 0)
+    yield btn.report(stage, 100)
+
+def create_status(btn):
+    stage = 'Preparing Status Log'
+    print(stage)
+    yield btn.reset(stage, 0)
+    yield btn.report(stage, 100)
+
+def create_data(btn):
+    stage = 'Preparing DataFrame'
+    print(stage)
+    import time
+    yield btn.reset(stage, 0)
+    for i in range(5):
+        print(i)
+        yield btn.report(stage, 100.0*i/5)
+        time.sleep(i)
+    yield btn.report(stage, 100)
+        
 
 @bp.route('/logout')
 @researcher_login_required

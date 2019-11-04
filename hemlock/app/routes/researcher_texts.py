@@ -1,6 +1,6 @@
 """Texts for researcher routes"""
 
-from hemlock.app.setting_utils import FORWARD_BUTTON_TEMPLATE
+from hemlock.app.settings_utils import FORWARD_BUTTON_TEMPLATE
 
 from flask import Markup
 

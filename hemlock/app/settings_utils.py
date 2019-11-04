@@ -1,5 +1,7 @@
 """Miscellaneous default settings texts and functions"""
 
+from hemlock.tools import Static
+
 TIME_EXPIRED = """You have exceeded your time limit for this survey."""
 
 RESTART = """
@@ -28,23 +30,54 @@ FORWARD_BUTTON_TEMPLATE = """
 
 FORWARD_BUTTON = FORWARD_BUTTON_TEMPLATE.format(classes='', text='>>')
 
+SOCKET_JS = Static(
+    cdn='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js',
+    filename='js/socketio-2.2.0.js',
+    blueprint='hemlock'
+)
+
+PAGE_CSS = [
+    Static(
+        cdn='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css',
+        filename='css/bootstrap-4.3.1.min.css',
+        blueprint='hemlock'
+    ),
+    Static(
+        filename='css/default.css',
+        blueprint='hemlock'
+    )
+]
+
+PAGE_JS = [
+    Static(
+        cdn='https://code.jquery.com/jquery-3.3.1.min.js',
+        filename='js/jquery-3.3.1.min.js',
+        blueprint='hemlock'
+    ),
+    Static(
+        cdn='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js',
+        filename='js/popper-1.14.7.min.js',
+        blueprint='hemlock'
+    ),
+    Static(
+        cdn='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js',
+        filename='js/bootstrap-4.3.1.min.js',
+        blueprint='hemlock'
+    ),
+    Static(
+        filename='js/default.js',
+        blueprint='hemlock'
+    )
+]
+
 def compile_function(page):
     """Call question compile functions in index order"""
-    [
-        compile_function() 
-        for q in page.questions for compile_function in q.compile_functions
-    ]
+    [q._compile() for q in page.questions]
 
 def validate_function(page):
     """Call question validate functions in index order"""
-    [
-        validate_function() 
-        for q in page.questions for validate_function in q.validate_functions
-    ]
+    [q._validate() for q in page.questions]
     
 def submit_function(page):
     """Call question submit functions in index order"""
-    [
-        submit_function() 
-        for q in page.questions for submit_function in q.submit_functions
-    ]
+    [q._submit() for q in page.questions]

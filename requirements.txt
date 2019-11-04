@@ -3,6 +3,7 @@ eventlet
 flask
 flask-apscheduler
 flask-bootstrap4
+flask-download-btn
 flask-login
 flask-socketio
 flask-sqlalchemy
@@ -14,10 +15,12 @@ pandas
 pillow
 psycopg2
 python-docx
+python-dotenv
 redis
 requests
 rq
 selenium
 sqlalchemy
+sqlalchemy-function
 sqlalchemy-mutable
 sqlalchemy-nav

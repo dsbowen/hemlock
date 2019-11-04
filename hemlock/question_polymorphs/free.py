@@ -6,15 +6,19 @@ from hemlock.question_polymorphs.imports import *
 class Free(Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'free'}
-    
-    def _compile(self):
-        return super()._compile(content=INPUT.format(q=self))
 
     @property
     def _default(self):
         return self.response or self.default or ''
+
+    def __init__(self, page=None, **kwargs):
+        super().__init__(['free_settings'], page, **kwargs)
+    
+    def _render(self):
+        return super()._render(content=INPUT.format(q=self))
     
     def _record_response(self, response):
+        print(response)
         self.response = None if response == [''] else response[0]
 
 INPUT = """

@@ -3,8 +3,7 @@
 time_limit and status_logger_period must be in 'hh:mm:ss' format.
 """
 
-from hemlock.app.setting_utils import *
-from hemlock.tools import Static
+from hemlock.app.settings_utils import *
 
 from datetime import datetime, timedelta
 from flask import Markup
@@ -15,18 +14,22 @@ import pandas as pd
 
 default_settings = {
     'duplicate_keys': ['IPv4', 'workerId'],
+    'offline': False,
     'password': '',
     'restart_option': True,
     'restart_text': RESTART,
     'screenout_folder': 'screenouts',
     'screenout_keys': ['IPv4', 'workerId'],
     'screenout_text': SCREENOUT,
-    'socket_js': '//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js',
+    'socket_js': SOCKET_JS,
     'static_folder': 'static',
     'status_log_period': '00:02:00',
     'template_folder': 'templates',
     'time_expired_text': TIME_EXPIRED,
     'time_limit': None,
+    'download_btn_settings': {
+        'btn_classes': ['btn', 'btn-outline-primary', 'w-100'],
+    },
     'manager_settings': {
         'blueprint': 'hemlock'
     },
@@ -34,23 +37,28 @@ default_settings = {
         'back': False,
         'back_button': BACK_BUTTON,
         'compile_functions': compile_function,
-        'css': [
-            Static(filename='css/bootstrap.min.css', blueprint='hemlock'), 
-            Static(filename='css/default.min.css', blueprint='hemlock')
-        ],
+        'css': PAGE_CSS,
         'forward': True,
         'forward_button': FORWARD_BUTTON,
-        'js': [
-            Static(filename='js/default.min.js', blueprint='hemlock')
-        ],
+        'js': PAGE_JS,
         'submit_function': submit_function,
         'survey_template': 'survey.html',
         'validate_function': validate_function,
         'view_tempalte': 'view.html'
     },
     'question_settings': {
-        'div_classes': ['form-group']
-    }
+        'div_classes': ['form-group'],
+        'css': [],
+        'js': [],
+    },
+    'single_choice_settings': {
+        'choice_div_classes': ['custom-control', 'custom-radio'],
+        'choice_input_type': 'radio',
+    },
+    'multi_choice_settings': {
+        'choice_div_classes': ['custom-control', 'custom-checkbox'],
+        'choice_input_type': 'checkbox',
+    },
 }
     
 def get_settings(settings):
@@ -80,7 +88,7 @@ def get_settings(settings):
     return settings, static, templates
 
 def override_default_settings(settings, default_settings):
-    """Recursively override settings"""
+    """Recursively override default settings"""
     for key, value in default_settings.items():
         if key not in settings:
             settings[key] = value

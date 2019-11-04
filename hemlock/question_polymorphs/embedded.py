@@ -9,18 +9,17 @@ class Embedded(Question):
     
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     
-    def __init__(self, branch=None, index=None, *args, **kwargs):
-        self.set_branch(branch, index)
-        super().__init__(*args, **kwargs)
+    def __init__(self, page=None, **kwargs):
+        super().__init__(['embedded_settings'], page, **kwargs)
         
     def set_branch(self, branch, index=None):
         self._set_parent(branch, index, 'branch', 'embedded')
     
-    def _compile(self):
+    def _render(self):
         return ''
     
     def _record_response(self, response):
         return
         
-    def _submit(self):
+    def _record_data(self):
         return

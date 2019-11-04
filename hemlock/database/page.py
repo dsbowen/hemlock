@@ -26,14 +26,14 @@ terminal: indicates this Page is the last in the experiment
 """
 
 from hemlock.app import db
-from hemlock.database.private import BranchingBase, CompileBase, FunctionBase
+from hemlock.database.private import BranchingBase, CompileBase
 from hemlock.database.types import  MarkupType
-from hemlock.tools.static import render_css, render_js
 
 from datetime import datetime
 from flask import Markup, current_app, render_template, request, url_for
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy_function import FunctionBase
 from sqlalchemy_mutable import MutableListType, MutableDictType
 
 DIRECTIONS = ['back', 'forward', 'invalid', None]
@@ -146,28 +146,34 @@ class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
     )
     
     """Columns"""
-    _back = db.Column(db.Boolean)
+    back = db.Column(db.Boolean)
     back_button = db.Column(MarkupType)
-    css = db.Column(MutableListType)
     _direction_from = db.Column(db.String(8))
     _direction_to = db.Column(db.String(8))
     error = db.Column(db.Text)
-    _forward = db.Column(db.Boolean)
+    forward = db.Column(db.Boolean)
     forward_button = db.Column(MarkupType)
-    js = db.Column(MutableListType)
     _nav_html = db.Column(MarkupType)
     _question_html = db.Column(MarkupType)
     survey_template = db.Column(db.String)
     terminal = db.Column(db.Boolean)
     view_template = db.Column(db.String)
+
+    @property
+    def _css(self):
+        page_css = super()._css
+        question_css = ''.join([q._css for q in self.questions])
+        return Markup(page_css+question_css)
+
+    @property
+    def _js(self):
+        page_js = super()._js
+        question_js = ''.join([q._js for q in self.questions])
+        return Markup(page_js+question_js)
     
     @property
-    def back(self):
-        return self._back and not self.first_page()
-    
-    @back.setter
-    def back(self, back):
-        self._back = back
+    def _back(self):
+        return self.back and not self.first_page()
     
     @property
     def direction_from(self):
@@ -192,53 +198,12 @@ class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
         self._direction_to = value
         
     @property
-    def forward(self):
-        return self._forward and not self.terminal
+    def _forward(self):
+        return self.forward and not self.terminal
     
-    @forward.setter
-    def forward(self, forward):
-        self._forward = forward
-    
-    def __init__(
-            self, branch=None, index=None, back_to=None, forward_to=None, 
-            nav=None, questions=[], timer=None,
-            cache_compile=False, compile_functions=[], compile_worker=None,
-            validate_functions=[], validate_worker=None,
-            submit_functions=[], submit_worker=None,
-            navigate_function=None, navigate_worker=None,
-            back=None, back_button=None, css=None, 
-            forward=True, forward_button=None, js=None,
-            survey_template=None, terminal=False, view_template=None
-        ):        
-        self.set_branch(branch, index)
-        self.back_to = back_to
-        self.forward_to = forward_to
-        self.nav = nav
-        self.questions = questions
-        self.timer = timer
-        
+    def __init__(self, branch=None, **kwargs):
         self._set_function_relationships()
-        self.cache_compile = cache_compile
-        self.compile_functions = compile_functions
-        self.compile_worker = compile_worker
-        self.validate_functions = validate_functions
-        self.validate_worker = validate_worker
-        self.submit_functions = submit_functions
-        self.submit_worker = submit_worker
-        self.navigate_function = navigate_function
-        self.navigate_worker = navigate_worker
-        
-        self.back = back
-        self.back_button = back_button
-        self.css = css
-        self.forward = forward
-        self.forward_button = forward_button
-        self.js = js
-        self.survey_template = survey_template
-        self.terminal = terminal
-        self.view_template = view_template
-        
-        super().__init__(current_app.page_settings)
+        super().__init__(['page_settings'], branch=branch, **kwargs)
 
     """API methods"""
     def set_branch(self, branch, index=None):
@@ -274,7 +239,7 @@ class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
         [compile_function() for compile_function in self.compile_functions]
         self._nav_html = self.nav.render() if self.nav is not None else ''
         self._question_html = Markup(''.join(
-            [q._compile() for q in self.questions]
+            [q._render() for q in self.questions]
         ))
         if self.cache_compile:
             self.compile_functions.clear()
@@ -284,15 +249,7 @@ class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
         """Render page"""
         self.start_time = datetime.utcnow()
         html = render_template(self.survey_template, page=self)
-        return super()._render(html)
-
-    @property
-    def _css(self):
-        return render_css(self)
-
-    @property
-    def _js(self):
-        return render_js(self)
+        return self._prettify(html)
 
     def _record_response(self):
         """Record participant response
@@ -306,8 +263,10 @@ class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
         delta = (datetime.utcnow() - self.start_time).total_seconds()
         self.total_time += int(delta)
         self.direction_from = request.form['direction']
-        [q._record_response(request.form.getlist(q.model_id)) 
-            for q in self.questions]
+        [
+            q._record_response(request.form.getlist(q.model_id)) 
+            for q in self.questions
+        ]
     
     def _validate(self):
         """Validate response
@@ -328,9 +287,9 @@ class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
     def _submit(self):
         """Submit page
         
-        Record data (submit) for each question, then run submit functions.
+        Record data for each question, then run submit functions.
         """
-        [q._submit() for q in self.questions]
+        [q._record_data() for q in self.questions]
         [submit_function() for submit_function in self.submit_functions]
     
     def _view_nav(self, indent):

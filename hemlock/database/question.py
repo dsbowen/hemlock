@@ -39,15 +39,16 @@ var: name of the variable to which this Question contributes data
 """
 
 from hemlock.app import db
-from hemlock.database.private import CompileBase, FunctionBase
+from hemlock.database.private import CompileBase
 
 from flask import current_app
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy_function import FunctionBase
 from sqlalchemy_mutable import Mutable, MutableType, MutableModelBase, MutableListType
 
 
-class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
+class Question(CompileBase, FunctionBase, MutableModelBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(50))
     __mapper_args__ = {
@@ -116,42 +117,8 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
     response = db.Column(MutableType)
     text = db.Column(db.Text)
     var = db.Column(db.Text)
-    
-    def __init__(
-            self, page=None, index=None,
-            choice_div_classes=[], choice_input_type=None, choices=[],
-            compile_functions=[], validate_functions=[], submit_functions=[],
-            all_rows=False, data=None, default=None, div_classes=[], 
-            text=None, var=None
-        ):
-        self.set_page(page, index)
-        self.choice_div_classes = choice_div_classes
-        self.choice_input_type = choice_input_type
-        self.choices = choices
 
-        self._set_function_relationships()
-        self.compile_functions = compile_functions
-        self.validate_functions = validate_functions
-        self.submit_functions = submit_functions
-        
-        self.all_rows = all_rows
-        self.data = data
-        self.default = default
-        self.div_classes = div_classes
-        self.text = text
-        self.var = var
-        
-        super().__init__(current_app.question_settings)
-    
-    """API methods"""
-    def set_page(self, page, index=None):
-        self._set_parent(page, index, 'page', 'questions')
-    
-    """Methods executed during study"""
-    def _compile(self, content=''):
-        """Compile question <div>"""
-        return DIV.format(q=self, content=content)
-
+    """Html attributes"""
     @property
     def _div_classes(self):
         """Get question <div> classes
@@ -170,6 +137,25 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
     @property
     def _error(self):
         return self.error if self.error is not None else ''
+    
+    def __init__(self, polymorph_settings=[], page=None, **kwargs):
+        self._set_function_relationships()
+        super().__init__(
+            ['question_settings']+polymorph_settings, page=page, **kwargs
+        )
+    
+    """API methods"""
+    def set_page(self, page, index=None):
+        self._set_parent(page, index, 'page', 'questions')
+    
+    """Methods executed during study"""
+    def _compile(self):
+        """Execute compile functions in index order"""
+        [compile_function() for compile_function in self.compile_functions]
+
+    def _render(self, content=''):
+        """Render question <div>"""
+        return DIV.format(q=self, content=content)
 
     def _record_response(self, response):
         return
@@ -186,13 +172,14 @@ class Question(MutableModelBase, CompileBase, FunctionBase, db.Model):
             if self.error is not None:
                 return False
         return True
+
+    def _record_data(self):
+        """Record data"""
+        self.data = self.response
     
     def _submit(self):
-        """Submit response
-
-        The question submit method will usually be used for data recording.
-        """
-        self.data = self.response
+        """Run submit functions"""
+        [submit_function() for submit_function in self.submit_functions]
         
     def _pack_data(self, data=None):
         """Pack data for storing in DataStore
