@@ -8,7 +8,7 @@ flask-login
 flask-socketio
 flask-sqlalchemy
 flask-worker
-gunicorn==18.0
+gunicorn
 imgkit
 numpy
 pandas
