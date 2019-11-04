@@ -135,9 +135,11 @@ def create_data(btn):
     in_progress = Participant.query.filter(
         db.not_(db.and_(Participant._completed, Participant._time_expired))
     ).all()
+    print('got in progress')
     for i, part in enumerate(in_progress):
         yield btn.report(stage, 100.0*i/len(in_progress))
         ds.store_participant(part)
+    print('done storing parts')
     ds.data.save('downloads/Data.csv')
     yield btn.report(stage, 100)
         
