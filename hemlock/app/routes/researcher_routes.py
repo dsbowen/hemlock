@@ -2,7 +2,7 @@
 
 from hemlock.app.factory import bp, db
 from hemlock.app.routes.researcher_texts import *
-from hemlock.database import Navbar, Page, Choice, Validate
+from hemlock.database import Participant, Navbar, Page, Choice, Validate
 from hemlock.database.private import DataStore
 from hemlock.question_polymorphs import Download, HandleForm, CreateFile, Free, MultiChoice, Text
 from hemlock.tools import Static
@@ -10,6 +10,7 @@ from hemlock.tools import Static
 from flask import Markup, current_app, redirect, request, session, url_for
 from functools import wraps
 from werkzeug.security import check_password_hash
+import os
 
 """Researcher login"""
 @bp.route('/login', methods=['GET','POST'])
@@ -80,6 +81,7 @@ def participants():
 @researcher_login_required
 def download():
     """Download data"""
+    create_downloads_folder()
     p = Page(nav=researcher_navbar(), back=False, forward=False)
     files_q = MultiChoice(p, text=DOWNLOAD)
     Choice(files_q, text='Metadata', value='meta')
@@ -91,6 +93,10 @@ def download():
     db.session.commit()
     return p._render()
 
+def create_downloads_folder():
+    if not os.path.exists('downloads'):
+        os.mkdir('downloads')
+
 def select_files(btn, response, files_q):
     files_q._record_response(response.getlist(files_q.model_id))
     files_q._record_data()
@@ -98,36 +104,40 @@ def select_files(btn, response, files_q):
     btn.filenames.clear()
     btn.create_file_functions.clear()
     if data.get('meta'):
-        btn.filenames.append('tmp/Metadata.csv')
+        btn.filenames.append('downloads/Metadata.csv')
         CreateFile(btn, create_meta)
     if data.get('status'):
-        btn.filenames.append('tmp/StatusLog.csv')
+        btn.filenames.append('downloads/StatusLog.csv')
         CreateFile(btn, create_status)
     if data.get('data'):
-        btn.filenames.append('tmp/Data.csv')
+        btn.filenames.append('downloads/Data.csv')
         CreateFile(btn, create_data)
 
 def create_meta(btn):
     stage = 'Preparing Metadata'
-    print(stage)
     yield btn.reset(stage, 0)
+    ds = DataStore.query.first()
+    ds.meta.save('downloads/Metadata.csv')
     yield btn.report(stage, 100)
 
 def create_status(btn):
     stage = 'Preparing Status Log'
-    print(stage)
     yield btn.reset(stage, 0)
+    ds = DataStore.query.first()
+    ds.status_log.save('downloads/StatusLog.csv')
     yield btn.report(stage, 100)
 
 def create_data(btn):
-    stage = 'Preparing DataFrame'
-    print(stage)
-    import time
+    stage = 'Storing In Progress Participants'
     yield btn.reset(stage, 0)
-    for i in range(5):
-        print(i)
-        yield btn.report(stage, 100.0*i/5)
-        time.sleep(i)
+    ds = DataStore.query.first()
+    in_progress = Participant.query.filter(
+        db.not_(db.and_(Participant._completed, Participant._time_expired))
+    ).all()
+    for i, part in enumerate(in_progress):
+        yield btn.report(stage, 100.0*i/len(in_progress))
+        ds.store_participant(part)
+    ds.data.save('downloads/Data.csv')
     yield btn.report(stage, 100)
         
 

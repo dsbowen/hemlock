@@ -2,6 +2,7 @@
 
 from sqlalchemy import PickleType
 from sqlalchemy_mutable import MutableList, MutableDict
+import csv
 
 
 class Variable(MutableList):
@@ -88,6 +89,12 @@ class DataFrame(MutableDict):
         self._changed()
         rows = self.rows()
         [self[var].pad(rows) for var in self.keys()]
+
+    def save(self, filename):
+        with open(filename, 'w') as outfile:
+            writer = csv.writer(outfile)
+            writer.writerow(self.keys())
+            writer.writerows(zip(*self.values()))
 
 
 class DataFrameType(PickleType):
