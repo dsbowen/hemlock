@@ -1,6 +1,6 @@
 $(document).ready(function(){
     console.log("Socket URL is "+$SOCKET_URL)
-    var socket = io.connect($SOCKET_URL+'/participants-nsp');
+    var socket = io.connect($SOCKET_URL+"/participants-nsp");
     socket.on("connect", function(){
         console.log("Socket connected");
     });

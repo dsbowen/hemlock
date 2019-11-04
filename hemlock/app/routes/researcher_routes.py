@@ -70,7 +70,7 @@ def participants():
     """
     p = Page(nav=researcher_navbar(), back=False, forward=False)
     p.js.append(current_app.socket_js)
-    p.js.append(Static(filename='js/participants.min.js',blueprint='hemlock'))
+    p.js.append(Static(filename='js/participants.js',blueprint='hemlock'))
     q = Text(p)
     q.text = PARTICIPANTS.format(**DataStore.query.first().current_status)
     p._compile()
