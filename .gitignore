@@ -3,4 +3,5 @@ hemlock-venv/
 __pycache__
 data.db
 test.py
+downloads
 tmp

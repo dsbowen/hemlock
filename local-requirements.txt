@@ -1,5 +1,4 @@
 bs4
-csv
 eventlet
 flask
 flask-apscheduler
