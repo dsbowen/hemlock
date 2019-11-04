@@ -129,6 +129,7 @@ def create_status(btn):
 
 def create_data(btn):
     stage = 'Storing In Progress Participants'
+    print('creating data')
     yield btn.reset(stage, 0)
     ds = DataStore.query.first()
     in_progress = Participant.query.filter(
