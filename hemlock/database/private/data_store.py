@@ -61,6 +61,8 @@ class DataStore(db.Model):
         print('removing participant')
         self.remove_participant(part)
         print('appending participant')
+        print('printing data')
+        print(part.data)
         self.data.append(part.data)
         print('participant updated False')
         part.updated = False
