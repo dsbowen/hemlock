@@ -9,7 +9,6 @@ def Start(root=None):
     Text(p, text='Hello World!')
     Download(p, text='Hello World')
     Navigate(b, Branch2)
-    NavigateWorker(b)
     return b
 
 def Branch2(root):
