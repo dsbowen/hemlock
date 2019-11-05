@@ -131,7 +131,9 @@ def create_data(btn):
     stage = 'Storing Participant Data'
     yield btn.reset(stage, 0)
     ds = DataStore.query.first()
+    db.session.add(ds)
     updated = Participant.query.filter_by(updated=True).all()
+    db.session.add_all(updated)
     print('got updated')
     print(updated)
     for i, part in enumerate(updated):
