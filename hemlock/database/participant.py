@@ -199,7 +199,9 @@ class Participant(UserMixin, Base, db.Model):
         """Set the order for Questions belonging to a given Page"""
         print('setting page order', page)
         questions = page.questions_with_timer
+        print('questions are', questions)
         [self._set_order_question(q, var_count) for q in questions]
+        print('done setting question order')
         if page.next_branch in self.branch_stack:
             self._set_order_branch(page.next_branch, var_count)
         
@@ -207,9 +209,7 @@ class Participant(UserMixin, Base, db.Model):
         """Set the order for a given Question"""
         print('setting question order', question)
         var = question.var
-        print('var is', var)
         if var is None:
-            print('returning')
             return
         if var not in var_count:
             var_count[var] = 0
