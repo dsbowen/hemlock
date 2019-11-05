@@ -128,17 +128,19 @@ def create_status(btn):
     yield btn.report(stage, 100)
 
 def create_data(btn):
-    stage = 'Storing In Progress Participants'
+    stage = 'Storing Participant Data'
     print('creating data')
     yield btn.reset(stage, 0)
     ds = DataStore.query.first()
-    in_progress = Participant.query.filter(
-        db.not_(db.and_(Participant._completed, Participant._time_expired))
-    ).all()
-    print('got in progress')
-    for i, part in enumerate(in_progress):
-        yield btn.report(stage, 100.0*i/len(in_progress))
+    updated = Participant.query.filter_by(updated=True).all()
+    print('got updated')
+    print(updated)
+    for i, part in enumerate(updated):
+        print('storing updated', i)
+        yield btn.report(stage, 100.0*i/len(updated))
+        print('yielded report')
         ds.store_participant(part)
+        print('stored part', i)
     print('done storing parts')
     ds.data.save('downloads/Data.csv')
     yield btn.report(stage, 100)
