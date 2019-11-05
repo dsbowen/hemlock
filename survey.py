@@ -6,9 +6,8 @@ from texts import *
 def Start(root=None):
     b = Branch()
     p = Page(b)
+    CompileWorker(p)
     Text(p, text='Hello World!')
-    Download(p, text='Hello World')
-    print(p.questions)
     Navigate(b, Branch2)
     return b
 
