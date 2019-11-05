@@ -58,8 +58,11 @@ class DataStore(db.Model):
     
     def store_participant(self, part):
         """Store data for given Participant"""
+        print('removing participant')
         self.remove_participant(part)
+        print('appending participant')
         self.data.append(part.data)
+        print('participant updated False')
         part.updated = False
         
     def remove_participant(self, part):
