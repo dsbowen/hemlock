@@ -38,6 +38,7 @@ def get_login_page():
     if 'login_page_id' in session:
         print('login_page_id in session')
         return Page.query.get(session['login_page_id'])
+    session.clear()
     print('creating new login page')
     login_page = Page(back=False, forward_button=LOGIN_BUTTON)
     Validate(login_page, check_password)
