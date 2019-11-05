@@ -14,4 +14,3 @@ $("form.submit-once").submit( function(e) {
 
 // Get socket.io url
 $SOCKET_URL = location.protocol+"//"+document.domain+':'+location.port
-// $SOCKET_URL = "https://"+document.domain+':'+location.port
