@@ -144,6 +144,7 @@ def create_data(btn):
     print('done storing parts')
     ds.data.save('downloads/Data.csv')
     yield btn.report(stage, 100)
+    db.session.commit()
         
 
 @bp.route('/logout')
