@@ -134,18 +134,12 @@ def create_data(btn):
     db.session.add(ds)
     updated = Participant.query.filter_by(updated=True).all()
     db.session.add_all(updated)
-    print('got updated')
-    print(updated)
     for i, part in enumerate(updated):
         yield btn.report(stage, 100.0*i/len(updated))
         ds.store_participant(part)
-        print('updated', part.updated)
-        print('stored part', i)
-    print('done storing parts')
     ds.data.save('downloads/Data.csv')
-    yield btn.report(stage, 100)
     db.session.commit()
-        
+    yield btn.report(stage, 100)
 
 @bp.route('/logout')
 @researcher_login_required
