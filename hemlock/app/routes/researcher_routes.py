@@ -129,16 +129,13 @@ def create_status(btn):
 
 def create_data(btn):
     stage = 'Storing Participant Data'
-    print('creating data')
     yield btn.reset(stage, 0)
     ds = DataStore.query.first()
     updated = Participant.query.filter_by(updated=True).all()
     print('got updated')
     print(updated)
     for i, part in enumerate(updated):
-        print('storing updated', i)
         yield btn.report(stage, 100.0*i/len(updated))
-        print('yielded report')
         ds.store_participant(part)
         print('updated', part.updated)
         print('stored part', i)

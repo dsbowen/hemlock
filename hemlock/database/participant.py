@@ -162,11 +162,14 @@ class Participant(UserMixin, Base, db.Model):
         they were created (i.e. by id). This is not necessarily the order in 
         which they appeared to the Participant.
         """
+        print('about to setting order')
         self._set_order_all()
         questions = self.questions
         df = DataFrame()
+        print('adding data to dataframe')
         df.add(data=self.meta, all_rows=True)
         [df.add(data=q._pack_data(), all_rows=q.all_rows) for q in questions]
+        print('padding df')
         df.pad()
         return df
     
@@ -180,11 +183,13 @@ class Participant(UserMixin, Base, db.Model):
         Note that a Branch's embedded data Questions are set before its 
         Pages' Questions. A Page's timer is set before its Questions.
         """
+        print('setting order')
         var_count = {}
         self._set_order_branch(self.branch_stack[0], var_count)
     
     def _set_order_branch(self, branch, var_count):
         """Set the order for Questions belonging to a given Branch"""
+        print('setting branch order', branch)
         [self._set_order_question(q, var_count) for q in branch.embedded]
         [self._set_order_page(p, var_count) for p in branch.pages]
         if branch.next_branch in self.branch_stack:
@@ -192,6 +197,7 @@ class Participant(UserMixin, Base, db.Model):
     
     def _set_order_page(self, page, var_count):
         """Set the order for Questions belonging to a given Page"""
+        print('setting page order', page)
         questions = page.questions_with_timer
         [self._set_order_question(q, var_count) for q in questions]
         if page.next_branch in self.branch_stack:
@@ -199,6 +205,7 @@ class Participant(UserMixin, Base, db.Model):
         
     def _set_order_question(self, question, var_count):
         """Set the order for a given Question"""
+        print('setting question order', question)
         var = question.var
         if var is None:
             return

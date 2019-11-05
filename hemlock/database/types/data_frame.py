@@ -51,11 +51,8 @@ class DataFrame(MutableDict):
         return max(lengths) if lengths else 0
         
     def append(self, data, all_rows=False):
-        print('padding before')
         self.pad()
-        print('adding data')
         self.add(data, all_rows, rows=self.rows())
-        print('padding after')
         self.pad()
     
     def add(self, data, all_rows=False, rows=None):
