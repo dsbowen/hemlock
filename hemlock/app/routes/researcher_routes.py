@@ -179,7 +179,7 @@ def create_data(btn):
 @bp.route('/logout')
 @researcher_login_required
 def logout():
-    session['logged_in'] = False
+    session.remove(password_key(), None)
     return redirect(url_for('hemlock.login'))
 
 """
