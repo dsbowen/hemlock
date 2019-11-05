@@ -180,7 +180,6 @@ class Participant(UserMixin, Base, db.Model):
         Note that a Branch's embedded data Questions are set before its 
         Pages' Questions. A Page's timer is set before its Questions.
         """
-        print('setting order')
         var_count = {}
         self._set_order_branch(self.branch_stack[0], var_count)
     
