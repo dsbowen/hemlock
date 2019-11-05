@@ -18,7 +18,7 @@ class Free(Question):
         return super()._render(content=INPUT.format(q=self))
     
     def _record_response(self, response):
-        print(response)
+        print('response is', response)
         self.response = None if response == [''] else response[0]
 
 INPUT = """
