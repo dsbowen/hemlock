@@ -34,7 +34,9 @@ def get_login_page():
 
     Create login page if one does not exist already.
     """
+    print('session is', session)
     if 'login_page_id' in session:
+        print('login_page_id in session')
         return Page.query.get(session['login_page_id'])
     print('creating new login page')
     login_page = Page(back=False, forward_button=LOGIN_BUTTON)
