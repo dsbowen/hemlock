@@ -140,6 +140,7 @@ def create_data(btn):
         yield btn.report(stage, 100.0*i/len(updated))
         print('yielded report')
         ds.store_participant(part)
+        print('updated', part.updated)
         print('stored part', i)
     print('done storing parts')
     ds.data.save('downloads/Data.csv')
