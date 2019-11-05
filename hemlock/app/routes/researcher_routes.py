@@ -17,6 +17,8 @@ import os
 def login():
     """Login view function"""
     login_page = get_login_page()
+    print('loginpage is', login_page)
+    print('quesitons are', login_page.questions)
     if request.method == 'POST':
         login_page._record_response()
         session['logged_in'] = login_page._validate()
@@ -34,6 +36,7 @@ def get_login_page():
     """
     if 'login_page_id' in session:
         return Page.query.get(session['login_page_id'])
+    print('creating new login page')
     login_page = Page(back=False, forward_button=LOGIN_BUTTON)
     Validate(login_page, check_password)
     Free(login_page, text=PASSWORD_PROMPT)
