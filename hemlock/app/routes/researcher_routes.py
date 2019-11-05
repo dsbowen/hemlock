@@ -17,14 +17,13 @@ import os
 def login():
     """Login view function"""
     login_page = get_login_page()
-    print('loginpage is', login_page)
-    print('quesitons are', login_page.questions)
     if request.method == 'POST':
         login_page._record_response()
-        session['logged_in'] = login_page._validate()
-        if session['logged_in']:
-            requested = request.args.get('requested') or 'participants'
-            return redirect(url_for('hemlock.{}'.format(requested)))
+        password = login_page.questions[0].response
+        password = password or ''
+        session_store(password_key(), password)
+        if login_page._validate():
+            return login_successful()
     login_page._compile()
     db.session.commit()
     return login_page._render()
@@ -34,35 +33,65 @@ def get_login_page():
 
     Create login page if one does not exist already.
     """
-    print('session is', session)
-    if 'login_page_id' in session:
-        print('login_page_id in session')
-        return Page.query.get(session['login_page_id'])
-    session.clear()
-    print('creating new login page')
+    key = login_page_key()
+    if key in session:
+        return Page.query.get(session[key])
     login_page = Page(back=False, forward_button=LOGIN_BUTTON)
     Validate(login_page, check_password)
     Free(login_page, text=PASSWORD_PROMPT)
-    session['login_page_id'] = login_page.id
+    session_store(login_page_key(), login_page.id)
     return login_page
 
 def check_password(login_page):
     """Check the input password against researcher password"""
-    q = login_page.questions[0]
-    password = '' if q.response is None else q.response
-    if not check_password_hash(current_app.password_hash, password):
+    if not password_correct():
         return PASSWORD_INCORRECT
+
+def password_correct():
+    """Indicate that the session password is correct"""
+    key = password_key()
+    if key not in session:
+        return False
+    return check_password_hash(current_app.password_hash, session[key])
 
 def researcher_login_required(func):
     """Decorator requiring researcher login"""
     @wraps(func)
     def login_requirement():
-        if 'logged_in' not in session or not session['logged_in']:
+        if not password_correct():
             get_login_page().error = LOGIN_REQUIRED
             db.session.commit()
             return redirect(url_for('hemlock.login', requested=func.__name__))
         return func()
     return login_requirement
+
+def login_successful():
+    """Process successful login
+
+    Clear login page and redirect to requested page.
+    """
+    login_page = get_login_page()
+    login_page.error = None
+    login_page.response = None
+    db.session.commit()
+    requested = request.args.get('requested') or 'participants'
+    return redirect(url_for('hemlock.{}'.format(requested)))
+
+def session_store(key, val):
+    """Store key, val pair in session
+
+    Remove elements from session until space has cleared.
+    """
+    session[key] = val
+    while key not in session:
+        session.pop()
+        session[key] = val
+
+def login_page_key():
+    return request.headers['Host']+'login-page-id'
+
+def password_key():
+    return request.headers['Host']+'password'
     
 """Researcher dashboard"""
 def researcher_navbar():
