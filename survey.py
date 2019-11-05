@@ -8,6 +8,7 @@ def Start(root=None):
     p = Page(b)
     Text(p, text='Hello World!')
     Download(p, text='Hello World')
+    print(p.questions)
     Navigate(b, Branch2)
     return b
 
