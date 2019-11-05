@@ -207,7 +207,9 @@ class Participant(UserMixin, Base, db.Model):
         """Set the order for a given Question"""
         print('setting question order', question)
         var = question.var
+        print('var is', var)
         if var is None:
+            print('returning')
             return
         if var not in var_count:
             var_count[var] = 0
