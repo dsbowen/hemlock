@@ -21,7 +21,7 @@ def login():
         login_page._record_response()
         password = login_page.questions[0].response
         password = password or ''
-        session_store(password_key(), password)
+        session_store('password', password)
         if login_page._validate():
             return login_successful()
     login_page._compile()
@@ -33,13 +33,12 @@ def get_login_page():
 
     Create login page if one does not exist already.
     """
-    key = login_page_key()
-    if key in session:
-        return Page.query.get(session[key])
+    if 'login_page_id' in session:
+        return Page.query.get(session['login_page_id'])
     login_page = Page(back=False, forward_button=LOGIN_BUTTON)
     Validate(login_page, check_password)
     Free(login_page, text=PASSWORD_PROMPT)
-    session_store(login_page_key(), login_page.id)
+    session_store('login_page_id', login_page.id)
     return login_page
 
 def check_password(login_page):
@@ -49,10 +48,9 @@ def check_password(login_page):
 
 def password_correct():
     """Indicate that the session password is correct"""
-    key = password_key()
-    if key not in session:
+    if 'password' not in session:
         return False
-    return check_password_hash(current_app.password_hash, session[key])
+    return check_password_hash(current_app.password_hash, session['password'])
 
 def researcher_login_required(func):
     """Decorator requiring researcher login"""
@@ -86,12 +84,6 @@ def session_store(key, val):
     while key not in session:
         session.pop()
         session[key] = val
-
-def login_page_key():
-    return request.headers['Host']+'login-page-id'
-
-def password_key():
-    return request.headers['Host']+'password'
     
 """Researcher dashboard"""
 def researcher_navbar():
@@ -104,13 +96,22 @@ def participants():
 
     This page displays streamed data on participant status.
     """
-    p = Page(nav=researcher_navbar(), back=False, forward=False)
-    p.js.append(current_app.socket_js)
-    p.js.append(Static(filename='js/participants.js',blueprint='hemlock'))
-    q = Text(p)
+    parts_page = get_parts_page()
+    parts_page._compile()
+    return parts_page._render()
+
+def get_parts_page():
+    """Return the Participants dashboard page"""
+    if 'parts_page_id' in session:
+        return Page.query.get(session['parts_page_id'])
+    parts_page = Page(nav=researcher_navbar(), back=False, forward=False)
+    parts_page.js.append(current_app.socket_js)
+    parts_static = Static(filename='js/participants.js', blueprint='hemlock')
+    parts_page.js.append(parts_static)
+    q = Text(parts_page)
     q.text = PARTICIPANTS.format(**DataStore.query.first().current_status)
-    p._compile()
-    return p._render()
+    session_store('parts_page_id', parts_page.id)
+    return parts_page
     
 @bp.route('/download', methods=['GET','POST'])
 @researcher_login_required
@@ -179,7 +180,7 @@ def create_data(btn):
 @bp.route('/logout')
 @researcher_login_required
 def logout():
-    session.pop(password_key(), None)
+    session.clear()
     return redirect(url_for('hemlock.login'))
 
 """

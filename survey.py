@@ -6,12 +6,11 @@ from texts import *
 def Start(root=None):
     b = Branch()
     p = Page(b)
-    CompileWorker(p)
     Text(p, text='Hello World!')
-    Navigate(b, Branch2)
+    Navigate(b, End)
     return b
 
-def Branch2(root):
+def End(root):
     b = Branch()
     p = Page(b, terminal=True)
     Text(p, text='Goodbye World!')
