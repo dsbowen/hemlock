@@ -12,7 +12,11 @@ from functools import wraps
 from werkzeug.security import check_password_hash
 import os
 
-"""Researcher login"""
+"""Dashboard Navigation Bar"""
+def researcher_navbar():
+    return Navbar.query.filter_by(name='researcher_navbar').first()
+
+"""Login"""
 @bp.route('/login', methods=['GET','POST'])
 def login():
     """Login view function"""
@@ -85,11 +89,8 @@ def session_store(key, val):
         session.pop()
         session[key] = val
     
-"""Researcher dashboard"""
-def researcher_navbar():
-    return Navbar.query.filter_by(name='researcher_navbar').first()
-    
-@bp.route('/participants', methods=['GET','POST'])
+"""Participant Status"""
+@bp.route('/participants')
 @researcher_login_required
 def participants():
     """View participant's status
@@ -98,6 +99,7 @@ def participants():
     """
     parts_page = get_parts_page()
     parts_page._compile()
+    db.session.commit()
     return parts_page._render()
 
 def get_parts_page():
@@ -113,27 +115,34 @@ def get_parts_page():
     session_store('parts_page_id', parts_page.id)
     return parts_page
     
-@bp.route('/download', methods=['GET','POST'])
+"""Download"""
+@bp.route('/download')
 @researcher_login_required
 def download():
     """Download data"""
-    create_downloads_folder()
-    p = Page(nav=researcher_navbar(), back=False, forward=False)
-    files_q = MultiChoice(p, text=DOWNLOAD)
+    download_page = get_download_page()
+    download_page._compile()
+    db.session.commit()
+    return download_page._render()
+
+def get_download_page():
+    """Get or create download page"""
+    if 'download_page_id' in session:
+        return Page.query.get(session['download_page_id'])
+    if not os.path.exists('downloads'):
+        os.mkdir('downloads')
+    download_page = Page(nav=researcher_navbar(), back=False, forward=False)
+    files_q = MultiChoice(download_page, text=DOWNLOAD)
     Choice(files_q, text='Metadata', value='meta')
     Choice(files_q, text='Status Log', value='status')
     Choice(files_q, text='Dataframe', value='data')
-    btn = Download(p, text='Download')
+    btn = Download(download_page, text='Download')
     HandleForm(btn, select_files, args=[files_q])
-    p._compile()
-    db.session.commit()
-    return p._render()
-
-def create_downloads_folder():
-    if not os.path.exists('downloads'):
-        os.mkdir('downloads')
+    session_store('download_page_id', download_page.id)
+    return download_page
 
 def select_files(btn, response, files_q):
+    """Process download file selection"""
     files_q._record_response(response.getlist(files_q.model_id))
     files_q._record_data()
     data = files_q.data
@@ -164,6 +173,10 @@ def create_status(btn):
     yield btn.report(stage, 100)
 
 def create_data(btn):
+    """
+    Some participants will have updated data. Store data from these 
+    participants before downloading dataframe.
+    """
     stage = 'Storing Participant Data'
     yield btn.reset(stage, 0)
     ds = DataStore.query.first()
@@ -177,6 +190,7 @@ def create_data(btn):
     db.session.commit()
     yield btn.report(stage, 100)
 
+"""Logout"""
 @bp.route('/logout')
 @researcher_login_required
 def logout():
