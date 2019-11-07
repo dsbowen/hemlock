@@ -2,7 +2,7 @@
 
 from hemlock.app.factory import bp, db
 from hemlock.app.routes.researcher_texts import *
-from hemlock.database import Participant, Navbar, Page, Choice, Validate
+from hemlock.database import Participant, Navbar, Page, Choice, Validate, Submit
 from hemlock.database.private import DataStore
 from hemlock.question_polymorphs import Download, HandleForm, CreateFile, Free, MultiChoice, Text
 from hemlock.tools import Static
@@ -20,6 +20,8 @@ def researcher_navbar():
 @bp.route('/login', methods=['GET','POST'])
 def login():
     """Login view function"""
+    if request.method == 'GET':
+        session.clear()
     login_page = get_login_page()
     if request.method == 'POST':
         login_page._record_response()
@@ -116,7 +118,7 @@ def get_parts_page():
     return parts_page
     
 """Download"""
-@bp.route('/download')
+@bp.route('/download', methods=['GET','POST'])
 @researcher_login_required
 def download():
     """Download data"""
@@ -132,29 +134,62 @@ def get_download_page():
     if not os.path.exists('downloads'):
         os.mkdir('downloads')
     download_page = Page(nav=researcher_navbar(), back=False, forward=False)
-    files_q = MultiChoice(download_page, text=DOWNLOAD)
+    files_q = MultiChoice(download_page, text=SELECT_FILES_TXT)
     Choice(files_q, text='Metadata', value='meta')
     Choice(files_q, text='Status Log', value='status')
     Choice(files_q, text='Dataframe', value='data')
+    survey_view_q = Free(download_page, text=SURVEY_VIEW_TXT)
+    Validate(survey_view_q, valid_part_ids)
+    Submit(survey_view_q, store_part_ids)
     btn = Download(download_page, text='Download')
-    HandleForm(btn, select_files, args=[files_q])
+    HandleForm(btn, handle_download_form)
     session_store('download_page_id', download_page.id)
     return download_page
 
-def select_files(btn, response, files_q):
+def valid_part_ids(survey_view_q):
+    part_ids = parse_part_ids(survey_view_q.response)
+    invalid_ids = []
+    for id in part_ids:
+        if Participant.query.get(id) is None:
+            invalid_ids.append(id)
+    if invalid_ids:
+        if len(invalid_ids) == 1:
+            return INVALID_ID.format(invalid_ids[0])
+        return INVALID_IDS.format(', '.join(invalid_ids))
+
+def store_part_ids(survey_view_q):
+    survey_view_q.data = parse_part_ids(survey_view_q.response)
+
+def parse_part_ids(raw_ids):
+    if raw_ids is None:
+        return
+    comma_splits = raw_ids.split(',')
+    space_splits = [cs.split(' ') for cs in comma_splits]
+    return [i for ss in space_splits for i in ss if i]
+
+def handle_download_form(btn, response):
     """Process download file selection"""
-    files_q._record_response(response.getlist(files_q.model_id))
-    files_q._record_data()
-    data = files_q.data
     btn.filenames.clear()
     btn.create_file_functions.clear()
-    if data.get('meta'):
+    download_page = get_download_page()
+    db.session.add(download_page)
+    files_q, survey_view_q, _ = download_page.questions
+    download_page._record_response()
+    download_page._validate()
+    if download_page.is_valid():
+        download_page._submit()
+        select_files(btn, files_q.data)
+        select_survey_view(btn, survey_view_q.data)
+    db.session.commit()
+
+def select_files(btn, files):
+    if files.get('meta'):
         btn.filenames.append('downloads/Metadata.csv')
         CreateFile(btn, create_meta)
-    if data.get('status'):
+    if files.get('status'):
         btn.filenames.append('downloads/StatusLog.csv')
         CreateFile(btn, create_status)
-    if data.get('data'):
+    if files.get('data'):
         btn.filenames.append('downloads/Data.csv')
         CreateFile(btn, create_data)
 
@@ -190,154 +225,21 @@ def create_data(btn):
     db.session.commit()
     yield btn.report(stage, 100)
 
+def select_survey_view(btn, part_ids):
+    if not part_ids:
+        return
+    CreateFile(btn, create_view, args=part_ids)
+
+def create_view(btn, *part_ids):
+    parts = [Participant.query.get(id) for id in part_ids]
+    gen = current_app.extensions['viewer'].survey_view(btn, parts)
+    for event in gen:
+        print('event is', event)
+        yield event
+
 """Logout"""
 @bp.route('/logout')
 @researcher_login_required
 def logout():
     session.clear()
     return redirect(url_for('hemlock.login'))
-
-"""
-# hemlock database, application blueprint, and models
-from hemlock.factory import viewer, db, bp
-from hemlock.models import Participant, Page, Question
-from hemlock.models.private import DataStore, Visitors
-from flask import current_app, render_template, redirect, url_for, session, request, Markup, make_response, request, flash, jsonify, send_file
-from flask_login import login_required, current_user, login_user
-from flask_bootstrap import bootstrap_find_resource
-from werkzeug.security import check_password_hash
-from datetime import datetime
-from io import StringIO
-import csv
-
-
-
-
-##############################################################################
-# Data download views
-##############################################################################
-
-# Request data download
-@bp.route('/download')
-def download():
-    if not valid_password():
-        return redirect(url_for('hemlock.password', requested_url='download'))
-    return render_template(
-        'download.html', password=request.args.get('password'))
-    
-# Get lists of participants with which to update datastore
-# to_store_complete: completed participants whose data was not properly stored
-# incomplete: incomplete participants
-@bp.route('/_get_store_lists')
-def _get_store_lists():
-    ds = DataStore.query.first()
-    participants = Participant.query.all()
-    
-    to_store_complete = [p for p in participants
-        if p.id not in ds.completed_ids and p._metadata['completed']]
-    incomplete = [p for p in participants
-        if not p._metadata['completed']]
-    ds.set_to_store(to_store_complete, incomplete)
-
-    return ''
-    
-# Update the data store
-@bp.route('/_update_data_store')
-def _update_data_store():
-    return jsonify(finished=DataStore.query.first().update())
-        
-# Data download
-# called after update is finished
-@bp.route('/_download')
-def _download():
-    if not valid_password():
-        return redirect(url_for('hemlock.password', requested_url='download'))
-    return get_response(data=DataStore.query.first().data, filename='data')
-
-
-
-##############################################################################
-# ipv4 download view
-##############################################################################
-
-# Download list of ipv4 addresses
-# for blocking duplicates in subsequent studies
-@bp.route('/ipv4', methods=['GET','POST'])
-def ipv4():
-    if not valid_password():
-        return redirect(url_for('hemlock.password', requested_url='ipv4'))
-        
-    ipv4 = list(set(current_app.ipv4_csv + Visitors.query.first().ipv4))
-    return get_response(data={'ipv4': ipv4}, filename='block')
-
-
-
-##############################################################################
-# Survey download view
-##############################################################################
-   
-# Download png and docx files with survey pages
-# requires input valid participant ID
-@bp.route('/survey_view', methods=['GET','POST'])
-def survey_view():
-    if not valid_password():
-        return redirect(url_for(
-            'hemlock.password', requested_url='survey_view'))
-    
-    if request.method == 'POST':
-        pid = request.form.get(list(request.form)[0])
-        # try:
-            # part = Participant.query.get(int(pid))
-            # assert part is not None
-            # return viewer.survey_view(part)
-        # except:
-            # error = '<p>Participant ID invalid.</p>'
-        part = Participant.query.get(int(pid))
-        assert part is not None
-        return viewer.survey_view(part)
-    else:
-        error = None
-        
-    p = Page()
-    q = Question(p, '<p>Participant ID</p>', type='free')
-    q.error(error)
-    return render_template('page.html', page=Markup(p._compile_html()))
-
-
-    
-##############################################################################
-# Password validation and get response
-##############################################################################
-
-# Check for valid password
-def valid_password():
-    password = request.args.get('password')
-    if password is None:
-        return False
-    return check_password_hash(current_app.password_hash, password)
-    
-# Request a password
-@bp.route('/password', methods=['GET','POST'])
-def password():
-    requested_url = 'hemlock.{}'.format(request.args.get('requested_url'))
-    if request.method == 'POST':
-        password = request.form.get(list(request.form)[0])
-        return redirect(url_for(requested_url, password=password))
-        
-    p = Page()
-    Question(p, 'Password', type='free')
-    return render_template('page.html', page=Markup(p._compile_html()))
-    
-# Create response csv from data dictionary in format {'key':[values]}
-def get_response(data, filename):
-    si = StringIO()
-    cw = csv.writer(si)
-    cw.writerow(data.keys())
-    cw.writerows(zip(*data.values()))
-    
-    resp = make_response(si.getvalue())
-    disposition = 'attachment; filename={}.csv'.format(filename)
-    resp.headers['Content-Disposition'] = disposition
-    resp.headers['Content-Type'] = 'text/csv'
-    return resp
-"""

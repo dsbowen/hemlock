@@ -1,18 +1,19 @@
-"""Page html database model
+"""Page Html database model
 
 Stores html snapshot of each Page for each Participant. These can be accessed
 in the researcher dashboard.
 """
 
-from hemlock.app.factory import db
+from hemlock.app import db
 from hemlock.database.types import MarkupType
+from hemlock.tools import Static
 
 from base64 import b64encode
 from bs4 import BeautifulSoup
-from flask import render_template
-from flask_login import current_user
+from flask import render_template, request
 from io import BytesIO
 from PIL import Image, ImageOps
+from sqlalchemy_mutable import MutableListType
 import numpy as np
 import os
 import requests
@@ -32,22 +33,33 @@ MAX_CROP = 45
 class PageHtml(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
-    css = db.Column(db.PickleType)
+    css = db.Column(MutableListType)
     html = db.Column(MarkupType)
+
+    @property
+    def _css(self):
+        """Return stylesheets
+
+        Sheets are rendered in offline mode for compatibility with 
+        wkhtmltoimg.
+        """
+        sheets = []
+        for sheet in self.css:
+            if isinstance(sheet, Static):
+                sheets.append(sheet.as_css(offline=True))
+            else:
+                sheets.append(sheet)
+        return sheets
     
-    def __init__(self, page):
+    def __init__(self, part, page):
+        self.part = part
         self.css = page.css
         self.html = render_template(page.view_template, page=page)
-        self.preprocess()
-        
-    def preprocess(self):
-        self._process(preprocess=True)
-        
-    def process(self):
-        self._process()
-        return self.html
+        print('self css is', self.css)
+        print('self html is', self.html)
+        self.process(preprocess=True)
     
-    def _process(self, preprocess=False):
+    def process(self, preprocess=False):
         """Process html
         
         Store all images in base64 encoding. Store all videos as thumbnails.
@@ -72,16 +84,14 @@ class PageHtml(db.Model):
         is from a URL, encode content from request.
         """
         src = image['src']
-        if src.startswith('/'): # local image
-            path = os.path.join(os.getcwd(), src[1:]).replace('\\', '/')
-            data = b64encode(open(path, 'rb').read()).decode('utf-8')
-        elif src.startswith('http'): # from URL
-            try:
-                data = b64encode(requests.get(src).content).decode('utf-8')
-            except:
-                data = ''
-        else:
+        if src.starts_with('data'):
             return
+        if src.startswith('/'): # local image
+            src = request.base_url + src
+        try:
+            data = b64encode(requests.get(src).content).decode('utf-8')
+        except:
+            data = ''
         image['src'] = 'data:image/png;base64,{}'.format(data)
     
     def encode_video(self, soup, video):

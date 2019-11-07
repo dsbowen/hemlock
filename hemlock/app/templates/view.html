@@ -1,27 +1,35 @@
 <!-- Default survey viewing template -->
 
-<html>
+{% extends 'bootstrap/base.html' %}
+
+{% block styles %}{% endblock %}
+{% block scripts %}{% endblock %}
+
+{% block navbar %}
+{% if page.nav is not none %}
+    {{ page.nav.render() }}
+{% endif %}
+{% endblock %}
+
+{% block content %}
 <div class="container h-100">
 <div class="row h-100 justify-content-center align-items-center">
 <form method="POST" class="submit-once col-12">
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-danger" style="text-align:center;">{{ message }}</div>
-        {% endfor %}
+    {% if page.error is not none %}
+        <div class="alert alert-danger w-100" style="text-align:center;">
+            {{ page.error }}
+        </div>
     {% endif %}
-    {% endwith %}
-
-    {{ page.question_html }}
+    {{ page._question_html }}
     <br/>
-    {% if page.back %}
+    {% if page._back %}
         {{ page.back_button }}
     {% endif %}
-    {% if page.forward %}
+    {% if page._forward %}
         {{ page.forward_button }}
     {% endif %}
     <br style="line-height:3;"></br>
-</form>   
+</form>
 </div>
 </div>
-</html>
+{% endblock %}

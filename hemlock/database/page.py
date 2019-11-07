@@ -262,7 +262,7 @@ class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
             self.start_time = datetime.utcnow()
         delta = (datetime.utcnow() - self.start_time).total_seconds()
         self.total_time += int(delta)
-        self.direction_from = request.form['direction']
+        self.direction_from = request.form.get('direction')
         [
             q._record_response(request.form.getlist(q.model_id)) 
             for q in self.questions

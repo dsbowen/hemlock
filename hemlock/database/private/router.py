@@ -14,6 +14,7 @@ backward and forward navigation.
 """
 
 from hemlock.app import db
+from hemlock.database.private.page_html import PageHtml
 
 from flask import current_app, request, redirect, url_for
 from flask_worker import RouterMixin as RouterMixinBase
@@ -87,6 +88,7 @@ class Router(RouterMixin, db.Model):
     
     def render(self):
         part, page = self.part, self.page
+        PageHtml(part, page)
         if page.terminal and not part.completed:
             part.update_end_time()
             part.completed = True

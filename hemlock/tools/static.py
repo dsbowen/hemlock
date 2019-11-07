@@ -13,18 +13,20 @@ class Static(Mutable):
         self.filename = filename
         self.blueprint = blueprint
 
-    def get_url(self):
-        assert self.cdn is not None or self.filename is not None
-        if not current_app.offline and self.cdn is not None:
+    def get_url(self, offline=False):
+        offline = offline or current_app.offline
+        if not offline and self.cdn is not None:
             return self.cdn
-        bp = self.blueprint+'.' if self.blueprint is not None else ''
-        return url_for(bp+'static', filename=self.filename)
+        if self.filename is not None:
+            bp = self.blueprint+'.' if self.blueprint is not None else ''
+            return url_for(bp+'static', filename=self.filename)
+        return ''
 
-    def as_css(self):
-        return CSS.format(href=self.get_url())
+    def as_css(self, offline=False):
+        return CSS.format(href=self.get_url(offline))
 
-    def as_js(self):
-        return JS.format(src=self.get_url())
+    def as_js(self, offline=False):
+        return JS.format(src=self.get_url(offline))
         
 
 CSS = '<link href="{href}" rel="stylesheet" type="text/css"/>'

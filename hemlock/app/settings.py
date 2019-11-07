@@ -41,10 +41,10 @@ default_settings = {
         'forward': True,
         'forward_button': FORWARD_BUTTON,
         'js': PAGE_JS,
-        'submit_function': submit_function,
+        'submit_functions': submit_function,
         'survey_template': 'survey.html',
-        'validate_function': validate_function,
-        'view_tempalte': 'view.html'
+        'validate_functions': validate_function,
+        'view_template': 'view.html'
     },
     'question_settings': {
         'div_classes': ['form-group'],

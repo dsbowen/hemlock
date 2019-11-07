@@ -1,8 +1,4 @@
-##############################################################################
-# Base for hemlock extensions
-# by Dillon Bowen
-# last modified 08/17/2019
-##############################################################################
+"""Base for Hemlock extensions"""
 
 class ExtensionsBase():
     def _register_app(self, app, ext_name):

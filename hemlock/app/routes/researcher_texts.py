@@ -39,7 +39,13 @@ PARTICIPANTS = """
 </table>
 """
 
-DOWNLOAD = "<p>Select files to download.</p>"
+SELECT_FILES_TXT = "<p>Select files to download.</p>"
+
+SURVEY_VIEW_TXT = "<p>Enter participant ID's for survey viewing.</p>"
+
+INVALID_ID = "<p>The following participant ID was invalid: {}."
+
+INVALID_IDS = "<p>The following participant IDs were invalid: {}."
 
 DOWNLOAD_BUTTON = Markup(
     FORWARD_BUTTON_TEMPLATE.format(classes='w-100', text='Download')
