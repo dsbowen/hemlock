@@ -143,6 +143,7 @@ def get_download_page():
     Validate(survey_view_q, valid_part_ids)
     Submit(survey_view_q, store_part_ids)
     btn = Download(download_page, text='Download', callback=request.url)
+    btn.target = '_blank'
     HandleForm(btn, handle_download_form)
     session_store('download_page_id', download_page.id)
     return download_page
