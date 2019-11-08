@@ -78,7 +78,11 @@ class Participant(UserMixin, Base, db.Model):
         questions.sort(key=lambda q: q.id)
         return questions
     
-    _page_htmls = db.relationship('PageHtml', backref='part', lazy='dynamic')
+    _viewing_pages = db.relationship(
+        'ViewingPage',
+        backref='part', 
+        lazy='dynamic'
+    )
 
     _forward_to_id = db.Column(db.Integer)
     g = db.Column(MutableDictType)

@@ -6,11 +6,11 @@ in the researcher dashboard.
 
 from hemlock.app import db
 from hemlock.database.types import MarkupType
-from hemlock.tools import Static
+from hemlock.tools import CSS
 
 from base64 import b64encode
 from bs4 import BeautifulSoup
-from flask import render_template, request
+from flask import current_app, render_template, request
 from io import BytesIO
 from PIL import Image, ImageOps
 from sqlalchemy_mutable import MutableListType
@@ -30,34 +30,37 @@ PCT_PADDING = .95
 MAX_CROP = 45
 
 
-class PageHtml(db.Model):
+class ViewingPage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
-    css = db.Column(MutableListType)
+    external_css_paths = db.Column(MutableListType)
     html = db.Column(MarkupType)
-
-    @property
-    def _css(self):
-        """Return stylesheets
-
-        Sheets are rendered in offline mode for compatibility with 
-        wkhtmltoimg.
-        """
-        sheets = []
-        for sheet in self.css:
-            if isinstance(sheet, Static):
-                sheets.append(sheet.as_css(offline=True))
-            else:
-                sheets.append(sheet)
-        return sheets
     
     def __init__(self, part, page):
         self.part = part
-        self.css = page.css
-        self.html = render_template(page.view_template, page=page)
-        print('self css is', self.css)
-        print('self html is', self.html)
+        internal_css, self.external_css_paths = self.get_css(page)
+        self.html = render_template(
+            page.view_template, page=page, css=internal_css
+        )
         self.process(preprocess=True)
+
+    def get_css(self, page):
+        """Get page css
+
+        Split the css into internal stylesheets and external stylesheets. 
+        The internal stylesheets will be rendered in the viewing page html. 
+        The external stylesheet paths will be captured and passed to imgkit 
+        when creating a survey view.
+        """
+        css = page.css + [sheet for q in page.questions for sheet in q.css]
+        internal_css = ''
+        external_css_paths = []
+        for sheet in css:
+            if isinstance(sheet, CSS):
+                external_css_paths.append(sheet.local_path())
+            else:
+                internal_css += sheet
+        return internal_css, external_css_paths
     
     def process(self, preprocess=False):
         """Process html
@@ -84,10 +87,8 @@ class PageHtml(db.Model):
         is from a URL, encode content from request.
         """
         src = image['src']
-        if src.starts_with('data'):
+        if src.startswith('data'):
             return
-        if src.startswith('/'): # local image
-            src = request.base_url + src
         try:
             data = b64encode(requests.get(src).content).decode('utf-8')
         except:
@@ -114,12 +115,10 @@ class PageHtml(db.Model):
         Get the raw thumbnail image. Then superimpose the YouTube play button.
         """
         thumbnail = self.get_thumbnail(video)
-
-        path = os.path.join(os.getcwd(), 'static/YouTube.png')
-        play = Image.open(path.replace('\\', '/'))
-        thumbnail = thumbnail.resize(play.size)
-        
-        thumbnail.paste(play, (0,0), play)
+        static_folder = current_app.blueprints['hemlock'].static_folder
+        play_btn = Image.open(os.path.join(static_folder, 'YouTube.png'))
+        thumbnail = thumbnail.resize(play_btn.size)
+        thumbnail.paste(play_btn, (0,0), play_btn)
         return thumbnail
     
     def get_thumbnail(self, video):

@@ -8,8 +8,11 @@ body, html {
 
 /* Question div formatting */
 div.error {
+    border-style: solid;
+    border-width: thin;
     border-radius: 5px;
-    background-color: rgb(232,232,232);
+    background-color: #f2dede;
+    border-color: #ebcccc;
 }
 
 /* Choice formatting */

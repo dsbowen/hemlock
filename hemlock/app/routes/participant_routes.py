@@ -12,12 +12,11 @@ See hemlock/database/private/routing.py
 from hemlock.app.factory import bp, db, socketio
 from hemlock.database import Participant, Page
 from hemlock.question_polymorphs import Text
-from hemlock.database.private import DataStore, PageHtml
+from hemlock.database.private import DataStore
 
 from datetime import datetime, timedelta
-from flask import Markup, current_app, flash, jsonify, redirect, render_template, request, url_for
+from flask import current_app, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
-import rq
 
 """Initial views and functions"""
 @bp.route('/')

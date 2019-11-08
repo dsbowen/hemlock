@@ -5,7 +5,7 @@ from hemlock.app.routes.researcher_texts import *
 from hemlock.database import Participant, Navbar, Page, Choice, Validate, Submit
 from hemlock.database.private import DataStore
 from hemlock.question_polymorphs import Download, HandleForm, CreateFile, Free, MultiChoice, Text
-from hemlock.tools import Static
+from hemlock.tools import JS
 
 from flask import Markup, current_app, redirect, request, session, url_for
 from functools import wraps
@@ -110,8 +110,8 @@ def get_parts_page():
         return Page.query.get(session['parts_page_id'])
     parts_page = Page(nav=researcher_navbar(), back=False, forward=False)
     parts_page.js.append(current_app.socket_js)
-    parts_static = Static(filename='js/participants.js', blueprint='hemlock')
-    parts_page.js.append(parts_static)
+    parts_js = JS(filename='js/participants.js', blueprint='hemlock')
+    parts_page.js.append(parts_js)
     q = Text(parts_page)
     q.text = PARTICIPANTS.format(**DataStore.query.first().current_status)
     session_store('parts_page_id', parts_page.id)
@@ -234,7 +234,6 @@ def create_view(btn, *part_ids):
     parts = [Participant.query.get(id) for id in part_ids]
     gen = current_app.extensions['viewer'].survey_view(btn, parts)
     for event in gen:
-        print('event is', event)
         yield event
 
 """Logout"""

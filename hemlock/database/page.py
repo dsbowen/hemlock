@@ -153,7 +153,6 @@ class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
     error = db.Column(db.Text)
     forward = db.Column(db.Boolean)
     forward_button = db.Column(MarkupType)
-    _nav_html = db.Column(MarkupType)
     _question_html = db.Column(MarkupType)
     survey_template = db.Column(db.String)
     terminal = db.Column(db.Boolean)
@@ -163,13 +162,13 @@ class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
     def _css(self):
         page_css = super()._css
         question_css = ''.join([q._css for q in self.questions])
-        return Markup(page_css+question_css)
+        return Markup(page_css + question_css)
 
     @property
     def _js(self):
         page_js = super()._js
         question_js = ''.join([q._js for q in self.questions])
-        return Markup(page_js+question_js)
+        return Markup(page_js + question_js)
     
     @property
     def _back(self):

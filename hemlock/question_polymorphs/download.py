@@ -15,9 +15,9 @@ class Download(DownloadBtnMixin, Question):
     def __init__(self, page=None, **kwargs):
         DownloadBtnMixin.__init__(self)
         Question.__init__(self, ['download_settings'], page, **kwargs)
-        self.js.append(self.script())
 
     def _render(self):
+        self.js.append(self.script())
         content = self.render_btn() + self.render_progress()
         return DIV.format(q=self, content=content)
 

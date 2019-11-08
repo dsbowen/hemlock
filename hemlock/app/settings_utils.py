@@ -1,6 +1,6 @@
 """Miscellaneous default settings texts and functions"""
 
-from hemlock.tools import Static
+from hemlock.tools import CSS, JS
 
 TIME_EXPIRED = """You have exceeded your time limit for this survey."""
 
@@ -30,41 +30,41 @@ FORWARD_BUTTON_TEMPLATE = """
 
 FORWARD_BUTTON = FORWARD_BUTTON_TEMPLATE.format(classes='', text='>>')
 
-SOCKET_JS = Static(
-    cdn='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js',
+SOCKET_JS = JS(
+    url='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js',
     filename='js/socketio-2.2.0.js',
     blueprint='hemlock'
 )
 
 PAGE_CSS = [
-    Static(
-        cdn='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css',
+    CSS(
+        url='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css',
         filename='css/bootstrap-4.3.1.min.css',
         blueprint='hemlock'
     ),
-    Static(
+    CSS(
         filename='css/default.css',
         blueprint='hemlock'
     )
 ]
 
 PAGE_JS = [
-    Static(
-        cdn='https://code.jquery.com/jquery-3.3.1.min.js',
+    JS(
+        url='https://code.jquery.com/jquery-3.3.1.min.js',
         filename='js/jquery-3.3.1.min.js',
         blueprint='hemlock'
     ),
-    Static(
-        cdn='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js',
+    JS(
+        url='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js',
         filename='js/popper-1.14.7.min.js',
         blueprint='hemlock'
     ),
-    Static(
-        cdn='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js',
+    JS(
+        url='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js',
         filename='js/bootstrap-4.3.1.min.js',
         blueprint='hemlock'
     ),
-    Static(
+    JS(
         filename='js/default.js',
         blueprint='hemlock'
     )

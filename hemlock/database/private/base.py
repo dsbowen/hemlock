@@ -12,7 +12,7 @@ Function models.
 """
 
 from hemlock.app import db
-from hemlock.tools import Static
+from hemlock.tools import CSS, JS
 
 from bs4 import BeautifulSoup
 from flask import current_app
@@ -77,14 +77,14 @@ class CompileBase(Base):
     @property
     def _css(self):
         return ''.join([
-            sheet.as_css() if isinstance(sheet, Static) else sheet
+            sheet.render() if isinstance(sheet, CSS) else sheet
             for sheet in self.css
         ])
 
     @property
     def _js(self):
         return ' '.join([
-            script.as_js() if isinstance(script, Static) else script
+            script.render() if isinstance(script, JS) else script
             for script in self.js
         ])
 

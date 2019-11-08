@@ -47,7 +47,7 @@ default_settings = {
         'view_template': 'view.html'
     },
     'question_settings': {
-        'div_classes': ['form-group'],
+        'div_classes': ['form-group', 'question'],
         'css': [],
         'js': [],
     },
