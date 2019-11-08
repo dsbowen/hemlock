@@ -11,13 +11,16 @@ from flask_download_btn import DownloadBtnManager, DownloadBtnMixin, HandleFormM
 class Download(DownloadBtnMixin, Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'download'}
+    _has_download_script = db.Column(db.Boolean, default=False)
 
     def __init__(self, page=None, **kwargs):
         DownloadBtnMixin.__init__(self)
         Question.__init__(self, ['download_settings'], page, **kwargs)
 
     def _render(self):
-        self.js.append(self.script())
+        if not self._has_download_script:
+            self.js.append(self.script())
+            self._has_download_script = True
         content = self.render_btn() + self.render_progress()
         return DIV.format(q=self, content=content)
 

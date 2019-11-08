@@ -124,8 +124,9 @@ def download():
     """Download data"""
     download_page = get_download_page()
     download_page._compile()
+    rendered = download_page._render()
     db.session.commit()
-    return download_page._render()
+    return rendered
 
 def get_download_page():
     """Get or create download page"""
@@ -141,7 +142,7 @@ def get_download_page():
     survey_view_q = Free(download_page, text=SURVEY_VIEW_TXT)
     Validate(survey_view_q, valid_part_ids)
     Submit(survey_view_q, store_part_ids)
-    btn = Download(download_page, text='Download')
+    btn = Download(download_page, text='Download', callback=request.url)
     HandleForm(btn, handle_download_form)
     session_store('download_page_id', download_page.id)
     return download_page
@@ -162,17 +163,17 @@ def store_part_ids(survey_view_q):
 
 def parse_part_ids(raw_ids):
     if raw_ids is None:
-        return
+        return []
     comma_splits = raw_ids.split(',')
     space_splits = [cs.split(' ') for cs in comma_splits]
     return [i for ss in space_splits for i in ss if i]
 
 def handle_download_form(btn, response):
     """Process download file selection"""
-    btn.filenames.clear()
-    btn.create_file_functions.clear()
     download_page = get_download_page()
     db.session.add(download_page)
+    btn.filenames.clear()
+    btn.create_file_functions.clear()
     files_q, survey_view_q, _ = download_page.questions
     download_page._record_response()
     download_page._validate()
