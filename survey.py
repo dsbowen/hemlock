@@ -20,6 +20,20 @@ def Start(root=None):
     vid_url = 'https://www.youtube.com/watch?v=bRhg2zvalXc'
     vid = YouTubeVid(url=vid_url, parms={'autoplay': 1})
     Text(p, text=vid.render())
+
+    p = Page(b)
+    mc = MultiChoice(p, text="<p>Which of these do you like?</p>", var='FavoriteVid')
+    sabaton_url = 'https://www.youtube.com/watch?v=bRhg2zvalXc'
+    sabaton = YouTubeVid(url=sabaton_url)
+    Choice(mc, text=sabaton.render(), label='Sabaton', value='Sabaton')
+
+    caravan_url = 'https://www.youtube.com/watch?v=cq3fwlZdWhw'
+    caravan = YouTubeVid(url=caravan_url)
+    Choice(mc, text=caravan.render(), label='CaravanPalace', value='CaravanPalace')
+
+    keane_url = 'https://www.youtube.com/watch?v=Zx4Hjq6KwO0'
+    keane = YouTubeVid(url=keane_url)
+    Choice(mc, text=keane.render(), label='Keane', value='Keane')
     
     return b
 

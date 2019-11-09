@@ -125,7 +125,7 @@ class Participant(UserMixin, Base, db.Model):
         
         Sets up the global dictionary g and metadata. Then initializes the
         root branch.
-        """        
+        """
         ds = DataStore.query.first()
         ds.meta.append(meta)
         ds.update_status(self)

@@ -2,9 +2,9 @@
 
 from hemlock.app.factory import bp, db
 from hemlock.app.routes.researcher_texts import *
-from hemlock.database import Participant, Navbar, Page, Choice, Validate, Submit
+from hemlock.database import *
 from hemlock.database.private import DataStore
-from hemlock.question_polymorphs import Download, HandleForm, CreateFile, Free, MultiChoice, Text
+from hemlock.question_polymorphs import *
 from hemlock.tools import JS
 
 from flask import Markup, current_app, redirect, request, session, url_for
@@ -112,10 +112,14 @@ def get_parts_page():
     parts_page.js.append(current_app.socket_js)
     parts_js = JS(filename='js/participants.js', blueprint='hemlock')
     parts_page.js.append(parts_js)
-    q = Text(parts_page)
-    q.text = PARTICIPANTS.format(**DataStore.query.first().current_status)
+    parts_q = Text(parts_page)
+    Compile(parts_q, update_text)
     session_store('parts_page_id', parts_page.id)
     return parts_page
+
+def update_text(parts_q):
+    ds = DataStore.query.first()
+    parts_q.text = PARTICIPANTS.format(**ds.current_status)
     
 """Download"""
 @bp.route('/download', methods=['GET','POST'])

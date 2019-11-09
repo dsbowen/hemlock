@@ -16,7 +16,7 @@ def init_app():
     
     Additionally, set a scheduler job to log the status periodically.
     """
-    session.pop('login_page_id', None)
+    session.clear()
     db.create_all()
     if not DataStore.query.first():
         DataStore()
@@ -51,9 +51,9 @@ def log_current_status(app):
         ds.log_status()
         db.session.commit()
 
-@bp.route('/check_job_status')
-def check_job_status():
-    """Check the status of a job in the Redis queue"""
-    job_id = request.args.get('job_id')
-    job = rq.job.Job.fetch(job_id, connection=current_app.redis)
-    return {'job_finished': job.is_finished}
+# @bp.route('/check_job_status')
+# def check_job_status():
+#     """Check the status of a job in the Redis queue"""
+#     job_id = request.args.get('job_id')
+#     job = rq.job.Job.fetch(job_id, connection=current_app.redis)
+#     return {'job_finished': job.is_finished}
