@@ -136,8 +136,6 @@ def get_download_page():
     """Get or create download page"""
     if 'download_page_id' in session:
         return Page.query.get(session['download_page_id'])
-    if not os.path.exists('downloads'):
-        os.mkdir('downloads')
     download_page = Page(nav=researcher_navbar(), back=False, forward=False)
     files_q = MultiChoice(download_page, text=SELECT_FILES_TXT)
     Choice(files_q, text='Metadata', value='meta')
@@ -190,27 +188,27 @@ def handle_download_form(btn, response):
 
 def select_files(btn, files):
     if files.get('meta'):
-        btn.filenames.append('downloads/Metadata.csv')
+        btn.filenames.append(btn.tmpdir_savefile('Metadata.csv'))
         CreateFile(btn, create_meta)
     if files.get('status'):
-        btn.filenames.append('downloads/StatusLog.csv')
+        btn.filenames.append(btn.tmpdir_savefile('StatusLog.csv'))
         CreateFile(btn, create_status)
     if files.get('data'):
-        btn.filenames.append('downloads/Data.csv')
+        btn.filenames.append(btn.tmpdir_savefile('Data.csv'))
         CreateFile(btn, create_data)
 
 def create_meta(btn):
     stage = 'Preparing Metadata'
     yield btn.reset(stage, 0)
     ds = DataStore.query.first()
-    ds.meta.save('downloads/Metadata.csv')
+    ds.meta.save(btn.tmpdir_savefile('Metadata.csv'))
     yield btn.report(stage, 100)
 
 def create_status(btn):
     stage = 'Preparing Status Log'
     yield btn.reset(stage, 0)
     ds = DataStore.query.first()
-    ds.status_log.save('downloads/StatusLog.csv')
+    ds.status_log.save(btn.tmpdir_savefile('StatusLog.csv'))
     yield btn.report(stage, 100)
 
 def create_data(btn):
@@ -227,7 +225,7 @@ def create_data(btn):
     for i, part in enumerate(updated):
         yield btn.report(stage, 100.0*i/len(updated))
         ds.store_participant(part)
-    ds.data.save('downloads/Data.csv')
+    ds.data.save(btn.tmpdir_savefile('Data.csv'))
     db.session.commit()
     yield btn.report(stage, 100)
 
