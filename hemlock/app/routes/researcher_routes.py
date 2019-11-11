@@ -144,8 +144,10 @@ def get_download_page():
     survey_view_q = Free(download_page, text=SURVEY_VIEW_TXT)
     Validate(survey_view_q, valid_part_ids)
     Submit(survey_view_q, store_part_ids)
-    btn = Download(download_page, text='Download', callback=request.url)
-    btn.target = '_blank'
+    btn = Download(
+        download_page, text='Download', callback=request.url,
+        download_msg='Download Complete'
+    )
     HandleForm(btn, handle_download_form)
     session_store('download_page_id', download_page.id)
     return download_page
@@ -175,8 +177,8 @@ def handle_download_form(btn, response):
     """Process download file selection"""
     download_page = get_download_page()
     db.session.add(download_page)
-    btn.filenames.clear()
-    btn.create_file_functions.clear()
+    btn.files = []
+    btn.create_file_functions = []
     files_q, survey_view_q, _ = download_page.questions
     download_page._record_response()
     download_page._validate()
@@ -188,27 +190,27 @@ def handle_download_form(btn, response):
 
 def select_files(btn, files):
     if files.get('meta'):
-        btn.filenames.append(btn.tmpdir_savefile('Metadata.csv'))
+        btn.files.append((btn.tmpdir, 'Metadata.csv'))
         CreateFile(btn, create_meta)
     if files.get('status'):
-        btn.filenames.append(btn.tmpdir_savefile('StatusLog.csv'))
+        btn.files.append((btn.tmpdir, 'StatusLog.csv'))
         CreateFile(btn, create_status)
     if files.get('data'):
-        btn.filenames.append(btn.tmpdir_savefile('Data.csv'))
+        btn.files.append((btn.tmpdir, 'Data.csv'))
         CreateFile(btn, create_data)
 
 def create_meta(btn):
     stage = 'Preparing Metadata'
     yield btn.reset(stage, 0)
     ds = DataStore.query.first()
-    ds.meta.save(btn.tmpdir_savefile('Metadata.csv'))
+    ds.meta.save(os.path.join(btn.tmpdir, 'Metadata.csv'))
     yield btn.report(stage, 100)
 
 def create_status(btn):
     stage = 'Preparing Status Log'
     yield btn.reset(stage, 0)
     ds = DataStore.query.first()
-    ds.status_log.save(btn.tmpdir_savefile('StatusLog.csv'))
+    ds.status_log.save(os.path.join(btn.tmpdir, 'StatusLog.csv'))
     yield btn.report(stage, 100)
 
 def create_data(btn):
@@ -225,7 +227,7 @@ def create_data(btn):
     for i, part in enumerate(updated):
         yield btn.report(stage, 100.0*i/len(updated))
         ds.store_participant(part)
-    ds.data.save(btn.tmpdir_savefile('Data.csv'))
+    ds.data.save(os.path.join(btn.tmpdir, 'Data.csv'))
     db.session.commit()
     yield btn.report(stage, 100)
 

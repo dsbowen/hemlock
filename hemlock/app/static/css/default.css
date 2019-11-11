@@ -6,6 +6,11 @@ body, html {
     width: 100%;
 }
 
+/* Form margins */
+form.form-margins {
+    margin: 20px 0px;
+}
+
 /* Question div formatting */
 div.error {
     border-style: solid;

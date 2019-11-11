@@ -10,7 +10,7 @@ import imgkit
 import os
 
 STAGE = 'Creating Survey View for Participant {}'
-SURVEY_VIEW_PATH = 'downloads/Participant-{}.docx'
+SURVEY_VIEW_FILE = 'Participant-{}.docx'
 SURVEY_VIEW_IMG_WIDTH = Inches(6)
 OPTIONS = {'quiet':'', 'quality':100, 'zoom':1.5}
 
@@ -34,16 +34,16 @@ class Viewer(ExtensionsBase):
         pages = part._viewing_pages.all()
         for i, page in enumerate(pages):
             yield btn.report(stage, 100.0*i/len(pages))
-            self.store_page(doc, page)
-        survey_view_path = SURVEY_VIEW_PATH.format(part.id)
-        doc.save(survey_view_path)
-        btn.filenames.append(survey_view_path)
+            self.store_page(btn, doc, page)
+        survey_view_file = SURVEY_VIEW_FILE.format(part.id)
+        doc.save(os.path.join(btn.tmpdir, survey_view_file))
+        btn.files.append((btn.tmpdir, survey_view_file))
         yield btn.report(stage, 100)
         
-    def store_page(self, doc, page):
+    def store_page(self, btn, doc, page):
         """Store a page in the survey view doc"""
         page.process()
-        page_name = 'downloads/Page-{}.png'.format(page.id)
+        page_name = os.path.join(btn.tmpdir, 'Page-{}.png'.format(page.id))
         imgkit.from_string(
             page.html, page_name, css=page.external_css_paths,
             config=self.config, options=OPTIONS
