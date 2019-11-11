@@ -40,7 +40,9 @@ class MultiChoice(Question):
         if var is None:
             return super()._pack_data()
         if self.data is None:
-            packed_data = {var+c.value: None 
-                for c in self.choices if c.value is not None}
-        packed_data = {var+key: self.data[key] for key in self.data.keys()}
+            packed_data = {
+                var+c.value: None for c in self.choices if c.value is not None
+            }
+        else:
+            packed_data = {var+key: val for key, val in self.data.items()}
         return super()._pack_data(packed_data)
