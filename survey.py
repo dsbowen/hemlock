@@ -8,6 +8,14 @@ def Start(root=None):
     Navigate(b, End)
 
     p = Page(b)
+    img = Img(
+        filename='wanna_see_the_code.png', 
+        use_bucket=True,
+        classes=['fit']
+    )
+    Text(p, text=img.render())
+
+    p = Page(b)
     img_url = 'https://imgs.xkcd.com/comics/wanna_see_the_code.png'
     img = Img(url=img_url, classes=['fit'])
     Text(p, text=img.render())

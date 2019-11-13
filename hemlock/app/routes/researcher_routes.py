@@ -12,149 +12,16 @@ from functools import wraps
 from werkzeug.security import check_password_hash
 import os
 
-@bp.route('/s3-test')
-def s3_test():
-    return """
-
-<!-- Default survey template -->
-<!DOCTYPE html>
-<html>
- <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
-  <title>
-  </title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css?" rel="stylesheet" type="text/css"/>
-  <link href="/hemlock/static/css/default.css?" rel="stylesheet" type="text/css"/>
- </head>
- <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-   <a class="navbar-brand" href="#">
-    Hemlock
-   </a>
-   <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarSupportedContent" data-toggle="collapse" type="button">
-    <span class="navbar-toggler-icon">
-    </span>
-   </button>
-   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-     <li class="nav-item">
-      <a class="nav-link" href="/participants">
-       Participants
-      </a>
-     </li>
-     <li class="nav-item active">
-      <a class="nav-link" href="/download">
-       Download
-      </a>
-     </li>
-     <li class="nav-item">
-      <a class="nav-link" href="/logout">
-       Logout
-      </a>
-     </li>
-    </ul>
-   </div>
-  </nav>
-  <div class="container h-100">
-   <div class="row h-100 justify-content-center align-items-center">
-    <form class="submit-once col-12 form-margins" method="POST">
-     <page id="Page-36">
-     </page>
-     <div class="form-group question" id="MultiChoice-46">
-      <label class="w-100" for="MultiChoice-46">
-       <span style="color: #721c24;">
-       </span>
-       <p>
-        Select files to download.
-       </p>
-      </label>
-      <div class="custom-control custom-checkbox">
-       <input class="custom-control-input" id="Choice-25" name="MultiChoice-46" type="checkbox" value="Choice-25"/>
-       <label class="custom-control-label w-100 choice" for="Choice-25">
-        Metadata
-       </label>
-      </div>
-      <div class="custom-control custom-checkbox">
-       <input class="custom-control-input" id="Choice-26" name="MultiChoice-46" type="checkbox" value="Choice-26"/>
-       <label class="custom-control-label w-100 choice" for="Choice-26">
-        Status Log
-       </label>
-      </div>
-      <div class="custom-control custom-checkbox">
-       <input class="custom-control-input" id="Choice-27" name="MultiChoice-46" type="checkbox" value="Choice-27"/>
-       <label class="custom-control-label w-100 choice" for="Choice-27">
-        Dataframe
-       </label>
-      </div>
-     </div>
-     <div class="form-group question" id="Free-47">
-      <label class="w-100" for="Free-47">
-       <span style="color: #721c24;">
-       </span>
-       <p>
-        Enter participant IDs for survey viewing.
-       </p>
-      </label>
-      <input class="form-control" id="Free-47" name="Free-47" type="text" value=""/>
-     </div>
-     <div class="form-group question" id="Download-48">
-      <button class="btn btn-outline-primary w-100" id="Download-48-btn" style="" type="button">
-       Download
-      </button>
-      <div id="download" style="display: none;">
-       <div class="progress position-relative" style="height: 25px; background-color: #C8C8C8; margin-top: 10px; margin-bottom: 10px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) inset;">
-        <div class="progress-bar" id="Download-48-progress-bar" role="progressbar" style="transition: width .5s;" width="0%">
-         <div class="justify-content-center d-flex position-absolute w-100 align-items-center" id="Download-48-progress-text">
-         </div>
-        </div>
-       </div>
-      </div>
-     </div>
-     <br/>
-    </form>
-   </div>
-  </div>
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js?">
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js?">
-  </script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js?">
-  </script>
-  <script src="/hemlock/static/js/default.js?">
-  </script>
-  <script>
-    $(document).ready(function(){
-        console.log('Downloading');
-        download();
-    });
-
-    function download(){
-        // Prepare download file
-        var url = "https://test-bucket2357.s3.us-east-2.amazonaws.com/s3-test.zip";
-        fetch(url, {cache: "no-store"})
-            .then(resp => resp.blob())
-            .then(blob => {
-                _download({blob: blob, download: "download.zip"});
-            })
-    }
-
-    function _download(e){
-        // Download
-        const url = window.URL.createObjectURL(e.blob);
-        const a = document.createElement("a");
-        a.style.display = "none";
-        a.href = url;
-        a.download = e.download;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-    }
-  </script>
- </body>
-</html>
-"""
+# BUCKET_NAME = 'test-bucket2357'
+# credentials = {
+#     'aws_access_key_id': 'AKIAJ4C7YXWRVXHKEWOQ', 
+#     'aws_secret_access_key': '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'
+# }
+# client = boto3.client('s3', **credentials)
+# REGION = client.get_bucket_location(Bucket=BUCKET_NAME)
+# BUCKET_URL = 'https://{bucket_name}.s3.{region}.amazonaws.com'.format(
+#     bucket_name=BUCKET_NAME, region=REGION
+# )
 
 """Dashboard Navigation Bar"""
 def researcher_navbar():
@@ -321,7 +188,7 @@ def handle_download_form(btn, response):
     """Process download file selection"""
     download_page = get_download_page()
     db.session.add(download_page)
-    btn.files = []
+    btn.downloads = []
     btn.create_file_functions = []
     files_q, survey_view_q, _ = download_page.questions
     download_page._record_response()
@@ -334,7 +201,7 @@ def handle_download_form(btn, response):
 
 def select_files(btn, files):
     if files.get('meta'):
-        btn.files.append((btn.tmpdir, 'Metadata.csv'))
+        btn.downloads.append((btn.tmpdir, 'Metadata.csv'))
         CreateFile(btn, create_meta)
     if files.get('status'):
         btn.files.append((btn.tmpdir, 'StatusLog.csv'))

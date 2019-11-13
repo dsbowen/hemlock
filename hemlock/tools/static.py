@@ -21,15 +21,14 @@ class StaticBase(Mutable):
     @property
     def _url(self):
         """Format URL for HTML tag"""
-        url = None
-        if not current_app.offline and self.url is not None:
-            url = self.url
-        elif self.filename is not None:
-            bp = self.blueprint+'.' if self.blueprint is not None else ''
-            url = url_for(
-                bp+'static', filename=self.filename, _external=self._external
-            )
-        return self._format_url(url)
+        if not current_app.offline:
+            if self.url is not None:
+                return self.url
+            if self.use_bucket:
+                return self.bucket_url()
+        if self.filename is not None:
+            return self.app_url()
+        return ''
 
     @property
     def _attrs(self):
@@ -42,20 +41,32 @@ class StaticBase(Mutable):
         return self._format_parms(self.parms)
 
     def __init__(
-            self, url=None, filename=None, blueprint=None, attrs={}, parms={}
+            self, url=None, filename=None, blueprint=None, use_bucket=False,
+            attrs={}, parms={}
         ):
         self.url = url
         self.filename = filename
         self.blueprint = blueprint
+        self.use_bucket = use_bucket
         self.attrs = attrs
         self.parms = parms
 
-    def _format_parms(self, parms):
-        """Format parameters for URL"""
-        return '&'.join([k+'='+str(v) for k, v in parms.items()])
+    def app_url(self):
+        bp = self.blueprint+'.' if self.blueprint is not None else ''
+        url = url_for(
+            bp+'static', filename=self.filename, _external=self._external
+        )
+        return self._format_url(url)
 
-    def _format_url(self, url=None):
-        return url+'?'+self._parms if url is not None else ''
+    def bucket_url(self):
+        params = {
+            'Bucket': os.environ.get('BUCKET'),
+            'Key': self.filename
+        }
+        s3_client = current_app.s3_client
+        url = s3_client.generate_presigned_url('get_object', Params=params)
+        print(url)
+        return self._format_url(url)
 
     def local_path(self):
         """Return the path to the local resource"""
@@ -66,6 +77,13 @@ class StaticBase(Mutable):
         else:
             path = current_app.blueprints[self.blueprint].static_folder
         return os.path.join(path, self.filename)
+
+    def _format_parms(self, parms):
+        """Format parameters for URL"""
+        return '&'.join([k+'='+str(v) for k, v in parms.items()])
+
+    def _format_url(self, url=None):
+        return url+'?'+self._parms if url is not None else ''
 
 
 CSS_TEMPLATE = """
