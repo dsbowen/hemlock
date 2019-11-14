@@ -9,7 +9,7 @@ flask-login
 flask-socketio
 flask-sqlalchemy
 flask-worker
-google-api-python-client
+google-cloud-storage
 gunicorn==18.0.0
 imgkit
 numpy
