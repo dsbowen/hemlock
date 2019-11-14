@@ -24,7 +24,7 @@ class StaticBase(Mutable):
         if not current_app.offline:
             if self.url is not None:
                 return self.url
-            if self.use_bucket:
+            if self.bucket is not None:
                 return self.bucket_url()
         if self.filename is not None:
             return self.app_url()
@@ -41,17 +41,18 @@ class StaticBase(Mutable):
         return self._format_parms(self.parms)
 
     def __init__(
-            self, url=None, filename=None, blueprint=None, use_bucket=False,
+            self, url=None, filename=None, blueprint=None, bucket=None,
             attrs={}, parms={}
         ):
         self.url = url
         self.filename = filename
         self.blueprint = blueprint
-        self.use_bucket = use_bucket
+        self.bucket = bucket
         self.attrs = attrs
         self.parms = parms
 
     def app_url(self):
+        """Return URL of static stored in application slug"""
         bp = self.blueprint+'.' if self.blueprint is not None else ''
         url = url_for(
             bp+'static', filename=self.filename, _external=self._external
@@ -59,15 +60,10 @@ class StaticBase(Mutable):
         return self._format_url(url)
 
     def bucket_url(self):
-        params = {
-            'Bucket': os.environ.get('BUCKET'),
-            'Key': self.filename
-        }
+        """Return URL of static stored in S3 bucket"""
+        params = {'Bucket': self.bucket,'Key': self.filename}
         s3_client = current_app.s3_client
-        url = s3_client.generate_presigned_url(
-            'get_object', Params=params, ExpiresIn=3600
-        )
-        return self._format_url(url)
+        return s3_client.generate_presigned_url('get_object', Params=params)
 
     def local_path(self):
         """Return the path to the local resource"""
@@ -84,6 +80,7 @@ class StaticBase(Mutable):
         return '&'.join([k+'='+str(v) for k, v in parms.items()])
 
     def _format_url(self, url=None):
+        """Format URL with parameters"""
         if not self.parms:
             return url
         return url+'?'+self._parms if url is not None else ''

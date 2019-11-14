@@ -10,7 +10,7 @@ def Start(root=None):
     p = Page(b)
     img = Img(
         filename='wanna_see_the_code.png', 
-        use_bucket=True,
+        bucket='hemlock-bucket',
         classes=['fit']
     )
     Text(p, text=img.render())

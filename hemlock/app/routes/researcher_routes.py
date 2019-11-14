@@ -8,20 +8,10 @@ from hemlock.question_polymorphs import *
 from hemlock.tools import JS
 
 from flask import Markup, current_app, redirect, request, session, url_for
+from flask_download_btn import S3File
 from functools import wraps
 from werkzeug.security import check_password_hash
 import os
-
-# BUCKET_NAME = 'test-bucket2357'
-# credentials = {
-#     'aws_access_key_id': 'AKIAJ4C7YXWRVXHKEWOQ', 
-#     'aws_secret_access_key': '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'
-# }
-# client = boto3.client('s3', **credentials)
-# REGION = client.get_bucket_location(Bucket=BUCKET_NAME)
-# BUCKET_URL = 'https://{bucket_name}.s3.{region}.amazonaws.com'.format(
-#     bucket_name=BUCKET_NAME, region=REGION
-# )
 
 """Dashboard Navigation Bar"""
 def researcher_navbar():
@@ -200,21 +190,28 @@ def handle_download_form(btn, response):
     db.session.commit()
 
 def select_files(btn, files):
+    s3_file = S3File(
+        current_app.s3_client, 
+        bucket=os.environ.get('BUCKET')
+    )
     if files.get('meta'):
-        btn.downloads.append((btn.tmpdir, 'Metadata.csv'))
+        s3_file.key = 'Metadata.csv'
+        btn.downloads.append(s3_file.gen_download())
         CreateFile(btn, create_meta)
     if files.get('status'):
-        btn.files.append((btn.tmpdir, 'StatusLog.csv'))
+        s3_file.key = 'StatusLog.csv'
+        btn.files.append(s3_file.gen_download())
         CreateFile(btn, create_status)
     if files.get('data'):
-        btn.files.append((btn.tmpdir, 'Data.csv'))
+        s3_file.key = 'Data.csv'
+        btn.files.append(s3_file.gen_download())
         CreateFile(btn, create_data)
 
 def create_meta(btn):
     stage = 'Preparing Metadata'
     yield btn.reset(stage, 0)
     ds = DataStore.query.first()
-    ds.meta.save(os.path.join(btn.tmpdir, 'Metadata.csv'))
+    ds.meta.save('Metadata.csv')
     yield btn.report(stage, 100)
 
 def create_status(btn):

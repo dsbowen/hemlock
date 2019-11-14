@@ -1,8 +1,11 @@
 """DataFrame mutable object and column type"""
 
+from flask import current_app
+from io import StringIO
 from sqlalchemy import PickleType
 from sqlalchemy_mutable import MutableList, MutableDict
 import csv
+import os
 
 
 class Variable(MutableList):
@@ -91,10 +94,18 @@ class DataFrame(MutableDict):
         [self[var].pad(rows) for var in self.keys()]
 
     def save(self, filename):
-        with open(filename, 'w') as outfile:
-            writer = csv.writer(outfile)
-            writer.writerow(self.keys())
-            writer.writerows(zip(*self.values()))
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(self.keys())
+        writer.writerows(zip(*self.values()))
+        import boto3
+        s3 = boto3.resource(
+            's3',
+            aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
+            aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY')
+        )
+        bucket = s3.Bucket(os.environ.get('BUCKET'))
+        bucket.put_object(output.getvalue(), Key=filename)
 
 
 class DataFrameType(PickleType):
