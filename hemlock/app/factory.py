@@ -3,7 +3,6 @@
 from hemlock.app.extensions import Viewer
 from hemlock.app.settings import get_settings, get_screenouts, Config
 
-from boto3 import client
 from botocore.client import Config as BotoConfig
 from datetime import datetime, timedelta
 from flask import Flask, Blueprint
@@ -14,6 +13,7 @@ from flask_login import LoginManager
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_worker import Manager
+from google.cloud import storage
 from redis import Redis
 from rq import Queue
 import eventlet
@@ -29,17 +29,13 @@ bp = Blueprint(
 )
 db = SQLAlchemy()
 download_btn_manager = DownloadBtnManager(db=db)
+gcp_client = storage.Client()
+gcp_bucket = gcp_client.get_bucket(os.environ.get('BUCKET'))
 login_manager = LoginManager()
 login_manager.login_view = 'hemlock.index'
 login_manager.login_message = None
 scheduler = APScheduler()
 eventlet.monkey_patch(socket=True)
-s3_client = client(
-    's3',
-    aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'), 
-    aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
-    region_name=os.environ.get('REGION_NAME')
-)
 socketio = SocketIO(async_mode='eventlet')
 manager = Manager(db=db, socketio=socketio)
 viewer = Viewer()
@@ -53,10 +49,11 @@ def create_app(settings):
     app = Flask(__name__, static_folder=static, template_folder=templates)
     app.__dict__.update(settings)
     app.config.from_object(Config)
+    app.gcp_client = gcp_client
+    app.gcp_bucket = gcp_bucket
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = Queue('hemlock-task-queue', connection=app.redis)
     app.register_blueprint(bp)
-    app.s3_client = s3_client
     get_screenouts(app)
     
     bootstrap.init_app(app)

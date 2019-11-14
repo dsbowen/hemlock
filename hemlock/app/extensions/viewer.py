@@ -2,10 +2,10 @@
 
 from hemlock.app.extensions.extensions_base import ExtensionsBase
 
+from datetime import timedelta
 from docx import Document
 from docx.shared import Inches
 from flask import Markup, current_app, render_template, send_file, url_for
-from flask_download_btn import S3File
 from io import BytesIO
 from itertools import chain
 import imgkit
@@ -25,10 +25,6 @@ class Viewer(ExtensionsBase):
     
     def survey_view(self, btn, parts):
         """Create a survey view for all participants (parts)"""
-        self.s3_file = S3File(
-            current_app.s3_client, 
-            bucket=os.environ.get('BUCKET')
-        )
         gen_list = [self._survey_view(btn, part) for part in parts]
         return chain.from_iterable(gen_list)
 
@@ -41,20 +37,7 @@ class Viewer(ExtensionsBase):
         for i, page in enumerate(pages):
             yield btn.report(stage, 100.0*i/len(pages))
             self.store_page(btn, doc, page)
-        survey_view_file = SURVEY_VIEW_FILE.format(part.id)
-        output = BytesIO()
-        doc.save(output)
-        import boto3
-        s3 = boto3.resource(
-            's3',
-            aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
-            aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY')
-        )
-        bucket = s3.Bucket(os.environ.get('BUCKET'))
-        key = SURVEY_VIEW_FILE.format(part.id)
-        bucket.put_object(output.getvalue(), Key=key)
-        self.s3_file.key = key
-        btn.downloads.append(self.s3_file.gen_download())
+        self.store_doc(btn, doc, part.id)
         yield btn.report(stage, 100)
         
     def store_page(self, btn, doc, page):
@@ -67,3 +50,14 @@ class Viewer(ExtensionsBase):
         )
         doc.add_picture(page_name, width=SURVEY_VIEW_IMG_WIDTH)
         os.remove(page_name)
+
+    def store_doc(self, btn, doc, part_id):
+        """Store documetn in GCP bucket"""
+        filename = SURVEY_VIEW_FILE.format(part_id)
+        output = BytesIO()
+        doc.save(output)
+        blob = current_app.gcp_bucket.blob(filename)
+        blob.upload_from_string(output.getvalue())
+        output.close()
+        url = blob.generate_signed_url(expiration=timedelta(hours=1))
+        btn.downloads.append((url, filename))

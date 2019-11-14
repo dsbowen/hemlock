@@ -1,5 +1,6 @@
 """DataFrame mutable object and column type"""
 
+from datetime import timedelta
 from flask import current_app
 from io import StringIO
 from sqlalchemy import PickleType
@@ -94,23 +95,16 @@ class DataFrame(MutableDict):
         [self[var].pad(rows) for var in self.keys()]
 
     def save(self, filename):
+        """Save data frame to GCP bucket"""
         output = StringIO()
         writer = csv.writer(output)
         writer.writerow(self.keys())
         writer.writerows(zip(*self.values()))
-        from google.cloud import storage
-        client = storage.Client()
-        bucket = client.get_bucket('hemlock-bucket')
-        blob = bucket.blob(filename)
-        print('about to upload', output.getvalue())
+        blob = current_app.gcp_bucket.blob(filename)
         blob.upload_from_string(output.getvalue())
-        print('upload successful')
-        # current_app.s3_client.put_object(
-        #     Body=output.getvalue(), 
-        #     Bucket=os.environ.get('BUCKET'), 
-        #     Key=filename
-        # )
         output.close()
+        url = blob.generate_signed_url(expiration=timedelta(hours=1))
+        return (url, filename)
 
 
 class DataFrameType(PickleType):

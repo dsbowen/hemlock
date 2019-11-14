@@ -2,6 +2,7 @@ hemlock-venv/
 *.log
 __pycache__
 data.db
+gcp_credentials.json
 test.py
 downloads
 tmp

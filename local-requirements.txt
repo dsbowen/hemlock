@@ -9,6 +9,7 @@ flask-login
 flask-socketio
 flask-sqlalchemy
 flask-worker
+google
 gunicorn==18.0.0
 imgkit
 numpy
