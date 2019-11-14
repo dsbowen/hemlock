@@ -4,6 +4,7 @@ from hemlock.app.extensions import Viewer
 from hemlock.app.settings import get_settings, get_screenouts, Config
 
 from boto3 import client
+from botocore.client import Config as BotoConfig
 from datetime import datetime, timedelta
 from flask import Flask, Blueprint
 from flask_apscheduler import APScheduler

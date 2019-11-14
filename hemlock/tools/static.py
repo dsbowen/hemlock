@@ -64,8 +64,9 @@ class StaticBase(Mutable):
             'Key': self.filename
         }
         s3_client = current_app.s3_client
-        url = s3_client.generate_presigned_url('get_object', Params=params)
-        print(url)
+        url = s3_client.generate_presigned_url(
+            'get_object', Params=params, ExpiresIn=3600
+        )
         return self._format_url(url)
 
     def local_path(self):
@@ -83,6 +84,8 @@ class StaticBase(Mutable):
         return '&'.join([k+'='+str(v) for k, v in parms.items()])
 
     def _format_url(self, url=None):
+        if not self.parms:
+            return url
         return url+'?'+self._parms if url is not None else ''
 
 
