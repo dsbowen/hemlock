@@ -98,14 +98,19 @@ class DataFrame(MutableDict):
         writer = csv.writer(output)
         writer.writerow(self.keys())
         writer.writerows(zip(*self.values()))
-        import boto3
-        s3 = boto3.resource(
-            's3',
-            aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
-            aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY')
-        )
-        bucket = s3.Bucket(os.environ.get('BUCKET'))
-        bucket.put_object(output.getvalue(), Key=filename)
+        from google.cloud import storage
+        client = storage.Client()
+        bucket = client.get_bucket('hemlock-bucket')
+        blob = bucket.blob(filename)
+        print('about to upload', output.getvalue())
+        blob.upload_from_string(output.getvalue())
+        print('upload successful')
+        # current_app.s3_client.put_object(
+        #     Body=output.getvalue(), 
+        #     Bucket=os.environ.get('BUCKET'), 
+        #     Key=filename
+        # )
+        output.close()
 
 
 class DataFrameType(PickleType):
