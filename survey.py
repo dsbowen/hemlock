@@ -13,7 +13,6 @@ def Start(root=None):
         use_bucket=True,
         classes=['fit']
     )
-    img = Img(url='https://hemlock-bucket.s3.us-east-2.amazonaws.com/wanna_see_the_code.png', classes=['fit'])
     Text(p, text=img.render())
 
     p = Page(b)
