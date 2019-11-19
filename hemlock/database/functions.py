@@ -16,6 +16,7 @@ from hemlock.database.private import Base
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy_function import FunctionMixin
 from sqlalchemy_mutable import MutableListType, MutableDictType
+from sqlalchemy_orderingitem import OrderingItem
 
 
 class FunctionMixin_Page_or_Question(FunctionMixin, Base):
@@ -27,18 +28,16 @@ class FunctionMixin_Page_or_Question(FunctionMixin, Base):
     @declared_attr
     def _question_id(self):
         return db.Column(db.Integer, db.ForeignKey('question.id'))
-
+        
     @property
     def parent(self):
-        return self.page if self.page is not None else self.question
+        return self.page or self.question
 
     @parent.setter
     def parent(self, value):
         if isinstance(value, Page):
             self.page = value
-            self.question = None
         elif isinstance(value, Question):
-            self.page = None
             self.question = value
         elif value is None:
             self.page = self.question = None
@@ -58,7 +57,7 @@ class Submit(FunctionMixin_Page_or_Question, db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
 
-class Navigate(FunctionMixin, Base, db.Model):
+class Navigate(FunctionMixin, db.Model):
     """
     A Navigate function can have either a branch or page as its parent. 
     """
@@ -68,15 +67,13 @@ class Navigate(FunctionMixin, Base, db.Model):
 
     @property
     def parent(self):
-        return self.branch if self.branch is not None else self.page
+        return self.branch or self.page
 
     @parent.setter
     def parent(self, value):
         if isinstance(value, Branch):
             self.branch = value
-            self.page = None
         elif isinstance(value, Page):
-            self.branch = None
             self.page = value
         elif value is None:
             self.branch = self.page = None

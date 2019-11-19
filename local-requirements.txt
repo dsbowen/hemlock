@@ -25,3 +25,4 @@ sqlalchemy
 sqlalchemy-function
 sqlalchemy-mutable
 sqlalchemy-nav
+sqlalchemy-orderingitem

@@ -281,7 +281,7 @@ class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
                 self.direction_from = 'invalid'
                 valid = False
                 break
-        return valid
+        return valid and all([q.error is None for q in self.questions])
     
     def _submit(self):
         """Submit page
