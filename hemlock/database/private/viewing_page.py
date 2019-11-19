@@ -33,6 +33,7 @@ MAX_CROP = 45
 class ViewingPage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
+    index = db.Column(db.Integer)
     external_css_paths = db.Column(MutableListType)
     html = db.Column(MarkupType)
     

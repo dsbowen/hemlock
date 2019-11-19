@@ -33,7 +33,7 @@ class Viewer(ExtensionsBase):
         stage = STAGE.format(part.id)
         yield btn.reset(stage, 0)
         doc = Document()
-        pages = part._viewing_pages.all()
+        pages = part._viewing_pages
         for i, page in enumerate(pages):
             yield btn.report(stage, 100.0*i/len(pages))
             self.store_page(btn, doc, page)

@@ -80,8 +80,9 @@ class Participant(UserMixin, Base, db.Model):
     
     _viewing_pages = db.relationship(
         'ViewingPage',
-        backref='part', 
-        lazy='dynamic'
+        backref='part',
+        order_by='ViewingPage.index',
+        collection_class=ordering_list('index')
     )
 
     _forward_to_id = db.Column(db.Integer)
