@@ -20,10 +20,9 @@ from hemlock.database.private import BranchingBase
 from flask import current_app
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy_function import FunctionBase
 
 
-class Branch(BranchingBase, FunctionBase, db.Model):
+class Branch(BranchingBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
@@ -101,7 +100,6 @@ class Branch(BranchingBase, FunctionBase, db.Model):
     is_root = db.Column(db.Boolean)
 
     def __init__(self, **kwargs):   
-        self._set_function_relationships()
         self.is_root = False
         super().__init__(['branch_settings'], **kwargs)
         

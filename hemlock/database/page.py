@@ -33,13 +33,12 @@ from datetime import datetime
 from flask import Markup, current_app, render_template, request, url_for
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy_function import FunctionBase
 from sqlalchemy_mutable import MutableListType, MutableDictType
 
 DIRECTIONS = ['back', 'forward', 'invalid', None]
 
 
-class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
+class Page(BranchingBase, CompileBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     """Relationships to primary models"""
@@ -201,7 +200,6 @@ class Page(BranchingBase, CompileBase, FunctionBase, db.Model):
         return self.forward and not self.terminal
     
     def __init__(self, branch=None, **kwargs):
-        self._set_function_relationships()
         super().__init__(['page_settings'], branch=branch, **kwargs)
 
     """API methods"""

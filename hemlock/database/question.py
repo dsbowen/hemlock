@@ -44,11 +44,10 @@ from hemlock.database.private import CompileBase
 from flask import current_app
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy_function import FunctionBase
 from sqlalchemy_mutable import Mutable, MutableType, MutableModelBase, MutableListType
 
 
-class Question(CompileBase, FunctionBase, MutableModelBase, db.Model):
+class Question(CompileBase, MutableModelBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(50))
     __mapper_args__ = {
@@ -139,7 +138,6 @@ class Question(CompileBase, FunctionBase, MutableModelBase, db.Model):
         return self.error if self.error is not None else ''
     
     def __init__(self, polymorph_settings=[], page=None, **kwargs):
-        self._set_function_relationships()
         super().__init__(
             ['question_settings']+polymorph_settings, page=page, **kwargs
         )

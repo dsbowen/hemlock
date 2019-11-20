@@ -18,11 +18,12 @@ from bs4 import BeautifulSoup
 from flask import current_app
 from sqlalchemy import Column
 from sqlalchemy.inspection import inspect
+from sqlalchemy_function import FunctionRelator
 from sqlalchemy_mutable import MutableListType
 from sqlalchemy_orderingitem import OrderingItem
 
 
-class Base(OrderingItem):
+class Base(FunctionRelator, OrderingItem):
     @property
     def model_id(self):
         """ID for distinguishing models"""
