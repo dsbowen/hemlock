@@ -7,13 +7,11 @@ def Start(root=None):
     b = Branch()
     Navigate(b, End)
 
-    # p = Page(b)
-    # img = Img(
-    #     filename='wanna_see_the_code.png', 
-    #     bucket='hemlock-bucket',
-    #     classes=['fit']
-    # )
-    # Text(p, text=img.render())
+    p = Page(b)
+    img = Img(
+        filename='wanna_see_the_code.png', use_bucket=True, classes=['fit']
+    )
+    Text(p, text=img.render())
 
     p = Page(b)
     img_url = 'https://imgs.xkcd.com/comics/wanna_see_the_code.png'

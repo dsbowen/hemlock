@@ -9,6 +9,7 @@ Statics can be:
 """
 
 from copy import deepcopy
+from datetime import timedelta
 from flask import Markup, current_app, url_for
 from sqlalchemy_mutable import Mutable
 import os
@@ -24,7 +25,7 @@ class StaticBase(Mutable):
         if not current_app.offline:
             if self.url is not None:
                 return self.url
-            if self.bucket is not None:
+            if self.use_bucket:
                 return self.bucket_url()
         if self.filename is not None:
             return self.app_url()
@@ -41,13 +42,13 @@ class StaticBase(Mutable):
         return self._format_parms(self.parms)
 
     def __init__(
-            self, url=None, filename=None, blueprint=None, bucket=None,
+            self, url=None, filename=None, blueprint=None, use_bucket=False,
             attrs={}, parms={}
         ):
         self.url = url
         self.filename = filename
         self.blueprint = blueprint
-        self.bucket = bucket
+        self.use_bucket = use_bucket
         self.attrs = attrs
         self.parms = parms
 
@@ -60,10 +61,9 @@ class StaticBase(Mutable):
         return self._format_url(url)
 
     def bucket_url(self):
-        """Return URL of static stored in S3 bucket"""
-        params = {'Bucket': self.bucket,'Key': self.filename}
-        s3_client = current_app.s3_client
-        return s3_client.generate_presigned_url('get_object', Params=params)
+        """Return URL of static stored in Google bucket"""
+        blob = current_app.gcp_bucket.get_blob(self.filename)
+        return blob.generate_signed_url(expiration=timedelta(hours=1))
 
     def local_path(self):
         """Return the path to the local resource"""
