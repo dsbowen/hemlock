@@ -15,9 +15,9 @@ DEFAULT_STATUS = {s: 0 for s in STATUS}
 class DataStore(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     _current_status = db.Column(MutableDictType, default=DEFAULT_STATUS)
-    data = db.Column(DataFrameType, default={})
-    meta = db.Column(DataFrameType, default={})
-    status_log = db.Column(DataFrameType, default={})
+    data = db.Column(DataFrameType)
+    meta = db.Column(DataFrameType)
+    status_log = db.Column(DataFrameType)
     
     @property
     def current_status(self):
@@ -35,6 +35,9 @@ class DataStore(db.Model):
     def __init__(self):
         db.session.add(self)
         db.session.flush([self])
+        self.data.filename = 'Data.csv'
+        self.meta.filename = 'Metadata.csv'
+        self.status_log.filename = 'StatusLog.csv'
         self.log_status()
     
     def log_status(self):

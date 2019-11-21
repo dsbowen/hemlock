@@ -199,15 +199,13 @@ def select_files(btn, files):
 def create_meta(btn):
     stage = 'Preparing Metadata'
     yield btn.reset(stage, 0)
-    ds = DataStore.query.first()
-    btn.downloads.append(ds.meta.save('Metadata.csv'))
+    add_download_dataframe(btn, DataStore.query.first().meta)
     yield btn.report(stage, 100)
 
 def create_status(btn):
     stage = 'Preparing Status Log'
     yield btn.reset(stage, 0)
-    ds = DataStore.query.first()
-    btn.downloads.append(ds.status_log.save('StatusLog.csv'))
+    add_download_dataframe(btn, DataStore.query.first().status_log)
     yield btn.report(stage, 100)
 
 def create_data(btn):
@@ -224,9 +222,13 @@ def create_data(btn):
     for i, part in enumerate(updated):
         yield btn.report(stage, 100.0*i/len(updated))
         ds.store_participant(part)
-    btn.downloads.append(ds.data.save('Data.csv'))
+    add_download_dataframe(btn, ds.data)
     db.session.commit()
     yield btn.report(stage, 100)
+
+def add_download_dataframe(btn, data_frame):
+    zipfunc = btn.create_file_functions[-1]
+    zipfunc.args.append(data_frame.get_download_file())
 
 def select_survey_view(btn, part_ids):
     if not part_ids:
@@ -248,9 +250,10 @@ def zip_files(btn, *files):
     yield btn.reset(stage, 0)
     zipf_bytes = BytesIO()
     zipf = ZipFile(zipf_bytes, 'w')
-    for i, (name, content) in enumerate(files):
+    for i, (filename, io) in enumerate(files):
         yield btn.report(stage, 100.0*i/len(files))
-        zipf.writestr(name, content)
+        zipf.writestr(filename, io.getvalue())
+        io.close()
     zipf.close()
     blob = current_app.gcp_bucket.blob(btn.model_id+'.zip')
     blob.upload_from_string(zipf_bytes.getvalue())

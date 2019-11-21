@@ -37,28 +37,26 @@ class Viewer(ExtensionsBase):
         for i, page in enumerate(pages):
             yield btn.report(stage, 100.0*i/len(pages))
             self.store_page(btn, doc, page)
-        self.store_doc(btn, doc, part.id)
+        self.add_download_doc(btn, doc, part.id)
         yield btn.report(stage, 100)
         
     def store_page(self, btn, doc, page):
         """Store a page in the survey view doc"""
         page.process()
-        page_png = BytesIO()
-        page_png.write(imgkit.from_string(
+        page_bytes = BytesIO()
+        page_bytes.write(imgkit.from_string(
             page.html, False, 
             css=page.external_css_paths,
             config=self.config, 
             options=OPTIONS
         ))
-        doc.add_picture(page_png, width=SURVEY_VIEW_IMG_WIDTH)
+        doc.add_picture(page_bytes, width=SURVEY_VIEW_IMG_WIDTH)
+        page_bytes.close()
 
-    def store_doc(self, btn, doc, part_id):
-        """Store documetn in GCP bucket"""
+    def add_download_doc(self, btn, doc, part_id):
+        """Add document to download files list"""
         filename = SURVEY_VIEW_FILE.format(part_id)
-        output = BytesIO()
-        doc.save(output)
-        blob = current_app.gcp_bucket.blob(filename)
-        blob.upload_from_string(output.getvalue())
-        output.close()
-        url = blob.generate_signed_url(expiration=timedelta(hours=1))
-        btn.downloads.append((url, filename))
+        doc_bytes = BytesIO()
+        doc.save(doc_bytes)
+        zipfunc = btn.create_file_functions[-1]
+        zipfunc.args.append((filename, doc_bytes))

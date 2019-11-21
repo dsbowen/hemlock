@@ -43,6 +43,10 @@ class DataFrame(MutableDict):
             return cls(value)
         return super().coerce(key, value)
 
+    def __init__(self, value={}):
+        self._python_type = None
+        super().__init__(value)
+
     def rows(self, variables=None):
         """Number of rows
         
@@ -94,17 +98,16 @@ class DataFrame(MutableDict):
         rows = self.rows()
         [self[var].pad(rows) for var in self.keys()]
 
-    def save(self, filename):
-        """Save data frame to GCP bucket"""
-        output = StringIO()
-        writer = csv.writer(output)
+    def get_download_file(self):
+        """Get file download tuple
+        
+        File download is (filename, file string) tuple.
+        """
+        csv_str = StringIO()
+        writer = csv.writer(csv_str)
         writer.writerow(self.keys())
         writer.writerows(zip(*self.values()))
-        blob = current_app.gcp_bucket.blob(filename)
-        blob.upload_from_string(output.getvalue())
-        output.close()
-        url = blob.generate_signed_url(expiration=timedelta(hours=1))
-        return (url, filename)
+        return (self.filename, csv_str)
 
 
 class DataFrameType(PickleType):
