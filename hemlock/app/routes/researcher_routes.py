@@ -7,9 +7,12 @@ from hemlock.database.private import DataStore
 from hemlock.question_polymorphs import *
 from hemlock.tools import JS
 
+from datetime import timedelta
 from flask import Markup, current_app, redirect, request, session, url_for
 from functools import wraps
+from io import BytesIO
 from werkzeug.security import check_password_hash
+from zipfile import ZipFile
 import os
 
 """Dashboard Navigation Bar"""
@@ -154,10 +157,7 @@ def get_download_page():
 
 def valid_part_ids(survey_view_q):
     part_ids = parse_part_ids(survey_view_q.response)
-    invalid_ids = []
-    for id in part_ids:
-        if Participant.query.get(id) is None:
-            invalid_ids.append(id)
+    invalid_ids = [i for i in part_ids if Participant.query.get(i) is None]
     if invalid_ids:
         if len(invalid_ids) == 1:
             return INVALID_ID.format(invalid_ids[0])
@@ -181,11 +181,11 @@ def handle_download_form(btn, response):
     btn.create_file_functions = []
     files_q, survey_view_q, _ = download_page.questions
     download_page._record_response()
-    download_page._validate()
-    if download_page.is_valid():
+    if download_page._validate():
         download_page._submit()
         select_files(btn, files_q.data)
         select_survey_view(btn, survey_view_q.data)
+        CreateFile(btn, zip_files)
     db.session.commit()
 
 def select_files(btn, files):
@@ -238,6 +238,26 @@ def create_view(btn, *part_ids):
     gen = current_app.extensions['viewer'].survey_view(btn, parts)
     for event in gen:
         yield event
+
+def zip_files(btn, *files):
+    """Zip download files
+    
+    `files` is a list of (download_filename, bytes) tuples.
+    """
+    stage = 'Zipping Files'
+    yield btn.reset(stage, 0)
+    zipf_bytes = BytesIO()
+    zipf = ZipFile(zipf_bytes, 'w')
+    for i, (name, content) in enumerate(files):
+        yield btn.report(stage, 100.0*i/len(files))
+        zipf.writestr(name, content)
+    zipf.close()
+    blob = current_app.gcp_bucket.blob(btn.model_id+'.zip')
+    blob.upload_from_string(zipf_bytes.getvalue())
+    url = blob.generate_signed_url(expiration=timedelta(hours=1))
+    btn.downloads = [(url, 'download.zip')]
+    zipf_bytes.close()
+    yield btn.report(stage, 100)
 
 """Logout"""
 @bp.route('/logout')

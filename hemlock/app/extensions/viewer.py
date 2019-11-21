@@ -43,13 +43,14 @@ class Viewer(ExtensionsBase):
     def store_page(self, btn, doc, page):
         """Store a page in the survey view doc"""
         page.process()
-        page_name = 'Page-{}.png'.format(page.id)
-        imgkit.from_string(
-            page.html, page_name, css=page.external_css_paths,
-            config=self.config, options=OPTIONS
-        )
-        doc.add_picture(page_name, width=SURVEY_VIEW_IMG_WIDTH)
-        os.remove(page_name)
+        page_png = BytesIO()
+        page_png.write(imgkit.from_string(
+            page.html, False, 
+            css=page.external_css_paths,
+            config=self.config, 
+            options=OPTIONS
+        ))
+        doc.add_picture(page_png, width=SURVEY_VIEW_IMG_WIDTH)
 
     def store_doc(self, btn, doc, part_id):
         """Store documetn in GCP bucket"""
