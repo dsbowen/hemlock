@@ -1,8 +1,4 @@
 hemlock-venv/
-*.log
+utils/
 __pycache__
-data.db
-gcp_credentials.json
 test.py
-downloads
-tmp

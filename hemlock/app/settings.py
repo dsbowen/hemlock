@@ -121,7 +121,7 @@ class Config():
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'secret-key'
     SQLALCHEMY_DATABASE_URI = (
         os.environ.get('DATABASE_URL') 
-        or 'sqlite:///'+os.path.join(os.getcwd(), 'data.db')
+        or 'sqlite:///'+os.path.join(os.getcwd(), 'utils/data.db')
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
