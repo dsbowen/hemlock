@@ -106,7 +106,7 @@ class DataFrame(MutableDict):
         """
         csv_str = StringIO()
         writer = csv.writer(csv_str)
-        writer.writerow(self.keys())
+        writer.writerow(self.get_var_names())
         writer.writerows(zip(*self.values()))
         return (self.filename, csv_str)
 
@@ -115,13 +115,13 @@ class DataFrame(MutableDict):
 
         Pascal case variable keys.
         """
-        var_names = list(self.keys())
-        for i, var_name in enumerate(var_names):
-            var_name.replace('_', ' ')
-            var_names[i] = ''.join([
-                l for l in text.title() if not l.isspace()
+        varnames = list(self.keys())
+        for i, varname in enumerate(varnames):
+            varname = varname.replace('_', ' ')
+            varnames[i] = ''.join([
+                l for l in varname.title() if not l.isspace()
             ])
-        return var_names
+        return varnames
 
 
 class DataFrameType(PickleType):

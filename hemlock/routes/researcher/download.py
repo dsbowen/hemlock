@@ -146,14 +146,22 @@ def create_data(btn):
     yield btn.reset(stage, 0)
     ds = DataStore.query.first()
     db.session.add(ds)
-    updated = Participant.query.filter_by(updated=True).all()
-    db.session.add_all(updated)
-    for i, part in enumerate(updated):
-        yield btn.report(stage, 100.0*i/len(updated))
+    to_store = get_parts_to_store(ds)
+    db.session.add_all(to_store)
+    for i, part in enumerate(to_store):
+        yield btn.report(stage, 100.0*i/len(to_store))
         ds.store_participant(part)
     add_dataframe_to_zip(btn, ds.data)
     db.session.commit()
     yield btn.report(stage, 100)
+
+def get_parts_to_store(ds):
+    """Return a list of participants to store in DataStore"""
+    all_parts = Participant.query.all()
+    parts_stored = ds.parts_stored
+    return [
+        p for p in all_parts if p.updated or p not in parts_stored
+    ]
 
 def add_dataframe_to_zip(btn, data_frame):
     """Add dataframe to zip file creation function"""

@@ -18,6 +18,7 @@ class DataStore(db.Model):
     data = db.Column(DataFrameType, default={})
     meta = db.Column(DataFrameType, default={})
     status_log = db.Column(DataFrameType, default={})
+    parts_stored = db.relationship('Participant')
     
     @property
     def current_status(self):
@@ -25,12 +26,6 @@ class DataStore(db.Model):
         current_status = self._current_status.copy()
         current_status['total'] = sum([current_status[s] for s in STATUS])
         return current_status
-    
-    @classmethod
-    def pascal(cls, text):
-        """Convert text to pascal format"""
-        text = text.replace('_', ' ')
-        return ''.join([l for l in text.title() if not l.isspace()])
     
     def __init__(self):
         db.session.add(self)
@@ -63,6 +58,7 @@ class DataStore(db.Model):
         """Store data for given Participant"""
         self.remove_participant(part)
         self.data.append(part.data)
+        self.parts_stored.append(part)
         part.updated = False
         
     def remove_participant(self, part):

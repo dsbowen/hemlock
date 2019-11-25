@@ -43,6 +43,7 @@ def send_data(func):
 
 class Participant(UserMixin, Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    _data_store_id = db.Column(db.Integer, db.ForeignKey('data_store.id'))
 
     _router = db.relationship(
         'Router',
