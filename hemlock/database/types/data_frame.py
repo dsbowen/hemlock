@@ -115,7 +115,7 @@ class DataFrame(MutableDict):
 
         Pascal case variable keys.
         """
-        var_names = copy(self.keys())
+        var_names = list(self.keys())
         for i, var_name in enumerate(var_names):
             var_name.replace('_', ' ')
             var_names[i] = ''.join([
