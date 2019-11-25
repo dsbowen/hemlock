@@ -205,6 +205,12 @@ class Page(BranchingBase, CompileBase, db.Model):
     """API methods"""
     def set_branch(self, branch, index=None):
         self._set_parent(branch, index, 'branch', 'pages')
+
+    def clear_errors(self):
+        """Clear all page and question errors"""
+        self.error = None
+        for q in self.questions:
+            q.error = None
     
     def clear_responses(self):
         """Clear all question responses"""

@@ -3,4 +3,5 @@
 from hemlock.app import create_app
 from hemlock.database import *
 from hemlock.question_polymorphs import *
+from hemlock.routes import *
 from hemlock.tools import *

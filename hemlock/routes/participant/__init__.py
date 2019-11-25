@@ -9,7 +9,7 @@ The main survey route is handled by the participant's router.
 See hemlock/database/private/routing.py
 """
 
-from hemlock.app.factory import bp, db, socketio
+from hemlock.app.factory import bp, db, login_manager, socketio
 from hemlock.database import Participant, Page
 from hemlock.question_polymorphs import Text
 from hemlock.database.private import DataStore
@@ -19,16 +19,23 @@ from flask import current_app, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
 """Initial views and functions"""
+@login_manager.user_loader
+def load_user(id):
+    return Participant.query.get(int(id))
+
 @bp.route('/')
 def index():
     """Initial view function
     
     Direct visitors to survey, restart page, or screenout page.
     """
+    print('index')
     meta = get_metadata()
+    print('got metadata')
     if is_screenout(meta):
         return redirect(url_for('hemlock.screenout'))
     
+    print('checking if user is in progress or duplicate')
     in_progress = current_user.is_authenticated
     duplicate = is_duplicate(meta)
     if in_progress:
@@ -38,7 +45,9 @@ def index():
     if duplicate:
         return redirect(url_for('hemlock.screenout'))
 
+    print('init participant')
     initialize_participant(meta)
+    print('redirecting')
     return redirect(url_for('hemlock.survey'))
 
 def get_metadata():
@@ -63,8 +72,11 @@ def initialize_participant(meta):
         return
     end_time = datetime.now() + current_app.time_limit
     current_app.apscheduler.add_job(
-        func=time_out, trigger='date', run_date=end_time, 
-        args=(current_app._get_current_object(), part.id), id=str(part.id)
+        func=time_out, 
+        trigger='date', 
+        run_date=end_time, 
+        args=(current_app._get_current_object(), part.id), 
+        id=str(part.id)
     )
         
 def time_out(app, part_id):
@@ -100,7 +112,8 @@ def match_found(visitor, tracked, keys):
     for key in keys:
         visitor_val = visitor.get(key)
         tracked_vals = tracked.get(key)
-        if (visitor_val is not None and tracked_vals is not None 
+        if (
+            visitor_val is not None and tracked_vals is not None 
             and visitor_val in tracked_vals
         ):
             return True

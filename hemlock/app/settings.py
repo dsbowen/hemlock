@@ -125,4 +125,3 @@ class Config():
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
-    WKHTMLTOIMAGE = os.environ.get('WKHTMLTOIMAGE')

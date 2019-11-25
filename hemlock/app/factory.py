@@ -1,6 +1,5 @@
 """Application factory"""
 
-from hemlock.app.extensions import Viewer
 from hemlock.app.settings import get_settings, get_screenouts, Config
 
 from datetime import datetime, timedelta
@@ -37,7 +36,6 @@ scheduler = APScheduler()
 eventlet.monkey_patch(socket=True)
 socketio = SocketIO(async_mode='eventlet')
 manager = Manager(db=db, socketio=socketio)
-viewer = Viewer()
 
 def create_app(settings):
     """Application factory
@@ -63,6 +61,5 @@ def create_app(settings):
     scheduler.start()
     socketio.init_app(app, message_queue=app.config['REDIS_URL'])
     manager.init_app(app, **app.manager_settings)
-    viewer.init_app(app)
     
     return app
