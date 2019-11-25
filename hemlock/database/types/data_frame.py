@@ -1,5 +1,6 @@
 """DataFrame mutable object and column type"""
 
+from copy import copy
 from datetime import timedelta
 from flask import current_app
 from io import StringIO
@@ -75,7 +76,7 @@ class DataFrame(MutableDict):
         [self[var].add(entry) for var, entry in data.items()]
         
     def prep_variable(self, var, all_rows=False, rows=None):
-        """Prepare a variale for adding an entry
+        """Prepare a variable for adding an entry
         
         Add the variable if it is not yet in the DataFrame and pad.
         """
@@ -108,6 +109,19 @@ class DataFrame(MutableDict):
         writer.writerow(self.keys())
         writer.writerows(zip(*self.values()))
         return (self.filename, csv_str)
+
+    def get_var_names(self):
+        """Get variables names
+
+        Pascal case variable keys.
+        """
+        var_names = copy(self.keys())
+        for i, var_name in enumerate(var_names):
+            var_name.replace('_', ' ')
+            var_names[i] = ''.join([
+                l for l in text.title() if not l.isspace()
+            ])
+        return var_names
 
 
 class DataFrameType(PickleType):
