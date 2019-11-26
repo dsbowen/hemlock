@@ -18,6 +18,7 @@ def researcher_navbar():
     if navbar is not None:
         return navbar
     navbar = Navbar(name='researcher_navbar')
+    navbar.classes.append('fixed-top')
     Brand(bar=navbar, label='Hemlock')
     Navitem(
         bar=navbar, url=url_for('hemlock.status'), label='Participant Status'
@@ -25,6 +26,14 @@ def researcher_navbar():
     Navitem(
         bar=navbar, url=url_for('hemlock.download'), label='Download'
     )
+    profile_item = Navitem(
+        bar=navbar, url=url_for('hemlock.profile'), label='Data Profile'
+    )
+    Dropdownitem(item=profile_item, url='#overview', label='Overview')
+    Dropdownitem(item=profile_item, url='#variables', label='Variables')
+    Dropdownitem(item=profile_item, url='#correlations', label='Correlations')
+    Dropdownitem(item=profile_item, url='#missing', label='Missing Values')
+    Dropdownitem(item=profile_item, url='#sample', label='Sample')
     Navitem(
         bar=navbar, url=url_for('hemlock.logout'), label='Logout'
     )

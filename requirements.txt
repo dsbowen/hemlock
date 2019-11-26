@@ -13,6 +13,7 @@ gunicorn==18.0.0
 imgkit
 numpy
 pandas
+pandas-profiling==2.3.0
 pillow
 psycopg2
 python-docx

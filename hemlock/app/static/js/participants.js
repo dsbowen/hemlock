@@ -7,9 +7,9 @@ $(document).ready(function(){
     socket.on("json", function(e){
         console.log("Received status update "+e);
         var curr_status = JSON.parse(e);
-        $("#completed").text(curr_status.completed);
-        $("#in_progress").text(curr_status.in_progress);
-        $("#timed_out").text(curr_status.timed_out);
-        $("#total").text(curr_status.total);
+        $("#Completed").text(curr_status.Completed);
+        $("#InProgress").text(curr_status.InProgress);
+        $("#TimedOut").text(curr_status.TimedOut);
+        $("#Total").text(curr_status.Total);
     });
 }); 

@@ -8,7 +8,7 @@ from sqlalchemy_mutable import MutableDictType
 import json
 import pandas as pd
 
-STATUS = ['completed', 'in_progress', 'timed_out']
+STATUS = ['Completed', 'InProgress', 'TimedOut']
 DEFAULT_STATUS = {s: 0 for s in STATUS}
 
 
@@ -24,7 +24,7 @@ class DataStore(db.Model):
     def current_status(self):
         """Add total Participants and time stamp to _current_status"""
         current_status = self._current_status.copy()
-        current_status['total'] = sum([current_status[s] for s in STATUS])
+        current_status['Total'] = sum([current_status[s] for s in STATUS])
         return current_status
     
     def __init__(self):
@@ -38,7 +38,7 @@ class DataStore(db.Model):
     def log_status(self):
         """Append current status to the status log"""
         current_status = self.current_status
-        current_status['time'] = datetime.utcnow()
+        current_status['Time'] = datetime.utcnow()
         self.status_log.append(current_status)
     
     def update_status(self, part):
@@ -51,7 +51,7 @@ class DataStore(db.Model):
         self._current_status[part.status] += 1
         current_status = json.dumps(self.current_status)
         socketio.emit('json', current_status, namespace='/participants-nsp')
-        if part.status in ['completed', 'timed_out']:
+        if part.status in ['Completed', 'TimedOut']:
             self.store_participant(part)
     
     def store_participant(self, part):

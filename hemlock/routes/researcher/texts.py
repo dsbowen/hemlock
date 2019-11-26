@@ -22,19 +22,19 @@ PARTICIPANTS = """
     <tr><td colspan="2"><hr/></td></tr>
     <tr>
         <td>Completed</td>
-        <td id="completed" align="right">{completed}</td>
+        <td id="Completed" align="right">{Completed}</td>
     </tr>
     <tr>
         <td>In Progress</td>
-        <td id="in_progress" align="right">{in_progress}</td>
+        <td id="InProgress" align="right">{InProgress}</td>
     </tr>
     <tr>
         <td>Timed Out</td>
-        <td id="timed_out" align="right">{timed_out}</td>
+        <td id="TimedOut" align="right">{TimedOut}</td>
     </tr>
     <tr>
         <td>Total</td>
-        <td id="total" align="right">{total}</td>
+        <td id="Total" align="right">{Total}</td>
     </tr>
 </table>
 """

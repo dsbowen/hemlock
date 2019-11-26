@@ -117,10 +117,10 @@ class Participant(UserMixin, Base, db.Model):
     @property
     def status(self):
         if self.completed:
-            return 'completed'
+            return 'Completed'
         if self.time_expired:
-            return 'timed_out'
-        return 'in_progress'
+            return 'TimedOut'
+        return 'InProgress'
     
     def __init__(self, start_navigation, meta={}):
         """Initialize Participant
@@ -131,6 +131,7 @@ class Participant(UserMixin, Base, db.Model):
         ds = DataStore.query.first()
         ds.meta.append(meta)
         ds.update_status(self)
+        db.session.commit()
 
         self._router = Router()
         self.end_time = self.start_time = datetime.utcnow()
@@ -151,9 +152,9 @@ class Participant(UserMixin, Base, db.Model):
     @property
     def meta(self):
         self._meta['ID'] = self.id
-        self._meta['end_time'] = self.end_time
-        self._meta['start_time'] = self.start_time
-        self._meta['status'] = self.status
+        self._meta['EndTime'] = self.end_time
+        self._meta['StartTime'] = self.start_time
+        self._meta['Status'] = self.status
         return self._meta
         
     @meta.setter
