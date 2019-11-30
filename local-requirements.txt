@@ -7,7 +7,7 @@ flask-download-btn==0.0.14
 flask-login
 flask-socketio
 flask-sqlalchemy
-flask-worker
+flask-worker==0.0.3
 google-cloud-storage
 gunicorn==18.0.0
 imgkit

@@ -20,11 +20,17 @@ PROFILE_SFX_LABELS = [
 def researcher_navbar():
     """Create a researcher navigation bar"""
     navbar = Navbar()
-    navbar.classes.append('fixed-top')
+    navbar.classes.remove('navbar-dark')
+    navbar.classes.remove('bg-dark')
+    navbar.classes.extend(['navbar-light', 'bg-light', 'fixed-top'])
     Brand(navbar, label='Hemlock')
     Navitem(navbar, url=url_for('hemlock.status'), label='Participant Status')
     Navitem(navbar, url=url_for('hemlock.download'), label='Download')
-    profile_item = Navitem(navbar, label='Data Profile')
+    profile_item = Navitem(
+        navbar, 
+        url=url_for('hemlock.profile'), 
+        label='Data Profile'
+    )
     pfx = '' if request.path == '/profile' else url_for('hemlock.profile')
     [
         create_profile_dditem(profile_item, pfx, url, label) 

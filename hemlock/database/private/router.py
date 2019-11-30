@@ -88,11 +88,12 @@ class Router(RouterMixin, db.Model):
     
     def render(self):
         part, page = self.part, self.page
-        ViewingPage(part, page)
         if page.terminal and not part.completed:
             part.update_end_time()
             part.completed = True
-        return page._render()
+        page_html = page._render()
+        ViewingPage(part, page)
+        return page_html
     
     """Submit track"""
     def record_response(self):

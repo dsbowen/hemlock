@@ -198,6 +198,12 @@ class Page(BranchingBase, CompileBase, db.Model):
     @property
     def _forward(self):
         return self.forward and not self.terminal
+
+    @property
+    def _error(self):
+        """Error in html format"""
+        msg = self.error
+        return '' if msg is None else Markup(ERROR.format(msg=msg))
     
     def __init__(self, branch=None, **kwargs):
         super().__init__(['page_settings'], branch=branch, **kwargs)
@@ -303,3 +309,9 @@ class Page(BranchingBase, CompileBase, db.Model):
         print(indent, self, head_branch, head_part)
         if self.next_branch in self.part.branch_stack:
             self.next_branch._view_nav()
+
+ERROR = """
+<div class="alert alert-danger w-100" style="text-align:center;">
+    {msg}
+</div>
+"""

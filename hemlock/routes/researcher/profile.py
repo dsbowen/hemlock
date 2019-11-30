@@ -18,9 +18,6 @@ def profile_page():
     profile_p = Page(nav=researcher_navbar(), back=False, forward=False)
     Compile(profile_p, create_profile)
     CompileWorker(profile_p)
-    download = Download(profile_p, text='Download Profile')
-    CreateFile(download, store_profile)
-    Text(profile_p)
     return profile_p
 
 def create_profile(profile_p):
@@ -30,16 +27,22 @@ def create_profile(profile_p):
         profile_p.error = 'No data currently available.'
         return
     profile_p.error = None
-    download, profile_txt = profile_p.questions
+    html_page, inner_html = gen_profile_html()
+    if not profile_p.questions:
+        download = Download(profile_p, text='Download Profile')
+        create_file_f = CreateFile(download, store_profile, args=[html_page])
+        profile_txt = Text(profile_p)
+    soup = BeautifulSoup(html_page, 'html.parser')
+    profile_txt.css = [str(soup.find_all('style')[-1])]
+    profile_txt.js = [str(soup.find_all('script')[-1])]
+    profile_txt.text = convert_to_bootstrap4(inner_html)
+
+def gen_profile_html():
+    """Generate profile html page and inner html"""
     df = pd.DataFrame(DataStore.query.first().data)
     df = current_app.clean_data(df)
     profile = df.profile_report(title='Data Profile')
-    html_full = profile.to_html()
-    download.create_file_functions[0].args = [html_full]
-    soup = BeautifulSoup(html_full, 'html.parser')
-    profile_txt.css = [str(soup.find_all('style')[-1])]
-    profile_txt.js = [str(soup.find_all('script')[-1])]
-    profile_txt.text = convert_to_bootstrap4(profile.html)
+    return profile.to_html(), profile.html
 
 def convert_to_bootstrap4(html):
     """Convert profile html from bootstrap 3 to 4"""

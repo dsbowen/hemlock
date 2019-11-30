@@ -29,13 +29,10 @@ def index():
     
     Direct visitors to survey, restart page, or screenout page.
     """
-    print('index')
     meta = get_metadata()
-    print('got metadata')
     if is_screenout(meta):
         return redirect(url_for('hemlock.screenout'))
     
-    print('checking if user is in progress or duplicate')
     in_progress = current_user.is_authenticated
     duplicate = is_duplicate(meta)
     if in_progress:
@@ -45,9 +42,7 @@ def index():
     if duplicate:
         return redirect(url_for('hemlock.screenout'))
 
-    print('init participant')
     initialize_participant(meta)
-    print('redirecting')
     return redirect(url_for('hemlock.survey'))
 
 def get_metadata():

@@ -19,11 +19,7 @@
 <div class="container h-100">
 <div class="row h-100 justify-content-center align-items-center">
 <form method="POST" class="submit-once col-12">
-    {% if page.error is not none %}
-        <div class="alert alert-danger w-100" style="text-align:center;">
-            {{ page.error }}
-        </div>
-    {% endif %}
+    {{ page._error }}
     {{ page._question_html }}
     <br/>
     {% if page._back %}
