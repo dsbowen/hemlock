@@ -81,3 +81,6 @@ def validate_function(page):
 def submit_function(page):
     """Call question submit functions in index order"""
     [q._submit() for q in page.questions]
+
+def clean_data(df):
+    return df

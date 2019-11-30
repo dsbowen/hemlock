@@ -3,7 +3,7 @@ eventlet
 flask
 flask-apscheduler
 flask-bootstrap4
-flask-download-btn
+flask-download-btn==0.0.14
 flask-login
 flask-socketio
 flask-sqlalchemy

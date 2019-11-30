@@ -236,22 +236,21 @@ class Page(BranchingBase, CompileBase, db.Model):
         """Compile html
         
         1. Execute compile functions
-        2. Compile message and question html
         3. If compile results are cached, remove get worker and functions
         """
         [compile_function() for compile_function in self.compile_functions]
-        self._nav_html = self.nav.render() if self.nav is not None else ''
-        self._question_html = Markup(''.join(
-            [q._render() for q in self.questions]
-        ))
         if self.cache_compile:
             self.compile_functions.clear()
             self.compile_worker = None
     
     def _render(self):
         """Render page"""
-        self.start_time = datetime.utcnow()
+        self._nav_html = self.nav.render() if self.nav is not None else ''
+        self._question_html = Markup(''.join(
+            [q._render() for q in self.questions]
+        ))
         html = render_template(self.survey_template, page=self)
+        self.start_time = datetime.utcnow()
         return self._prettify(html)
 
     def _record_response(self):

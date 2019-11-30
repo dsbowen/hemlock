@@ -13,6 +13,7 @@ import os
 import pandas as pd
 
 default_settings = {
+    'clean_data': clean_data,
     'duplicate_keys': ['IPv4', 'workerId'],
     'offline': False,
     'password': '',
