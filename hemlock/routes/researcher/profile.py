@@ -46,7 +46,7 @@ def gen_profile_html():
     """Generate profile html page and inner html"""
     df = pd.DataFrame(DataStore.query.first().data)
     df = current_app.clean_data(df)
-    profile = df.profile_report()
+    profile = df.profile_report(check_recoded=False)
     return profile.to_html(), profile.html
 
 def convert_to_bootstrap4(inner_html):
