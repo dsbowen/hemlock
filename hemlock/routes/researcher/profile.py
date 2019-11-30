@@ -4,6 +4,7 @@ from hemlock.routes.researcher.utils import *
 from hemlock.routes.researcher.login import researcher_login_required
 
 from bs4 import BeautifulSoup
+from copy import copy
 from datetime import timedelta
 import pandas as pd
 import pandas_profiling
@@ -27,12 +28,12 @@ def create_profile(profile_p):
         profile_p.error = 'No data currently available.'
         return
     profile_p.error = None
-    html_page, inner_html = gen_profile_html()
+    html, inner_html = gen_profile_html()
     if not profile_p.questions:
         download = Download(profile_p, text='Download Profile')
-        create_file_f = CreateFile(download, store_profile, args=[html_page])
+        create_file_f = CreateFile(download, store_profile, args=[html])
         profile_txt = Text(profile_p)
-    soup = BeautifulSoup(html_page, 'html.parser')
+    soup = BeautifulSoup(html, 'html.parser')
     profile_txt.css = [str(soup.find_all('style')[-1])]
     profile_txt.js = [str(soup.find_all('script')[-1])]
     profile_txt.text = convert_to_bootstrap4(inner_html)
@@ -41,15 +42,15 @@ def gen_profile_html():
     """Generate profile html page and inner html"""
     df = pd.DataFrame(DataStore.query.first().data)
     df = current_app.clean_data(df)
-    profile = df.profile_report(title='Data Profile')
+    profile = df.profile_report()
     return profile.to_html(), profile.html
 
-def convert_to_bootstrap4(html):
+def convert_to_bootstrap4(inner_html):
     """Convert profile html from bootstrap 3 to 4"""
-    soup = BeautifulSoup(html, 'html.parser')
+    soup = BeautifulSoup(inner_html, 'html.parser')
 
     # label --> badge
-    span_label_tags = soup.find_all('span', class_='label')
+    span_label_tags = soup.select('span.label')
     for tag in span_label_tags:
         classes = tag.attrs['class']
         for i, class_ in enumerate(classes):
@@ -58,7 +59,7 @@ def convert_to_bootstrap4(html):
         tag.attrs['class'] = classes
 
     # add nav-item and nav-link class 
-    nav_tab_tags = soup.find_all('ul', class_='nav nav-tabs')
+    nav_tab_tags = soup.select('ul.nav.nav-tabs')
     for tag in nav_tab_tags:
         items = tag.findChildren('li')
         for li in items:
@@ -72,6 +73,30 @@ def convert_to_bootstrap4(html):
             if 'active' in li.attrs['class']:
                 li.attrs['class'].remove('active')
                 a.attrs['class'].append('active')
+
+    # show previews by default
+    previews = soup.select('div.in.collapse')
+    [p.attrs['class'].append('show') for p in previews]
+
+    # figures and captions
+    captions = soup.select('div.caption')
+    for c in captions:
+        c.name = 'figcaption'
+        c_class = c.attrs['class']
+        c_class.remove('caption')
+        c_class.insert(0, 'figure-caption')
+        c.parent.name = 'figure'
+        parent_class = c.parent.attrs['class']
+        parent_class.remove('row')
+        parent_class.insert(0, 'figure')
+        img_class = c.parent.findChildren('img')[0].attrs['class']
+        img_class.insert(0, 'img-fluid')
+        img_class.insert(0, 'figure-img')
+
+    # toggle buttons
+    btns = soup.select('a[role="button"]')
+    for btn in btns:
+        btn.attrs['href'] = '#'
 
     return str(soup)
 

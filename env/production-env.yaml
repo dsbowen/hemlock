@@ -1,5 +1,5 @@
 BUCKET: hemlock-bucket2357
-CURRENT_ENV: local
+CURRENT_ENV: production-lite
 GOOGLE_APPLICATION_CREDENTIALS: env/gcp-credentials.json
 WKHTMLTOIMAGE: /app/bin/wkhtmltoimage
 WKHTMLTOPDF_BUILDPACK_URL: https://github.com/dsbowen/heroku-buildpack-wkhtmltopdf
