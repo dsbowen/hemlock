@@ -31,8 +31,12 @@ def create_profile(profile_p):
     html, inner_html = gen_profile_html()
     if not profile_p.questions:
         download = Download(profile_p, text='Download Profile')
-        create_file_f = CreateFile(download, store_profile, args=[html])
+        create_file_f = CreateFile(download, store_profile)
         profile_txt = Text(profile_p)
+    else:
+        download, profile_txt = profile_p.questions
+        create_file_f = download.create_file_functions[0]
+    create_file_f.args = [html]
     soup = BeautifulSoup(html, 'html.parser')
     profile_txt.css = [str(soup.find_all('style')[-1])]
     profile_txt.js = [str(soup.find_all('script')[-1])]
