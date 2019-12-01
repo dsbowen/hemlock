@@ -18,7 +18,7 @@ def profile():
 def profile_page():
     profile_p = Page(nav=researcher_navbar(), back=False, forward=False)
     Compile(profile_p, create_profile)
-    # CompileWorker(profile_p)
+    CompileWorker(profile_p)
     return profile_p
 
 def create_profile(profile_p):
