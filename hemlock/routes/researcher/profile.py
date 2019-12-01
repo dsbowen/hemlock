@@ -38,8 +38,7 @@ def create_profile(profile_p):
         create_file_f = download.create_file_functions[0]
     create_file_f.args = [html]
     soup = BeautifulSoup(html, 'html.parser')
-    css = str(soup.find_all('style')[-1])
-    profile_txt.css = [to_bootstrap4_css(css)]
+    profile_txt.css = [str(soup.find_all('style')[-1])]
     profile_txt.js = [str(soup.find_all('script')[-1])]
     profile_txt.text = to_bootstrap4_html(inner_html)
 
@@ -49,10 +48,6 @@ def gen_profile_html():
     df = current_app.clean_data(df)
     profile = df.profile_report(check_recoded=False)
     return profile.to_html(), profile.html
-
-def to_bootstrap4_css(css):
-    return css
-    # return css.replace('.freq ', '')
 
 def to_bootstrap4_html(inner_html):
     """Convert profile html from bootstrap 3 to 4"""
