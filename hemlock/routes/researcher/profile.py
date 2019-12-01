@@ -18,7 +18,7 @@ def profile():
 def profile_page():
     profile_p = Page(nav=researcher_navbar(), back=False, forward=False)
     Compile(profile_p, create_profile)
-    CompileWorker(profile_p)
+    # CompileWorker(profile_p)
     return profile_p
 
 def create_profile(profile_p):
@@ -51,7 +51,8 @@ def gen_profile_html():
     return profile.to_html(), profile.html
 
 def to_bootstrap4_css(css):
-    return css.replace('.freq ', '')
+    return css
+    # return css.replace('.freq ', '')
 
 def to_bootstrap4_html(inner_html):
     """Convert profile html from bootstrap 3 to 4"""
@@ -102,11 +103,14 @@ def to_bootstrap4_html(inner_html):
         img_class.insert(0, 'figure-img')
 
     # frequency tables
-    freq_tables = soup.select('table.freq')
+    freq_tables = soup.select('table.freq.table')
     for table in freq_tables:
         table.attrs['class'].remove('freq')
         bars = table.select('div.bar')
         for bar in bars:
+            div = soup.new_tag('div')
+            div.attrs['class'] = ['freq']
+            bar.wrap(div)
             bar.attrs['style'] += '; height:24px;'
 
     # toggle buttons
