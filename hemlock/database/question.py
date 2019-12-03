@@ -57,7 +57,6 @@ class Question(CompileBase, MutableModelBase, db.Model):
     
     """Relationships to primary models"""
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    _page_timer_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     index = db.Column(db.Integer)
     
     choice_div_classes = db.Column(MutableListType)

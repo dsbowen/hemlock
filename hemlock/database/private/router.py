@@ -116,7 +116,7 @@ class Router(RouterMixin, db.Model):
     @set_route
     def submit(self):
         page = self.page
-        if page.direction_from == 'invalid':
+        if not page.is_valid():
             return self.redirect()
         return self.run_worker(
             page._submit, page.submit_worker, self.forward_prep, 

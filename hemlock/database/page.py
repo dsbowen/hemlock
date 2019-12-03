@@ -80,13 +80,11 @@ class Page(BranchingBase, CompileBase, db.Model):
         collection_class=ordering_list('index'),
         foreign_keys='Question._page_id'
     )
-        
-    start_time = db.Column(db.DateTime)
-    total_time = db.Column(db.Integer, default=0)
+
     timer = db.relationship(
-        'Question', # Update to 'Timer'
+        'Timer',
         uselist=False,
-        foreign_keys='Question._page_timer_id'
+        foreign_keys='Timer._page_timer_id'
     )
 
     @property
@@ -206,6 +204,8 @@ class Page(BranchingBase, CompileBase, db.Model):
         return '' if msg is None else Markup(ERROR.format(msg=msg))
     
     def __init__(self, branch=None, **kwargs):
+        from hemlock.question_polymorphs import Timer
+        self.timer = Timer()
         super().__init__(['page_settings'], branch=branch, **kwargs)
 
     """API methods"""
@@ -256,7 +256,8 @@ class Page(BranchingBase, CompileBase, db.Model):
             [q._render() for q in self.questions]
         ))
         html = render_template(self.survey_template, page=self)
-        self.start_time = datetime.utcnow()
+        if self.timer is not None:
+            self.timer.start()
         return self._prettify(html)
 
     def _record_response(self):
@@ -266,10 +267,8 @@ class Page(BranchingBase, CompileBase, db.Model):
         participant requested for navigation (forward or back). Finally, 
         record the participant's response to each question.
         """
-        if self.start_time is None:
-            self.start_time = datetime.utcnow()
-        delta = (datetime.utcnow() - self.start_time).total_seconds()
-        self.total_time += int(delta)
+        if self.timer is not None:
+            self.timer.pause()
         self.direction_from = request.form.get('direction')
         [
             q._record_response(request.form.getlist(q.model_id)) 
@@ -283,14 +282,13 @@ class Page(BranchingBase, CompileBase, db.Model):
         message (i.e. error is not None), indicate the response was invalid 
         and return False. Otherwise, return True.
         """
-        valid = True
         for validate_function in self.validate_functions:
             self.error = validate_function()
             if self.error is not None:
-                self.direction_from = 'invalid'
-                valid = False
                 break
-        return valid and all([q.error is None for q in self.questions])
+        is_valid = self.is_valid()
+        self.direction_from = 'forward' if is_valid else 'invalid'
+        return is_valid
     
     def _submit(self):
         """Submit page
