@@ -1,5 +1,6 @@
 """Public database models"""
 
+from hemlock.database.private import Base
 from hemlock.database.participant import Participant
 from hemlock.database.branch import Branch
 from hemlock.database.navbar import Navbar, Brand, Navitem, Dropdownitem

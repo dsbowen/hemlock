@@ -42,7 +42,7 @@ class Free(Question):
 
 
 INPUT_GROUP = """
-<div class="input-group mb3">
+<div class="input-group mb-3">
     {q._prepend}
     <input type="text" class="form-control" id="{q.model_id}" name="{q.model_id}" placeholder="{q._placeholder}" value="{q._default}">
     {q._append}

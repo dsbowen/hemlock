@@ -5,4 +5,5 @@ from hemlock.database import *
 from hemlock.question_polymorphs import *
 from hemlock.routes import *
 from hemlock.tools import *
-from hemlock.validators import *
+from hemlock.validate_functions import *
+from hemlock.submit_functions import *
