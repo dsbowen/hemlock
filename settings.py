@@ -1,6 +1,6 @@
 """Experiment settings"""
 
-from survey import Start, IPD
+from survey import Start
 
 settings = {
     'duplicate_keys': [],

@@ -12,6 +12,7 @@ from sqlalchemy_orderingitem import OrderingItem
 
 
 class GameMixin(Base):
+    id = Column(Integer, primary_key=True)
     description = Column(MarkupType)
     rounds = Column(Integer, default=0)
 
@@ -90,6 +91,7 @@ class GameMixin(Base):
 
 
 class PlayerMixin(Base):
+    id = Column(Integer, primary_key=True)
     index = Column(Integer)
     name = Column(String)
     actions = Column(MutableListType)
@@ -114,6 +116,8 @@ class PlayerMixin(Base):
 
 
 class StrategyMixin(FunctionMixin, Base):
+    id = Column(Integer, primary_key=True)
+
     @declared_attr
     def player_id(cls):
         return Column(Integer, ForeignKey('player.id'))
@@ -128,6 +132,8 @@ class StrategyMixin(FunctionMixin, Base):
 
 
 class PayoffMixin(FunctionMixin, Base):
+    id = Column(Integer, primary_key=True)
+
     @declared_attr
     def game_id(cls):
         return Column(Integer, ForeignKey('game.id'))
