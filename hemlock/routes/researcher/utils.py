@@ -29,13 +29,14 @@ def researcher_navbar():
     profile_item = Navitem(
         navbar, 
         url=url_for('hemlock.profile'), 
-        label='Data Profile'
+        label='Data Profile',
+        attrs={'target': '_blank'}
     )
-    pfx = '' if request.path == '/profile' else url_for('hemlock.profile')
-    [
-        create_profile_dditem(profile_item, pfx, url, label) 
-        for url, label in PROFILE_SFX_LABELS
-    ]
+    # pfx = '' if request.path == '/profile' else url_for('hemlock.profile')
+    # [
+    #     create_profile_dditem(profile_item, pfx, url, label) 
+    #     for url, label in PROFILE_SFX_LABELS
+    # ]
     Navitem(navbar, url=url_for('hemlock.logout'), label='Logout')
     return navbar
 
