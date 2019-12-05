@@ -1,4 +1,5 @@
 hemlock-venv/
 __pycache__
 data.db
+cors.json
 test.py
