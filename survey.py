@@ -3,6 +3,9 @@
 from hemlock import *
 from texts import *
 
+# CRT if answer is None
+# interval checks for valid conversion using try except
+
 from hemlock_crt import CRT, ball_bat, machines, lily_pads
 
 from hemlock_nash import GameMixin, PlayerMixin, StrategyMixin, PayoffMixin
@@ -37,10 +40,10 @@ class Payoff(PayoffMixin, db.Model):
     pass
 
 def Start(root=None):
-    crt_branch = CRT(ball_bat, machines, lily_pads)
-    Navigate(crt_branch, IPD)
-    return crt_branch
-
+    b = CRT(ball_bat, machines, lily_pads)
+    Navigate(b, IPD)
+    return b
+    
 def IPD(root=None):
     g = Game()
     Player(g, name='Red', strategy=noisy_tft)
@@ -55,7 +58,6 @@ def IPD(root=None):
         p = Page(b, cache_compile=True)
         Compile(p, update_game, args=[g])
         Submit(p, record_accuracy, args=[g])
-        SubmitWorker(p)
     p = Page(b, terminal=True)
     Text(p, text='<p>Thank you for participating.</p>')
     return b
@@ -80,4 +82,4 @@ def record_accuracy(page, game):
     blue_coop = int(game.actions['Blue'][-1] == 'Cooperate')
     Embedded(page, data=red_coop, var='RedCoop')
     Embedded(page, data=blue_coop, var='BlueCoop')
-    Embedded(page, data=(red_coop - est_q.data)**2, var='Brier')
+    Embedded(page, data=(est_q.data - red_coop)**2, var='Brier')

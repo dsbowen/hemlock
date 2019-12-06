@@ -203,7 +203,7 @@ class Question(CompileBase, MutableModelBase, db.Model):
 DIV = """
 <div id="{q.model_id}" class="{q._div_classes}">
     <label class="w-100" for="{q.model_id}">
-        <span style="color: #721c24;">{q._error}</span>
+        <span style="color: rgb(114,28,36);">{q._error}</span>
         {q._text}
     </label>
     {content}

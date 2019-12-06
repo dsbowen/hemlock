@@ -15,14 +15,13 @@ from docx import Document
 from docx.shared import Inches
 from io import BytesIO
 from itertools import chain
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from zipfile import ZipFile
-import imgkit
 import os
 
 # Width of survey view for imgkit
 SURVEY_VIEW_IMG_WIDTH = Inches(6)
-# Imgkit options
-OPTIONS = {'quiet':'', 'quality':100, 'zoom':1.5}
 
 """1. Create a download page"""
 @bp.route('/download', methods=['GET','POST'])
@@ -172,12 +171,15 @@ def add_dataframe_to_zip(btn, data_frame):
 def create_views(btn, *part_ids):
     """Create survey views for all selected participants"""
     parts = [Participant.query.get(id) for id in part_ids]
-    config = imgkit.config(wkhtmltoimage=os.environ.get('WKHTMLTOIMAGE'))
-    gen = chain.from_iterable([create_view(btn, p, config) for p in parts])
+    options = Options()
+    options.add_argument('--headless')
+    driver = webdriver.Chrome(chrome_options=options)
+    gen = chain.from_iterable([create_view(btn, p, driver) for p in parts])
     for event in gen:
         yield event
+    driver.close()
 
-def create_view(btn, part, config):
+def create_view(btn, part, driver):
     """Create survey view for a single participant"""
     stage = 'Creating Survey View for Participant {}'.format(part.id)
     yield btn.reset(stage, 0)
@@ -185,20 +187,17 @@ def create_view(btn, part, config):
     pages = part._viewing_pages
     for i, page in enumerate(pages):
         yield btn.report(stage, 100.0*i/len(pages))
-        add_page_to_doc(doc, page, config)
+        add_page_to_doc(doc, page, driver)
     add_doc_to_zip(btn, doc, part.id)
     yield btn.report(stage, 100)
 
-def add_page_to_doc(doc, page, config):
+def add_page_to_doc(doc, page, driver):
     """Add survey view page to survey view doc"""
-    page.process()
+    page.convert_to_abs_paths()
+    driver.get('data:text/html,'+page.html)
+    body = driver.find_element_by_tag_name('body')
     page_bytes = BytesIO()
-    page_bytes.write(imgkit.from_string(
-        page.html, False, 
-        css=page.external_css_paths,
-        config=config, 
-        options=OPTIONS
-    ))
+    page_bytes.write(body.screenshot_as_png)
     doc.add_picture(page_bytes, width=SURVEY_VIEW_IMG_WIDTH)
     page_bytes.close()
 
@@ -209,6 +208,47 @@ def add_doc_to_zip(btn, doc, part_id):
     doc.save(doc_bytes)
     zipfunc = btn.create_file_functions[-1]
     zipfunc.args.append((filename, doc_bytes))
+
+# def create_views(btn, *part_ids):
+#     """Create survey views for all selected participants"""
+#     parts = [Participant.query.get(id) for id in part_ids]
+#     config = imgkit.config(wkhtmltoimage=os.environ.get('WKHTMLTOIMAGE'))
+#     gen = chain.from_iterable([create_view(btn, p, config) for p in parts])
+#     for event in gen:
+#         yield event
+
+# def create_view(btn, part, config):
+#     """Create survey view for a single participant"""
+#     stage = 'Creating Survey View for Participant {}'.format(part.id)
+#     yield btn.reset(stage, 0)
+#     doc = Document()
+#     pages = part._viewing_pages
+#     for i, page in enumerate(pages):
+#         yield btn.report(stage, 100.0*i/len(pages))
+#         add_page_to_doc(doc, page, config)
+#     add_doc_to_zip(btn, doc, part.id)
+#     yield btn.report(stage, 100)
+
+# def add_page_to_doc(doc, page, config):
+#     """Add survey view page to survey view doc"""
+#     page.process()
+#     page_bytes = BytesIO()
+#     page_bytes.write(imgkit.from_string(
+#         page.html, False, 
+#         css=page.external_css_paths,
+#         config=config, 
+#         options=OPTIONS
+#     ))
+#     doc.add_picture(page_bytes, width=SURVEY_VIEW_IMG_WIDTH)
+#     page_bytes.close()
+
+# def add_doc_to_zip(btn, doc, part_id):
+#     """Add survey view doc to download zip file"""
+#     filename = 'Participant-{}.docx'.format(part_id)
+#     doc_bytes = BytesIO()
+#     doc.save(doc_bytes)
+#     zipfunc = btn.create_file_functions[-1]
+#     zipfunc.args.append((filename, doc_bytes))
 
 """4. Zip download files and save to Google bucket"""
 def zip_files(btn, *files):

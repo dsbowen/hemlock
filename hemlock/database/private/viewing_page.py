@@ -34,34 +34,52 @@ class ViewingPage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     index = db.Column(db.Integer)
-    external_css_paths = db.Column(MutableListType)
-    html = db.Column(MarkupType)
+    # external_css_paths = db.Column(MutableListType)
+    html = db.Column(db.String)
+    url_root = db.Column(db.String)
     
-    def __init__(self, part, page):
+    # def __init__(self, part, page):
+    def __init__(self, part, html):
         self.part = part
-        internal_css, self.external_css_paths = self.get_css(page)
-        self.html = render_template(
-            page.view_template, page=page, css=internal_css
-        )
-        self.process(preprocess=True)
+        # internal_css, self.external_css_paths = self.get_css(page)
+        # self.html = render_template(
+        #     page.view_template, page=page, css=internal_css
+        # )
+        self.html = html
+        self.url_root = request.url_root
+        # self.process(preprocess=True)
 
-    def get_css(self, page):
-        """Get page css
+    def convert_to_abs_paths(self):
+        """Convert stylesheets and scripts from relative to absolute paths"""
+        soup = BeautifulSoup(self.html, 'html.parser')
+        sheets = soup.select('link')
+        [self.convert_to_abs_path(s, 'href') for s in sheets]
+        scripts = soup.select('script')
+        [self.convert_to_abs_path(s, 'src') for s in scripts]
+        self.html = str(soup)
 
-        Split the css into internal stylesheets and external stylesheets. 
-        The internal stylesheets will be rendered in the viewing page html. 
-        The external stylesheet paths will be captured and passed to imgkit 
-        when creating a survey view.
-        """
-        css = page.css + [sheet for q in page.questions for sheet in q.css]
-        internal_css = ''
-        external_css_paths = []
-        for sheet in css:
-            if isinstance(sheet, CSS):
-                external_css_paths.append(sheet.local_path())
-            else:
-                internal_css += sheet
-        return internal_css, external_css_paths
+    def convert_to_abs_path(self, element, url_attr):
+        url = element.attrs.get(url_attr)
+        if url is not None and url.startswith('/'):
+            element.attrs[url_attr] = self.url_root + url
+
+    # def get_css(self, page):
+    #     """Get page css
+
+    #     Split the css into internal stylesheets and external stylesheets. 
+    #     The internal stylesheets will be rendered in the viewing page html. 
+    #     The external stylesheet paths will be captured and passed to imgkit 
+    #     when creating a survey view.
+    #     """
+    #     css = page.css + [sheet for q in page.questions for sheet in q.css]
+    #     internal_css = ''
+    #     external_css_paths = []
+    #     for sheet in css:
+    #         if isinstance(sheet, CSS):
+    #             external_css_paths.append(sheet.local_path())
+    #         else:
+    #             internal_css += sheet
+    #     return internal_css, external_css_paths
     
     def process(self, preprocess=False):
         """Process html
