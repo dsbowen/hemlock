@@ -172,8 +172,16 @@ def create_views(btn, *part_ids):
     """Create survey views for all selected participants"""
     parts = [Participant.query.get(id) for id in part_ids]
     options = Options()
-    options.add_argument('--headless')
-    driver = webdriver.Chrome(chrome_options=options)
+    [
+        options.add_argument(arg) 
+        for arg in ['--disable-gpu', '--no-sandbox', '--headless']
+    ]
+    options.binary_location = os.environ.get('GOOGLE_CHROME_PATH')
+    chromedriver_path = os.environ.get('CHROMEDRIVER_PATH')
+    if chromedriver_path:
+        driver = webdriver.Chrome(chromedriver_path, chrome_options=options)
+    else:
+        driver = webdriver.Chrome(chrome_options=options)
     gen = chain.from_iterable([create_view(btn, p, driver) for p in parts])
     for event in gen:
         yield event

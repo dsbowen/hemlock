@@ -1,5 +1,4 @@
 BUCKET: hemlock-local-bucket2357
-CHROMEDRIVER_PATH: /app/.chromedriver/bin/chromedriver
 CURRENT_ENV: production-lite
 FLASK_APP: app
 GOOGLE_APPLICATION_CREDENTIALS: env/gcp-credentials.json
