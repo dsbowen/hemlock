@@ -20,7 +20,9 @@ from selenium.webdriver.chrome.options import Options
 from zipfile import ZipFile
 import os
 
-# Width of survey view for imgkit
+# Screen buffer for driver window height 
+HEIGHT_BUFFER = 74
+# Width of survey view for docx
 SURVEY_VIEW_IMG_WIDTH = Inches(6)
 
 """1. Create a download page"""
@@ -203,9 +205,14 @@ def add_page_to_doc(doc, page, driver):
     """Add survey view page to survey view doc"""
     page.convert_to_abs_paths()
     driver.get('data:text/html,'+page.html)
-    body = driver.find_element_by_tag_name('body')
+    width = driver.get_window_size()['width']
+    height = driver.execute_script(
+        'return document.body.parentNode.scrollHeight'
+    )
+    driver.set_window_size(width, height+HEIGHT_BUFFER)
+    form = driver.find_element_by_tag_name('form')
     page_bytes = BytesIO()
-    page_bytes.write(body.screenshot_as_png)
+    page_bytes.write(form.screenshot_as_png)
     doc.add_picture(page_bytes, width=SURVEY_VIEW_IMG_WIDTH)
     page_bytes.close()
 
@@ -216,47 +223,6 @@ def add_doc_to_zip(btn, doc, part_id):
     doc.save(doc_bytes)
     zipfunc = btn.create_file_functions[-1]
     zipfunc.args.append((filename, doc_bytes))
-
-# def create_views(btn, *part_ids):
-#     """Create survey views for all selected participants"""
-#     parts = [Participant.query.get(id) for id in part_ids]
-#     config = imgkit.config(wkhtmltoimage=os.environ.get('WKHTMLTOIMAGE'))
-#     gen = chain.from_iterable([create_view(btn, p, config) for p in parts])
-#     for event in gen:
-#         yield event
-
-# def create_view(btn, part, config):
-#     """Create survey view for a single participant"""
-#     stage = 'Creating Survey View for Participant {}'.format(part.id)
-#     yield btn.reset(stage, 0)
-#     doc = Document()
-#     pages = part._viewing_pages
-#     for i, page in enumerate(pages):
-#         yield btn.report(stage, 100.0*i/len(pages))
-#         add_page_to_doc(doc, page, config)
-#     add_doc_to_zip(btn, doc, part.id)
-#     yield btn.report(stage, 100)
-
-# def add_page_to_doc(doc, page, config):
-#     """Add survey view page to survey view doc"""
-#     page.process()
-#     page_bytes = BytesIO()
-#     page_bytes.write(imgkit.from_string(
-#         page.html, False, 
-#         css=page.external_css_paths,
-#         config=config, 
-#         options=OPTIONS
-#     ))
-#     doc.add_picture(page_bytes, width=SURVEY_VIEW_IMG_WIDTH)
-#     page_bytes.close()
-
-# def add_doc_to_zip(btn, doc, part_id):
-#     """Add survey view doc to download zip file"""
-#     filename = 'Participant-{}.docx'.format(part_id)
-#     doc_bytes = BytesIO()
-#     doc.save(doc_bytes)
-#     zipfunc = btn.create_file_functions[-1]
-#     zipfunc.args.append((filename, doc_bytes))
 
 """4. Zip download files and save to Google bucket"""
 def zip_files(btn, *files):
