@@ -22,7 +22,9 @@
 <form method="POST" class="submit-once col-12 form-margins">
     <page id="{{ page.model_id }}"/>
     {{ page._error }}
-    {{ page._question_html }}
+    {% for q in page.questions %}
+        {{ q._render() }}
+    {% endfor %}
     <br/>
     {% if page._back %}
         {{ page.back_button }}

@@ -4,6 +4,7 @@ from hemlock.app import db
 from hemlock.database.private import Base
 from hemlock.question_polymorphs.imports import *
 
+from flask import Markup
 from flask_download_btn import DownloadBtnManager, DownloadBtnMixin, HandleFormMixin, CreateFileMixin
 
 
@@ -21,7 +22,7 @@ class Download(DownloadBtnMixin, Question):
             self.js.append(self.script())
             self._has_download_script = True
         content = self.render_btn() + self.render_progress()
-        return DIV.format(q=self, content=content)
+        return Markup(DIV.format(q=self, content=content))
 
 
 DIV = """

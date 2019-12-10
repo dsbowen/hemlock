@@ -114,21 +114,13 @@ class MediaBase(StaticBase):
         """Format classes for HTML tag"""
         return ' '.join(self.classes)
 
-    @property
-    def _cfv(self):
-        """Format copy for viewing for HTML tag"""
-        return 'copy_for_viewing' if self.copy_for_viewing else ''
-
-    def __init__(
-            self, classes=[], copy_for_viewing=False, *args, **kwargs
-        ):
+    def __init__(self, classes=[], *args, **kwargs):
         self.classes = classes
-        self.copy_for_viewing = copy_for_viewing
         super().__init__(*args, **kwargs)
 
 
 IMG_TEMPLATE = """
-<img class="{static._classes}" src="{static._url}" {static._attrs} {static._cfv}/>
+<img class="{static._classes}" src="{static._url}" {static._attrs}/>
 """
 
 class Img(MediaBase):
@@ -138,7 +130,7 @@ class Img(MediaBase):
 
 VID_TEMPLATE =  """
 <div class="video-wrapper">
-    <iframe src="{static._url}" class="video {static._classes}" {static._attrs} {static._cfv}>
+    <iframe src="{static._url}" class="video {static._classes}" {static._attrs}>
     </iframe>
 </div>
 """

@@ -151,9 +151,8 @@ class Page(BranchingBase, CompileBase, db.Model):
     forward = db.Column(db.Boolean)
     forward_button = db.Column(MarkupType)
     _question_html = db.Column(MarkupType)
-    survey_template = db.Column(db.String)
+    template = db.Column(db.String)
     terminal = db.Column(db.Boolean)
-    view_template = db.Column(db.String)
 
     @property
     def _css(self):
@@ -252,10 +251,7 @@ class Page(BranchingBase, CompileBase, db.Model):
     def _render(self):
         """Render page"""
         self._nav_html = self.nav.render() if self.nav is not None else ''
-        self._question_html = Markup(''.join(
-            [q._render() for q in self.questions]
-        ))
-        html = render_template(self.survey_template, page=self)
+        html = render_template(self.template, page=self)
         if self.timer is not None:
             self.timer.start()
         return self._prettify(html)

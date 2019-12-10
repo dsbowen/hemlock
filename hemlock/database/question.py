@@ -41,7 +41,7 @@ var: name of the variable to which this Question contributes data
 from hemlock.app import db
 from hemlock.database.private import CompileBase
 
-from flask import current_app
+from flask import Markup, current_app
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import Mutable, MutableType, MutableModelBase, MutableListType
@@ -152,7 +152,7 @@ class Question(CompileBase, MutableModelBase, db.Model):
 
     def _render(self, content=''):
         """Render question <div>"""
-        return DIV.format(q=self, content=content)
+        return Markup(DIV.format(q=self, content=content))
 
     def _record_response(self, response):
         return
