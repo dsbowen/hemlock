@@ -12,10 +12,8 @@ google-cloud-storage
 gunicorn==18.0.0
 pandas
 pandas-profiling==2.3.0
-pillow
 python-docx
 redis
-requests
 rq
 selenium
 sqlalchemy
