@@ -178,7 +178,7 @@ def create_views(btn, *part_ids):
         options.add_argument(arg) 
         for arg in ['--disable-gpu', '--no-sandbox', '--headless']
     ]
-    options.binary_location = os.environ.get('GOOGLE_CHROME_PATH')
+    options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
     chromedriver_path = os.environ.get('CHROMEDRIVER_PATH')
     if chromedriver_path:
         driver = webdriver.Chrome(chromedriver_path, chrome_options=options)
