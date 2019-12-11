@@ -35,12 +35,12 @@ class AIParticipant(unittest.TestCase):
         options = Options()
         [
             options.add_argument(arg)
-            for arg in ['--disable-gpu', '--no-sandbox']
+            for arg in ['--disable-gpu', '--no-sandbox', '--headless']
         ]
         options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
-        path = os.environ.get('CHROMEDRIVER_PATH')
+        chromedriver = os.environ.get('CHROMEDRIVER_PATH')
         if path:
-            self.driver = webdriver.Chrome(path, options=options)
+            self.driver = webdriver.Chrome(chromedriver, options=options)
         else:
             self.driver = webdriver.Chrome(options=options)
         self.driver.get('http://hlk-test.herokuapp.com')
