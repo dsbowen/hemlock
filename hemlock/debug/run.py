@@ -39,7 +39,7 @@ class AIParticipant(unittest.TestCase):
         ]
         options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
         chromedriver = os.environ.get('CHROMEDRIVER_PATH')
-        if path:
+        if chromedriver:
             self.driver = webdriver.Chrome(chromedriver, options=options)
         else:
             self.driver = webdriver.Chrome(options=options)
