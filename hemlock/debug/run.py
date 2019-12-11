@@ -35,8 +35,14 @@ class AIParticipant(unittest.TestCase):
 
     def test(self):
         while self.current_page is None or not self.current_page.terminal:
+            print('current page is', self.current_page)
+            try:
+                print(self.current_page.terminal)
+            except:
+                pass
             self.check_internal_server_error()
             if self.current_page is None:
+                print('current page is None')
                 sleep(3)
             else:
                 submit = self.driver.find_element_by_id('forward-button')
