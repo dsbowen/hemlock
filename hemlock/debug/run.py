@@ -27,7 +27,9 @@ class AIParticipant(unittest.TestCase):
         self.ctx = app.app_context()
         self.ctx.push()
         self.driver = chromedriver()
+        print('url root', os.environ.get('URL_ROOT'))
         self.driver.get(os.environ.get('URL_ROOT'))
+        print('connected driver')
         self.part = Participant.query.all()[-1]
         super().setUp()
 
