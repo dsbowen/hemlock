@@ -1,5 +1,5 @@
 BUCKET: hemlock-local-bucket2357
-CURRENT_ENV: local
+CURRENT_ENV: production-lite
 FLASK_APP: app
 GOOGLE_APPLICATION_CREDENTIALS: env/gcp-credentials.json
 WORKER: 'False'

@@ -1,7 +1,7 @@
 BUCKET: hemlock-bucket2357
 CHROMEDRIVER_BUILDPACK_URL: https://github.com/heroku/heroku-buildpack-chromedriver
 CHROMEDRIVER_PATH: /app/.chromedriver/bin/chromedriver
-CURRENT_ENV: local
+CURRENT_ENV: production-lite
 GOOGLE_APPLICATION_CREDENTIALS: env/gcp-credentials.json
 GOOGLE_CHROME_BUILDPACK_URL: https://github.com/heroku/heroku-buildpack-google-chrome
 POSTGRES_PRODUCTION_PLAN: standard-0
