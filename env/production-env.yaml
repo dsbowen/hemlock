@@ -7,6 +7,7 @@ GOOGLE_CHROME_BUILDPACK_URL: https://github.com/heroku/heroku-buildpack-google-c
 POSTGRES_PRODUCTION_PLAN: standard-0
 PROCTYPE_PRODUCTION: standard-1x
 REDIS_PRODUCTION_PLAN: premium-1
+URL_ROOT: http://hlk-test/herokuapp.com
 WEB_PRODUCTION_SCALE: '3'
 WORKER: 'False'
 WORKER_PRODUCTION_SCALE: '3'

@@ -1,9 +1,8 @@
 """Classes and functions for running debug tool"""
 
 from hemlock.database import Participant, Page
+from hemlock.tools import chromedriver
 
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from threading import Thread
 from time import sleep
 import os
@@ -27,24 +26,10 @@ class AIParticipant(unittest.TestCase):
         warnings.simplefilter('ignore', ResourceWarning)
         self.ctx = app.app_context()
         self.ctx.push()
-        self.setup_driver()
+        self.driver = chromedriver()
+        self.driver.get(os.environ.get('URL_ROOT'))
         self.part = Participant.query.all()[-1]
         super().setUp()
-
-    def setup_driver(self):
-        options = Options()
-        [
-            options.add_argument(arg)
-            for arg in ['--disable-gpu', '--no-sandbox', '--headless']
-        ]
-        options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
-        chromedriver = os.environ.get('CHROMEDRIVER_PATH')
-        if chromedriver:
-            self.driver = webdriver.Chrome(chromedriver, options=options)
-        else:
-            self.driver = webdriver.Chrome(options=options)
-        self.driver.get('http://hlk-test.herokuapp.com')
-        # self.driver.get('localhost:5000')
 
     def test(self):
         while self.current_page is None or not self.current_page.terminal:

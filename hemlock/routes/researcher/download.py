@@ -9,14 +9,13 @@ This module performs the following download processes:
 
 from hemlock.routes.researcher.utils import *
 from hemlock.routes.researcher.login import researcher_login_required
+from hemlock.tools import chromedriver
 
 from datetime import timedelta
 from docx import Document
 from docx.shared import Inches
 from io import BytesIO
 from itertools import chain
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from zipfile import ZipFile
 import os
 
@@ -173,17 +172,7 @@ def add_dataframe_to_zip(btn, data_frame):
 def create_views(btn, *part_ids):
     """Create survey views for all selected participants"""
     parts = [Participant.query.get(id) for id in part_ids]
-    options = Options()
-    [
-        options.add_argument(arg) 
-        for arg in ['--disable-gpu', '--no-sandbox', '--headless']
-    ]
-    options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
-    chromedriver = os.environ.get('CHROMEDRIVER_PATH')
-    if chromedriver:
-        driver = webdriver.Chrome(chromedriver, options=options)
-    else:
-        driver = webdriver.Chrome(options=options)
+    driver = chromedriver()
     gen = chain.from_iterable([create_view(btn, p, driver) for p in parts])
     for event in gen:
         yield event
