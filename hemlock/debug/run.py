@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from threading import Thread
 from time import sleep
+import os
 import sys
 import unittest
 import warnings
@@ -34,15 +35,16 @@ class AIParticipant(unittest.TestCase):
         options = Options()
         [
             options.add_argument(arg)
-            for arg in ['--disable-gpu', '--no-sandbox', '--headless']
+            for arg in ['--disable-gpu', '--no-sandbox']
         ]
         options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
         path = os.environ.get('CHROMEDRIVER_PATH')
         if path:
-            self.driver = webdriver.Chrome(path, chrome_options=options)
+            self.driver = webdriver.Chrome(path, options=options)
         else:
-            self.driver = webdriver.Chrome(chrome_options=options)
+            self.driver = webdriver.Chrome(options=options)
         self.driver.get('http://hlk-test.herokuapp.com')
+        # self.driver.get('localhost:5000')
 
     def test(self):
         while self.current_page is None or not self.current_page.terminal:
