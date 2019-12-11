@@ -1,8 +1,6 @@
-##############################################################################
-# Debug module
-# by Dillon Bowen
-# last modified 07/18/2019
-##############################################################################
+"""Hemlock debugger"""
 
-from hemlock.debug.main import main
-from hemlock.debug.aiparticipant import AIParticipantBase
+from hemlock.debug.run import AIParticipant, run_batch
+
+def main(num_batches=1, batch_size=1):
+    [run_batch(batch_size) for i in range(num_batches)]
