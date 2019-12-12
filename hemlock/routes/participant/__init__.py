@@ -130,9 +130,8 @@ def restart():
     or forward to restart.
     """
     if request.method == 'POST':
-        if request.form.get('direction') == 'back':
-            return redirect(url_for('hemlock.survey'))
-        initialize_participant(get_metadata())
+        if request.form.get('direction') == 'forward':
+            initialize_participant(get_metadata())
         return redirect(url_for('hemlock.survey'))
         
     p = Page(back=True)
@@ -144,4 +143,9 @@ def restart():
 @bp.route('/survey', methods=['GET','POST'])
 @login_required
 def survey():
-    return current_user._router.route()
+    if request.method == 'GET':
+        part_id = request.args.get('part_id')
+    else:
+        part_id = request.form.get('part_id')
+    part = current_user if part_id is None else Participant.query.get(part_id)
+    return part._router.route()

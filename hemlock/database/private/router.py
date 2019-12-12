@@ -92,7 +92,6 @@ class Router(RouterMixin, db.Model):
             part.update_end_time()
             part.completed = True
         page_html = page._render()
-        # ViewingPage(part, page)
         ViewingPage(part, page_html)
         return page_html
     
@@ -169,6 +168,7 @@ class Router(RouterMixin, db.Model):
 
     def redirect(self):
         self.reset()
+        # return redirect(url_for('hemlock.survey', part_id=self.part.id))
         return redirect(url_for('hemlock.survey'))
 
 
