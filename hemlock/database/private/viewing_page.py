@@ -8,9 +8,10 @@ from hemlock.app import db
 
 from bs4 import BeautifulSoup
 from flask import request
+from sqlalchemy_orderingitem import OrderingItem
 
 
-class ViewingPage(db.Model):
+class ViewingPage(OrderingItem, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     index = db.Column(db.Integer)

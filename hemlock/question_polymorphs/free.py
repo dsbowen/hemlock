@@ -65,10 +65,13 @@ def text_input_debug(question, driver):
         val = gen_number()
     else:
         val = gen_str()
+    print('sending', val)
     inpt.send_keys(str(val))
 
 def gen_number():
     num = random() * randint(1,10)
+    if random() < .1:
+        num = -num
     if random() < .5:
         return int(num)
     return round(num, randint(0,10))
@@ -76,8 +79,8 @@ def gen_number():
 def gen_str():
     chars = ascii_letters + digits
     chars = list(chars) + [' '] * int(len(chars)*.1)
-    length = 10**randint(0,10)
-    return ''.join(choice(chars) for i in range(length))
+    length = 10 * randint(0,10)
+    return ''.join([choice(chars) for i in range(length)])
 
 
 INPUT_GROUP = """
