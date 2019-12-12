@@ -65,7 +65,7 @@ def text_input_debug(question, driver):
         val = gen_number()
     else:
         val = gen_str()
-    print('sending', val)
+    inpt.clear()
     inpt.send_keys(str(val))
 
 def gen_number():
