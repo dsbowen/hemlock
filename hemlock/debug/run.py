@@ -10,16 +10,10 @@ import sys
 import unittest
 import warnings
 
-class AIParticipant(unittest.TestCase):
-    @property
-    def current_page(self):
-        try:
-            page_tag = self.driver.find_element_by_tag_name('page')
-        except:
-            return None
-        page_id = page_tag.get_attribute('id').split('-')[-1]
-        return Page.query.get(page_id)
+ERROR_MSG = '{ai.part} encountered an error.'
 
+
+class AIParticipant(unittest.TestCase):
     def setUp(self):
         """Push application context and connect webdriver"""
         from app import app
@@ -27,26 +21,38 @@ class AIParticipant(unittest.TestCase):
         self.ctx = app.app_context()
         self.ctx.push()
         self.driver = chromedriver()
-        self.driver.get(os.environ.get('URL_ROOT'))
+        self.driver.get(os.environ.get('URL_ROOT')+'?Test=1')
         self.part = Participant.query.all()[-1]
         super().setUp()
 
     def test(self):
-        while self.current_page is None or not self.current_page.terminal:
-            self.check_internal_server_error()
-            if self.current_page is None:
+        """Take the survey and test for errors"""
+        current_page = self.get_current_page()
+        while current_page is None or not current_page.terminal:
+            self.check_for_error()
+            if current_page is None:
                 sleep(3)
+                self.driver.refresh()
             else:
-                submit = self.driver.find_element_by_id('forward-button')
-                submit.click()
+                current_page._debug(self.driver)
+            current_page = self.get_current_page()
 
-    def check_internal_server_error(self):
+    def get_current_page(self):
+        """Get the current page"""
+        try:
+            page_tag = self.driver.find_element_by_tag_name('page')
+        except:
+            return None
+        page_id = page_tag.get_attribute('id').split('-')[-1]
+        return Page.query.get(page_id)
+
+    def check_for_error(self):
         """Assert that page is not Internal Server Error"""
         try:
             h1 = self.driver.find_element_by_tag_name('h1').text
         except:
-            h1 = None
-        assert h1 != 'Internal Server Error'
+            h1 = ''
+        assert h1 != 'Internal Server Error', ERROR_MSG.format(ai=self)
 
     def tearDown(self):
         """Close webdriver and pop application context"""

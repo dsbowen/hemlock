@@ -57,6 +57,16 @@ class Submit(FunctionMixin_Page_or_Question, db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
 
+class Debug(FunctionMixin_Page_or_Question, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    def __call__(self, driver):
+        """Call function with webdriver argument"""
+        if self.parent is None:
+            return self.func(driver, *self.args, **self.kwargs)
+        return self.func(self.parent, driver, *self.args, **self.kwargs)
+
+
 class Navigate(FunctionMixin, db.Model):
     """
     A Navigate function can have either a branch or page as its parent. 

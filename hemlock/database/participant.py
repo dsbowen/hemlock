@@ -19,6 +19,7 @@ updated: indicates Participant data has been updated since last store
 from hemlock.app import db
 from hemlock.database.private import Base, DataStore, Router
 from hemlock.database.types import DataFrame
+from hemlock.tools import random_key
 
 from datetime import datetime
 from flask_login import UserMixin
@@ -43,6 +44,7 @@ def send_data(func):
 
 class Participant(UserMixin, Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    _key = db.Column(db.String(90))
     _data_store_id = db.Column(db.Integer, db.ForeignKey('data_store.id'))
 
     _router = db.relationship(
@@ -133,6 +135,7 @@ class Participant(UserMixin, Base, db.Model):
         ds.update_status(self)
         db.session.commit()
 
+        self._key = random_key()
         self._router = Router()
         self.end_time = self.start_time = datetime.utcnow()
         self.meta = meta.copy()

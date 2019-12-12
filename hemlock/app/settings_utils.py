@@ -2,6 +2,9 @@
 
 from hemlock.tools import CSS, JS
 
+from random import random, shuffle
+from time import sleep
+
 TIME_EXPIRED = """You have exceeded your time limit for this survey."""
 
 RESTART = """
@@ -81,6 +84,27 @@ def validate_function(page):
 def submit_function(page):
     """Call question submit functions in index order"""
     [q._submit() for q in page.questions]
+
+def debug_function(page, driver):
+    """Call question debug functions in random order then navigate"""
+    order = [i for i, q in enumerate(page.questions)]
+    shuffle(order)
+    [page.questions[i]._debug(driver) for i in order]
+    forward_exists = back_exists = True
+    if random() < .8:
+        try:
+            driver.find_element_by_id('forward-button').click()
+        except:
+            forward_exists = False
+    if random() < .5:
+        try:
+            driver.find_element_by_id('back-button').click()
+        except:
+            back_exists = False
+    if not (forward_exists or back_exists):
+        sleep(3)
+    driver.refresh()
+    
 
 def clean_data(df):
     return df

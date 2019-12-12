@@ -131,6 +131,13 @@ class Page(BranchingBase, CompileBase, db.Model):
         uselist=False
     )
 
+    debug_functions = db.relationship(
+        'Debug',
+        backref='page',
+        order_by='Debug.index',
+        collection_class=ordering_list('index')
+    )
+
     navigate_function = db.relationship(
         'Navigate', 
         backref='page', 
@@ -293,6 +300,9 @@ class Page(BranchingBase, CompileBase, db.Model):
         """
         [q._record_data() for q in self.questions]
         [submit_function() for submit_function in self.submit_functions]
+
+    def _debug(self, driver):
+        [debug_function(driver) for debug_function in self.debug_functions]
     
     def _view_nav(self, indent):
         """Print self and next branch for debugging purposes"""

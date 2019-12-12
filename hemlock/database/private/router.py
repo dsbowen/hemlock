@@ -168,8 +168,14 @@ class Router(RouterMixin, db.Model):
 
     def redirect(self):
         self.reset()
-        # return redirect(url_for('hemlock.survey', part_id=self.part.id))
-        return redirect(url_for('hemlock.survey'))
+        part = self.part
+        if part.meta.get('Test') is None:
+            return redirect(url_for('hemlock.survey'))
+        return redirect(url_for(
+            'hemlock.survey', 
+            part_id=part.id, 
+            part_key=part._key
+        ))
 
 
 class Navigator(RouterMixin, db.Model):

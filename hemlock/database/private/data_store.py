@@ -47,7 +47,8 @@ class DataStore(db.Model):
         Store Participant data on completion and time out.
         """
         if part.previous_status is not None:
-            self._current_status[part.previous_status] -= 1
+            count = self._current_status[part.previous_status]
+            self._current_status[part.previous_status] = max(count-1, 0)
         self._current_status[part.status] += 1
         current_status = json.dumps(self.current_status)
         socketio.emit('json', current_status, namespace='/participants-nsp')

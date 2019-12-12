@@ -104,6 +104,13 @@ class Question(CompileBase, MutableModelBase, db.Model):
         order_by='Submit.index',
         collection_class=ordering_list('index')
     )
+
+    debug_functions = db.relationship(
+        'Debug',
+        backref='question',
+        order_by='Debug.index',
+        collection_class=ordering_list('index')
+    )
     
     """Columns"""
     all_rows = db.Column(db.Boolean)
@@ -177,6 +184,10 @@ class Question(CompileBase, MutableModelBase, db.Model):
     def _submit(self):
         """Run submit functions"""
         [submit_function() for submit_function in self.submit_functions]
+
+    def _debug(self, driver):
+        """Run debug functions"""
+        [debug_function(driver) for debug_function in self.debug_functions]
         
     def _pack_data(self, data=None):
         """Pack data for storing in DataStore

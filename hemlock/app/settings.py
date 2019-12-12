@@ -39,6 +39,7 @@ default_settings = {
         'back_button': BACK_BUTTON,
         'compile_functions': compile_function,
         'css': PAGE_CSS,
+        'debug_functions': debug_function,
         'forward': True,
         'forward_button': FORWARD_BUTTON,
         'js': PAGE_JS,

@@ -145,7 +145,13 @@ def restart():
 def survey():
     if request.method == 'GET':
         part_id = request.args.get('part_id')
+        part_key = request.args.get('part_key')
     else:
         part_id = request.form.get('part_id')
-    part = current_user if part_id is None else Participant.query.get(part_id)
+        part_key = request.form.get('part_key')
+    if part_id is None:
+        part = current_user
+    else:
+        part = Participant.query.get(part_id)
+        assert part_key == part._key
     return part._router.route()

@@ -22,9 +22,9 @@
 <form method="POST" class="submit-once col-12 form-margins">
     <page id="{{ page.model_id }}"/>
     {{ page._error }}
-    {% if page.part is not none %}
-        <!-- <input type="hidden" name="part_id" value="{{ page.part.id }}"/> -->
-        <!-- <input type="hidden" name="part_key" value="{{ page.part.secret_key }}"/> -->
+    {% if page.part is not none and page.part.meta.get('Test') == '1' %}
+        <input type="hidden" name="part_id" value="{{ page.part.id }}"/>
+        <input type="hidden" name="part_key" value="{{ page.part._key }}"/>
     {% endif %}
     {% for q in page.questions %}
         {{ q._render() }}
