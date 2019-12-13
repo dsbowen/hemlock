@@ -31,8 +31,8 @@ class AIParticipant(unittest.TestCase):
         while current_page is None or not current_page.terminal:
             self.check_for_error()
             if current_page is None:
-                sleep(3)
                 self.driver.refresh()
+                sleep(3)
             else:
                 current_page._debug(self.driver)
             current_page = self.get_current_page()
