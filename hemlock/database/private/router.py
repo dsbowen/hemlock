@@ -17,8 +17,20 @@ from hemlock.app import db
 from hemlock.database.private.viewing_page import ViewingPage
 
 from flask import current_app, request, redirect, url_for
-from flask_worker import RouterMixin
+from flask_worker import RouterMixin as RouterMixinBase
 from flask_worker import set_route
+
+
+class RouterMixin(RouterMixinBase):
+    def run_worker(self, func, worker, next_route, args=[], kwargs={}):
+        """Run worker overload"""
+        if worker is not None:
+            page = super().run_worker(worker, next_route, args, kwargs)
+            if worker.job_finished:
+                worker.reset()
+            return page
+        func()
+        return next_route(*args, **kwargs)
 
 
 class Router(RouterMixin, db.Model):
@@ -42,16 +54,6 @@ class Router(RouterMixin, db.Model):
     def __init__(self):
         self.reset()
         self.navigator = Navigator()
-
-    def run_worker(self, func, worker, next_route, args=[], kwargs={}):
-        """Run worker overload"""
-        if worker is not None:
-            page = super().run_worker(worker, next_route, args, kwargs)
-            if worker.job_finished:
-                worker.reset()
-            return page
-        func()
-        return next_route(*args, **kwargs)
 
     def reset(self):
         self.current_route = 'compile'
@@ -233,8 +235,10 @@ class Navigator(RouterMixin, db.Model):
     def insert_branch(self, origin):
         """Grow and insert new branch into the branch stack"""
         return self.run_worker(
-            origin.navigate_function, origin.navigate_worker, 
-            self._insert_branch, args=[origin]
+            origin.navigate_function, 
+            origin.navigate_worker, 
+            self._insert_branch, 
+            args=[origin]
         )
     
     def _insert_branch(self, origin):

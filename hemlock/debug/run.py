@@ -10,6 +10,8 @@ import sys
 import unittest
 import warnings
 
+SERVER_ERR = 'Internal Server Error'
+WERKZEUG_ERR = "Brought to you by DON'T PANIC, your friendly Werkzeug powered traceback interpreter."
 ERROR_MSG = '{ai.part} encountered an error.'
 
 
@@ -26,7 +28,7 @@ class AIParticipant(unittest.TestCase):
         super().setUp()
 
     def test(self):
-        """Take the survey and test for errors"""
+        """An AI Participant has encountered an error."""
         current_page = self.get_current_page()
         while current_page is None or not current_page.terminal:
             self.check_for_error()
@@ -47,12 +49,19 @@ class AIParticipant(unittest.TestCase):
         return Page.query.get(page_id)
 
     def check_for_error(self):
-        """Assert that page is not Internal Server Error"""
+        """Assert that there are no errors on this page"""
         try:
             h1 = self.driver.find_element_by_tag_name('h1').text
         except:
             h1 = ''
-        assert h1 != 'Internal Server Error', ERROR_MSG.format(ai=self)
+        assert h1 != SERVER_ERR, ERROR_MSG.format(ai=self)
+        try:
+            foot = self.driver.find_element_by_css_selector('div.footer').text
+        except:
+            foot = ''
+        assert h1 != SERVER_ERR and foot != WERKZEUG_ERR, (
+            ERROR_MSG.format(ai=self)
+        )
 
     def tearDown(self):
         """Close webdriver and pop application context"""
