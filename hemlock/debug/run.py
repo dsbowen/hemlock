@@ -50,18 +50,18 @@ class AIParticipant(unittest.TestCase):
 
     def check_for_error(self):
         """Assert that there are no errors on this page"""
+        error = False
         try:
-            h1 = self.driver.find_element_by_tag_name('h1').text
+            h1 = self.driver.find_element_by_tag_name('h1')
+            error = h1.text == SERVER_ERR
         except:
-            h1 = ''
-        assert h1 != SERVER_ERR, ERROR_MSG.format(ai=self)
+            pass
         try:
-            foot = self.driver.find_element_by_css_selector('div.footer').text
+            footer = self.driver.find_element_by_css_selector('div.footer')
+            error = error or footer.text == WERKZEUG_ERR
         except:
-            foot = ''
-        assert h1 != SERVER_ERR and foot != WERKZEUG_ERR, (
-            ERROR_MSG.format(ai=self)
-        )
+            pass
+        assert not error, ERROR_MSG.format(ai=self)
 
     def tearDown(self):
         """Close webdriver and pop application context"""
