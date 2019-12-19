@@ -39,161 +39,38 @@ var: name of the variable to which this Question contributes data
 """
 
 from hemlock.app import db
-from hemlock.database.private import CompileBase
+from hemlock.database.private import Base
 
-from flask import Markup, current_app
-from flask_login import current_user
-from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy_mutable import Mutable, MutableType, MutableModelBase, MutableListType
+from sqlalchemy_mutable import MutableType, MutableModelBase
 
 
-class Question(CompileBase, MutableModelBase, db.Model):
+class Question(Base, MutableModelBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(50))
+    type = db.Column(db.String)
     __mapper_args__ = {
         'polymorphic_identity': 'question',
         'polymorphic_on': type
     }
-    
-    """Relationships to primary models"""
+
+    """Page relationship"""
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     index = db.Column(db.Integer)
-    
-    choice_div_classes = db.Column(MutableListType)
-    choice_input_type = db.Column(db.String(50))
-    choices = db.relationship(
-        'Choice', 
-        backref='question',
-        order_by='Choice.index',
-        collection_class=ordering_list('index'),
-        foreign_keys='Choice._question_id'
-    )
-    
-    selected_choices = db.relationship(
-        'Choice',
-        order_by='Choice._selected_index',
-        collection_class=ordering_list('_selected_index'),
-        foreign_keys='Choice._selected_id'
-    )
-    
-    nonselected_choices = db.relationship(
-        'Choice',
-        order_by='Choice._nonselected_index',
-        collection_class=ordering_list('_nonselected_index'),
-        foreign_keys='Choice._nonselected_id'
-    )
-    
-    """Relationships to function models"""
-    compile_functions = db.relationship(
-        'Compile',
-        backref='question',
-        order_by='Compile.index',
-        collection_class=ordering_list('index')
-    )
 
-    validate_functions = db.relationship(
-        'Validate', 
-        backref='question', 
-        order_by='Validate.index',
-        collection_class=ordering_list('index')
-    )
-    
-    submit_functions = db.relationship(
-        'Submit',
-        backref='question',
-        order_by='Submit.index',
-        collection_class=ordering_list('index')
-    )
-
-    debug_functions = db.relationship(
-        'Debug',
-        backref='question',
-        order_by='Debug.index',
-        collection_class=ordering_list('index')
-    )
-    
-    """Columns"""
+    """Data columns"""
     all_rows = db.Column(db.Boolean)
     data = db.Column(MutableType)
-    default = db.Column(MutableType)
-    div_classes = db.Column(MutableListType)
-    error = db.Column(db.Text)
     order = db.Column(db.Integer)
-    response = db.Column(MutableType)
-    text = db.Column(db.Text)
     var = db.Column(db.Text)
 
-    """Html attributes"""
-    @property
-    def _div_classes(self):
-        """Get question <div> classes
-        
-        Add the error class if the response was invalid.
-        """
-        div_classes = ' '.join(self.div_classes)
-        if self.error is not None:
-            return div_classes + ' error'
-        return div_classes
-
-    @property
-    def _text(self):
-        return self.text if self.text is not None else ''
-
-    @property
-    def _error(self):
-        return self.error if self.error is not None else ''
-    
-    def __init__(self, polymorph_settings=[], page=None, **kwargs):
-        super().__init__(
-            ['question_settings']+polymorph_settings, page=page, **kwargs
-        )
-    
-    """API methods"""
-    def set_page(self, page, index=None):
-        self._set_parent(page, index, 'page', 'questions')
-    
-    """Methods executed during study"""
-    def _compile(self):
-        """Execute compile functions in index order"""
-        [compile_function() for compile_function in self.compile_functions]
-
-    def _render(self, content=''):
-        """Render question <div>"""
-        return Markup(DIV.format(q=self, content=content))
-
-    def _record_response(self, response):
-        return
-        
-    def _validate(self):
-        """Validate Participant response
-        
-        Check validate functions one at a time. If any yields an error 
-        message (i.e. error is not None), indicate the response was invalid 
-        and return False. Otherwise, return True.
-        """
-        for validate_function in self.validate_functions:
-            self.error = validate_function()
-            if self.error is not None:
-                return False
-        return True
-
-    def _record_data(self):
-        """Record data"""
-        self.data = self.response
-    
-    def _submit(self):
-        """Run submit functions"""
-        [submit_function() for submit_function in self.submit_functions]
-
-    def _debug(self, driver):
-        """Run debug functions"""
-        [debug_function(driver) for debug_function in self.debug_functions]
+    @Base.init('Question')
+    def __init__(self):
+        super().__init__()
         
     def _pack_data(self, data=None):
         """Pack data for storing in DataStore
         
-        Note: <var>Index is the index of the object; its order within its
-        Branch, Page, or Question. <var>Order is the order of the Question
+        Note: `var`Index is the index of the object; its order within its
+        Branch, Page, or Question. `var`Order is the order of the Question
         relative to other Questions with the same variable.
         
         The optional `data` argument is prepacked data from the question 
@@ -210,13 +87,3 @@ class Question(CompileBase, MutableModelBase, db.Model):
             if c.label is not None:
                 data[''.join([self.var, c.label, 'Index'])] = c.index
         return data
-
-DIV = """
-<div id="{q.model_id}" class="{q._div_classes}">
-    <label class="w-100" for="{q.model_id}">
-        <span style="color: rgb(114,28,36);">{q._error}</span>
-        {q._text}
-    </label>
-    {content}
-</div>
-"""

@@ -13,32 +13,32 @@ timer: Question which tracks how long a Participant spent on this page
 Public (non-Function) Columns:
 
 back: indicates this Page has a back button
-back_button: html for back button
+back_btn: html for back button
 compiled: indicates that this Page has ever been compiled
 css: list of css files
 direction_from: direction from which this Page is navigating
 direction_to: direction to which this Page was navigated
 forward: indicates this Page has a forward button
-forward_button: html for forward button
+forward_btn: html for forward button
 js: list of js files
 template: name of html template
 terminal: indicates this Page is the last in the experiment
 """
 
-from hemlock.app import db
-from hemlock.database.private import BranchingBase, CompileBase
+from hemlock.app import Settings, db
+from hemlock.database.private import BranchingBase, HTMLBase
+from hemlock.database.html_question import HTMLQuestion
 from hemlock.database.types import  MarkupType
+from hemlock.tools import CSS, JS
 
-from datetime import datetime
 from flask import Markup, current_app, render_template, request, url_for
-from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy_mutable import MutableListType, MutableDictType
 
-DIRECTIONS = ['back', 'forward', 'invalid', None]
+from random import random, shuffle
+from time import sleep
 
 
-class Page(BranchingBase, CompileBase, db.Model):
+class Page(BranchingBase, HTMLBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     """Relationships to primary models"""
@@ -88,10 +88,12 @@ class Page(BranchingBase, CompileBase, db.Model):
     )
 
     @property
+    def html_questions(self):
+        return [q for q in self.questions if isinstance(q, HTMLQuestion)]
+
+    @property
     def questions_with_timer(self):
-        if self.timer is None:
-            return self.questions
-        return [self.timer]+self.questions
+        return [self.timer]+self.questions if self.timer else self.questions
     
     """Relationships to function models and workers"""
     cache_compile = db.Column(db.Boolean)
@@ -151,13 +153,12 @@ class Page(BranchingBase, CompileBase, db.Model):
     
     """Columns"""
     back = db.Column(db.Boolean)
-    back_button = db.Column(MarkupType)
-    _direction_from = db.Column(db.String(8))
-    _direction_to = db.Column(db.String(8))
+    back_btn = db.Column(MarkupType)
+    direction_from = db.Column(db.String(8))
+    direction_to = db.Column(db.String(8))
     error = db.Column(db.Text)
     forward = db.Column(db.Boolean)
-    forward_button = db.Column(MarkupType)
-    _question_html = db.Column(MarkupType)
+    forward_btn = db.Column(MarkupType)
     template = db.Column(db.String)
     terminal = db.Column(db.Boolean)
 
@@ -172,36 +173,6 @@ class Page(BranchingBase, CompileBase, db.Model):
         page_js = super()._js
         question_js = ''.join([q._js for q in self.questions])
         return Markup(page_js + question_js)
-    
-    @property
-    def _back(self):
-        return self.back and not self.first_page()
-    
-    @property
-    def direction_from(self):
-        return self._direction_from
-    
-    @direction_from.setter
-    def direction_from(self, value):
-        assert value in DIRECTIONS, (
-            'Direction must be one of: {}'.format(DIRECTIONS)
-        )
-        self._direction_from = value
-        
-    @property
-    def direction_to(self):
-        return self._direction_to
-    
-    @direction_to.setter
-    def direction_to(self, value):
-        assert value in DIRECTIONS, (
-            'Direction must be one of: {}'.format(DIRECTIONS)
-        )
-        self._direction_to = value
-        
-    @property
-    def _forward(self):
-        return self.forward and not self.terminal
 
     @property
     def _error(self):
@@ -209,25 +180,26 @@ class Page(BranchingBase, CompileBase, db.Model):
         msg = self.error
         return '' if msg is None else Markup(ERROR.format(msg=msg))
     
+    @property
+    def _back(self):
+        return self.back and not self.first_page()
+        
+    @property
+    def _forward(self):
+        return self.forward and not self.terminal
+    
     def __init__(self, branch=None, **kwargs):
         from hemlock.question_polymorphs import Timer
         self.timer = Timer()
-        super().__init__(['page_settings'], branch=branch, **kwargs)
+        super().__init__('Page', branch=branch, **kwargs)
 
     """API methods"""
-    def set_branch(self, branch, index=None):
-        self._set_parent(branch, index, 'branch', 'pages')
-
     def clear_errors(self):
-        """Clear all page and question errors"""
         self.error = None
-        for q in self.questions:
-            q.error = None
+        [setattr(self, 'error', '') for q in self.questions]
     
     def clear_responses(self):
-        """Clear all question responses"""
-        for q in self.questions:
-            q.response = None
+        [setattr(self, 'response', None) for q in self.questions]
     
     def first_page(self):
         """Indicate that this is the first Page in the experiment"""
@@ -248,16 +220,15 @@ class Page(BranchingBase, CompileBase, db.Model):
         """Compile html
         
         1. Execute compile functions
-        3. If compile results are cached, remove get worker and functions
+        2. If compile results are cached, remove get worker and functions
         """
-        [compile_function() for compile_function in self.compile_functions]
+        [compile_func() for compile_func in self.compile_functions]
         if self.cache_compile:
             self.compile_functions.clear()
             self.compile_worker = None
     
     def _render(self):
         """Render page"""
-        self._nav_html = self.nav.render() if self.nav is not None else ''
         html = render_template(self.template, page=self)
         if self.timer is not None:
             self.timer.start()
@@ -285,8 +256,8 @@ class Page(BranchingBase, CompileBase, db.Model):
         message (i.e. error is not None), indicate the response was invalid 
         and return False. Otherwise, return True.
         """
-        for validate_function in self.validate_functions:
-            self.error = validate_function()
+        for validate_func in self.validate_functions:
+            self.error = validate_func()
             if self.error is not None:
                 break
         is_valid = self.is_valid()
@@ -294,15 +265,11 @@ class Page(BranchingBase, CompileBase, db.Model):
         return is_valid
     
     def _submit(self):
-        """Submit page
-        
-        Record data for each question, then run submit functions.
-        """
         [q._record_data() for q in self.questions]
-        [submit_function() for submit_function in self.submit_functions]
+        [submit_func() for submit_func in self.submit_functions]
 
     def _debug(self, driver):
-        [debug_function(driver) for debug_function in self.debug_functions]
+        [debug_func(driver) for debug_func in self.debug_functions]
     
     def _view_nav(self, indent):
         """Print self and next branch for debugging purposes"""
@@ -314,8 +281,100 @@ class Page(BranchingBase, CompileBase, db.Model):
         if self.next_branch in self.part.branch_stack:
             self.next_branch._view_nav()
 
+
 ERROR = """
 <div class="alert alert-danger w-100" style="text-align:center;">
     {msg}
 </div>
 """
+
+STYLESHEETS = [
+    CSS(
+        url='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css',
+        filename='css/bootstrap-4.4.1.min.css',
+        blueprint='hemlock'
+    ),
+    CSS(
+        filename='css/default.css',
+        blueprint='hemlock'
+    )
+]
+
+SCRIPTS = [
+    JS(
+        url='https://code.jquery.com/jquery-3.4.1.min.js',
+        filename='js/jquery-3.4.1.min.js',
+        blueprint='hemlock'
+    ),
+    JS(
+        url='https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js',
+        filename='js/popper-1.16.0.min.js',
+        blueprint='hemlock'
+    ),
+    JS(
+        url='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js',
+        filename='js/bootstrap-4.4.1.min.js',
+        blueprint='hemlock'
+    ),
+    JS(
+        filename='js/default.js',
+        blueprint='hemlock'
+    )
+]
+
+BACK_BTN = """
+<button id="back-button" name="direction" type="submit" class="btn btn-outline-primary" style="float: left;" value="back"> 
+    <<
+</button>
+"""
+
+FORWARD_BTN = """
+<button id="forward-button" name="direction" type="submit" class="btn btn-outline-primary" style="float: right;" value="forward">
+    >>
+</button>
+"""
+
+def compile_func(page):
+    [q._compile() for q in page.questions]
+
+def validate_func(page):
+    [q._validate() for q in page.questions]
+    
+def submit_func(page):
+    [q._submit() for q in page.questions]
+
+def debug_func(page, driver):
+    """Call question debug functions in random order then navigate"""
+    order = list(range(len(page.questions)))
+    shuffle(order)
+    [page.questions[i]._debug(driver) for i in order]
+    forward_exists = back_exists = True
+    if random() < .8:
+        try:
+            driver.find_element_by_id('forward-button').click()
+        except:
+            forward_exists = False
+    if random() < .5:
+        try:
+            driver.find_element_by_id('back-button').click()
+        except:
+            back_exists = False
+    if not (forward_exists or back_exists):
+        sleep(3)
+    driver.refresh()
+
+@Settings.register('Page')
+def page_settings():
+    return {
+        'css': STYLESHEETS,
+        'js': SCRIPTS,
+        'back': False,
+        'back_btn': BACK_BTN,
+        'forward': True,
+        'forward_btn': FORWARD_BTN,
+        'compile_functions': compile_func,
+        'validate_functions': validate_func,
+        'submit_functions': submit_func,
+        'debug_functions': debug_func,
+        'template': 'default.html',
+    }

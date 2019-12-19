@@ -1,15 +1,14 @@
-"""Embedded question polymorph"""
+"""Label question polymorph"""
 
 from hemlock.question_polymorphs.utils import *
 
 
-class Embedded(Question):
+class Label(HTMLQuestion):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
-    __mapper_args__ = {'polymorphic_identity': 'embedded'}
+    __mapper_args__ = {'polymorphic_identity': 'label'}
 
-    _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
-    
-    @Question.init('Embedded')
+    @HTMLQuestion.init('Label')
     def __init__(self, page=None, **kwargs):
         super().__init__()
+        self.soup = render_template('form-group.html', q=self)
         return {'page': page, **kwargs}

@@ -11,12 +11,13 @@ See hemlock/database/private/routing.py
 
 from hemlock.app.factory import bp, db, login_manager, socketio
 from hemlock.database import Participant, Page
-from hemlock.question_polymorphs import Text
+from hemlock.question_polymorphs import Label
 from hemlock.database.private import DataStore
 
 from datetime import datetime, timedelta
 from flask import current_app, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
+from functools import wraps
 
 """Initial views and functions"""
 @login_manager.user_loader
@@ -37,13 +38,13 @@ def index():
     duplicate = is_duplicate(meta)
     if in_progress:
         if duplicate or not current_app.restart_option:
-            return redirect(url_for('hemlock.survey'))
+            return redirect(url_for('hemlock.{}'.format(bp.default_route)))
         return redirect(url_for('hemlock.restart', **meta))
     if duplicate:
         return redirect(url_for('hemlock.screenout'))
 
     initialize_participant(meta)
-    return redirect(url_for('hemlock.survey'))
+    return redirect(url_for('hemlock.{}'.format(bp.default_route)))
 
 def get_metadata():
     """Get Participant metadata from URL parameters"""
@@ -59,7 +60,7 @@ def initialize_participant(meta):
     """
     if current_user.is_authenticated:
         logout_user()
-    part = Participant(start_navigation=current_app.start, meta=meta)
+    part = Participant(meta)
     db.session.commit()
     login_user(part)
     
@@ -117,7 +118,7 @@ def match_found(visitor, tracked, keys):
 @bp.route('/screenout')
 def screenout():
     p = Page(forward=False)
-    q = Text(p, text=current_app.screenout_text)
+    q = Label(p, text=current_app.screenout_text)
     p._compile()
     return p._render()
     
@@ -132,21 +133,35 @@ def restart():
     if request.method == 'POST':
         if request.form.get('direction') == 'forward':
             initialize_participant(get_metadata())
-        return redirect(url_for('hemlock.survey'))
+        return redirect(url_for('hemlock.{}'.format(bp.default_route)))
         
     p = Page(back=True)
-    q = Text(p, text=current_app.restart_text)
+    q = Label(p, text=current_app.restart_text)
     p._compile()
     return p._render()
 
 """Main survey view function"""
-@bp.route('/survey', methods=['GET','POST'])
-@login_required
-def survey():
+def route(path, default=False):
+    def register_view(root_f):
+        if default or not hasattr(bp, 'default_route'):
+            bp.default_route = root_f.__name__
+            
+        @bp.route(path, methods=['GET','POST'])
+        @login_required
+        @wraps(root_f)
+        def view():
+            part = get_part()
+            if not part.branch_stack:
+                part._init_tree(root_f)
+            return part._router.route()
+        return root_f
+    return register_view
+
+def get_part():
     if request.method == 'GET':
         part_id = request.args.get('part_id')
         part_key = request.args.get('part_key')
-    else:
+    else: # request method is POST
         part_id = request.form.get('part_id')
         part_key = request.form.get('part_key')
     if part_id is None:
@@ -154,4 +169,4 @@ def survey():
     else:
         part = Participant.query.get(part_id)
         assert part_key == part._key
-    return part._router.route()
+    return part

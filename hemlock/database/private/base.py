@@ -6,12 +6,10 @@ BranchingBase contains methods for growing and inserting new branches to a
 Participant's branch_stack. 
 
 CompileBase contains convenience methods for models which compile html.
-
-FunctionBase contains convenience methods for models with relationships to 
-Function models.
 """
 
-from hemlock.app import db
+from hemlock.app import Settings, db
+from hemlock.database.types import MutableSoupType
 from hemlock.tools import CSS, JS
 
 from bs4 import BeautifulSoup
@@ -30,32 +28,34 @@ class Base(FunctionRelator, OrderingItem):
         id = inspect(self).identity
         id = '-'.join([str(key) for key in id]) if id is not None else ''
         return type(self).__name__+'-'+str(id)
-    
-    def __init__(self, default_settings=[], **kwargs):
-        """Add and flush all models on construction"""
-        settings = {}
-        [settings.update(self.app_settings(ds)) for ds in default_settings]
-        settings.update(kwargs)
-        [setattr(self, key, val) for key, val in settings.items()]
-        db.session.add(self)
-        db.session.flush([self])
-        super().__init__()
 
-    def app_settings(self, settings_name):
-        if settings_name is not None and hasattr(current_app, settings_name):
-            return getattr(current_app, settings_name)
-        return {}
-    
-    def _set_parent(self, parent, index, parent_attr, child_attr):
-        """Set model parent
-        
-        Automatically detect whether to insert using standard __setattr___
-        or insert.
+    def init(*settings_keys):
+        """Decorator for initialization function
+
+        The decorator wraps __init__ as follows:
+        1. Add and flush object to database
+        2. Execute __init__
+        3. Apply settings
+
+        The wrapper derives settings first from settings keys, which are
+        passed to the decorator. Secondly, the __init__ function may return a
+        dictionary of attribute:value mappings to apply, which override 
+        default settings.
         """
-        if parent is None or index is None:
-            self.__setattr__(parent_attr, parent)
-        else:
-            getattr(parent, child_attr).insert(index, self)
+        settings_keys = list(settings_keys)
+        settings_keys.reverse()
+        def wrapper(init_func):
+            def inner(self, *args, **kwargs):
+                db.session.add(self)
+                db.session.flush([self])
+                settings = Settings.get(*settings_keys)
+                attrs = init_func(self, *args, **kwargs)
+                if attrs is not None:
+                    settings.update(attrs)
+                [setattr(self, key, val) for key, val in settings.items()]
+                return
+            return inner
+        return wrapper
 
 
 class BranchingBase(Base):
@@ -72,28 +72,19 @@ class BranchingBase(Base):
         )
 
 
-class CompileBase(Base):
-    css = Column(MutableListType)
-    js = Column(MutableListType)
+class HTMLBase(Base):
+    css = Column(MutableSoupType)
+    js = Column(MutableSoupType)
+    soup = Column(MutableSoupType)
 
-    @property
-    def _css(self):
-        return ''.join([
-            sheet.render() if isinstance(sheet, CSS) else sheet
-            for sheet in self.css
-        ])
+    def select(self, selector, parent=None):
+        elem = self.select_all(selector, parent)
+        if elem:
+            return elem[0]
 
-    @property
-    def _js(self):
-        return ' '.join([
-            script.render() if isinstance(script, JS) else script
-            for script in self.js
-        ])
+    def select_all(self, selector, parent=None):
+        return (parent or self.soup).select(selector)
 
-    def _prettify(self, html):
-        """Prettify compiled html"""
-        return BeautifulSoup(html, 'html.parser').prettify()
-    
-    def view_html(self, html=None):
-        html = html or self._render()
-        print(self._prettify(html))
+    def text(self, selector, parent=None):
+        elem = self.select(selector, parent)
+        return None if elem is None else elem.text

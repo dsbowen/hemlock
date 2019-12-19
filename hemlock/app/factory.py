@@ -1,6 +1,6 @@
 """Application factory"""
 
-from hemlock.app.settings import get_settings, get_screenouts, Config
+from hemlock.app.settings import Config, Settings, get_app_settings, get_screenouts
 
 from datetime import datetime, timedelta
 from flask import Flask, Blueprint
@@ -37,14 +37,14 @@ eventlet.monkey_patch(socket=True)
 socketio = SocketIO(async_mode='eventlet')
 manager = Manager(db=db, socketio=socketio)
 
-def create_app(settings):
+def create_app():
     """Application factory
     
     First configure the application. Then initialize extensions.
     """
-    settings, static, templates = get_settings(settings)
+    app_settings, static, templates = get_app_settings()
     app = Flask(__name__, static_folder=static, template_folder=templates)
-    app.__dict__.update(settings)
+    app.__dict__.update(app_settings)
     app.config.from_object(Config)
     app.gcp_client = gcp_client
     app.gcp_bucket = gcp_bucket
@@ -55,11 +55,11 @@ def create_app(settings):
     
     bootstrap.init_app(app)
     db.init_app(app)
-    download_btn_manager.init_app(app, **app.download_btn_settings)
+    download_btn_manager.init_app(app, **Settings.get('download_btn_manager'))
     login_manager.init_app(app)
     scheduler.init_app(app)
     scheduler.start()
     socketio.init_app(app, message_queue=app.config['REDIS_URL'])
-    manager.init_app(app, **app.manager_settings)
+    manager.init_app(app, **Settings.get('manager'))
     
     return app

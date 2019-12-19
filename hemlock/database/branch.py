@@ -101,7 +101,7 @@ class Branch(BranchingBase, db.Model):
 
     def __init__(self, **kwargs):   
         self.is_root = False
-        super().__init__(['branch_settings'], **kwargs)
+        super().__init__('Branch', **kwargs)
         
     def _forward(self):
         """Advance forward to the next page in the queue"""

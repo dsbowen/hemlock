@@ -1,6 +1,5 @@
 """Login"""
 
-from hemlock.app.settings_utils import FORWARD_BUTTON_TEMPLATE
 from hemlock.routes.researcher.utils import *
 
 from functools import wraps
@@ -21,12 +20,19 @@ def login():
             return login_successful()
     return render(login_p)
 
+LOGIN_BTN = """
+<button id="forward-button" name="direction" type="submit" class="w-100 btn btn-outline-primary" style="float: right;" value="forward">
+    Login
+</button>
+"""
+
 @researcher_page('login')
 def login_page():
     """Create login page"""
-    login_p = Page(back=False, forward_button=LOGIN_BUTTON)
+    login_p = Page(back=False)
     Validate(login_p, check_password)
     Free(login_p, text=PASSWORD_PROMPT)
+    login_p.forward_button = LOGIN_BTN
     return login_p
 
 def check_password(login_page):

@@ -41,17 +41,15 @@ class Router(RouterMixin, db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
-    navigator = db.relationship(
-        'Navigator',
-        backref='router',
-        uselist=False
-    )
+    root_name = db.Column(db.String)
+    navigator = db.relationship('Navigator', backref='router', uselist=False)
 
     @property
     def page(self):
         return self.part.current_page
 
-    def __init__(self):
+    def __init__(self, root_f):
+        self.root_name = root_f.__name__
         self.reset()
         self.navigator = Navigator()
 
@@ -170,13 +168,10 @@ class Router(RouterMixin, db.Model):
     def redirect(self):
         self.reset()
         part = self.part
+        url_arg = 'hemlock.{}'.format(self.root_name)
         if part.meta.get('Test') is None:
-            return redirect(url_for('hemlock.survey'))
-        return redirect(url_for(
-            'hemlock.survey', 
-            part_id=part.id, 
-            part_key=part._key
-        ))
+            return redirect(url_for(url_arg))
+        return redirect(url_for(url_arg, part_id=part.id, part_key=part._key))
 
 
 class Navigator(RouterMixin, db.Model):

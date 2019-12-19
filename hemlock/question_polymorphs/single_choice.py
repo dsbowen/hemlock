@@ -10,7 +10,7 @@ class SingleChoice(Question):
     __mapper_args__ = {'polymorphic_identity': 'singlechoice'}
     
     def __init__(self, page=None, **kwargs):
-        super().__init__(['single_choice_settings'], page, **kwargs)
+        super().__init__(['SingleChoice'], page, **kwargs)
 
     def _render(self):
         content = ''.join([choice._compile() for choice in self.choices])
@@ -39,3 +39,11 @@ class SingleChoice(Question):
     
     def _record_data(self):
         self.data = None if self.response is None else self.response.value
+
+
+@Settings.register('SingleChoice')
+def single_choice_settings():
+    return {
+        'choice_div_classes': ['custom-control', 'custom-radio'],
+        'choice_input_type': 'radio',
+    }

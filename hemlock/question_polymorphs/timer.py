@@ -1,6 +1,6 @@
 """Timer"""
 
-from hemlock.question_polymorphs.imports import *
+from hemlock.question_polymorphs.utils import *
 
 from datetime import datetime
 
@@ -51,8 +51,10 @@ class Timer(Question):
             self._total_time = self._end_time - self.unpause_time
             self._data = self._total_time.total_seconds()
 
+    @Question.init('Timer')
     def __init__(self, page=None, **kwargs):
-        super().__init__(['timer_settings'], page, **kwargs)
+        super().__init__()
+        return {'page': page, **kwargs}
 
     def start(self):
         now = datetime.utcnow()

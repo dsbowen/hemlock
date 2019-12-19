@@ -1,106 +1,123 @@
-"""Application default settings and configuration object
+"""Application settings and configuration objects
 
 time_limit and status_logger_period must be in 'hh:mm:ss' format.
 """
 
-from hemlock.app.settings_utils import *
+from hemlock.tools import JS
 
 from datetime import datetime, timedelta
-from flask import Markup
 from glob import glob
 from werkzeug.security import generate_password_hash
 import os
 import pandas as pd
 
-default_settings = {
-    'clean_data': clean_data,
-    'duplicate_keys': ['IPv4', 'workerId'],
-    'offline': False,
-    'password': '',
-    'restart_option': True,
-    'restart_text': RESTART,
-    'screenout_folder': 'screenouts',
-    'screenout_keys': ['IPv4', 'workerId'],
-    'screenout_text': SCREENOUT,
-    'socket_js': SOCKET_JS,
-    'static_folder': 'static',
-    'status_log_period': '00:02:00',
-    'template_folder': 'templates',
-    'time_expired_text': TIME_EXPIRED,
-    'time_limit': None,
-    'download_btn_settings': {
-        'btn_classes': ['btn', 'btn-outline-primary', 'w-100'],
-    },
-    'manager_settings': {
+
+class Config():
+    """Application configuration object"""
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'secret-key'
+    SQLALCHEMY_DATABASE_URI = (
+        os.environ.get('DATABASE_URL') 
+        or 'sqlite:///'+os.path.join(os.getcwd(), 'data.db')
+    )
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
+
+
+class Settings():
+    """Settings object"""
+    settings_funcs = {}
+
+    @classmethod
+    def register(cls, obj_name):
+        """Register a settings function
+
+        A settings function returns a dict of settings associated with an 
+        object name.
+        """
+        def wrapper(func):
+            if obj_name not in cls.settings_funcs:
+                cls.settings_funcs[obj_name] = []
+            cls.settings_funcs[obj_name].append(func)
+            return func()
+        return wrapper
+
+    @classmethod
+    def get(cls, *obj_names):
+        """Get the settings associated with a list of object names
+
+        Settings functions associated with the same object name override 
+        settings functions registered previously.
+        """
+        settings = {}
+        for obj_name in obj_names:
+            funcs = cls.settings_funcs.get(obj_name)
+            if funcs:
+                [settings.update(func()) for func in funcs]
+        return settings
+
+
+TIME_EXPIRED_TXT = 'You have exceeded your time limit for this survey'
+
+RESTART_TXT = """
+<p>Click << to return to your in progress survey. Click >> to restart the survey.</p>
+<p>If you choose to restart the survey, your responses will not be saved.</p>
+"""
+
+SCREENOUT_TXT = """
+<p>Our records indicate that you have already participated in this or similar surveys.</p>
+<p>Thank you for your continuing interest in our research.</p>
+"""
+
+SOCKET_JS = JS(
+    url='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js',
+    filename='js/socketio-2.2.0.js',
+    blueprint='hemlock'
+)
+
+@Settings.register('app')
+def app_settings():
+    return {
+        'clean_data': None,
+        'duplicate_keys': ['IPv4', 'workerId'],
+        'offline': False,
+        'password': '',
+        'restart_option': True,
+        'restart_text': RESTART_TXT,
+        'screenout_folder': 'screenouts',
+        'screenout_keys': ['IPv4', 'workerId'],
+        'screenout_text': SCREENOUT_TXT,
+        'socket_js': SOCKET_JS,
+        'static_folder': 'static',
+        'status_log_period': '00:02:00',
+        'template_folder': 'templates',
+        'time_expired_text': TIME_EXPIRED_TXT,
+        'time_limit': None,
+    }
+
+@Settings.register('manager')
+def manager_settings():
+    return {
         'blueprint': 'hemlock'
-    },
-    'page_settings': {
-        'back': False,
-        'back_button': BACK_BUTTON,
-        'compile_functions': compile_function,
-        'css': PAGE_CSS,
-        'debug_functions': debug_function,
-        'forward': True,
-        'forward_button': FORWARD_BUTTON,
-        'js': PAGE_JS,
-        'submit_functions': submit_function,
-        'template': 'default.html',
-        'validate_functions': validate_function,
-    },
-    'question_settings': {
-        'div_classes': ['form-group', 'question'],
-        'css': [],
-        'js': [],
-    },
-    'single_choice_settings': {
-        'choice_div_classes': ['custom-control', 'custom-radio'],
-        'choice_input_type': 'radio',
-    },
-    'multi_choice_settings': {
-        'choice_div_classes': ['custom-control', 'custom-checkbox'],
-        'choice_input_type': 'checkbox',
-    },
-}
-    
-def get_settings(settings):
+    }
+
+def get_app_settings():
     """Get application settings
     
-    Overwrite default settings with input settings. Convert settings to list 
-    and timedelta objects as needed.
+    Convert settings to timedelta objects as needed.
     
     Then merge static and template folders with current working directory. 
     Return these separately, as they need to be passed to the Flask 
     constructor.
     """
-    override_default_settings(settings, default_settings)
-
+    settings = Settings.get('app')
     to_timedelta(settings, 'time_limit')
     to_timedelta(settings, 'status_log_period')
 
-    page_settings = settings['page_settings']
-    to_Markup(page_settings, 'back_button')
-    to_Markup(page_settings, 'forward_button')
-
     password = settings.pop('password')
     settings['password_hash'] = generate_password_hash(password)
-    cwd = os.getcwd()
-    static = os.path.join(cwd, settings.pop('static_folder'))
-    templates = os.path.join(cwd, settings.pop('template_folder'))
+    static = os.path.join(os.getcwd(), settings.pop('static_folder'))
+    templates = os.path.join(os.getcwd(), settings.pop('template_folder'))
     return settings, static, templates
-
-def override_default_settings(settings, default_settings):
-    """Recursively override default settings"""
-    for key, value in default_settings.items():
-        if key not in settings:
-            settings[key] = value
-        elif isinstance(settings[key], dict):
-            override_default_settings(settings[key], value)
-
-def to_Markup(settings, key):
-    """Convert setting item to Markup"""
-    item = settings[key]
-    if not isinstance(item, Markup):
-        settings[key] = Markup(item)
 
 def to_timedelta(settings, key):
     """Convert time expressed as 'hh:mm:ss' to timedelta object"""
@@ -116,13 +133,3 @@ def get_screenouts(app):
     screenout_csvs = glob(app.screenout_folder+'/*.csv')
     df = pd.concat([pd.read_csv(csv) for csv in screenout_csvs]).astype(str)
     app.screenouts = df.to_dict(orient='list')
-
-class Config():
-    """Application configuration object"""
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'secret-key'
-    SQLALCHEMY_DATABASE_URI = (
-        os.environ.get('DATABASE_URL') 
-        or 'sqlite:///'+os.path.join(os.getcwd(), 'data.db')
-    )
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'

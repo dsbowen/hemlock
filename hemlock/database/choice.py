@@ -31,7 +31,7 @@ class Choice(CompileBase, db.Model):
     
     def __init__(self, question=None, **kwargs):
         self.set_all(kwargs.pop('text', None))
-        super().__init__(['choice_settings'], question=question, **kwargs)
+        super().__init__('Choice', question=question, **kwargs)
 
     def set_question(self, question, index=None):
         self._set_parent(question, index, 'question', 'choices')

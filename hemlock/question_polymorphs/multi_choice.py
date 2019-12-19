@@ -8,7 +8,7 @@ class MultiChoice(Question):
     __mapper_args__ = {'polymorphic_identity': 'multichoice'}
     
     def __init__(self, page=None, **kwargs):
-        super().__init__(['multi_choice_settings'], page, **kwargs)
+        super().__init__(['MultiChoice'], page, **kwargs)
     
     def _render(self):
         content = ''.join([choice._compile() for choice in self.choices])
@@ -46,3 +46,11 @@ class MultiChoice(Question):
         else:
             packed_data = {var+key: val for key, val in self.data.items()}
         return super()._pack_data(packed_data)
+
+
+@Settings.register('MultiChoice')
+def multi_choice_settings():
+    return {
+        'choice_div_classes': ['custom-control', 'custom-checkbox'],
+        'choice_input_type': 'checkbox',
+    }

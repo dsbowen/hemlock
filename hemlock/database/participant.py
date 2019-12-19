@@ -47,11 +47,7 @@ class Participant(UserMixin, Base, db.Model):
     _key = db.Column(db.String(90))
     _data_store_id = db.Column(db.Integer, db.ForeignKey('data_store.id'))
 
-    _router = db.relationship(
-        'Router',
-        backref='part',
-        uselist=False
-    )
+    _router = db.relationship('Router', backref='part', uselist=False)
     
     branch_stack = db.relationship(
         'Branch',
@@ -88,7 +84,6 @@ class Participant(UserMixin, Base, db.Model):
         collection_class=ordering_list('index')
     )
 
-    _forward_to_id = db.Column(db.Integer)
     g = db.Column(MutableDictType)
     _completed = db.Column(db.Boolean, default=False)
     end_time = db.Column(db.DateTime)
@@ -124,32 +119,32 @@ class Participant(UserMixin, Base, db.Model):
             return 'TimedOut'
         return 'InProgress'
     
-    def __init__(self, start_navigation, meta={}):
-        """Initialize Participant
-        
-        Sets up the global dictionary g and metadata. Then initializes the
-        root branch.
-        """
+    def __init__(self, meta={}):
+        """Initialize Participant"""
         ds = DataStore.query.first()
         ds.meta.append(meta)
         ds.update_status(self)
         db.session.commit()
 
         self._key = random_key()
-        self._router = Router()
         self.end_time = self.start_time = datetime.utcnow()
         self.meta = meta.copy()
         self.g = {}
-        
-        self.current_branch = root = start_navigation()
-        self.branch_stack.append(root)
-        root.current_page = root.start_page
-        root.is_root = True
         
         super().__init__()
 
     def update_end_time(self):
         self.end_time = datetime.utcnow()
+
+    def _init_tree(self, root_f):
+        """Initialize a new tree"""
+        self._router = Router(root_f)
+        self.current_branch = root = root_f()
+        self.branch_stack.append(root)
+        root.current_page = root.start_page
+        root.is_root = True
+        if not self.current_branch.pages:
+            self._router.navigator.forward_recurse()
     
     """Data packaging"""
     @property

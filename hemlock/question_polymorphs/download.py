@@ -15,7 +15,7 @@ class Download(DownloadBtnMixin, Question):
     _has_download_script = db.Column(db.Boolean, default=False)
 
     def __init__(self, page=None, **kwargs):
-        super().__init__(['download_settings'], page, **kwargs)
+        super().__init__('Download', page=page, **kwargs)
 
     def _render(self):
         if not self._has_download_script:
