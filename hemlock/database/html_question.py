@@ -58,8 +58,14 @@ class HTMLQuestion(Question, HTMLBase):
 
     @error.setter
     def error(self, val):
-        self.select('.error-txt').string = val or ''
-        self.soup.changed()
+        form_grp_cls = self.body.select_one('div.form-group')['class']
+        if val:
+            form_grp_cls.append('error')
+        else:
+            form_grp_cls.remove('error')
+        val = val or ''
+        self._set_element(val, 'span.error-txt')
+        self.body.changed()
 
     @property
     def label(self):
@@ -67,8 +73,9 @@ class HTMLQuestion(Question, HTMLBase):
 
     @label.setter
     def label(self, val):
-        self.select('.label-txt').string = val or ''
-        self.soup.changed()
+        val = val or ''
+        self._set_element(val, 'span.label-txt')
+        self.body.changed()
 
     """Methods executed during study"""
     def _compile(self):

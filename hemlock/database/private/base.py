@@ -5,7 +5,7 @@ Base is a generic base class for all Hemlock models.
 BranchingBase contains methods for growing and inserting new branches to a 
 Participant's branch_stack. 
 
-CompileBase contains convenience methods for models which compile html.
+HTMLBase contains convenience methods for models which manipulate HTML.
 """
 
 from hemlock.app import Settings, db
@@ -13,11 +13,10 @@ from hemlock.database.types import MutableSoupType
 from hemlock.tools import CSS, JS
 
 from bs4 import BeautifulSoup
-from flask import current_app
+from flask import render_template
 from sqlalchemy import Column
 from sqlalchemy.inspection import inspect
 from sqlalchemy_function import FunctionRelator
-from sqlalchemy_mutable import MutableListType
 from sqlalchemy_orderingitem import OrderingItem
 
 
@@ -75,16 +74,28 @@ class BranchingBase(Base):
 class HTMLBase(Base):
     css = Column(MutableSoupType)
     js = Column(MutableSoupType)
-    soup = Column(MutableSoupType)
-
-    def select(self, selector, parent=None):
-        elem = self.select_all(selector, parent)
-        if elem:
-            return elem[0]
-
-    def select_all(self, selector, parent=None):
-        return (parent or self.soup).select(selector)
+    body = Column(MutableSoupType)
 
     def text(self, selector, parent=None):
-        elem = self.select(selector, parent)
+        elem = self.body.select_one(selector, parent)
         return None if elem is None else elem.text
+
+    def _set_element(
+            self, val, parent_selector, target_selector=None, gen_target=None
+        ):
+        """Set a soup element"""
+        parent = self.body.select_one(parent_selector)
+        if not val:
+            return parent.clear()
+        if target_selector is None:
+            target = parent
+        else:
+            target = self.body.select_one(target_selector)
+            if target is None:
+                target = gen_target()
+                parent.append(target)
+        if isinstance(val, str):
+            val = BeautifulSoup(val, 'html.parser')
+        target.clear()
+        target.append(val)
+        self.body.changed()

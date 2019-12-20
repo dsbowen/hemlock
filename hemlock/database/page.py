@@ -1,41 +1,97 @@
-"""Page database model
-
-Relationships to primary models:
-
-branch: Branch to which this Page belongs
-next_branch: Branch to which this Page navigates
-back_to: Page to which this Page navigates on 'back'
-forward_to: Page to which this Page navigates on 'forward'
-nav: Navigation bar
-questions: list of questions
-timer: Question which tracks how long a Participant spent on this page
-
-Public (non-Function) Columns:
-
-back: indicates this Page has a back button
-back_btn: html for back button
-compiled: indicates that this Page has ever been compiled
-css: list of css files
-direction_from: direction from which this Page is navigating
-direction_to: direction to which this Page was navigated
-forward: indicates this Page has a forward button
-forward_btn: html for forward button
-js: list of js files
-template: name of html template
-terminal: indicates this Page is the last in the experiment
-"""
+"""Page database model"""
 
 from hemlock.app import Settings, db
 from hemlock.database.private import BranchingBase, HTMLBase
 from hemlock.database.html_question import HTMLQuestion
-from hemlock.database.types import  MarkupType
-from hemlock.tools import CSS, JS
+from hemlock.database.types import MutableSoupType
+from hemlock.tools import gen_external_css, gen_external_js, url_for
 
-from flask import Markup, current_app, render_template, request, url_for
+from bs4 import BeautifulSoup, Tag
+from flask import Markup, current_app, render_template, request
 from sqlalchemy.ext.orderinglist import ordering_list
 
 from random import random, shuffle
 from time import sleep
+
+def default_css():
+    attrs_list = [
+        {
+            'href': 'https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css',
+            'id': 'bootstrap-css'
+        },
+        {
+            'href': url_for('hemlock.static', filename='css/default.css'),
+            'id': 'hemlock-css'
+        }
+    ]
+    css = BeautifulSoup('', 'html.parser')
+    [css.append(gen_external_css(**attrs)) for attrs in attrs_list]
+    return css
+
+def default_js():
+    attrs_list = [
+        {
+            'src': 'https://code.jquery.com/jquery-3.4.1.min.js',
+            'id': 'jquery'
+        },
+        {
+            'src': 'https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js',
+            'id': 'popper'
+        },
+        {
+            'src': 'https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js',
+            'id': 'bootstrap-js'
+        },
+        {
+            'src': url_for('hemlock.static', filename='js/default.js'),
+            'id': 'hemlock-js'
+        }
+    ]
+    js = BeautifulSoup('', 'html.parser')
+    [js.append(gen_external_js(**attrs)) for attrs in attrs_list]
+    return js
+
+def compile_fn(page):
+    [q._compile() for q in page.questions]
+
+def validate_fn(page):
+    [q._validate() for q in page.questions]
+    
+def submit_fn(page):
+    [q._submit() for q in page.questions]
+
+def debug_fn(page, driver):
+    """Call question debug functions in random order then navigate"""
+    order = list(range(len(page.questions)))
+    shuffle(order)
+    [page.questions[i]._debug(driver) for i in order]
+    forward_exists = back_exists = True
+    if random() < .8:
+        try:
+            driver.find_element_by_id('forward-btn').click()
+        except:
+            forward_exists = False
+    if random() < .5:
+        try:
+            driver.find_element_by_id('back-btn').click()
+        except:
+            back_exists = False
+    if not (forward_exists or back_exists):
+        sleep(3)
+    driver.refresh()
+
+@Settings.register('Page')
+def page_settings():
+    return {
+        'css': default_css(),
+        'js': default_js(),
+        'back': False,
+        'forward': True,
+        'compile_functions': compile_fn,
+        'validate_functions': validate_fn,
+        'submit_functions': submit_fn,
+        'debug_functions': debug_fn,
+    }
 
 
 class Page(BranchingBase, HTMLBase, db.Model):
@@ -152,57 +208,87 @@ class Page(BranchingBase, HTMLBase, db.Model):
     )
     
     """Columns"""
-    back = db.Column(db.Boolean)
-    back_btn = db.Column(MarkupType)
     direction_from = db.Column(db.String(8))
     direction_to = db.Column(db.String(8))
-    error = db.Column(db.Text)
-    forward = db.Column(db.Boolean)
-    forward_btn = db.Column(MarkupType)
-    template = db.Column(db.String)
     terminal = db.Column(db.Boolean)
-
-    @property
-    def _css(self):
-        page_css = super()._css
-        question_css = ''.join([q._css for q in self.questions])
-        return Markup(page_css + question_css)
-
-    @property
-    def _js(self):
-        page_js = super()._js
-        question_js = ''.join([q._js for q in self.questions])
-        return Markup(page_js + question_js)
-
-    @property
-    def _error(self):
-        """Error in html format"""
-        msg = self.error
-        return '' if msg is None else Markup(ERROR.format(msg=msg))
     
-    @property
-    def _back(self):
-        return self.back and not self.first_page()
-        
-    @property
-    def _forward(self):
-        return self.forward and not self.terminal
-    
+    @BranchingBase.init('Page')
     def __init__(self, branch=None, **kwargs):
+        super().__init__()
         from hemlock.question_polymorphs import Timer
         self.timer = Timer()
-        super().__init__('Page', branch=branch, **kwargs)
+        self.body = render_template('page-body.html')
+        return {'branch': branch, **kwargs}
 
     """API methods"""
+    @property
+    def error(self):
+        return self.text('div.error-msg')
+
+    @error.setter
+    def error(self, val):
+        self._set_element(
+            val, 'span.error-msg', 'div.error-msg', self._gen_error
+        )
+
+    def _gen_error(self):
+        """Generate error tag"""
+        err = Tag(name='div')
+        err['class'] = 'error-msg alert alert-danger w=100'
+        err['style'] = 'text-align: center;'
+        return err
+
+    @property
+    def back(self):
+        return self.text('#back-btn')
+
+    @back.setter
+    def back(self, val):
+        val = '<<' if val is True else val
+        self._set_element(
+            val, 'span.back-btn', '#back-btn', self._gen_back
+        )
+    
+    def _gen_back(self):
+        """Generate back button Tag"""
+        return self._gen_submit('back')
+
+    @property
+    def forward(self):
+        return self.text('#forward-btn')
+
+    @forward.setter
+    def forward(self, val):
+        val = '>>' if val is True else val
+        self._set_element(
+            val, 'span.forward-btn', '#forward-btn', self._gen_forward
+        )
+
+    def _gen_forward(self):
+        """Generate forward button"""
+        return self._gen_submit('forward')
+
+    def _gen_submit(self, direction):
+        """Generate submit (back or forward) button"""
+        btn = Tag(name='button')
+        btn['id'] = direction+'-btn'
+        btn['name'] = 'direction'
+        btn['type'] = 'submit'
+        btn['class'] = 'btn btn-outline-primary'
+        float_ = 'left' if direction == 'back' else 'right'
+        btn['style'] = 'float: {};'.format(float_)
+        btn['value'] = direction
+        return btn
+
     def clear_errors(self):
         self.error = None
-        [setattr(self, 'error', '') for q in self.questions]
+        [setattr(self, 'error', None) for q in self.questions]
     
     def clear_responses(self):
         [setattr(self, 'response', None) for q in self.questions]
     
     def first_page(self):
-        """Indicate that this is the first Page in the experiment"""
+        """Indicate that this is the first Page in the survey"""
         return (
             self.branch is not None and self.branch.is_root 
             and self.index == 0
@@ -210,10 +296,7 @@ class Page(BranchingBase, HTMLBase, db.Model):
 
     def is_valid(self):
         """Indicates response was valid"""
-        return (
-            self.error is None 
-            and all([q.error is None for q in self.questions])
-        )
+        return not (self.error or any([q.error for q in self.questions]))
 
     """Methods executed during study"""
     def _compile(self):
@@ -222,17 +305,45 @@ class Page(BranchingBase, HTMLBase, db.Model):
         1. Execute compile functions
         2. If compile results are cached, remove get worker and functions
         """
-        [compile_func() for compile_func in self.compile_functions]
+        [compile_fn() for compile_fn in self.compile_functions]
         if self.cache_compile:
             self.compile_functions.clear()
             self.compile_worker = None
     
     def _render(self):
         """Render page"""
-        html = render_template(self.template, page=self)
+        html = render_template('page.html', page=self)
+        soup = BeautifulSoup(html, 'html.parser')
+        self._add_page_metadata(soup)
+        self._catch_btns(soup)
+        question_html = soup.select_one('span.question-html')
+        [question_html.append(q.body) for q in self.questions]
         if self.timer is not None:
             self.timer.start()
-        return self._prettify(html)
+        return soup.prettify()
+    
+    def _add_page_metadata(self, soup):
+        """Add page metadata to soup"""
+        meta_html = render_template('page-meta.html', page=self)
+        meta_soup = BeautifulSoup(meta_html, 'html.parser')
+        form = soup.select_one('form')
+        if form is not None:
+            form.insert(0, meta_soup)
+    
+    def _catch_btns(self, soup):
+        """Catch submit button errors
+
+        Back button should not be present on the first page of the survey.
+        Forward button should not be present on the terminal page.
+        """
+        if self.first_page():
+            back_btn = soup.select_one('span.back-btn')
+            if back_btn is not None:
+                back_btn.clear()
+        if self.terminal:
+            forward_btn = soup.select_one('span.forward-btn')
+            if forward_btn is not None:
+                forward_btn.clear()
 
     def _record_response(self):
         """Record participant response
@@ -266,10 +377,10 @@ class Page(BranchingBase, HTMLBase, db.Model):
     
     def _submit(self):
         [q._record_data() for q in self.questions]
-        [submit_func() for submit_func in self.submit_functions]
+        [submit_fn() for submit_fn in self.submit_functions]
 
     def _debug(self, driver):
-        [debug_func(driver) for debug_func in self.debug_functions]
+        [debug_fn(driver) for debug_fn in self.debug_functions]
     
     def _view_nav(self, indent):
         """Print self and next branch for debugging purposes"""
@@ -280,101 +391,3 @@ class Page(BranchingBase, HTMLBase, db.Model):
         print(indent, self, head_branch, head_part)
         if self.next_branch in self.part.branch_stack:
             self.next_branch._view_nav()
-
-
-ERROR = """
-<div class="alert alert-danger w-100" style="text-align:center;">
-    {msg}
-</div>
-"""
-
-STYLESHEETS = [
-    CSS(
-        url='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css',
-        filename='css/bootstrap-4.4.1.min.css',
-        blueprint='hemlock'
-    ),
-    CSS(
-        filename='css/default.css',
-        blueprint='hemlock'
-    )
-]
-
-SCRIPTS = [
-    JS(
-        url='https://code.jquery.com/jquery-3.4.1.min.js',
-        filename='js/jquery-3.4.1.min.js',
-        blueprint='hemlock'
-    ),
-    JS(
-        url='https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js',
-        filename='js/popper-1.16.0.min.js',
-        blueprint='hemlock'
-    ),
-    JS(
-        url='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js',
-        filename='js/bootstrap-4.4.1.min.js',
-        blueprint='hemlock'
-    ),
-    JS(
-        filename='js/default.js',
-        blueprint='hemlock'
-    )
-]
-
-BACK_BTN = """
-<button id="back-button" name="direction" type="submit" class="btn btn-outline-primary" style="float: left;" value="back"> 
-    <<
-</button>
-"""
-
-FORWARD_BTN = """
-<button id="forward-button" name="direction" type="submit" class="btn btn-outline-primary" style="float: right;" value="forward">
-    >>
-</button>
-"""
-
-def compile_func(page):
-    [q._compile() for q in page.questions]
-
-def validate_func(page):
-    [q._validate() for q in page.questions]
-    
-def submit_func(page):
-    [q._submit() for q in page.questions]
-
-def debug_func(page, driver):
-    """Call question debug functions in random order then navigate"""
-    order = list(range(len(page.questions)))
-    shuffle(order)
-    [page.questions[i]._debug(driver) for i in order]
-    forward_exists = back_exists = True
-    if random() < .8:
-        try:
-            driver.find_element_by_id('forward-button').click()
-        except:
-            forward_exists = False
-    if random() < .5:
-        try:
-            driver.find_element_by_id('back-button').click()
-        except:
-            back_exists = False
-    if not (forward_exists or back_exists):
-        sleep(3)
-    driver.refresh()
-
-@Settings.register('Page')
-def page_settings():
-    return {
-        'css': STYLESHEETS,
-        'js': SCRIPTS,
-        'back': False,
-        'back_btn': BACK_BTN,
-        'forward': True,
-        'forward_btn': FORWARD_BTN,
-        'compile_functions': compile_func,
-        'validate_functions': validate_func,
-        'submit_functions': submit_func,
-        'debug_functions': debug_func,
-        'template': 'default.html',
-    }

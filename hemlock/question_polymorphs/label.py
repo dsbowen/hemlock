@@ -10,5 +10,5 @@ class Label(HTMLQuestion):
     @HTMLQuestion.init('Label')
     def __init__(self, page=None, **kwargs):
         super().__init__()
-        self.soup = render_template('form-group.html', q=self)
+        self.body = render_template('form-group.html', q=self)
         return {'page': page, **kwargs}

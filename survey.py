@@ -10,9 +10,16 @@ def app_settings():
         'password': '',
     }
 
+@Settings.register('Page')
+def settings():
+    return {'back':True}
+
 @route('/survey')
 def Start(root=None):
     b = Branch()
+    p = Page(b)
+    p = Page(b)
+    l = Label(p, label='<p>Hello World</p>', error='<p>Error</p>')
+    l.error = None
     p = Page(b, terminal=True)
-    Free(p, label='Hello World', prepend='hello', append='world')
     return b

@@ -119,8 +119,11 @@ class Participant(UserMixin, Base, db.Model):
             return 'TimedOut'
         return 'InProgress'
     
+    @Base.init('Participant')
     def __init__(self, meta={}):
         """Initialize Participant"""
+        super().__init__()
+        
         ds = DataStore.query.first()
         ds.meta.append(meta)
         ds.update_status(self)
@@ -130,8 +133,6 @@ class Participant(UserMixin, Base, db.Model):
         self.end_time = self.start_time = datetime.utcnow()
         self.meta = meta.copy()
         self.g = {}
-        
-        super().__init__()
 
     def update_end_time(self):
         self.end_time = datetime.utcnow()

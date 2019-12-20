@@ -22,7 +22,7 @@ from functools import wraps
 """Initial views and functions"""
 @login_manager.user_loader
 def load_user(id):
-    return Participant.query.get(int(id))
+    return Participant.query.get(id)
 
 @bp.route('/')
 def index():
@@ -118,7 +118,7 @@ def match_found(visitor, tracked, keys):
 @bp.route('/screenout')
 def screenout():
     p = Page(forward=False)
-    q = Label(p, text=current_app.screenout_text)
+    q = Label(p, label=current_app.screenout_text)
     p._compile()
     return p._render()
     
@@ -136,7 +136,7 @@ def restart():
         return redirect(url_for('hemlock.{}'.format(bp.default_route)))
         
     p = Page(back=True)
-    q = Label(p, text=current_app.restart_text)
+    q = Label(p, label=current_app.restart_text)
     p._compile()
     return p._render()
 
