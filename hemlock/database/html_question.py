@@ -64,7 +64,7 @@ class HTMLQuestion(Question, HTMLBase):
         else:
             form_grp_cls.remove('error')
         val = val or ''
-        self._set_element(val, 'span.error-txt')
+        self._set_element(val, parent_selector='span.error-txt')
         self.body.changed()
 
     @property
@@ -74,7 +74,7 @@ class HTMLQuestion(Question, HTMLBase):
     @label.setter
     def label(self, val):
         val = val or ''
-        self._set_element(val, 'span.label-txt')
+        self._set_element(val, parent_selector='span.label-txt')
         self.body.changed()
 
     """Methods executed during study"""
@@ -82,7 +82,7 @@ class HTMLQuestion(Question, HTMLBase):
         [compile_func() for compile_func in self.compile_functions]
 
     def _render(self):
-        return self.soup._render()
+        return self.body
 
     def _record_response(self, response):
         pass

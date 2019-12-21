@@ -81,21 +81,39 @@ class HTMLBase(Base):
         return None if elem is None else elem.text
 
     def _set_element(
-            self, val, parent_selector, target_selector=None, gen_target=None
+            self, val, parent_selector, target_selector=None, 
+            gen_target=None, args=[], kwargs={}
         ):
-        """Set a soup element"""
+        """Set a soup element
+        
+        `parent_selector` selects an ancestor of the target from the body. 
+        The target is then selected as a descendent of the parent. Its 
+        value is set to the input value.
+        """
         parent = self.body.select_one(parent_selector)
         if not val:
             return parent.clear()
-        if target_selector is None:
-            target = parent
-        else:
-            target = self.body.select_one(target_selector)
-            if target is None:
-                target = gen_target()
-                parent.append(target)
+        target = self._get_target(
+            parent, target_selector, gen_target, args, kwargs
+        )
         if isinstance(val, str):
             val = BeautifulSoup(val, 'html.parser')
         target.clear()
         target.append(val)
         self.body.changed()
+
+    def _get_target(self, parent, target_selector, gen_target, args, kwargs):
+        """Get target element
+
+        If `target_selector` is None, the target attribute is assumed to be 
+        the parent attribute. Otherwise, the target is assumed to be a 
+        descendent of the parent. If the target does not yet exist, generate 
+        a child Tag which includes the target.
+        """
+        if target_selector is None:
+            return parent
+        target = parent.select_one(target_selector)
+        if target is not None:
+            return target
+        parent.append(gen_target(*args, **kwargs))
+        return parent.select_one(target_selector)

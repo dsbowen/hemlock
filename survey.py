@@ -18,8 +18,18 @@ def settings():
 def Start(root=None):
     b = Branch()
     p = Page(b)
-    p = Page(b)
-    l = Label(p, label='<p>Hello World</p>', error='<p>Error</p>')
-    l.error = None
+    Label(p, label='<p>This is a label.</p>')
+    t = Text(
+        p, 
+        label='<p>This is a text input.</p>', 
+        prepend='$', 
+        append='.00'
+    )
+    t = Text(
+        p, 
+        label='<p>This is a textarea.</p>', 
+        default='Hello World', 
+        textarea=True
+    )
     p = Page(b, terminal=True)
     return b

@@ -228,7 +228,10 @@ class Page(BranchingBase, HTMLBase, db.Model):
     @error.setter
     def error(self, val):
         self._set_element(
-            val, 'span.error-msg', 'div.error-msg', self._gen_error
+            val, 
+            parent_selector='span.error-msg', 
+            target_selector='div.error-msg', 
+            gen_target=self._gen_error
         )
 
     def _gen_error(self):
@@ -246,7 +249,10 @@ class Page(BranchingBase, HTMLBase, db.Model):
     def back(self, val):
         val = '<<' if val is True else val
         self._set_element(
-            val, 'span.back-btn', '#back-btn', self._gen_back
+            val, 
+            parent_selector='span.back-btn', 
+            target_selector='#back-btn', 
+            gen_target=self._gen_back
         )
     
     def _gen_back(self):
@@ -261,7 +267,10 @@ class Page(BranchingBase, HTMLBase, db.Model):
     def forward(self, val):
         val = '>>' if val is True else val
         self._set_element(
-            val, 'span.forward-btn', '#forward-btn', self._gen_forward
+            val, 
+            parent_selector='span.forward-btn', 
+            target_selector='#forward-btn', 
+            gen_target=self._gen_forward
         )
 
     def _gen_forward(self):
@@ -317,10 +326,10 @@ class Page(BranchingBase, HTMLBase, db.Model):
         self._add_page_metadata(soup)
         self._catch_btns(soup)
         question_html = soup.select_one('span.question-html')
-        [question_html.append(q.body) for q in self.questions]
+        [question_html.append(q._render()) for q in self.questions]
         if self.timer is not None:
             self.timer.start()
-        return soup.prettify()
+        return str(soup)
     
     def _add_page_metadata(self, soup):
         """Add page metadata to soup"""
