@@ -6,6 +6,28 @@ from random import randint
 from string import ascii_letters, digits
 
 
+class InputBase(Question):
+    @property
+    def input(self):
+        return self.body.select_one('#'+self.model_id)
+
+    def get_input_from_driver(self, driver=None):
+        """Get input from driver for debugging"""
+        return driver.find_element_by_css_selector('#'+self.model_id)
+
+    def _render(self):
+        """Set the default value before rendering"""
+        value = self.response or self.default
+        inpt = self.input
+        if inpt.name == 'textarea':
+            inpt.string = value or ''
+        elif value is None:
+            inpt.attrs.pop('value', None)
+        else:
+            inpt['value'] = value
+        return self.body
+
+
 def debug_fn(question, driver):
     """Text input debug function
     
@@ -93,3 +115,16 @@ class Input(InputGroup, InputBase):
         parent.insert(parent.index(curr_input), new_input)
         curr_input.extract()
         self.body.changed()
+
+
+class Range(InputGroup, InputBase):
+    id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
+    __mapper_args__ = {'polymorphic_identity': 'range'}
+
+    @Question.init('Range')
+    def __init__(self, page=None, **kwargs):
+        super().__init__()
+        self.body = render_template('range.html', q=self)
+        return {'page': page, **kwargs}
+    
+    

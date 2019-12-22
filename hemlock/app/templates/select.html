@@ -1,7 +1,7 @@
 {% extends 'input-group.html' %}
 
 {% block input %}
-<select class="custom-select" id="{{ q.model_id }}">
-    <span class="option-wrapper"></span>
+<select id="{{ q.model_id }}" name="{{ q.model_id }}" class="custom-select">
+    <span class="choice-wrapper"></span>
 </select>
 {% endblock %}

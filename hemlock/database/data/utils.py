@@ -2,11 +2,13 @@
 
 from hemlock.app import Settings, db
 from hemlock.database.bases import Base, HTMLMixin
+from hemlock.database.choice import Choice, Option
 
 from bs4 import Tag
 from flask import render_template, request
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy.orm import validates
 from sqlalchemy_mutable import MutableType, MutableModelBase
 
 from random import choice, random
@@ -93,6 +95,9 @@ class Question(Data, HTMLMixin, MutableModelBase):
         collection_class=ordering_list('index')
     )
 
+    default = db.Column(MutableType)
+    response = db.Column(MutableType)
+
     @Data.init('Question')
     def __init__(self, page=None, **kwargs):
         super().__init__()
@@ -153,31 +158,6 @@ class Question(Data, HTMLMixin, MutableModelBase):
 
     def _debug(self, driver):
         [debug_fn(driver) for debug_fn in self.debug_functions]
-
-
-class InputBase(Question):
-    default = db.Column(MutableType)
-    response = db.Column(MutableType)
-
-    @property
-    def input(self):
-        return self.body.select_one('#'+self.model_id)
-
-    def get_input_from_driver(self, driver=None):
-        """Get input from driver for debugging"""
-        return driver.find_element_by_css_selector('#'+self.model_id)
-
-    def _render(self):
-        """Set the default value before rendering"""
-        value = self.response or self.default
-        inpt = self.input
-        if inpt.name == 'textarea':
-            inpt.string = value or ''
-        elif value is None:
-            inpt.attrs.pop('value', None)
-        else:
-            inpt['value'] = value
-        return self.body
 
 
 class InputGroup():

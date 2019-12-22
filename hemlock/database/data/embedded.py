@@ -1,4 +1,4 @@
-"""Embedded question polymorph"""
+"""Embedded and Timer data element polymorphs"""
 
 from hemlock.database.data.utils import *
 

@@ -1,19 +1,13 @@
-"""Choice database model
-Certain Question polymorphs, such as MultiChoice, contain a list of Choices. 
-Each choice specifies:    
-1. A text: to be displayed on the page
-2. A value: stored as the Question's data by default
-3. A label: to identify the Choice when the data are downloaded
-"""
+"""Choice database model"""
 
 from hemlock.app import db
-from hemlock.database.private import HTMLBase
+from hemlock.database.bases import HTMLMixin
 
-from flask import current_app, render_template
+from flask import render_template
 from sqlalchemy_mutable import MutableType
 
 
-class Choice(HTMLBase, db.Model):
+class Choice(HTMLMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String)
     __mapper_args__ = {
@@ -22,22 +16,26 @@ class Choice(HTMLBase, db.Model):
     }
     
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-    index = db.Column(db.Integer)
-    _selected_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-    _selected_index = db.Column(db.Integer)
-    _nonselected_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-    _nonselected_index = db.Column(db.Integer)
-    
+    index = db.Column(db.Integer)    
     name = db.Column(db.Text)
     value = db.Column(MutableType)
     
-    @HTMLBase.init('Choice')
+    @HTMLMixin.init('Choice')
     def __init__(self, question=None, **kwargs):
         super().__init__()
         self.body = render_template('choice.html', c=self)
         self.set_all(kwargs.pop('label', None))
         return {'question': question, **kwargs}
-        
+
+    @property
+    def label(self):
+        return self.text('label.choice')
+
+    @label.setter
+    def label(self, val):
+        self._set_element((val or ''), parent_selector='label.choice')
+        self.body.changed()
+
     def set_all(self, val):
         self.label = self.name = self.value = val
     
@@ -46,19 +44,51 @@ class Choice(HTMLBase, db.Model):
 
         Default is assumed to a be a choice or list of choices.
         """
+        if self.question is None:
+            return False
         default = self.question.response or self.question.default
         if isinstance(default, list):
             return self in default
         return self == default
+    
+    def _render(self):
+        inpt = self.body.select_one('input#'+self.model_id)
+        inpt['name'] = self.question.model_id
+        self._handle_multiple(inpt)
+        if self.is_default():
+            inpt['checked'] = None
+        else:
+            inpt.attrs.pop('checked', None)
+        return self.body
 
+    def _handle_multiple(self, inpt):
+        """Appropriately converts body html for single or multiple choice"""
+        div_class = self.body.select_one('div.custom-control')['class']
+        rm_classes = [
+            'custom-radio', 'custom-checkbox', 'custom-control-inline'
+        ]
+        for class_ in rm_classes:
+            try:
+                div_class.remove(class_)
+            except:
+                pass
+        if not self.question.multiple:
+            div_class.append('custom-radio')
+            inpt['type'] = 'radio'
+        else:
+            div_class.append('custom-checkbox')
+            inpt['type'] = 'checkbox'
+        if self.question.inline:
+            div_class.append('custom-control-inline')
+            
 
 class Option(Choice):
     id = db.Column(db.Integer, db.ForeignKey('choice.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'option'}
 
-    @HTMLBase.init('Option')
+    @Choice.init('Option')
     def __init__(self, question=None, **kwargs):
-        super(HTMLBase, self).__init__()
+        super(HTMLMixin, self).__init__()
         self.body = render_template('option.html', opt=self)
         self.set_all(kwargs.pop('label', None))
         return {'question': question, **kwargs}
@@ -73,8 +103,10 @@ class Option(Choice):
         self.body.changed()
     
     def _render(self):
-        option_tag = self.body.select_one('option')
-        option_tag['name'] = option_tag['value'] = self.question.model_id
+        opt_tag = self.body.select_one('#'+self.model_id)
+        opt_tag['name'] = self.question.model_id
         if self.is_default():
-            option_tag['selected'] = None
+            opt_tag['selected'] = None
+        else:
+            opt_tag.attrs.pop('selected', None)
         return self.body
