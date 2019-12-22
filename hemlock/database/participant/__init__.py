@@ -1,23 +1,8 @@
-"""Participant database models
-
-Relationships:
-
-branch_stack: stack of branches to be displayed
-current_branch: head of the branch stack
-current_page: head of the page queue of the current branch
-pages: all Pages belonging to the Participant
-question: all Questions belonging to the Participant
-    
-Columns:
-
-g: Participant dictionary
-meta: dictionary of Participant metadata
-status: in progress, completed, or timed out
-updated: indicates Participant data has been updated since last store
-"""
+"""Participant database models"""
 
 from hemlock.app import db
-from hemlock.database.private import Base, DataStore, Router
+from hemlock.database.bases import Base
+from hemlock.database.private import DataStore, Router
 from hemlock.database.types import DataFrame
 from hemlock.tools import random_key
 
@@ -72,10 +57,10 @@ class Participant(UserMixin, Base, db.Model):
         return [p for b in self.branch_stack for p in b.pages]
         
     @property
-    def questions(self):
-        questions = [q for b in self.branch_stack for q in b.questions]
-        questions.sort(key=lambda q: q.id)
-        return questions
+    def data_elements(self):
+        elements = [e for b in self.branch_stack for e in b.data_elements]
+        elements.sort(key=lambda e: e.id)
+        return elements
     
     _viewing_pages = db.relationship(
         'ViewingPage',
@@ -168,47 +153,47 @@ class Participant(UserMixin, Base, db.Model):
         they were created (i.e. by id). This is not necessarily the order in 
         which they appeared to the Participant.
         """
-        self._set_order_all()
-        questions = self.questions
+        self._set_order()
+        elements = self.data_elements
         df = DataFrame()
         df.add(data=self.meta, all_rows=True)
-        [df.add(data=q._pack_data(), all_rows=q.all_rows) for q in questions]
+        [df.add(data=e._pack_data(), all_rows=e.all_rows) for e in elements]
         df.pad()
         return df
     
-    def _set_order_all(self):
-        """Set the order for all Questions
+    def _set_order(self):
+        """Set the order for all data elements
         
-        A Question's order is the order in which it appeared to the 
-        Participant relative to other Questions of the same variable. These 
-        functions walk through the survey and sets the Question order.
+        An element's order is the order in which it appeared to the 
+        Participant relative to other elements of the same variable. These 
+        functions walk through the survey and set the element order.
         
-        Note that a Branch's embedded data Questions are set before its 
-        Pages' Questions. A Page's timer is set before its Questions.
+        Note that a Branch's embedded data elements are set before its 
+        Pages' elements. A Page's Timer is set before its Questions.
         """
         var_count = {}
         self._set_order_branch(self.branch_stack[0], var_count)
     
     def _set_order_branch(self, branch, var_count):
         """Set the order for Questions belonging to a given Branch"""
-        [self._set_order_question(q, var_count) for q in branch.embedded]
+        [self._set_order_element(e, var_count) for e in branch.embedded]
         [self._set_order_page(p, var_count) for p in branch.pages]
         if branch.next_branch in self.branch_stack:
             self._set_order_branch(branch.next_branch, var_count)
     
     def _set_order_page(self, page, var_count):
         """Set the order for Questions belonging to a given Page"""
-        questions = page.questions_with_timer
-        [self._set_order_question(q, var_count) for q in questions]
+        elements = page.data_elements
+        [self._set_order_element(e, var_count) for e in elements]
         if page.next_branch in self.branch_stack:
             self._set_order_branch(page.next_branch, var_count)
         
-    def _set_order_question(self, question, var_count):
-        """Set the order for a given Question"""
-        var = question.var
+    def _set_order_element(self, element, var_count):
+        """Set the order for a given data element"""
+        var = element.var
         if var is None:
             return
         if var not in var_count:
             var_count[var] = 0
-        question.order = var_count[var]
+        element.order = var_count[var]
         var_count[var] += 1

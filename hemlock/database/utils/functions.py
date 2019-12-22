@@ -10,8 +10,10 @@ workflow.
 """
 
 from hemlock.app import db
-from hemlock.database import Branch, Page, Question
-from hemlock.database.private import Base
+from hemlock.database.branch import Branch
+from hemlock.database.page import Page
+from hemlock.database.data import Question
+from hemlock.database.bases import Base
 
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy_function import FunctionMixin

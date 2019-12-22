@@ -1,100 +1,17 @@
 """Page database model"""
 
-from hemlock.app import Settings, db
-from hemlock.database.private import BranchingBase, HTMLBase
-from hemlock.database.html_question import HTMLQuestion
+from hemlock.app import db
+from hemlock.database.bases import BranchingBase, HTMLMixin
 from hemlock.database.types import MutableSoupType
-from hemlock.tools import gen_external_css, gen_external_js, url_for
+from hemlock.database.page.navbar import *
+import hemlock.database.page.settings
 
 from bs4 import BeautifulSoup, Tag
 from flask import Markup, current_app, render_template, request
 from sqlalchemy.ext.orderinglist import ordering_list
 
-from random import random, shuffle
-from time import sleep
 
-def default_css():
-    attrs_list = [
-        {
-            'href': 'https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css',
-            'id': 'bootstrap-css'
-        },
-        {
-            'href': url_for('hemlock.static', filename='css/default.css'),
-            'id': 'hemlock-css'
-        }
-    ]
-    css = BeautifulSoup('', 'html.parser')
-    [css.append(gen_external_css(**attrs)) for attrs in attrs_list]
-    return css
-
-def default_js():
-    attrs_list = [
-        {
-            'src': 'https://code.jquery.com/jquery-3.4.1.min.js',
-            'id': 'jquery'
-        },
-        {
-            'src': 'https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js',
-            'id': 'popper'
-        },
-        {
-            'src': 'https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js',
-            'id': 'bootstrap-js'
-        },
-        {
-            'src': url_for('hemlock.static', filename='js/default.js'),
-            'id': 'hemlock-js'
-        }
-    ]
-    js = BeautifulSoup('', 'html.parser')
-    [js.append(gen_external_js(**attrs)) for attrs in attrs_list]
-    return js
-
-def compile_fn(page):
-    [q._compile() for q in page.questions]
-
-def validate_fn(page):
-    [q._validate() for q in page.questions]
-    
-def submit_fn(page):
-    [q._submit() for q in page.questions]
-
-def debug_fn(page, driver):
-    """Call question debug functions in random order then navigate"""
-    order = list(range(len(page.questions)))
-    shuffle(order)
-    [page.questions[i]._debug(driver) for i in order]
-    forward_exists = back_exists = True
-    if random() < .8:
-        try:
-            driver.find_element_by_id('forward-btn').click()
-        except:
-            forward_exists = False
-    if random() < .5:
-        try:
-            driver.find_element_by_id('back-btn').click()
-        except:
-            back_exists = False
-    if not (forward_exists or back_exists):
-        sleep(3)
-    driver.refresh()
-
-@Settings.register('Page')
-def page_settings():
-    return {
-        'css': default_css(),
-        'js': default_js(),
-        'back': False,
-        'forward': True,
-        'compile_functions': compile_fn,
-        'validate_functions': validate_fn,
-        'submit_functions': submit_fn,
-        'debug_functions': debug_fn,
-    }
-
-
-class Page(BranchingBase, HTMLBase, db.Model):
+class Page(HTMLMixin, BranchingBase, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     """Relationships to primary models"""
@@ -129,27 +46,27 @@ class Page(BranchingBase, HTMLBase, db.Model):
     
     _navbar_id = db.Column(db.Integer, db.ForeignKey('navbar.id'))
     
+    embedded = db.relationship(
+        'Embedded',
+        backref='page',
+        order_by='Embedded.index',
+        collection_class=ordering_list('index'),
+        foreign_keys='Embedded._page_id'
+    )
+
+    timer = db.relationship('Timer', uselist=False)
+
     questions = db.relationship(
         'Question', 
         backref='page',
         order_by='Question.index',
-        collection_class=ordering_list('index'),
-        foreign_keys='Question._page_id'
-    )
-
-    timer = db.relationship(
-        'Timer',
-        uselist=False,
-        foreign_keys='Timer._page_timer_id'
+        collection_class=ordering_list('index')
     )
 
     @property
-    def html_questions(self):
-        return [q for q in self.questions if isinstance(q, HTMLQuestion)]
-
-    @property
-    def questions_with_timer(self):
-        return [self.timer]+self.questions if self.timer else self.questions
+    def data_elements(self):
+        timer = [self.timer] if self.timer else []
+        return timer + self.embedded + self.questions
     
     """Relationships to function models and workers"""
     cache_compile = db.Column(db.Boolean)
@@ -215,7 +132,7 @@ class Page(BranchingBase, HTMLBase, db.Model):
     @BranchingBase.init('Page')
     def __init__(self, branch=None, **kwargs):
         super().__init__()
-        from hemlock.question_polymorphs import Timer
+        from hemlock.database import Timer
         self.timer = Timer()
         self.body = render_template('page-body.html')
         return {'branch': branch, **kwargs}
@@ -364,10 +281,7 @@ class Page(BranchingBase, HTMLBase, db.Model):
         if self.timer is not None:
             self.timer.pause()
         self.direction_from = request.form.get('direction')
-        [
-            q._record_response(request.form.getlist(q.model_id)) 
-            for q in self.questions
-        ]
+        [q._record_response() for q in self.questions]
     
     def _validate(self):
         """Validate response
@@ -376,8 +290,8 @@ class Page(BranchingBase, HTMLBase, db.Model):
         message (i.e. error is not None), indicate the response was invalid 
         and return False. Otherwise, return True.
         """
-        for validate_func in self.validate_functions:
-            self.error = validate_func()
+        for validate_fn in self.validate_functions:
+            self.error = validate_fn()
             if self.error is not None:
                 break
         is_valid = self.is_valid()

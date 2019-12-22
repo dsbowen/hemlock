@@ -2,7 +2,7 @@
 
 from hemlock.app import db
 from hemlock.database import Branch, Page
-from hemlock.database.private import Base
+from hemlock.database.bases import Base
 
 from flask_worker import WorkerMixin as WorkerBaseMixin
 from sqlalchemy.ext.declarative import declared_attr

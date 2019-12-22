@@ -1,7 +1,7 @@
 """Navigation bar database model"""
 
 from hemlock.app import db
-from hemlock.database.private import Base
+from hemlock.database.bases import Base
 
 from sqlalchemy_nav import BrandMixin, DropdownitemMixin, NavbarMixin, NavitemMixin
 

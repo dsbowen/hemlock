@@ -5,7 +5,7 @@ Base is a generic base class for all Hemlock models.
 BranchingBase contains methods for growing and inserting new branches to a 
 Participant's branch_stack. 
 
-HTMLBase contains convenience methods for models which manipulate HTML.
+HTMLMixin contains convenience methods for models which manipulate HTML.
 """
 
 from hemlock.app import Settings, db
@@ -71,7 +71,7 @@ class BranchingBase(Base):
         )
 
 
-class HTMLBase(Base):
+class HTMLMixin(Base):
     css = Column(MutableSoupType)
     js = Column(MutableSoupType)
     body = Column(MutableSoupType)

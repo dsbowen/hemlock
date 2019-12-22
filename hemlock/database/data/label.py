@@ -1,13 +1,13 @@
 """Label question polymorph"""
 
-from hemlock.question_polymorphs.utils import *
+from hemlock.database.data.utils import *
 
 
-class Label(HTMLQuestion):
+class Label(Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'label'}
 
-    @HTMLQuestion.init('Label')
+    @Question.init('Label')
     def __init__(self, page=None, **kwargs):
         super().__init__()
         self.body = render_template('form-group.html', q=self)

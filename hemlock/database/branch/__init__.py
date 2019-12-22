@@ -1,21 +1,7 @@
-"""Branch database model
-
-Relationships:
-
-part: Participant to whom this Branch belongs
-origin_branch: Branch from which this Branch originated
-next_branch: Branch originating from this Branch
-origin_page: Page from which this Branch originated
-pages: queue of Pages to be displayed
-embedded: list of Embedded data questions
-questions: list of Questions belonging to this Branch
-navigate: Function model for growing a new Branch
-navigate_worker: Worker model for the navigate function
-is_root: indicates that this is the Participant's root branch
-"""
+"""Branch database model"""
 
 from hemlock.app import db
-from hemlock.database.private import BranchingBase
+from hemlock.database.bases import BranchingBase
 
 from flask import current_app
 from flask_login import current_user
@@ -80,11 +66,11 @@ class Branch(BranchingBase, db.Model):
     )
         
     @property
-    def questions(self):
-        page_questions = [
-            q for p in self.pages for q in p.questions_with_timer
-        ]
-        return self.embedded + page_questions
+    def data_elements(self):
+        elements = []
+        elements += self.embedded
+        [elements.extend(p.data_elements) for p in self.pages]
+        return elements
         
     navigate_function = db.relationship(
         'Navigate',

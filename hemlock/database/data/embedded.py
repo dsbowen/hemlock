@@ -1,15 +1,25 @@
-"""Timer"""
+"""Embedded question polymorph"""
 
-from hemlock.question_polymorphs.utils import *
+from hemlock.database.data.utils import *
 
 from datetime import datetime
 
 
-class Timer(Question):
-    id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
-    __mapper_args__ = {'polymorphic_identity': 'timer'}
+class Embedded(Data):
+    id = db.Column(db.Integer, db.ForeignKey('data.id'), primary_key=True)
+    __mapper_args__ = {'polymorphic_identity': 'embedded'}
 
-    _page_timer_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+    _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    
+    @Data.init('Embedded')
+    def __init__(self, page=None, **kwargs):
+        super().__init__()
+        return {'page': page, **kwargs}
+
+
+class Timer(Embedded):
+    id = db.Column(db.Integer, db.ForeignKey('embedded.id'), primary_key=True)
+    __mapper_args__ = {'polymorphic_identity': 'timer'}
 
     state = db.Column(db.String(16), default='not_started')
     start_time = db.Column(db.DateTime)
@@ -51,7 +61,7 @@ class Timer(Question):
             self._total_time = self._end_time - self.unpause_time
             self._data = self._total_time.total_seconds()
 
-    @Question.init('Timer')
+    @Embedded.init('Timer')
     def __init__(self, page=None, **kwargs):
         super().__init__()
         return {'page': page, **kwargs}
