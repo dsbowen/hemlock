@@ -1,7 +1,5 @@
-"""Label question polymorph"""
 
-from hemlock.database.data.utils import *
-
+from hemlock.qpolymorphs.utils import *
 
 class Label(Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)

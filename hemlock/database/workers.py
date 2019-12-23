@@ -1,7 +1,8 @@
 """Worker models"""
 
 from hemlock.app import db
-from hemlock.database import Branch, Page
+from hemlock.database.branch import Branch
+from hemlock.database.page import Page
 from hemlock.database.bases import Base
 
 from flask_worker import WorkerMixin as WorkerBaseMixin

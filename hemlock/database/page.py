@@ -2,13 +2,16 @@
 
 from hemlock.app import db
 from hemlock.database.bases import BranchingBase, HTMLMixin
+from hemlock.database.data import Timer
 from hemlock.database.types import MutableSoupType
-from hemlock.database.page.navbar import *
-import hemlock.database.page.settings
+import hemlock.database.page_settings
 
 from bs4 import BeautifulSoup, Tag
 from flask import Markup, current_app, render_template, request
 from sqlalchemy.ext.orderinglist import ordering_list
+
+from random import random, shuffle
+from time import sleep
 
 
 class Page(HTMLMixin, BranchingBase, db.Model):
@@ -51,7 +54,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         backref='page',
         order_by='Embedded.index',
         collection_class=ordering_list('index'),
-        foreign_keys='Embedded._page_id'
     )
 
     timer = db.relationship('Timer', uselist=False)
@@ -132,7 +134,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     @BranchingBase.init('Page')
     def __init__(self, branch=None, **kwargs):
         super().__init__()
-        from hemlock.database import Timer
         self.timer = Timer()
         self.body = render_template('page-body.html')
         return {'branch': branch, **kwargs}

@@ -1,56 +1,13 @@
-"""Data element imports"""
 
 from hemlock.app import Settings, db
 from hemlock.database.bases import Base, HTMLMixin
+from hemlock.database.data import Data
 from hemlock.database.choice import Choice, Option
 
-from bs4 import Tag
-from flask import render_template, request
-from sqlalchemy.ext.declarative import declared_attr
+from flask import request
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import validates
 from sqlalchemy_mutable import MutableType, MutableModelBase
-
-from random import choice, random
-
-
-class Data(Base, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    data_type = db.Column(db.String)
-    __mapper_args__ = {
-        'polymorphic_identity': 'data',
-        'polymorphic_on': data_type
-    }
-
-    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-
-    all_rows = db.Column(db.Boolean)
-    data = db.Column(MutableType)
-    index = db.Column(db.Integer)
-    order = db.Column(db.Integer)
-    var = db.Column(db.Text)
-
-    def _pack_data(self, data=None):
-        """Pack data for storing in DataStore
-        
-        Note: `var`Index is the index of the object; its order within its
-        Branch, Page, or Question. `var`Order is the order of the Question
-        relative to other Questions with the same variable.
-        
-        The optional `data` argument is prepacked data from the element.
-        """
-        if self.var is None:
-            return {}
-        data = {self.var: self.data} if data is None else data
-        if not self.all_rows:
-            data[self.var+'Order'] = self.order
-        if self.index is not None:
-            data[self.var+'Index'] = self.index
-        if hasattr(self, 'choices'):
-            for c in self.choices:
-                if c.name is not None:
-                    data[self.var + c.name + 'Index'] = c.index
-        return data
 
 
 @Settings.register('Question')
@@ -112,7 +69,10 @@ class Question(Data, HTMLMixin, MutableModelBase):
     def error(self, val):
         form_grp_cls = self.body.select_one('div.form-group')['class']
         if not val:
-            form_grp_cls.remove('error')
+            try:
+                form_grp_cls.remove('error')
+            except:
+                pass
         elif 'error' not in form_grp_cls:
             form_grp_cls.append('error')
         self._set_element((val or ''), parent_selector='span.error-txt')
@@ -160,43 +120,58 @@ class Question(Data, HTMLMixin, MutableModelBase):
         [debug_fn(driver) for debug_fn in self.debug_functions]
 
 
-class InputGroup():
-    @property
-    def prepend(self):
-        return self.text('.prepend.input-group-text')
+class ChoiceQuestion(Question):
+    choices = db.relationship(
+        'Choice', 
+        backref='question',
+        order_by='Choice.index',
+        collection_class=ordering_list('index'),
+        foreign_keys='Choice._question_id'
+    )
 
-    @prepend.setter
-    def prepend(self, val):
-        self._set_element(
-            val, 
-            parent_selector='span.prepend-wrapper',
-            target_selector='span.prepend.input-group-text', 
-            gen_target=self._gen_input_group_div,
-            args=['prepend']
-        )
+    @validates('choices')
+    def validate_choice(self, key, val):
+        if isinstance(val, Choice):
+            return val
+        val = str(val)
+        if type(self).__name__ == 'Select':
+            return Option(label=val)
+        return Choice(label=val)
 
     @property
-    def append(self):
-        return self.text('.append.input-group-text')
+    def _choice_wrapper(self):
+        return self.body.select_one('.choice-wrapper')
+
+    def _render(self):
+        choice_wrapper = self._choice_wrapper
+        [choice_wrapper.append(c._render()) for c in self.choices]
+        return self.body
+
+    def _record_response(self):
+        if not self.multiple:
+            response_id = request.form.get(self.model_id)
+            self.response = Choice.query.get(response_id)
+        else:
+            response_ids = request.form.getlist(self.model_id)
+            self.response = [Choice.query.get(id) for id in response_ids]
+
+    def _record_data(self):
+        if not self.multiple:
+            self.data = None if self.response is None else self.response.value
+        else:
+            self.data = {
+                c.value: int(c in self.response)
+                for c in self.choices if c.value is not None
+            }
     
-    @append.setter
-    def append(self, val):
-        self._set_element(
-            val,
-            parent_selector='span.append-wrapper',
-            target_selector='span.append.input-group-text',
-            gen_target=self._gen_input_group_div,
-            args=['append']
-        )
-    
-    def _gen_input_group_div(self, type_):
-        """Generate input group prepend/append <div> Tag
-        
-        `type_` is 'prepend' or 'append'
-        """
-        input_group_div = Tag(name='div')
-        input_group_div['class'] = 'input-group-'+type_
-        span = Tag(name='span')
-        span['class'] = [type_, 'input-group-text']
-        input_group_div.append(span)
-        return input_group_div
+    def _pack_data(self):
+        var = self.var
+        if not self.multiple or var is None:
+            return super()._pack_data()
+        if self.data is None:
+            packed_data = {
+                var+c.value:None for c in self.choices if c.value is not None
+            }
+        else:
+            packed_data = {var+key: val for key, val in self.data.items()}
+        return super()._pack_data(packed_data)

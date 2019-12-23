@@ -10,7 +10,6 @@ HTMLMixin contains convenience methods for models which manipulate HTML.
 
 from hemlock.app import Settings, db
 from hemlock.database.types import MutableSoupType
-from hemlock.tools import CSS, JS
 
 from bs4 import BeautifulSoup
 from flask import render_template
@@ -96,8 +95,8 @@ class HTMLMixin(Base):
         target = self._get_target(
             parent, target_selector, gen_target, args, kwargs
         )
-        if isinstance(val, str):
-            val = BeautifulSoup(val, 'html.parser')
+        if type(val) in [str, int, float]:
+            val = BeautifulSoup(str(val), 'html.parser')
         target.clear()
         target.append(val)
         self.body.changed()
