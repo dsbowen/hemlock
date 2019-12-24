@@ -18,6 +18,14 @@ def settings():
 def End(root=None):
     b = Branch()
     p = Page(b)
+    t = Textarea(p, prepend='Textarea')
+    Validate(t, max_words, args=[10])
+    p = Page(b, terminal=True)
+    return b
+
+def Nav(root):
+    b = Branch()
+    p = Page(b)
     i = Input(p, label='<p>Enter an integer.</p>')
     Validate(i, is_type, args=[int])
     i = Input(p, label='<p>Enter a number less than 100.</p>')
@@ -94,7 +102,8 @@ def Start(root=None):
     s = Select(
         p,
         multiple=True,
-        label='<p>This is also a select question. Choose as many as you like.</p>',
+        label='<p>This is also a select question.</p>',
+        append='Choose a few.',
         choices=['World', 'Moon', 'Sun', 'Star', 'Galaxy']
     )
     s.default = s.choices[0:2]

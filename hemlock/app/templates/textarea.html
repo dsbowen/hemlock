@@ -1,5 +1,12 @@
-{% extends 'input-group.html' %}
+{% extends 'form-group.html' %}
 
-{% block input %}
-<textarea id="{{ q.model_id }}" name="{{ q.model_id }}" class="form-control" type="text"></textarea>
+{% block content %}
+<div class="input-group">
+    <div class="input-group-prepend"></div>
+    <textarea id="{{ q.model_id }}" name="{{ q.model_id }}" class="form-control"></textarea>
+    <div class="input-group-append"></div>
+</div>
+<small>Character count: <span id="{{ q.model_id }}-chars"></span></small>
+<br/>
+<small>Word count: <span id="{{ q.model_id }}-words"></span></small>
 {% endblock %}

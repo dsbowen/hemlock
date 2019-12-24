@@ -10,6 +10,7 @@ class Textarea(InputGroup, Question):
     def __init__(self, page=None, **kwargs):
         super().__init__()
         self.body = render_template('textarea.html', q=self)
+        self.js = render_template('textarea.js', q=self)
         return {'page': page, **kwargs}
 
     @property
