@@ -239,7 +239,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     
     def _render(self):
         """Render page"""
-        q = self.questions[0]
         html = render_template('page.html', page=self)
         soup = BeautifulSoup(html, 'html.parser')
         self._add_page_metadata(soup)

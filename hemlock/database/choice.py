@@ -52,14 +52,15 @@ class Choice(HTMLMixin, db.Model):
         return self == default
     
     def _render(self):
-        inpt = self.body.select_one('input#'+self.model_id)
+        body = self.body.copy()
+        inpt = body.select_one('input#'+self.model_id)
         inpt['name'] = self.question.model_id
         self._handle_multiple(inpt)
         if self.is_default():
             inpt['checked'] = None
         else:
             inpt.attrs.pop('checked', None)
-        return self.body.copy()
+        return body
 
     def _handle_multiple(self, inpt):
         """Appropriately converts body html for single or multiple choice"""

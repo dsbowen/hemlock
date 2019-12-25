@@ -99,7 +99,7 @@ class Question(Data, HTMLMixin, MutableModelBase):
         [compile_fn() for compile_fn in self.compile_functions]
 
     def _render(self):
-        return super()._render()
+        return self.body.copy()
 
     def _record_response(self):
         self.response = request.form.get(self.model_id) or None
@@ -146,14 +146,14 @@ class ChoiceQuestion(Question):
             return Option(label=val)
         return Choice(label=val)
 
-    @property
-    def _choice_wrapper(self):
-        return self.body.select_one('.choice-wrapper')
-
     def _render(self):
-        choice_wrapper = self._choice_wrapper
+        body = self.body.copy()
+        choice_wrapper = self._choice_wrapper(body)
         [choice_wrapper.append(c._render()) for c in self.choices]
-        return self.body.copy()
+        return body
+    
+    def _choice_wrapper(self, body=None):
+        return (body or self.body).select_one('.choice-wrapper')
 
     def _record_response(self):
         if not self.multiple:
