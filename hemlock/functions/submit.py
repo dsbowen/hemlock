@@ -5,7 +5,7 @@ from hemlock.database import Submit
 import re
 
 @Submit.register
-def convert(question, new_type, *args, **kwargs):
+def data_type(question, new_type, *args, **kwargs):
     question.data = new_type(question.data, *args, **kwargs)
 
 @Submit.register

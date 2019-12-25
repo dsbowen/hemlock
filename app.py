@@ -1,6 +1,6 @@
 """Create web application"""
 
-import survey
+from survey import *
 
 from hemlock import create_app
 from hemlock.app import db, socketio

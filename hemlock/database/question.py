@@ -9,6 +9,7 @@ from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import validates
 from sqlalchemy_mutable import MutableType, MutableModelBase
 
+from copy import copy
 
 @Settings.register('Question')
 def settings():
@@ -80,19 +81,25 @@ class Question(Data, HTMLMixin, MutableModelBase):
 
     @property
     def label(self):
-        return self.text('.label-txt')
+        return self.text('span.label-txt')
 
     @label.setter
     def label(self, val):
         self._set_element((val or ''), parent_selector='span.label-txt')
         self.body.changed()
 
+    def clear_error(self):
+        self.error = None
+
+    def clear_response(self):
+        self.response = None
+
     """Methods executed during study"""
     def _compile(self):
         [compile_fn() for compile_fn in self.compile_functions]
 
     def _render(self):
-        return self.body
+        return copy(self.body)
 
     def _record_response(self):
         self.response = request.form.get(self.model_id) or None
@@ -105,8 +112,9 @@ class Question(Data, HTMLMixin, MutableModelBase):
         and return False. Otherwise, return True.
         """
         for validate_fn in self.validate_functions:
-            self.error = validate_fn()
-            if self.error is not None:
+            error = validate_fn()
+            if error:
+                self.error = error
                 return False
         return True
 
@@ -145,7 +153,7 @@ class ChoiceQuestion(Question):
     def _render(self):
         choice_wrapper = self._choice_wrapper
         [choice_wrapper.append(c._render()) for c in self.choices]
-        return self.body
+        return super()._render()
 
     def _record_response(self):
         if not self.multiple:

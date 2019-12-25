@@ -207,12 +207,12 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         btn['value'] = direction
         return btn
 
-    def clear_errors(self):
+    def clear_error(self):
         self.error = None
-        [setattr(self, 'error', None) for q in self.questions]
+        [q.clear_error() for q in self.questions]
     
-    def clear_responses(self):
-        [setattr(self, 'response', None) for q in self.questions]
+    def clear_response(self):
+        [q.clear_response() for q in self.questions]
     
     def first_page(self):
         """Indicate that this is the first Page in the survey"""
@@ -239,6 +239,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     
     def _render(self):
         """Render page"""
+        q = self.questions[0]
         html = render_template('page.html', page=self)
         soup = BeautifulSoup(html, 'html.parser')
         self._add_page_metadata(soup)
@@ -292,8 +293,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         and return False. Otherwise, return True.
         """
         for validate_fn in self.validate_functions:
-            self.error = validate_fn()
-            if self.error is not None:
+            error = validate_fn()
+            if error is not None:
+                self.error = error
                 break
         is_valid = self.is_valid()
         self.direction_from = 'forward' if is_valid else 'invalid'

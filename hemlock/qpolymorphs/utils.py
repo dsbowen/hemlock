@@ -22,7 +22,7 @@ class InputBase(Question):
             self.input.attrs.pop('value', None)
         else:
             self.input['value'] = value
-        return self.body
+        return super()._render()
 
 
 class InputGroup():

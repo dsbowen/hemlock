@@ -27,7 +27,6 @@ def End(root=None):
     Label(p, label='<p>Goodbye World.</p>')
     return b
 
-@route('/survey')
 def QuestionPolymorphs(root=None):
     b = Branch()
     Navigate.End(b)
@@ -193,8 +192,95 @@ def Validation(root=None):
     p = Page(b)
     i = Input(p, label='<p>Enter a proper noun.</p>')
     Validate.regex(i, pattern='([A-Z])\w+')
-    
+
     return b
+
+def CustomValidation(root=None):
+    b = Branch()
+    Navigate.End(b)
+
+    """Question validation"""
+    p = Page(b)
+    password = Input(p, label='<p>Enter your password.</p>')
+
+    p = Page(b)
+    confirm = Input(p, label='<p>Confirm password.</p>')
+    Validate.confirm_password1(confirm, password)
+
+    """Page validation"""
+    p = Page(b)
+    password = Input(p, label='<p>Enter your password.</p>')
+    confirm = Input(p, label='<p>Confirm password.</p>')
+    Validate.confirm_password2(p, password, confirm)
+
+    return b
+
+@Validate.register
+def confirm_password1(confirm, password):
+    if password.response != confirm.response:
+        return '<p>Passwords must match.</p>'
+
+@Validate.register
+def confirm_password2(p, password, confirm):
+    if password.response != confirm.response:
+        return 'Passwords must match.'
+
+def Compilation(root=None):
+    b = Branch()
+    Navigate.End(b)
+
+    """Rerandomize"""
+    p = Page(b)
+    Input(p, label='<p>Click refresh to rerandomize the input order.</p>')
+    Input(p, label='<p>This is another input.</p>')
+    Compile.rerandomize(p)
+
+    p = Page(b)
+    c = Check(
+        p,
+        label='<p>Click refresh to rerandomize the choice order.</p>',
+        choices=['Red','Green','Blue']
+    )
+    Compile.rerandomize(c)
+
+    """Clear error"""
+    p = Page(b)
+    i = Input(
+        p, 
+        label='<p>This input is required, but no error message will be displayed.</p>'
+    )
+    Compile.clear_error(i)
+    Validate.require(i)
+
+    """Clear response"""
+    p = Page(b)
+    Input(p, label='<p>This response is cleared before compiling.</p>')
+    Check(
+        p, 
+        label='<p>This response is also cleared before compiling.</p>',
+        choices=['World','Moon','Sun']
+    )
+    Compile.clear_response(p)
+
+    return b
+
+@route('/survey')
+def CustomCompilation(root=None):
+    b = Branch()
+    Navigate.End(b)
+
+    p = Page(b)
+    name = Input(p, label="<p>What's your name?</p>")
+
+    p = Page(b)
+    greeting = Label(p)
+    Compile.greet(greeting, name)
+
+    return b
+
+@Compile.register
+def greet(greeting, name):
+    greeting.label = 'Hello, {}!'.format(name.response)
 
 def ComprehensionCheck(root=None):
     instructions, checks = [], []
