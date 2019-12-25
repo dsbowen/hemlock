@@ -59,7 +59,7 @@ class Choice(HTMLMixin, db.Model):
             inpt['checked'] = None
         else:
             inpt.attrs.pop('checked', None)
-        return self.body
+        return self.body.copy()
 
     def _handle_multiple(self, inpt):
         """Appropriately converts body html for single or multiple choice"""
@@ -109,4 +109,4 @@ class Option(Choice):
             opt_tag['selected'] = None
         else:
             opt_tag.attrs.pop('selected', None)
-        return self.body
+        return self.body.copy()

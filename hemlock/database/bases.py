@@ -79,6 +79,9 @@ class HTMLMixin(Base):
         elem = self.body.select_one(selector, parent)
         return None if elem is None else elem.text
 
+    def _render(self):
+        return self.body.copy()
+
     def _set_element(
             self, val, parent_selector, target_selector=None, 
             gen_target=None, args=[], kwargs={}

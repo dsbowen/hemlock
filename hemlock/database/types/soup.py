@@ -4,6 +4,8 @@ from flask import Markup
 from sqlalchemy import PickleType
 from sqlalchemy.ext.mutable import Mutable
 
+from copy import copy
+
 
 class MutableSoup(Mutable, BeautifulSoup):
     @classmethod
@@ -15,6 +17,9 @@ class MutableSoup(Mutable, BeautifulSoup):
         if isinstance(obj, BeautifulSoup):
             return cls(str(obj), 'html.parser')
         return super().coerce(key, obj)
+
+    def copy(self):
+        return copy(self)
 
     def _render(self):
         return Markup(str(self))

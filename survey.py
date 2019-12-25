@@ -14,6 +14,22 @@ def app_settings():
 def settings():
     return {'back':True}
 
+@route('/survey')
+def Start(root=None):
+    b = Branch()
+    Navigate.End(b)
+    p = Page(b)
+    s = Select(p)
+    Option(s, label='1')
+    Option(s, label='2')
+    Compile.f(s)
+    return b
+
+@Compile.register
+def f(s):
+    opt = s.choices[0]
+    opt.body.changed()
+
 def Start(root=None):
     b = Branch()
     p = Page(b, terminal=True)
@@ -264,7 +280,6 @@ def Compilation(root=None):
 
     return b
 
-@route('/survey')
 def CustomCompilation(root=None):
     b = Branch()
     Navigate.End(b)
