@@ -35,16 +35,16 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     
     _back_to_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     back_to = db.relationship(
-        'Page', 
-        uselist=False, 
-        foreign_keys='Page._back_to_id'
+        'Page',
+        foreign_keys=_back_to_id,
+        remote_side=[id]
     )
         
     _forward_to_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     forward_to = db.relationship(
-        'Page', 
-        uselist=False, 
-        foreign_keys='Page._forward_to_id'
+        'Page',
+        foreign_keys=_forward_to_id,
+        remote_side=[id]
     )
     
     _navbar_id = db.Column(db.Integer, db.ForeignKey('navbar.id'))
@@ -73,9 +73,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     """Relationships to function models and workers"""
     cache_compile = db.Column(db.Boolean)
     compile_functions = db.relationship(
-        'Compile',
+        'CompileFn',
         backref='page',
-        order_by='Compile.index',
+        order_by='CompileFn.index',
         collection_class=ordering_list('index')
     )
     compile_worker = db.relationship(
@@ -85,9 +85,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     )
 
     validate_functions = db.relationship(
-        'Validate',
+        'ValidateFn',
         backref='page',
-        order_by='Validate.index',
+        order_by='ValidateFn.index',
         collection_class=ordering_list('index')
     )
     validate_worker = db.relationship(
@@ -97,9 +97,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     )
 
     submit_functions = db.relationship(
-        'Submit',
+        'SubmitFn',
         backref='page',
-        order_by='Submit.index',
+        order_by='SubmitFn.index',
         collection_class=ordering_list('index')
     )
     submit_worker = db.relationship(
@@ -109,14 +109,14 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     )
 
     debug_functions = db.relationship(
-        'Debug',
+        'DebugFn',
         backref='page',
-        order_by='Debug.index',
+        order_by='DebugFn.index',
         collection_class=ordering_list('index')
     )
 
     navigate_function = db.relationship(
-        'Navigate', 
+        'NavigateFn', 
         backref='page', 
         uselist=False
     )

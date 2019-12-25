@@ -96,12 +96,6 @@ def gen_str():
     chars = list(chars) + [' '] * int(.1*len(chars))
     length = int(random() * 10**randint(1,3))
     return ''.join([choice(chars) for i in range(length)])
-
-@Settings.register('Input')
-def settings():
-    return {
-        'debug_functions': debug_fn,
-    }
     
 @Settings.register('Input')
 def settings():

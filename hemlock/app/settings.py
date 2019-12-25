@@ -3,8 +3,6 @@
 time_limit and status_logger_period must be in 'hh:mm:ss' format.
 """
 
-from hemlock.tools import JS
-
 from datetime import datetime, timedelta
 from glob import glob
 from werkzeug.security import generate_password_hash
@@ -68,11 +66,7 @@ SCREENOUT_TXT = """
 <p>Thank you for your continuing interest in our research.</p>
 """
 
-SOCKET_JS = JS(
-    url='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js',
-    filename='js/socketio-2.2.0.js',
-    blueprint='hemlock'
-)
+SOCKET_JS_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js'
 
 @Settings.register('app')
 def app_settings():
@@ -86,7 +80,7 @@ def app_settings():
         'screenout_folder': 'screenouts',
         'screenout_keys': ['IPv4', 'workerId'],
         'screenout_text': SCREENOUT_TXT,
-        'socket_js': SOCKET_JS,
+        'socket_js_src': SOCKET_JS_SRC,
         'static_folder': 'static',
         'status_log_period': '00:02:00',
         'template_folder': 'templates',

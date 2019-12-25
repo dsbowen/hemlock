@@ -14,8 +14,6 @@ def random_key(length=90):
 # from copy import deepcopy
 # from random import shuffle
 
-
-
 # '''
 # Randomize evenly over a sorted list of elements
 # arguments:

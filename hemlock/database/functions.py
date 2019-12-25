@@ -18,11 +18,15 @@ from hemlock.database.question import Question
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy_function import FunctionMixin
 from sqlalchemy_mutable import MutableListType, MutableDictType
-from sqlalchemy_orderingitem import OrderingItem
 
 
-class FunctionMixin_Page_or_Question(FunctionMixin, Base):
-    """Function mixin with page or question as parent"""
+class Function(FunctionMixin, Base):
+    id = db.Column(db.Integer, primary_key=True)
+
+    @declared_attr
+    def _branch_id(self):
+        return db.Column(db.Integer, db.ForeignKey('branch.id'))
+
     @declared_attr
     def _page_id(self):
         return db.Column(db.Integer, db.ForeignKey('page.id'))
@@ -30,68 +34,56 @@ class FunctionMixin_Page_or_Question(FunctionMixin, Base):
     @declared_attr
     def _question_id(self):
         return db.Column(db.Integer, db.ForeignKey('question.id'))
-        
+
     @property
     def parent(self):
-        return self.page or self.question
+        if hasattr(self, 'branch') and self.branch is not None:
+            return self.branch
+        if hasattr(self, 'page') and self.page is not None:
+            return self.page
+        if hasattr(self, 'question') and self.question is not None:
+            return self.question
 
     @parent.setter
-    def parent(self, value):
-        if isinstance(value, Page):
-            self.page = value
-        elif isinstance(value, Question):
-            self.question = value
-        elif value is None:
+    def parent(self, parent=None):
+        if isinstance(parent, Branch):
             self.page = self.question = None
+            self.branch = parent
+        elif isinstance(parent, Page):
+            self.branch = self.question = None
+            self.page = parent
+        elif isinstance(parent, Question):
+            self.branch = self.page = None
+            self.question = parent
+        elif parent is None:
+            self.branch = self.page = self.question = None
         else:
-            raise ValueError('Parent must be a Page or Question')
+            raise ValueError('Parent must be Branch, Page, or Question')
+
+    @Base.init()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
-class Compile(FunctionMixin_Page_or_Question, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+class CompileFn(Function, db.Model):
+    pass
 
+class ValidateFn(Function, db.Model):
+    pass
 
-class Validate(FunctionMixin_Page_or_Question, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+class SubmitFn(Function, db.Model):
+    pass
 
-
-class Submit(FunctionMixin_Page_or_Question, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-
-
-class Debug(FunctionMixin_Page_or_Question, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-
+class DebugFn(Function, db.Model):
     def __call__(self, driver):
         """Call function with webdriver argument"""
         if self.parent is None:
             return self.func(driver, *self.args, **self.kwargs)
-        return self.func(self.parent, driver, *self.args, **self.kwargs)
+        return self.func(
+            self.parent, driver, *self.args, **self.kwargs.unshell()
+        )
 
-
-class Navigate(FunctionMixin, db.Model):
-    """
-    A Navigate function can have either a branch or page as its parent. 
-    """
-    id = db.Column(db.Integer, primary_key=True)
-    _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
-    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-
-    @property
-    def parent(self):
-        return self.branch or self.page
-
-    @parent.setter
-    def parent(self, value):
-        if isinstance(value, Branch):
-            self.branch = value
-        elif isinstance(value, Page):
-            self.page = value
-        elif value is None:
-            self.branch = self.page = None
-        else:
-            raise ValueError('Parent must be a Branch or Page')
-
+class NavigateFn(Function, db.Model):
     def __call__(self):
         """
         A Navigate function call begins by creating a new branch using its 
@@ -115,4 +107,27 @@ class Navigate(FunctionMixin, db.Model):
         else:
             next_branch.origin_branch = None
             next_branch.origin_page = parent
-        
+
+
+class FunctionRegistrar():
+    @classmethod
+    def register(cls, fn):
+        def add_function(parent, *args, **kwargs):
+            cls.function_model(parent, fn, list(args), kwargs)
+        setattr(cls, fn.__name__, add_function)
+        return fn
+
+class Compile(FunctionRegistrar):
+    function_model = CompileFn
+
+class Validate(FunctionRegistrar):
+    function_model = ValidateFn
+
+class Submit(FunctionRegistrar):
+    function_model = SubmitFn
+
+class Debug(FunctionRegistrar):
+    function_model = DebugFn
+
+class Navigate(FunctionRegistrar):
+    function_model = NavigateFn

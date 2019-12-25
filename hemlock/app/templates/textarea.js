@@ -1,17 +1,15 @@
 <script>
     $(document).ready(function(){
-        txtarea = $("#{{ q.model_id }}");
-        chars = $("#{{ q.model_id }}-chars");
-        words = $("#{{ q.model_id }}-words");
-        updateCount(txtarea, chars, words);
+        updateCount("#{{ q.model_id }}");
         $("#{{ q.model_id }}").on("input", function(){
-            updateCount(txtarea, chars, words);
+            updateCount("#{{ q.model_id }}");
         })
     })
 
-    function updateCount(txtarea, chars, words){
-        resp = txtarea.val();
-        chars.text(resp.length);
+    function updateCount(model_id){
+        resp = $(model_id).val();
+        $(model_id+"-chars").text(resp.length);
+        words = $(model_id+"-words");
         if (resp.length == 0){
             words.text(0)
         }

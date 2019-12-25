@@ -25,30 +25,30 @@ class Question(Data, HTMLMixin, MutableModelBase):
 
     """Relationships to Function models"""
     compile_functions = db.relationship(
-        'Compile',
+        'CompileFn',
         backref='question',
-        order_by='Compile.index',
+        order_by='CompileFn.index',
         collection_class=ordering_list('index')
     )
 
     validate_functions = db.relationship(
-        'Validate', 
+        'ValidateFn', 
         backref='question', 
-        order_by='Validate.index',
+        order_by='ValidateFn.index',
         collection_class=ordering_list('index')
     )
     
     submit_functions = db.relationship(
-        'Submit',
+        'SubmitFn',
         backref='question',
-        order_by='Submit.index',
+        order_by='SubmitFn.index',
         collection_class=ordering_list('index')
     )
 
     debug_functions = db.relationship(
-        'Debug',
+        'DebugFn',
         backref='question',
-        order_by='Debug.index',
+        order_by='DebugFn.index',
         collection_class=ordering_list('index')
     )
 

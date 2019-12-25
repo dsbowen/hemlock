@@ -1,4 +1,4 @@
 
-from hemlock.functions.compile import *
-from hemlock.functions.validate import *
-from hemlock.functions.submit import *
+import hemlock.functions.compile
+import hemlock.functions.validate
+import hemlock.functions.submit

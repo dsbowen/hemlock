@@ -1,7 +1,13 @@
+"""Submit functions"""
 
+from hemlock.database import Submit
 
-def convert_data(question, new_type, *args, **kwargs):
+import re
+
+@Submit.register
+def convert(question, new_type, *args, **kwargs):
     question.data = new_type(question.data, *args, **kwargs)
 
-def convert_response(question, new_type, *args, **kwargs):
-    question.response = new_type(question.response, *args, **kwargs)
+@Submit.register
+def match(question, pattern):
+    question.data = int(re.match(pattern, (question.data or '')) is not None)

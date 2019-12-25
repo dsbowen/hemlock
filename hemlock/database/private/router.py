@@ -261,7 +261,7 @@ class Navigator(RouterMixin, db.Model):
         """Navigate backward to specified Page"""
         if back_to is None:
             return self.back_one()
-        while self.current_page != back_to:
+        while self.page != back_to:
             self.back_one()
             
     def back_one(self):

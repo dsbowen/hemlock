@@ -16,31 +16,10 @@ For example, if you want a dollar amount to the cent, use the
 `exact_decimals` function with a `value` of 2.
 """
 
+from hemlock.database import Validate
+
 from operator import __ge__, __le__
 import re
-
-__all__ = [
-    'require',
-    'is_type',
-    'is_in',
-    'is_not_in',
-    'max_val',
-    'min_val',
-    'range_val',
-    'max_len',
-    'min_len',
-    'range_len',
-    'exact_len',
-    'max_words',
-    'min_words',
-    'range_words',
-    'exact_words',
-    'max_decimals',
-    'min_decimals',
-    'range_decimals',
-    'exact_decimals',
-    'regex',
-]
 
 """Utils"""
 
@@ -52,10 +31,12 @@ def plural(val):
 
 """Require and type validation"""
 
+@Validate.register
 def require(question, error_msg=None):
     if question.response is None:
         return error_msg or '<p>Please respond to this question.<p>'
 
+@Validate.register
 def is_type(question, resp_type=None, type_name=None, error_msg=None):
     """Validate that the response can be converted to a given type"""
     try:
@@ -80,6 +61,7 @@ def is_type(question, resp_type=None, type_name=None, error_msg=None):
 
 IS_IN_MSG = '<p>Please enter one of the following: {}.</p>'
 
+@Validate.register
 def is_in(question, valid_set, resp_type=None, error_msg=None):
     if _convert_resp(question.response, resp_type) not in valid_set:
         s = ', '.join([str(s) for s in valid_set])
@@ -87,6 +69,7 @@ def is_in(question, valid_set, resp_type=None, error_msg=None):
 
 IS_NOT_IN = '<p>Please do not enter any of the following: {}.</p>'
 
+@Validate.register
 def is_not_in(question, invalid_set, resp_type=None, error_msg=None):
     if _convert_resp(question.response, resp_type) in invalid_set:
         s = ', '.join([str(s) for s in invalid_set])
@@ -104,12 +87,14 @@ these methods assume the response type is that of the min or max value.
 
 MAX_MSG = '<p>Please enter a response less than {}.</p>'
 
+@Validate.register
 def max_val(question, max, resp_type=None, error_msg=None):
     error_msg = error_msg or MAX_MSG.format(max)
     return _in_range(question, max, resp_type, error_msg, __le__)
 
 MIN_MSG = '<p>Please enter a response greater than {}.</p>'
 
+@Validate.register
 def min_val(question, min, resp_type=None, error_msg=None):
     error_msg = error_msg or MIN_MSG.format(min)
     return _in_range(question, min, resp_type, error_msg, __ge__)
@@ -124,6 +109,7 @@ def _in_range(question, val, resp_type, error_msg, comparator):
 
 RANGE_MSG = '<p>Please enter a response between {min} and {max}.</p>'
 
+@Validate.register
 def range_val(question, min, max, resp_type=None, error_msg=None):
     if resp_type is None:
         assert type(min) == type(max)
@@ -144,6 +130,7 @@ the number of selected choices for a `ChoiceQuestion`. This is because
 MAX_CHOICES_MSG = '<p>Please select at most {0} choice{1}.</p>'
 MAX_LEN_MSG = '<p>Please enter a response at most {0} character{1} long.</p>'
 
+@Validate.register
 def max_len(question, max, error_msg=None):
     """
     Note that a response of None satisfies all max length validation.
@@ -161,6 +148,7 @@ def max_len(question, max, error_msg=None):
 MIN_CHOICES_MSG = '<p>Please select at least {0} choice{1}.</p>'
 MIN_LEN_MSG = '<p>Please enter a response at least {0} character{1} long.</p>'
 
+@Validate.register
 def min_len(question, min, error_msg=None):
     msg = require(question)
     if min and msg is not None:
@@ -176,6 +164,7 @@ def min_len(question, min, error_msg=None):
 NUM_CHOICES_RANGE_MSG = '<p>Please select between {0} and {1} choices.</p>'
 RANGE_LEN_MSG = '<p>Please enter a response {0} to {1} characters long.</p>'
 
+@Validate.register
 def range_len(question, min, max, error_msg=None):
     msg = require(question)
     if min and msg is not None:
@@ -191,9 +180,10 @@ def range_len(question, min, max, error_msg=None):
 NUM_CHOICES_EXACT_MSG = '<p>Please select exactly {0} choice{1}.</p>'
 EXACT_LEN_MSG = '<p>Please enter a response exactly {0} character{1} long.</p>'
 
+@Validate.register
 def exact_len(question, value, error_msg=None):
     msg = require(question)
-    if val and msg is not None:
+    if value and msg is not None:
         return error_msg or msg
     if len(question.response) == value:
         return
@@ -207,6 +197,7 @@ def exact_len(question, value, error_msg=None):
 
 MAX_WORDS_MSG = '<p>Please enter a response at most {0} word{1} long.</p>'
 
+@Validate.register
 def max_words(question, max, error_msg=None):
     if not question.response:
         return
@@ -216,6 +207,7 @@ def max_words(question, max, error_msg=None):
 
 MIN_WORDS_MSG = '<p>Please enter a response at least {0} word{1} long.</p>'
 
+@Validate.register
 def min_words(question, min, error_msg=None):
     msg = require(question)
     if min and msg is not None:
@@ -226,6 +218,7 @@ def min_words(question, min, error_msg=None):
 
 RANGE_WORDS_MSG = '<p>Please enter a response {0} to {1} words long.</p>'
 
+@Validate.register
 def range_words(question, min, max, error_msg=None):
     msg = require(question)
     if min and msg is not None:
@@ -236,6 +229,7 @@ def range_words(question, min, max, error_msg=None):
 
 EXACT_WORDS_MSG = '<p>Please enter a response exactly {0} word{1} long.</p>'
 
+@Validate.register
 def exact_words(question, value, error_msg=None):
     """
     Note that a response of None can satisfy exact_words if `value`==0.
@@ -247,6 +241,7 @@ def exact_words(question, value, error_msg=None):
     if not num_words(question.response) == value:
         return error_msg or EXACT_WORDS_MSG.format(value, plural(value))
 
+@Validate.register
 def num_words(string):
     """Count the number of words in the string"""
     return len(re.findall(r'\w+', string))
@@ -255,6 +250,7 @@ def num_words(string):
 
 MAX_DECIMALS = '<p>Please enter a number with at most {0} decimal{1}.</p>'
 
+@Validate.register
 def max_decimals(question, max, error_msg=None):
     msg, decimals = _get_decimals(question, error_msg)
     if msg:
@@ -264,6 +260,7 @@ def max_decimals(question, max, error_msg=None):
 
 MIN_DECIMALS = '<p>Please enter a number with at least {0} decimal{1}.</p>'
 
+@Validate.register
 def min_decimals(question, min, error_msg=None):
     msg, decimals = _get_decimals(question, error_msg)
     if msg:
@@ -273,6 +270,7 @@ def min_decimals(question, min, error_msg=None):
 
 RANGE_DECIMALS = '<p>Please enter a number with {0} to {1} decimals.</p>'
 
+@Validate.register
 def range_decimals(question, min, max, error_msg=None):
     msg, decimals = _get_decimals(question, error_msg)
     if msg:
@@ -282,6 +280,7 @@ def range_decimals(question, min, max, error_msg=None):
 
 EXACT_DECIMALS = '<p>Please enter a number with exactly {0} decimal{1}.</p>'
 
+@Validate.register
 def exact_decimals(question, value, error_msg=None):
     msg, decimals = _get_decimals(question, error_msg)
     if msg:
@@ -306,6 +305,7 @@ def _get_decimals(question, error_msg):
 
 REGEX_MSG = '<p>Please enter a response with the correct pattern.</p>'
 
+@Validate.register
 def regex(question, pattern, error_msg=None):
     """Validate that the response matches the regex pattern."""
     if not re.compile(pattern).match((question.response or '')):

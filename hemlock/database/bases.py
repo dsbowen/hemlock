@@ -91,7 +91,9 @@ class HTMLMixin(Base):
         """
         parent = self.body.select_one(parent_selector)
         if not val:
-            return parent.clear()
+            parent.clear()
+            self.body.changed()
+            return
         target = self._get_target(
             parent, target_selector, gen_target, args, kwargs
         )
