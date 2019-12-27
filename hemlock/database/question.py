@@ -102,7 +102,7 @@ class Question(Data, HTMLMixin, MutableModelBase):
         return self.body.copy()
 
     def _record_response(self):
-        self.response = request.form.get(self.model_id) or None
+        self.response = request.form.get(self.model_id)
         
     def _validate(self):
         """Validate Participant response
@@ -116,6 +116,7 @@ class Question(Data, HTMLMixin, MutableModelBase):
             if error:
                 self.error = error
                 return False
+        self.error = None
         return True
 
     def _record_data(self):
@@ -145,6 +146,10 @@ class ChoiceQuestion(Question):
         if type(self).__name__ == 'Select':
             return Option(label=val)
         return Choice(label=val)
+
+    @Question.init('ChoiceQuestion')
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
 
     def _render(self):
         body = self.body.copy()

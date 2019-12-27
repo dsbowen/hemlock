@@ -121,3 +121,22 @@ class HTMLMixin(Base):
             return target
         parent.append(gen_target(*args, **kwargs))
         return parent.select_one(target_selector)
+
+
+class InputBase():
+    @property
+    def input(self):
+        return self.body.select_one('#'+self.model_id)
+
+    def input_from_driver(self, driver=None):
+        """Get input from driver for debugging"""
+        return driver.find_element_by_css_selector('#'+self.model_id)
+
+    def _render(self):
+        """Set the default value before rendering"""
+        value = self.response or self.default
+        if value is None:
+            self.input.attrs.pop('value', None)
+        else:
+            self.input['value'] = value
+        return super()._render()

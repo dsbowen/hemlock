@@ -1,13 +1,13 @@
 """Choice database model"""
 
 from hemlock.app import db
-from hemlock.database.bases import HTMLMixin
+from hemlock.database.bases import HTMLMixin, InputBase
 
 from flask import render_template
 from sqlalchemy_mutable import MutableType
 
 
-class Choice(HTMLMixin, db.Model):
+class Choice(InputBase, HTMLMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String)
     __mapper_args__ = {
@@ -55,16 +55,16 @@ class Choice(HTMLMixin, db.Model):
         body = self.body.copy()
         inpt = body.select_one('input#'+self.model_id)
         inpt['name'] = self.question.model_id
-        self._handle_multiple(inpt)
+        self._handle_multiple(body, inpt)
         if self.is_default():
             inpt['checked'] = None
         else:
             inpt.attrs.pop('checked', None)
         return body
 
-    def _handle_multiple(self, inpt):
+    def _handle_multiple(self, body, inpt):
         """Appropriately converts body html for single or multiple choice"""
-        div_class = self.body.select_one('div.custom-control')['class']
+        div_class = body.select_one('div.custom-control')['class']
         rm_classes = [
             'custom-radio', 'custom-checkbox', 'custom-control-inline'
         ]

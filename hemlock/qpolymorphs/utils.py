@@ -1,28 +1,10 @@
 
 from hemlock.app import Settings, db
-from hemlock.database.question import Question, ChoiceQuestion
+from hemlock.database import Question, ChoiceQuestion
+from hemlock.database.bases import InputBase
 
 from bs4 import Tag
 from flask import render_template
-
-
-class InputBase(Question):
-    @property
-    def input(self):
-        return self.body.select_one('#'+self.model_id)
-
-    def get_input_from_driver(self, driver=None):
-        """Get input from driver for debugging"""
-        return driver.find_element_by_css_selector('#'+self.model_id)
-
-    def _render(self):
-        """Set the default value before rendering"""
-        value = self.response or self.default
-        if value is None:
-            self.input.attrs.pop('value', None)
-        else:
-            self.input['value'] = value
-        return super()._render()
 
 
 class InputGroup():

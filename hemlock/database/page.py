@@ -170,12 +170,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
             val, 
             parent_selector='span.back-btn', 
             target_selector='#back-btn', 
-            gen_target=self._gen_back
+            gen_target=self._gen_submit,
+            args=['back']
         )
-    
-    def _gen_back(self):
-        """Generate back button Tag"""
-        return self._gen_submit('back')
 
     @property
     def forward(self):
@@ -188,12 +185,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
             val, 
             parent_selector='span.forward-btn', 
             target_selector='#forward-btn', 
-            gen_target=self._gen_forward
+            gen_target=self._gen_submit,
+            args=['forward']
         )
-
-    def _gen_forward(self):
-        """Generate forward button"""
-        return self._gen_submit('forward')
 
     def _gen_submit(self, direction):
         """Generate submit (back or forward) button"""
@@ -291,13 +285,14 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         message (i.e. error is not None), indicate the response was invalid 
         and return False. Otherwise, return True.
         """
+        self.error = None
         for validate_fn in self.validate_functions:
             error = validate_fn()
             if error is not None:
                 self.error = error
                 break
         is_valid = self.is_valid()
-        self.direction_from = 'forward' if is_valid else 'invalid'
+        self.direction_form = 'forward' if is_valid else 'invalid'
         return is_valid
     
     def _submit(self):

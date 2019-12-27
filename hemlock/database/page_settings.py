@@ -5,9 +5,6 @@ from hemlock.tools import gen_external_css, gen_external_js, url_for
 
 from bs4 import BeautifulSoup
 
-from random import random, shuffle
-from time import sleep
-
 def default_css():
     attrs_list = [
         {
@@ -55,26 +52,6 @@ def validate_fn(page):
 def submit_fn(page):
     [q._submit() for q in page.questions]
 
-def debug_fn(page, driver):
-    """Call question debug functions in random order then navigate"""
-    order = list(range(len(page.questions)))
-    shuffle(order)
-    [page.questions[i]._debug(driver) for i in order]
-    forward_exists = back_exists = True
-    if random() < .8:
-        try:
-            driver.find_element_by_id('forward-btn').click()
-        except:
-            forward_exists = False
-    if random() < .5:
-        try:
-            driver.find_element_by_id('back-btn').click()
-        except:
-            back_exists = False
-    if not (forward_exists or back_exists):
-        sleep(3)
-    driver.refresh()
-
 @Settings.register('Page')
 def page_settings():
     return {
@@ -85,5 +62,4 @@ def page_settings():
         'compile_functions': compile_fn,
         'validate_functions': validate_fn,
         'submit_functions': submit_fn,
-        'debug_functions': debug_fn,
     }

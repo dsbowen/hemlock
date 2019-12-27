@@ -14,7 +14,6 @@ def app_settings():
 def settings():
     return {'back':True}
 
-
 def Start(root=None):
     b = Branch()
     p = Page(b, terminal=True)
@@ -192,7 +191,7 @@ def Validation(root=None):
     """Regex validation"""
     p = Page(b)
     i = Input(p, label='<p>Enter a proper noun.</p>')
-    Validate.regex(i, pattern='([A-Z])\w+')
+    Validate.match(i, pattern='([A-Z])\w+')
 
     return b
 
@@ -203,8 +202,6 @@ def CustomValidation(root=None):
     """Question validation"""
     p = Page(b)
     password = Input(p, label='<p>Enter your password.</p>')
-
-    p = Page(b)
     confirm = Input(p, label='<p>Confirm password.</p>')
     Validate.confirm_password1(confirm, password)
 
@@ -232,8 +229,8 @@ def Compilation(root=None):
 
     """Rerandomize"""
     p = Page(b)
-    Input(p, label='<p>Click refresh to rerandomize the input order.</p>')
-    Input(p, label='<p>This is another input.</p>')
+    Label(p, label='<p>Click refresh to rerandomize the label order.</p>')
+    Label(p, label='<p>This is another label.</p>')
     Compile.rerandomize(p)
 
     p = Page(b)
@@ -265,7 +262,6 @@ def Compilation(root=None):
 
     return b
 
-@route('/survey')
 def CustomCompilation(root=None):
     b = Branch()
     Navigate.End(b)
@@ -282,6 +278,99 @@ def CustomCompilation(root=None):
 @Compile.register
 def greet(greeting, name):
     greeting.label = 'Hello, {}!'.format(name.response)
+
+def Submission(root=None):
+    b = Branch()
+    Navigate.End(b)
+
+    input_p = Page(b)
+    integer = Input(
+        input_p, 
+        label='<p>The data for this input will be converted to an int.</p>'
+    )
+    Validate.is_type(integer, int)
+    Submit.data_type(integer, int)
+    correct = Input(
+        input_p, 
+        label='<p>The data for this input indicates whether the response was "correct".</p>'
+    )
+    Submit.match(correct, 'correct')
+
+    p = Page(b)
+    display_data = Label(p)
+
+    Submit.display_data(input_p, integer, correct, display_data)
+
+    return b
+
+@Submit.register
+def display_data(input_page, integer, correct, display_data):
+    assert isinstance(integer.data, int)
+    display_data.label = (
+        '<p>The data for `integer` is {0}.</p>'
+        +'<p>The data for `correct` is {1}.</p>'
+    ).format(integer.data, correct.data)
+
+@route('/survey')
+def Debugging(root=None):
+    b = Branch()
+    Navigate.End(b)
+
+    """Textarea and text Input"""
+    p = Page(b)
+    Textarea(p)
+    Input(p, label='<p>This input accepts any input.</p>')
+    i = Input(p, label='<p>This input accepts any number.</p>')
+    Validate.is_type(i, float)
+    Debug.random_number(i)
+    i = Input(p, label='<p>This input accepts integers.</p>')
+    Validate.is_type(i, int)
+    Debug.random_number(i, integer=True)
+    
+    """Date and time debugging"""
+    p = Page(b)
+    Label(p, label='<p>Debugging for date and time inputs.</p>')
+    Input(p, input_type='date')
+    Input(p, input_type='datetime-local')
+    Input(p, input_type='month')
+    Input(p, input_type='time')
+    Input(p, input_type='week')
+
+    """Range debugging"""
+    p = Page(b)
+    Range(p, label='<p>Debugging for range input.</p>')
+
+    """Choice question debugging"""
+    p = Page(b)
+    Label(p, label='<p>Debugging for choice questions.</p>')
+    Check(p, choices=['Red','Green','Blue'])
+    Check(p, choices=['World','Moon','Sun'], multiple=True)
+    Select(p, choices=['1','2','3'])
+    Select(p, choices=['Canada','United States','Mexico'], multiple=True)
+
+    """Custom debugging functions"""
+    p = Page(b)
+    i = Input(p, label='<p>Enter "hello world" to continue.</p>')
+    Validate.match(i, 'hello world')
+    Debug.send_keys(i, 'hello world')
+    
+    check = Check(p)
+    Choice(check, label='Correct', value=1)
+    Choice(check, label='Incorrect', value=0)
+    Validate.correct_choices(check)
+    Debug.click_choices(check, check.choices[0])
+
+    i = Input(p, label='<p>Enter "goodbye moon" to continue.</p>')
+    Validate.match(i, 'goodbye moon')
+    Debug.send_goodbye_moon(i)
+
+    return b
+
+@Debug.register
+def send_goodbye_moon(inpt, driver):
+    input_from_driver = inpt.input_from_driver(driver)
+    input_from_driver.clear()
+    input_from_driver.send_keys('goodbye moon')
 
 def ComprehensionCheck(root=None):
     instructions, checks = [], []

@@ -2,11 +2,11 @@
 from hemlock.qpolymorphs.utils import *
 
 
-class Range(InputBase):
+class Range(InputBase, Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'range'}
 
-    @InputBase.init('Range')
+    @Question.init('Range')
     def __init__(self, page=None, **kwargs):
         super().__init__()
         self.body = render_template('range.html', q=self)

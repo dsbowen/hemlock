@@ -17,6 +17,10 @@ class Textarea(InputGroup, Question):
     def textarea(self):
         return self.body.select_one('textarea#'+self.model_id)
 
+    def textarea_from_driver(self, driver):
+        """Get textarea from driver for debugging"""
+        return driver.find_element_by_css_selector('textarea#'+self.model_id)
+
     @property
     def size(self):
         return self.textarea.attrs.get('size')

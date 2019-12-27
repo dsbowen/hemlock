@@ -8,6 +8,7 @@ This file specifies the following types of validation:
 5. Number of words
 6. Number of decimals
 7. Regex
+8. Correct choice (choice value evaluates to True)
 
 For value and number of xxx validation, programmers can set the minimum 
 value, the maximum value, the range of accepted values, or the exact value.
@@ -33,11 +34,11 @@ def plural(val):
 
 @Validate.register
 def require(question, error_msg=None):
-    if question.response is None:
+    if not question.response:
         return error_msg or '<p>Please respond to this question.<p>'
 
 @Validate.register
-def is_type(question, resp_type=None, type_name=None, error_msg=None):
+def is_type(question, resp_type, type_name=None, error_msg=None):
     """Validate that the response can be converted to a given type"""
     try:
         resp_type(question.response)
@@ -306,7 +307,19 @@ def _get_decimals(question, error_msg):
 REGEX_MSG = '<p>Please enter a response with the correct pattern.</p>'
 
 @Validate.register
-def regex(question, pattern, error_msg=None):
+def match(question, pattern, error_msg=None):
     """Validate that the response matches the regex pattern."""
     if not re.compile(pattern).match((question.response or '')):
         return error_msg or REGEX_MSG
+
+"""Choice validation"""
+
+@Validate.register
+def correct_choices(question, error_msg=None):
+    correct = [c for c in question.choices if c.value]
+    if question.multiple:
+        resp_correct = question.response == correct
+    else:
+        resp_correct = question.response in correct
+    if not resp_correct:
+        return error_msg or '<p>Please select the correct choice.</p>'
