@@ -94,6 +94,16 @@ def QuestionPolymorphs(root=None):
         default=-10
     )
 
+    """File upload"""
+    p = Page(b)
+    Label(p, label='<p>Uploads are stored in your Google bucket.</p>')
+    File(
+        p, 
+        label='Choose a .jpg file.',
+        filename='picture',
+        allowed_extensions=['.jpg'],
+    )
+
     return b
 
 def Validation(root=None):
@@ -193,6 +203,29 @@ def Validation(root=None):
     i = Input(p, label='<p>Enter a proper noun.</p>')
     Validate.match(i, pattern='([A-Z])\w+')
 
+    """Choice validation"""
+    p = Page(b)
+    s = Select(p, label='<p>Select the correct answer.</p>')
+    Option(s, label='Incorrect', value=0)
+    Option(s, label='Correct', value=1)
+    Validate.correct_choices(s)
+
+    c = Check(p, label='<p>Select one of the correct answers.</p>')
+    Choice(c, label='Correct 1', value=1)
+    Choice(c, label='Correct 2', value=1)
+    Choice(c, label='Incorrect', value=0)
+    Validate.correct_choices(c)
+
+    s = Select(
+        p, 
+        label='<p>Select all of the correct answers.</p>',
+        multiple=True
+    )
+    Option(s, label='Correct 1', value=1)
+    Option(s, label='Correct 2', value=2)
+    Option(s, label='Incorrect', value=0)
+    Validate.correct_choices(s)
+
     return b
 
 def CustomValidation(root=None):
@@ -284,34 +317,57 @@ def Submission(root=None):
     Navigate.End(b)
 
     input_p = Page(b)
-    integer = Input(
+
+    """Type conversion"""
+    i = Input(
         input_p, 
         label='<p>The data for this input will be converted to an int.</p>'
     )
-    Validate.is_type(integer, int)
-    Submit.data_type(integer, int)
-    correct = Input(
+    Validate.is_type(i, int)
+    Submit.data_type(i, int)
+
+    """Regex matching"""
+    i = Input(
         input_p, 
         label='<p>The data for this input indicates whether the response was "correct".</p>'
     )
-    Submit.match(correct, 'correct')
+    Submit.match(i, 'correct')
 
+    """Correct choices"""
+    s = Select(
+        input_p,
+        label='<p>The data for this question indicates whether the selected choice was correct.<p>'
+    )
+    Option(s, label='Incorrect', value=0)
+    Option(s, label='Correct', value=1)
+    Submit.correct_choices(s)
+
+    """Custom Submit functions"""
     p = Page(b)
     display_data = Label(p)
-
-    Submit.display_data(input_p, integer, correct, display_data)
+    Submit.display_data(input_p, display_data)
 
     return b
 
 @Submit.register
-def display_data(input_page, integer, correct, display_data):
-    assert isinstance(integer.data, int)
-    display_data.label = (
-        '<p>The data for `integer` is {0}.</p>'
-        +'<p>The data for `correct` is {1}.</p>'
-    ).format(integer.data, correct.data)
+def display_data(input_page, display_data):
+    label = ''
 
-@route('/survey')
+    if isinstance(input_page.questions[0].data, int):
+        label += "<p>The first question's data was converted to an int.</p>"
+
+    if input_page.questions[1].data == 1:
+        label += '<p>Your response to the second question was correct.</p>'
+    else: # data == 0
+        label += '<p>Your response to the second question was not correct.</p>'
+    
+    if input_page.questions[2].data == 1:
+        label += '<p>You selected the correct choice for the third question.</p>'
+    else: # data == 0
+        label += '<p>You did not select the correct choice for the third question.</p>'
+    
+    display_data.label = label
+
 def Debugging(root=None):
     b = Branch()
     Navigate.End(b)

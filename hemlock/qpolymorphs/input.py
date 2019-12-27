@@ -1,9 +1,6 @@
 
 from hemlock.qpolymorphs.utils import *
 
-from random import randint
-from string import ascii_letters, digits
-
 
 class Input(InputGroup, InputBase, Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)

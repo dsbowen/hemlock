@@ -24,6 +24,10 @@ class Question(Data, HTMLMixin, MutableModelBase):
         'polymorphic_on': question_type
     }
 
+    @property
+    def part(self):
+        return None if self.page is None else self.page.part
+
     """Relationships to Function models"""
     compile_functions = db.relationship(
         'CompileFn',
@@ -81,11 +85,11 @@ class Question(Data, HTMLMixin, MutableModelBase):
 
     @property
     def label(self):
-        return self.text('span.label-txt')
+        return self.text('.label-txt')
 
     @label.setter
     def label(self, val):
-        self._set_element((val or ''), parent_selector='span.label-txt')
+        self._set_element((val or ''), parent_selector='.label-txt')
         self.body.changed()
 
     def clear_error(self):
@@ -98,8 +102,8 @@ class Question(Data, HTMLMixin, MutableModelBase):
     def _compile(self):
         [compile_fn() for compile_fn in self.compile_functions]
 
-    def _render(self):
-        return self.body.copy()
+    def _render(self, body=None):
+        return body or self.body.copy()
 
     def _record_response(self):
         self.response = request.form.get(self.model_id)
@@ -151,8 +155,8 @@ class ChoiceQuestion(Question):
     def __init__(self, *args, **kwargs):
         return super().__init__(*args, **kwargs)
 
-    def _render(self):
-        body = self.body.copy()
+    def _render(self, body=None):
+        body = body or self.body.copy()
         choice_wrapper = self._choice_wrapper(body)
         [choice_wrapper.append(c._render()) for c in self.choices]
         return body

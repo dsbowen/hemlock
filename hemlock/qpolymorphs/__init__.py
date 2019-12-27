@@ -1,14 +1,16 @@
 
 __all__ = [
     'Check',
+    'File',
     'Input',
     'Label',
     'Range',
     'Select',
-    'Textarea'
+    'Textarea',
 ]
 
 from hemlock.qpolymorphs.check import Check
+from hemlock.qpolymorphs.file import File
 from hemlock.qpolymorphs.input import Input
 from hemlock.qpolymorphs.label import Label
 from hemlock.qpolymorphs.range import Range

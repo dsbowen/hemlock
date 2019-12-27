@@ -132,11 +132,13 @@ class InputBase():
         """Get input from driver for debugging"""
         return driver.find_element_by_css_selector('#'+self.model_id)
 
-    def _render(self):
+    def _render(self, body=None):
         """Set the default value before rendering"""
+        body = body or self.body.copy()
+        inpt = body.select_one('#'+self.model_id)
         value = self.response or self.default
         if value is None:
-            self.input.attrs.pop('value', None)
+            inpt.attrs.pop('value', None)
         else:
-            self.input['value'] = value
-        return super()._render()
+            inpt['value'] = value
+        return super()._render(body)

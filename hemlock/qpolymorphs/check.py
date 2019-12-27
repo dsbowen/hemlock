@@ -17,14 +17,14 @@ class Check(ChoiceQuestion):
     
     @property
     def center(self):
-        return 'text-center' in self._choice_wrapper['class']
+        return 'text-center' in self._choice_wrapper()['class']
 
     @center.setter
     def center(self, val):
         assert isinstance(val, bool)
         if val == self.center:
             return
-        choice_wrapper = self._choice_wrapper
+        choice_wrapper = self._choice_wrapper()
         if val:
             choice_wrapper['class'].append('text-center')
         else:

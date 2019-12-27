@@ -31,8 +31,10 @@ class Textarea(InputGroup, Question):
         self.textarea['size'] = val
         self.body.changed()
 
-    def _render(self):
-        self.textarea.string = self.response or self.default or ''
-        return self.body
+    def _render(self, body=None):
+        body = body or self.body.copy()
+        textarea = body.select_one('#'+self.model_id)
+        textarea.string = self.response or self.default or ''
+        return super()._render(body)
 
     

@@ -44,3 +44,11 @@ class InputGroup():
         span = Tag(name='span')
         span['class'] = 'input-group-text'
         return span
+    
+    def _render(self, body=None):
+        body = body or self.body.copy()
+        if not self.prepend:
+            body.select_one('div.input-group-prepend').extract()
+        if not self.append:
+            body.select_one('div.input-group-append').extract()
+        return super()._render(body)

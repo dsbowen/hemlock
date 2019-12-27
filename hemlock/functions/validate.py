@@ -18,6 +18,7 @@ For example, if you want a dollar amount to the cent, use the
 """
 
 from hemlock.database import Validate
+from hemlock.functions.utils import _correct_choices
 
 from operator import __ge__, __le__
 import re
@@ -316,10 +317,12 @@ def match(question, pattern, error_msg=None):
 
 @Validate.register
 def correct_choices(question, error_msg=None):
-    correct = [c for c in question.choices if c.value]
-    if question.multiple:
-        resp_correct = question.response == correct
-    else:
-        resp_correct = question.response in correct
-    if not resp_correct:
-        return error_msg or '<p>Please select the correct choice.</p>'
+    """Validate that selected choice(s) is (are) correct"""
+    if _correct_choices(question):
+        if error_msg is not None:
+            return error_msg
+        if question.multiple:
+            return '<p>Please select the correct choice(s).</p>'
+        if len(correct) == 1:
+            return '<p>Please select the correct choice.</p>'
+        return '<p>Please select one of the correct choices.</p>'

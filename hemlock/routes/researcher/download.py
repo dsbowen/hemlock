@@ -11,9 +11,10 @@ from hemlock.routes.researcher.utils import *
 from hemlock.routes.researcher.login import researcher_login_required
 from hemlock.tools import chromedriver
 
-from datetime import timedelta
 from docx import Document
 from docx.shared import Inches
+
+from datetime import timedelta
 from io import BytesIO
 from itertools import chain
 from zipfile import ZipFile
