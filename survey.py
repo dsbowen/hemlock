@@ -14,6 +14,7 @@ def app_settings():
 def settings():
     return {'back':True}
 
+@route('/survey')
 def Start(root=None):
     b = Branch()
     p = Page(b, terminal=True)
@@ -427,6 +428,36 @@ def send_goodbye_moon(inpt, driver):
     input_from_driver = inpt.input_from_driver(driver)
     input_from_driver.clear()
     input_from_driver.send_keys('goodbye moon')
+
+def Statics(root=None):
+    b = Branch()
+
+    """Video"""
+    p = Page(b)
+    vid = Vid.from_youtube('https://www.youtube.com/watch?v=LPYCtErvMyA')
+    vid.parms['autoplay'] = 1
+    Label(p, label=vid.render())
+
+    """Image"""
+    p = Page(b)
+    img = Img(
+        caption='Wanna See the Code?',
+        alignment='center',
+        src='https://imgs.xkcd.com/comics/wanna_see_the_code.png'
+    )
+    Label(p, label=img.render())
+
+    """Images as choices"""
+    p = Page(b)
+    c = Check(p, label='<p>Pick your favorite.</p>')
+    img = Img(src='https://imgs.xkcd.com/comics/halting_problem.png')
+    Choice(c, label=img.render())
+    img = Img(src='https://imgs.xkcd.com/comics/xkcde.png')
+    Choice(c, label=img.render())
+    img = Img(src='https://imgs.xkcd.com/comics/code_quality_2.png')
+    Choice(c, label=img.render())
+
+    return b
 
 def ComprehensionCheck(root=None):
     instructions, checks = [], []

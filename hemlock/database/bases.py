@@ -70,11 +70,7 @@ class BranchingBase(Base):
         )
 
 
-class HTMLMixin(Base):
-    css = Column(MutableSoupType)
-    js = Column(MutableSoupType)
-    body = Column(MutableSoupType)
-
+class HTMLBase():
     def text(self, selector, parent=None):
         elem = self.body.select_one(selector, parent)
         return None if elem is None else elem.text
@@ -94,9 +90,7 @@ class HTMLMixin(Base):
         """
         parent = self.body.select_one(parent_selector)
         if not val:
-            parent.clear()
-            self.body.changed()
-            return
+            return parent.clear()
         target = self._get_target(
             parent, target_selector, gen_target, args, kwargs
         )
@@ -104,7 +98,6 @@ class HTMLMixin(Base):
             val = BeautifulSoup(str(val), 'html.parser')
         target.clear()
         target.append(val)
-        self.body.changed()
 
     def _get_target(self, parent, target_selector, gen_target, args, kwargs):
         """Get target element
@@ -121,6 +114,16 @@ class HTMLMixin(Base):
             return target
         parent.append(gen_target(*args, **kwargs))
         return parent.select_one(target_selector)
+
+
+class HTMLMixin(HTMLBase, Base):
+    css = Column(MutableSoupType)
+    js = Column(MutableSoupType)
+    body = Column(MutableSoupType)
+
+    def _set_element(self, *args, **kwargs):
+        super()._set_element(*args, **kwargs)
+        self.body.changed()
 
 
 class InputBase():
