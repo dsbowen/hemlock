@@ -17,7 +17,8 @@ redis
 rq
 selenium
 sqlalchemy
-sqlalchemy-function
+sqlalchemy-function==0.0.3
 sqlalchemy-mutable
+sqlalchemy-mutablesoup==0.0.1
 sqlalchemy-nav
 sqlalchemy-orderingitem

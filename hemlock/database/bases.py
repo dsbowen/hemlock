@@ -9,13 +9,13 @@ HTMLMixin contains convenience methods for models which manipulate HTML.
 """
 
 from hemlock.app import Settings, db
-from hemlock.database.types import MutableSoupType
 
 from bs4 import BeautifulSoup
 from flask import render_template
 from sqlalchemy import Column
 from sqlalchemy.inspection import inspect
 from sqlalchemy_function import FunctionRelator
+from sqlalchemy_mutablesoup import MutableSoupType
 from sqlalchemy_orderingitem import OrderingItem
 
 
@@ -139,9 +139,10 @@ class InputBase():
         """Set the default value before rendering"""
         body = body or self.body.copy()
         inpt = body.select_one('#'+self.model_id)
-        value = self.response or self.default
-        if value is None:
-            inpt.attrs.pop('value', None)
-        else:
-            inpt['value'] = value
+        if inpt is not None:
+            value = self.response or self.default
+            if value is None:
+                inpt.attrs.pop('value', None)
+            else:
+                inpt['value'] = value
         return super()._render(body)

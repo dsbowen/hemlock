@@ -4,7 +4,7 @@ This module performs the following download processes:
 1. Create a download page.
 2. Create data download files.
 3. Create survey view download files.
-4. Zip download files and save to Google bucket.
+4. Zip download files.
 """
 
 from hemlock.routes.researcher.utils import *
@@ -14,6 +14,7 @@ from hemlock.tools import chromedriver
 from docx import Document
 from docx.shared import Inches
 
+from base64 import b64encode
 from datetime import timedelta
 from io import BytesIO
 from itertools import chain
@@ -43,16 +44,16 @@ def download_page():
     by commas or spaces.
     """
     download_p = Page(nav=researcher_navbar(), back=False, forward=False)
-    data_q = MultiChoice(download_p, text=SELECT_FILES_TXT)
-    Choice(data_q, text='Metadata', value='meta')
-    Choice(data_q, text='Status Log', value='status')
-    Choice(data_q, text='Dataframe', value='data')
-    survey_view_q = Free(download_p, text=SURVEY_VIEW_TXT)
+    data_q = Check(download_p, label=SELECT_FILES_TXT, multiple=True)
+    Choice(data_q, label='Metadata', value='meta')
+    Choice(data_q, label='Status Log', value='status')
+    Choice(data_q, label='Dataframe', value='data')
+    survey_view_q = Input(download_p, label=SURVEY_VIEW_TXT)
     Validate(survey_view_q, valid_part_ids)
     Submit(survey_view_q, store_part_ids)
     btn = Download(
         download_p, 
-        text='Download', 
+        btn_text='Download', 
         callback=request.url,
         download_msg='Download Complete'
     )
@@ -81,7 +82,7 @@ def parse_part_ids(raw_ids):
     Raw IDs are delimited by spaces or commas. Parsed IDs are a list of 
     integers.
     """
-    if raw_ids is None:
+    if not raw_ids:
         return []
     comma_splits = raw_ids.split(',')
     space_splits = [cs.split(' ') for cs in comma_splits]
@@ -99,6 +100,7 @@ def handle_download_form(btn, response):
     btn.downloads = []
     btn.create_file_functions = []
     download_p._record_response()
+    downloads_q, views_q, _ = download_p.questions
     if download_p._validate():
         download_p._submit()
         data_q, survey_view_q, _ = download_p.questions
@@ -214,7 +216,7 @@ def add_doc_to_zip(btn, doc, part_id):
     zipfunc = btn.create_file_functions[-1]
     zipfunc.args.append((filename, doc_bytes))
 
-"""4. Zip download files and save to Google bucket"""
+"""4. Zip download files"""
 def zip_files(btn, *files):
     """Zip download files
     
@@ -229,9 +231,8 @@ def zip_files(btn, *files):
         zipf.writestr(filename, io.getvalue())
         io.close()
     zipf.close()
-    blob = current_app.gcp_bucket.blob(btn.model_id+'.zip')
-    blob.upload_from_string(zipf_bytes.getvalue())
-    url = blob.generate_signed_url(expiration=timedelta(hours=1))
-    btn.downloads = [(url, 'download.zip')]
+    data = b64encode(zipf_bytes.getvalue()).decode()
+    url = 'data:application/zip;base64,' + data
+    btn.tmp_downloads = [(url, 'download.zip')]
     zipf_bytes.close()
     yield btn.report(stage, 100)

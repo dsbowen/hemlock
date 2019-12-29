@@ -43,13 +43,13 @@ def default_js():
     [js.append(gen_external_js(**attrs)) for attrs in attrs_list]
     return js
 
-def compile_fn(page):
+def compile_func(page):
     [q._compile() for q in page.questions]
 
-def validate_fn(page):
+def validate_func(page):
     [q._validate() for q in page.questions]
     
-def submit_fn(page):
+def submit_func(page):
     [q._submit() for q in page.questions]
 
 @Settings.register('Page')
@@ -59,7 +59,7 @@ def page_settings():
         'js': default_js(),
         'back': False,
         'forward': True,
-        'compile_functions': compile_fn,
-        'validate_functions': validate_fn,
-        'submit_functions': submit_fn,
+        'compile_functions': compile_func,
+        'validate_functions': validate_func,
+        'submit_functions': submit_func,
     }

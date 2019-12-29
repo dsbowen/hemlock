@@ -3,7 +3,6 @@
 from hemlock.app import db
 from hemlock.database.bases import BranchingBase, HTMLMixin
 from hemlock.database.data import Timer
-from hemlock.database.types import MutableSoupType
 import hemlock.database.page_settings
 
 from bs4 import BeautifulSoup, Tag
@@ -73,9 +72,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     """Relationships to function models and workers"""
     cache_compile = db.Column(db.Boolean)
     compile_functions = db.relationship(
-        'CompileFn',
+        'Compile',
         backref='page',
-        order_by='CompileFn.index',
+        order_by='Compile.index',
         collection_class=ordering_list('index')
     )
     compile_worker = db.relationship(
@@ -85,9 +84,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     )
 
     validate_functions = db.relationship(
-        'ValidateFn',
+        'Validate',
         backref='page',
-        order_by='ValidateFn.index',
+        order_by='Validate.index',
         collection_class=ordering_list('index')
     )
     validate_worker = db.relationship(
@@ -97,9 +96,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     )
 
     submit_functions = db.relationship(
-        'SubmitFn',
+        'Submit',
         backref='page',
-        order_by='SubmitFn.index',
+        order_by='Submit.index',
         collection_class=ordering_list('index')
     )
     submit_worker = db.relationship(
@@ -109,14 +108,14 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     )
 
     debug_functions = db.relationship(
-        'DebugFn',
+        'Debug',
         backref='page',
-        order_by='DebugFn.index',
+        order_by='Debug.index',
         collection_class=ordering_list('index')
     )
 
     navigate_function = db.relationship(
-        'NavigateFn', 
+        'Navigate', 
         backref='page', 
         uselist=False
     )
@@ -226,7 +225,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         1. Execute compile functions
         2. If compile results are cached, remove get worker and functions
         """
-        [compile_fn() for compile_fn in self.compile_functions]
+        [compile_func() for compile_func in self.compile_functions]
         if self.cache_compile:
             self.compile_functions.clear()
             self.compile_worker = None
@@ -286,8 +285,8 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         and return False. Otherwise, return True.
         """
         self.error = None
-        for validate_fn in self.validate_functions:
-            error = validate_fn()
+        for validate_func in self.validate_functions:
+            error = validate_func()
             if error is not None:
                 self.error = error
                 break
@@ -297,10 +296,10 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     
     def _submit(self):
         [q._record_data() for q in self.questions]
-        [submit_fn() for submit_fn in self.submit_functions]
+        [submit_func() for submit_func in self.submit_functions]
 
     def _debug(self, driver):
-        [debug_fn(driver) for debug_fn in self.debug_functions]
+        [debug_func(driver) for debug_func in self.debug_functions]
     
     def _view_nav(self, indent):
         """Print self and next branch for debugging purposes"""

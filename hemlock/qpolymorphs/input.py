@@ -1,3 +1,4 @@
+"""Input question"""
 
 from hemlock.qpolymorphs.utils import *
 

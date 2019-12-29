@@ -30,30 +30,30 @@ class Question(Data, HTMLMixin, MutableModelBase):
 
     """Relationships to Function models"""
     compile_functions = db.relationship(
-        'CompileFn',
+        'Compile',
         backref='question',
-        order_by='CompileFn.index',
+        order_by='Compile.index',
         collection_class=ordering_list('index')
     )
 
     validate_functions = db.relationship(
-        'ValidateFn', 
+        'Validate', 
         backref='question', 
-        order_by='ValidateFn.index',
+        order_by='Validate.index',
         collection_class=ordering_list('index')
     )
     
     submit_functions = db.relationship(
-        'SubmitFn',
+        'Submit',
         backref='question',
-        order_by='SubmitFn.index',
+        order_by='Submit.index',
         collection_class=ordering_list('index')
     )
 
     debug_functions = db.relationship(
-        'DebugFn',
+        'Debug',
         backref='question',
-        order_by='DebugFn.index',
+        order_by='Debug.index',
         collection_class=ordering_list('index')
     )
 
@@ -100,7 +100,7 @@ class Question(Data, HTMLMixin, MutableModelBase):
 
     """Methods executed during study"""
     def _compile(self):
-        [compile_fn() for compile_fn in self.compile_functions]
+        [compile_func() for compile_func in self.compile_functions]
 
     def _render(self, body=None):
         return body or self.body.copy()
@@ -115,8 +115,8 @@ class Question(Data, HTMLMixin, MutableModelBase):
         message (i.e. error is not None), indicate the response was invalid 
         and return False. Otherwise, return True.
         """
-        for validate_fn in self.validate_functions:
-            error = validate_fn()
+        for validate_func in self.validate_functions:
+            error = validate_func()
             if error:
                 self.error = error
                 return False
@@ -127,10 +127,10 @@ class Question(Data, HTMLMixin, MutableModelBase):
         self.data = self.response
     
     def _submit(self):
-        [submit_fn() for submit_fn in self.submit_functions]
+        [submit_func() for submit_func in self.submit_functions]
 
     def _debug(self, driver):
-        [debug_fn(driver) for debug_fn in self.debug_functions]
+        [debug_func(driver) for debug_func in self.debug_functions]
 
 
 class ChoiceQuestion(Question):
@@ -189,6 +189,8 @@ class ChoiceQuestion(Question):
             packed_data = {
                 var+c.value:None for c in self.choices if c.value is not None
             }
-        else:
+        elif isinstance(self.data, dict):
             packed_data = {var+key: val for key, val in self.data.items()}
+        else:
+            packed_data = self.data
         return super()._pack_data(packed_data)

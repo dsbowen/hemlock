@@ -65,16 +65,16 @@ class Function(FunctionMixin, Base):
         super().__init__(*args, **kwargs)
 
 
-class CompileFn(Function, db.Model):
+class Compile(Function, db.Model):
     pass
 
-class ValidateFn(Function, db.Model):
+class Validate(Function, db.Model):
     pass
 
-class SubmitFn(Function, db.Model):
+class Submit(Function, db.Model):
     pass
 
-class DebugFn(Function, db.Model):
+class Debug(Function, db.Model):
     def __call__(self, driver):
         """Call function with webdriver argument"""
         if self.parent is None:
@@ -83,7 +83,7 @@ class DebugFn(Function, db.Model):
             self.parent, driver, *self.args, **self.kwargs.unshell()
         )
 
-class NavigateFn(Function, db.Model):
+class Navigate(Function, db.Model):
     def __call__(self):
         """
         A Navigate function call begins by creating a new branch using its 
@@ -107,27 +107,3 @@ class NavigateFn(Function, db.Model):
         else:
             next_branch.origin_branch = None
             next_branch.origin_page = parent
-
-
-class FunctionRegistrar():
-    @classmethod
-    def register(cls, fn):
-        def add_function(parent, *args, **kwargs):
-            cls.function_model(parent, fn, list(args), kwargs)
-        setattr(cls, fn.__name__, add_function)
-        return fn
-
-class Compile(FunctionRegistrar):
-    function_model = CompileFn
-
-class Validate(FunctionRegistrar):
-    function_model = ValidateFn
-
-class Submit(FunctionRegistrar):
-    function_model = SubmitFn
-
-class Debug(FunctionRegistrar):
-    function_model = DebugFn
-
-class Navigate(FunctionRegistrar):
-    function_model = NavigateFn

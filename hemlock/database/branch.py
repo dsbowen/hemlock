@@ -73,7 +73,7 @@ class Branch(BranchingBase, db.Model):
         return elements
         
     navigate_function = db.relationship(
-        'NavigateFn',
+        'Navigate',
         backref='branch', 
         uselist=False
     )

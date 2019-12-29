@@ -14,7 +14,7 @@ def app_settings():
 def settings():
     return {'back':True}
 
-@route('/survey')
+
 def Start(root=None):
     b = Branch()
     p = Page(b, terminal=True)
@@ -28,6 +28,7 @@ def End(root=None):
     Label(p, label='<p>Goodbye World.</p>')
     return b
 
+@route('/survey')
 def QuestionPolymorphs(root=None):
     b = Branch()
     Navigate.End(b)
@@ -94,6 +95,11 @@ def QuestionPolymorphs(root=None):
         step=2,
         default=-10
     )
+
+    """File download"""
+    p = Page(b)
+    url = 'https://test-bucket2357.s3.us-east-2.amazonaws.com/hello_world.txt'
+    Download(p, downloads=[(url, 'hello-world.txt')])
 
     """File upload"""
     p = Page(b)

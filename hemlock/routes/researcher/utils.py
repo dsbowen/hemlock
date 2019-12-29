@@ -3,7 +3,7 @@
 from hemlock.app.factory import bp, db
 from hemlock.database import *
 from hemlock.database.private import DataStore
-from hemlock.question_polymorphs import *
+from hemlock.qpolymorphs import *
 from hemlock.routes.researcher.texts import *
 from hemlock.tools import *
 
@@ -26,12 +26,12 @@ def researcher_navbar():
     Brand(navbar, label='Hemlock')
     Navitem(navbar, url=url_for('hemlock.status'), label='Participant Status')
     Navitem(navbar, url=url_for('hemlock.download'), label='Download')
-    profile_item = Navitem(
-        navbar, 
-        url=url_for('hemlock.profile'), 
-        label='Data Profile',
-        attrs={'target': '_blank'}
-    )
+    # profile_item = Navitem(
+    #     navbar, 
+    #     url=url_for('hemlock.profile'), 
+    #     label='Data Profile',
+    #     attrs={'target': '_blank'}
+    # )
     # pfx = '' if request.path == '/profile' else url_for('hemlock.profile')
     # [
     #     create_profile_dditem(profile_item, pfx, url, label) 

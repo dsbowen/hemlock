@@ -13,26 +13,20 @@ def login():
     login_p = login_page()
     if request.method == 'POST':
         login_p._record_response()
-        password = login_p.questions[0].response
-        password = password or ''
+        password = login_p.questions[0].response or ''
         session_store('password', password)
         if login_p._validate():
             return login_successful()
     return render(login_p)
-
-LOGIN_BTN = """
-<button id="forward-button" name="direction" type="submit" class="w-100 btn btn-outline-primary" style="float: right;" value="forward">
-    Login
-</button>
-"""
 
 @researcher_page('login')
 def login_page():
     """Create login page"""
     login_p = Page(back=False)
     Validate(login_p, check_password)
-    Free(login_p, text=PASSWORD_PROMPT)
-    login_p.forward_button = LOGIN_BTN
+    Input(login_p, label=PASSWORD_PROMPT)
+    login_p.forward = 'Login'
+    login_p.body.select_one('#forward-btn')['class'] += ' w-100'
     return login_p
 
 def check_password(login_page):
@@ -40,14 +34,20 @@ def check_password(login_page):
     if not password_correct():
         return PASSWORD_INCORRECT
 
+def password_correct():
+    """Indicate that the session password is correct"""
+    if 'password' not in session:
+        return False
+    return check_password_hash(current_app.password_hash, session['password'])
+
 def login_successful():
     """Process successful login
 
     Clear login page and redirect to requested page.
     """
     login_p = login_page()
-    login_p.clear_errors()
-    login_p.clear_responses()
+    login_p.clear_error()
+    login_p.clear_response()
     db.session.commit()
     requested = request.args.get('requested') or 'status'
     return redirect(url_for('hemlock.{}'.format(requested)))
@@ -62,12 +62,6 @@ def researcher_login_required(func):
             return redirect(url_for('hemlock.login', requested=func.__name__))
         return func()
     return login_requirement
-
-def password_correct():
-    """Indicate that the session password is correct"""
-    if 'password' not in session:
-        return False
-    return check_password_hash(current_app.password_hash, session['password'])
 
 @bp.route('/logout')
 def logout():

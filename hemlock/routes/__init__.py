@@ -4,7 +4,7 @@ from hemlock.app.factory import bp, db
 from hemlock.database.private import DataStore
 from hemlock.routes.participant import route
 import hemlock.routes.participant
-# import hemlock.routes.researcher
+import hemlock.routes.researcher
 
 from flask import current_app, session
     

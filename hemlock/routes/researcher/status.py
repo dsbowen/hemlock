@@ -13,14 +13,18 @@ def status():
 def status_page():
     """Return the Participant Status page"""
     status_p = Page(nav=researcher_navbar(), back=False, forward=False)
-    status_p.js.append(current_app.socket_js)
-    status_js = JS(filename='js/participants.js', blueprint='hemlock')
+    socket_js = gen_external_js(src=current_app.socket_js_src)
+    status_p.js.append(socket_js)
+    status_js = gen_external_js(
+        src=url_for('hemlock.static', filename='js/status.js')
+    )
     status_p.js.append(status_js)
-    status_txt = Text(status_p)
-    Compile(status_txt, live_status)
+    status_p.js.changed()
+    status_label = Label(status_p)
+    Compile(status_label, live_status)
     return status_p
 
-def live_status(status_txt):
+def live_status(status_label):
     """Set text to reflect participants' live status"""
     ds = DataStore.query.first()
-    status_txt.text = PARTICIPANTS.format(**ds.current_status)
+    status_label.label = PARTICIPANTS.format(**ds.current_status)

@@ -1,6 +1,7 @@
 
 __all__ = [
     'Check',
+    'Download', 'CreateFile', 'HandleForm',
     'File',
     'Input',
     'Label',
@@ -10,6 +11,7 @@ __all__ = [
 ]
 
 from hemlock.qpolymorphs.check import Check
+from hemlock.qpolymorphs.download import Download, CreateFile, HandleForm
 from hemlock.qpolymorphs.file import File
 from hemlock.qpolymorphs.input import Input
 from hemlock.qpolymorphs.label import Label
