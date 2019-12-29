@@ -7,7 +7,7 @@ from flask_download_btn import DownloadBtnManager, DownloadBtnMixin, CreateFileM
 
 
 @DownloadBtnManager.register
-class Download(DownloadBtnMixin, InputGroup, InputBase, Question):
+class Download(DownloadBtnMixin, Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'download'}
 
@@ -28,7 +28,10 @@ class Download(DownloadBtnMixin, InputGroup, InputBase, Question):
     def _compile(self, *args, **kwargs):
         """Compile
 
-        Begin by compiling the download button javascript. Each time the script is generated, it creates and stores a new CSRF token. Therefore the current script should be replaced by a new script on each compile.
+        Begin by compiling the download button javascript. Each time the 
+        script is generated, it creates and stores a new CSRF token. 
+        Therefore the current script should be replaced by a new script on 
+        each compile.
         """
         curr_script = self.js.select_one('#'+self.model_id)
         if curr_script is not None:
@@ -39,6 +42,7 @@ class Download(DownloadBtnMixin, InputGroup, InputBase, Question):
         super()._compile(*args, **kwargs)
 
     def _render(self, body=None):
+        """Render download button and progress bar"""
         if body is None:
             body = self.body.copy()
             progress = BeautifulSoup(self.render_progress(), 'html.parser')
