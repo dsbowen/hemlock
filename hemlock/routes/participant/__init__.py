@@ -10,7 +10,8 @@ See hemlock/database/private/routing.py
 """
 
 from hemlock.app.factory import bp, db, login_manager, socketio
-from hemlock.database import Participant, Page#, Label
+from hemlock.database import Participant, Page
+from hemlock.qpolymorphs import Label
 from hemlock.database.private import DataStore
 
 from datetime import datetime, timedelta
@@ -117,7 +118,7 @@ def match_found(visitor, tracked, keys):
 @bp.route('/screenout')
 def screenout():
     p = Page(forward=False)
-    # q = Label(p, label=current_app.screenout_text)
+    Label(p, label=current_app.screenout_text)
     p._compile()
     return p._render()
     
@@ -135,7 +136,7 @@ def restart():
         return redirect(url_for('hemlock.{}'.format(bp.default_route)))
         
     p = Page(back=True)
-    # q = Label(p, label=current_app.restart_text)
+    Label(p, label=current_app.restart_text)
     p._compile()
     return p._render()
 

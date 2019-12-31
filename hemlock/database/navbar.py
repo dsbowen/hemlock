@@ -3,17 +3,28 @@
 from hemlock.app import db
 from hemlock.database.bases import Base
 
-from sqlalchemy_nav import BrandMixin, DropdownitemMixin, NavbarMixin, NavitemMixin
+from flask import Markup
+from sqlalchemy_nav import NavbarMixin, NavitemMixin, DropdownitemMixin 
 
 
 class Navbar(NavbarMixin, Base, db.Model):
-    pages = db.relationship('Page', backref='nav', lazy='dynamic')
+    pages = db.relationship('Page', backref='navbar', lazy='dynamic')
 
-class Brand(BrandMixin, Base, db.Model):
-    pass
+    @Base.init('Navbar')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def render(self, body=None):
+        return Markup(str(super().render(body)))
     
+
 class Navitem(NavitemMixin, Base, db.Model):
-    pass
+    @Base.init('Navitem')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     
 class Dropdownitem(DropdownitemMixin, Base, db.Model):
-    pass
+    @Base.init('Dropdownitem')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

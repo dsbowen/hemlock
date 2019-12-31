@@ -43,7 +43,7 @@ def download_page():
     inputing participant IDs in a free response question. IDs are delimited 
     by commas or spaces.
     """
-    download_p = Page(nav=researcher_navbar(), back=False, forward=False)
+    download_p = Page(navbar=researcher_navbar(), back=False, forward=False)
     data_q = Check(download_p, label=SELECT_FILES_TXT, multiple=True)
     Choice(data_q, label='Metadata', value='meta')
     Choice(data_q, label='Status Log', value='status')
@@ -52,8 +52,7 @@ def download_page():
     Validate(survey_view_q, valid_part_ids)
     Submit(survey_view_q, store_part_ids)
     btn = Download(
-        download_p, 
-        btn_text='Download', 
+        download_p,
         callback=request.url,
         download_msg='Download Complete'
     )

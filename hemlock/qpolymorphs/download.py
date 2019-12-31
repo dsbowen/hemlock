@@ -1,5 +1,6 @@
 """Download button"""
 
+from hemlock.database.bases import Base
 from hemlock.qpolymorphs.utils import *
 
 from bs4 import BeautifulSoup
@@ -33,7 +34,7 @@ class Download(DownloadBtnMixin, Question):
         Therefore the current script should be replaced by a new script on 
         each compile.
         """
-        curr_script = self.js.select_one('#'+self.model_id)
+        curr_script = self.js.select_one('#'+self.script_id)
         if curr_script is not None:
             curr_script.extract()
         new_script = BeautifulSoup(self.script(), 'html.parser')
@@ -50,10 +51,19 @@ class Download(DownloadBtnMixin, Question):
         return super()._render(body)
 
 
-class CreateFile(CreateFileMixin, db.Model):
+class CreateFile(CreateFileMixin, Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bnt_id = db.Column(db.Integer, db.ForeignKey('download.id'))
 
-class HandleForm(HandleFormMixin, db.Model):
+    @Base.init('CreateFile')
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+
+
+class HandleForm(HandleFormMixin, Base, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bnt_id = db.Column(db.Integer, db.ForeignKey('download.id'))
+
+    @Base.init('HandleForm')
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)

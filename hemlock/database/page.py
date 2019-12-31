@@ -8,6 +8,7 @@ import hemlock.database.page_settings
 from bs4 import BeautifulSoup, Tag
 from flask import Markup, current_app, render_template, request
 from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy_mutable import MutableType
 
 from random import random, shuffle
 from time import sleep
@@ -23,6 +24,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _branch_head_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    g = db.Column(MutableType)
     index = db.Column(db.Integer)
 
     next_branch = db.relationship(
@@ -55,7 +57,11 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         collection_class=ordering_list('index'),
     )
 
-    timer = db.relationship('Timer', uselist=False)
+    timer = db.relationship(
+        'Timer', 
+        uselist=False,
+        foreign_keys='Timer._timed_page_id'
+    )
 
     questions = db.relationship(
         'Question', 
@@ -140,13 +146,12 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     """API methods"""
     @property
     def error(self):
-        return self.text('div.error-msg')
+        return self.body.text('div.error-msg')
 
     @error.setter
     def error(self, val):
-        self._set_element(
-            val, 
-            parent_selector='span.error-msg', 
+        self.body._set_element(
+            'span.error-msg', val,
             target_selector='div.error-msg', 
             gen_target=self._gen_error
         )
@@ -160,14 +165,13 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     @property
     def back(self):
-        return self.text('#back-btn')
+        return self.body.text('#back-btn')
 
     @back.setter
     def back(self, val):
         val = '<<' if val is True else val
-        self._set_element(
-            val, 
-            parent_selector='span.back-btn', 
+        self.body._set_element(
+            'span.back-btn', val,
             target_selector='#back-btn', 
             gen_target=self._gen_submit,
             args=['back']
@@ -175,14 +179,13 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     @property
     def forward(self):
-        return self.text('#forward-btn')
+        return self.body.text('#forward-btn')
 
     @forward.setter
     def forward(self, val):
         val = '>>' if val is True else val
-        self._set_element(
-            val, 
-            parent_selector='span.forward-btn', 
+        self.body._set_element(
+            'span.forward-btn', val,
             target_selector='#forward-btn', 
             gen_target=self._gen_submit,
             args=['forward']

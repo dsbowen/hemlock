@@ -72,7 +72,7 @@ SOCKET_JS_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.i
 def app_settings():
     return {
         'clean_data': None,
-        'duplicate_keys': ['IPv4', 'workerId'],
+        'duplicate_keys': [],
         'offline': False,
         'password': '',
         'restart_option': True,

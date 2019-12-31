@@ -19,32 +19,18 @@ PROFILE_SFX_LABELS = [
 
 def researcher_navbar():
     """Create a researcher navigation bar"""
-    navbar = Navbar()
-    navbar.classes.remove('navbar-dark')
-    navbar.classes.remove('bg-dark')
-    navbar.classes.extend(['navbar-light', 'bg-light', 'fixed-top'])
-    Brand(navbar, label='Hemlock')
-    Navitem(navbar, url=url_for('hemlock.status'), label='Participant Status')
-    Navitem(navbar, url=url_for('hemlock.download'), label='Download')
-    # profile_item = Navitem(
-    #     navbar, 
-    #     url=url_for('hemlock.profile'), 
-    #     label='Data Profile',
-    #     attrs={'target': '_blank'}
-    # )
-    # pfx = '' if request.path == '/profile' else url_for('hemlock.profile')
-    # [
-    #     create_profile_dditem(profile_item, pfx, url, label) 
-    #     for url, label in PROFILE_SFX_LABELS
-    # ]
-    Navitem(navbar, url=url_for('hemlock.logout'), label='Logout')
+    navbar = Navbar(label='Hemlock')
+    Navitem(navbar, label='Participant Status', href=url_for('hemlock.status'))
+    Navitem(navbar, label='Download', href=url_for('hemlock.download'))
+    navitem = Navitem(
+        navbar, 
+        label='Data Profile', 
+        href=url_for('hemlock.profile')
+    )
+    navitem.a['target'] = '_blank'
+    navitem.body.changed()
+    Navitem(navbar, label='Logout', href=url_for('hemlock.logout'))
     return navbar
-
-def create_profile_dditem(profile_navitem, pfx, sfx, label):
-    """Create dropdown item for data profile"""
-    url = '{0}#{1}'.format(pfx, sfx)
-    item = Dropdownitem(profile_navitem, url=url, label=label)
-    item.classes.append('anchor')
 
 def researcher_page(key):
     """Decorator for retrieving or creating a researcher page

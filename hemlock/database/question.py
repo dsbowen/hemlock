@@ -68,7 +68,7 @@ class Question(Data, HTMLMixin, MutableModelBase):
     """Shortcuts for modifying soup"""
     @property
     def error(self):
-        return self.text('.error-txt')
+        return self.body.text('.error-txt')
 
     @error.setter
     def error(self, val):
@@ -80,17 +80,15 @@ class Question(Data, HTMLMixin, MutableModelBase):
                 pass
         elif 'error' not in form_grp_cls:
             form_grp_cls.append('error')
-        self._set_element((val or ''), parent_selector='span.error-txt')
-        self.body.changed()
+        self.body._set_element('span.error-txt', val)
 
     @property
     def label(self):
-        return self.text('.label-txt')
+        return self.body.text('.label-txt')
 
     @label.setter
     def label(self, val):
-        self._set_element((val or ''), parent_selector='.label-txt')
-        self.body.changed()
+        self.body._set_element('.label-txt', val)
 
     def clear_error(self):
         self.error = None

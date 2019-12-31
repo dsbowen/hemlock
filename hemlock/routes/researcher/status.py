@@ -12,7 +12,7 @@ def status():
 @researcher_page('status')
 def status_page():
     """Return the Participant Status page"""
-    status_p = Page(nav=researcher_navbar(), back=False, forward=False)
+    status_p = Page(navbar=researcher_navbar(), back=False, forward=False)
     socket_js = gen_external_js(src=current_app.socket_js_src)
     status_p.js.append(socket_js)
     status_js = gen_external_js(

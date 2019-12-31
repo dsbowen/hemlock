@@ -16,6 +16,7 @@ class Choice(InputBase, HTMLMixin, db.Model):
     }
     
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+
     index = db.Column(db.Integer)    
     name = db.Column(db.Text)
     value = db.Column(MutableType)
@@ -29,12 +30,11 @@ class Choice(InputBase, HTMLMixin, db.Model):
 
     @property
     def label(self):
-        return self.text('label.choice')
+        return self.body.text('label.choice')
 
     @label.setter
     def label(self, val):
-        self._set_element((val or ''), parent_selector='label.choice')
-        self.body.changed()
+        self.body._set_element('label.choice', val)
 
     def set_all(self, val):
         self.label = self.name = self.value = val
@@ -51,8 +51,8 @@ class Choice(InputBase, HTMLMixin, db.Model):
             return self in default
         return self == default
     
-    def _render(self):
-        body = self.body.copy()
+    def _render(self, body=None):
+        body = body or self.body.copy()
         inpt = body.select_one('input#'+self.model_id)
         inpt['name'] = self.question.model_id
         self._handle_multiple(body, inpt)
@@ -96,18 +96,18 @@ class Option(Choice):
 
     @property
     def label(self):
-        return self.text('option')
+        return self.body.text('option')
     
     @label.setter
     def label(self, val):
-        self._set_element((val or ''), parent_selector='option')
-        self.body.changed()
+        self.body._set_element('option', val)
     
-    def _render(self):
-        opt_tag = self.body.select_one('#'+self.model_id)
+    def _render(self, body=None):
+        body = body or self.body.copy()
+        opt_tag = body.select_one('#'+self.model_id)
         opt_tag['name'] = self.question.model_id
         if self.is_default():
             opt_tag['selected'] = None
         else:
             opt_tag.attrs.pop('selected', None)
-        return self.body.copy()
+        return body

@@ -51,10 +51,17 @@ class Embedded(Data):
     id = db.Column(db.Integer, db.ForeignKey('data.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'embedded'}
 
+    @Data.init('Embedded')
+    def __init__(self, page=None, **kwargs):
+        super().__init__()
+        return {'page': page, **kwargs}
+
 
 class Timer(Embedded):
     id = db.Column(db.Integer, db.ForeignKey('embedded.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'timer'}
+
+    _timed_page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
 
     state = db.Column(db.String(16), default='not_started')
     start_time = db.Column(db.DateTime)

@@ -74,12 +74,14 @@ def settings():
 
 """Textarea and text Input debugging"""
 @Debug.register
-def send_keys(question, driver, keys):
+def send_keys(question, driver, keys, p_exec=1):
     """Send keys method
 
     This debugger sends the specified keys or list or keys to the textarea 
     or input.
     """
+    if random() > p_exec:
+        return
     try:
         inpt = question.textarea_from_driver(driver)
     except:
@@ -230,12 +232,14 @@ def settings():
 
 """Choice question debugger"""
 @Debug.register
-def click_choices(question, driver, *choices):
+def click_choices(question, driver, *choices, p_exec=1):
     """Click on input choices
 
     Note: the try/except is due to an open issue, possibly due to dragula. 
     See more here https://github.com/bevacqua/dragula/issues/569.
     """
+    if random() > p_exec:
+        return
     actions = ActionChains(driver)
     actions.key_down(Keys.CONTROL)
     for choice in choices:

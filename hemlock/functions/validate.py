@@ -193,7 +193,7 @@ def exact_len(question, value, error_msg=None):
         return error_msg
     if isinstance(question.response, list):
         return NUM_CHOICES_EXACT_MSG.format(value, plural(value))
-    return EXACT_LEN_MSG.format(val, plural(value))
+    return EXACT_LEN_MSG.format(value, plural(value))
 
 """Number of words"""
 

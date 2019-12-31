@@ -172,7 +172,8 @@ class Participant(UserMixin, Base, db.Model):
         Pages' elements. A Page's Timer is set before its Questions.
         """
         var_count = {}
-        self._set_order_branch(self.branch_stack[0], var_count)
+        if self.branch_stack:
+            self._set_order_branch(self.branch_stack[0], var_count)
     
     def _set_order_branch(self, branch, var_count):
         """Set the order for Questions belonging to a given Branch"""

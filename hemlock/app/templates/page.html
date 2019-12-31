@@ -3,31 +3,31 @@
 {% extends 'bootstrap/base.html' %}
 
 {% block styles %}
-{{ page.css._render() }}
+{{ page.css.render() }}
 {% for q in page.questions %}
-    {{ q.css._render() }}
+    {{ q.css.render() }}
     {% for opt in q.options %}
-        {{ opt.css._render() }}
+        {{ opt.css.render() }}
     {% endfor %}
 {% endfor %}
 {% endblock %}
 
 {% block scripts %}
-{{ page.js._render() }}
+{{ page.js.render() }}
 {% for q in page.questions %}
-    {{ q.js._render() }}
+    {{ q.js.render() }}
     {% for opt in q.options %}
-        {{ opt.js._render() }}
+        {{ opt.js.render() }}
     {% endfor %}
 {% endfor %}
 {% endblock %}
 
 {% block navbar %}
-{% if page.nav is not none %}
-    {{ page.nav.render() }}
+{% if page.navbar is not none %}
+    {{ page.navbar.render() }}
 {% endif %}
 {% endblock %}
 
 {% block content %}
-{{ page.body._render() }}
+{{ page.body.render() }}
 {% endblock %}

@@ -23,3 +23,4 @@ sqlalchemy-mutable
 sqlalchemy-mutablesoup==0.0.1
 sqlalchemy-nav
 sqlalchemy-orderingitem
+sqlalchemy_mutablesoup==0.0.1

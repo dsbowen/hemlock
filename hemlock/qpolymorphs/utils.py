@@ -10,13 +10,12 @@ from flask import render_template
 class InputGroup():
     @property
     def prepend(self):
-        return self.text('.input-group-prepend')
+        return self.body.text('.input-group-prepend')
 
     @prepend.setter
     def prepend(self, val):
-        self._set_element(
-            val, 
-            parent_selector='div.input-group-prepend',
+        self.body._set_element(
+            '.input-group-prepend', val,
             target_selector='span.input-group-text', 
             gen_target=self._gen_input_group_text,
             args=['prepend']
@@ -24,13 +23,12 @@ class InputGroup():
 
     @property
     def append(self):
-        return self.text('.input-group-append')
+        return self.body.text('.input-group-append')
     
     @append.setter
     def append(self, val):
-        self._set_element(
-            val,
-            parent_selector='div.input-group-append',
+        self.body._set_element(
+            '.input-group-append', val,
             target_selector='span.input-group-text',
             gen_target=self._gen_input_group_text,
             args=['append']

@@ -1,9 +1,8 @@
 """Tool for generating statics"""
 
-from hemlock.database.bases import HTMLBase
-
 from bs4 import BeautifulSoup
 from flask import render_template
+from sqlalchemy_mutablesoup import SoupBase
 
 from urllib.parse import parse_qs, urlparse, urlencode
 
@@ -42,7 +41,7 @@ def gen_external_js(**attrs):
     return gen_soup('<script></script>', **attrs)
 
 
-class Static(HTMLBase):
+class Static(SoupBase):
     def __init__(self, template, **kwargs):
         self.body = BeautifulSoup(render_template(template), 'html.parser')
         self.src_parms = {}
@@ -80,11 +79,11 @@ class Img(Static):
 
     @property
     def caption(self):
-        return self.text('figcaption')
+        return self.body.text('figcaption')
 
     @caption.setter
     def caption(self, val):
-        self._set_element(val, 'figcaption')
+        self.body._set_element(val, 'figcaption')
 
     @property
     def alignment(self):

@@ -40,3 +40,10 @@ SURVEY_VIEW_TXT = "<p>Enter participant IDs for survey viewing.</p>"
 INVALID_ID = "<p>The following participant ID was invalid: {}."
 
 INVALID_IDS = "<p>The following participant IDs were invalid: {}."
+
+EMPTY_DATAFRAME = "No data are available to create the profle."
+
+PROFILE_CREATION_ERR = '''
+<p>An error occurred while creating the data profile.</p>
+<p>Check that you have enabled background jobs.</p>
+'''
