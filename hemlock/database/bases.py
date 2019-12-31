@@ -78,6 +78,10 @@ class InputBase():
         """Get input from driver for debugging"""
         return driver.find_element_by_css_selector('#'+self.model_id)
 
+    def label_from_driver(self, driver):
+        selector = 'label[for={}]'.format(self.model_id)
+        return driver.find_element_by_css_selector(selector)
+
     def _render(self, body=None):
         """Set the default value before rendering"""
         body = body or self.body.copy()

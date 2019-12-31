@@ -22,6 +22,7 @@ Page:
 
 from hemlock.app import Settings
 from hemlock.database import Debug
+from hemlock.qpolymorphs import Check
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -233,21 +234,29 @@ def settings():
 """Choice question debugger"""
 @Debug.register
 def click_choices(question, driver, *choices, p_exec=1):
-    """Click on input choices
-
-    Note: the try/except is due to an open issue, possibly due to dragula. 
-    See more here https://github.com/bevacqua/dragula/issues/569.
-    """
+    """Click on input choices"""
     if random() > p_exec:
         return
-    actions = ActionChains(driver)
-    actions.key_down(Keys.CONTROL)
-    for choice in choices:
-        actions.click(choice.input_from_driver(driver))
-    try:
-        actions.key_up(Keys.CONTROL).perform()
-    except:
-        pass
+    if question.multiple:
+        clear_choices(question, driver)
+    if isinstance(question, Check):
+        return [c.label_from_driver(driver).click() for c in choices]
+    return [c.input_from_driver(driver).click() for c in choices]
+
+@Debug.register
+def clear_choices(question, driver, p_exec=1):
+    if random() > p_exec or not question.choices:
+        return
+    if not question.multiple:
+        print("Warning: Only multiple choice questions cannot be cleared")
+        return
+    for c in question.choices:
+        if c.input_from_driver(driver).get_attribute('checked'):
+            if isinstance(question, Check):
+                c.label_from_driver(driver).click()
+            else:
+                c.input_from_driver(driver).click()
+                
 
 def default_choice_question_debug(question, driver, p_skip=.1):
     """Default choice question debugging function

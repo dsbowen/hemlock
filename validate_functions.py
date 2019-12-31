@@ -9,6 +9,20 @@ def ValidateFunctions(origin=None):
     b = Branch()
     Navigate.End(b)
 
+    p = Page(b)
+    # s = Select(p, choices=['Hello','World'], var='test')
+    # Debug.click_choices(s, s.choices[1])
+    # c = Check(p, choices=['Hello','World'], var='test')
+    # Debug.click_choices(c, c.choices[1])
+    c = Check(p, choices=['Hello','World'], multiple=True, var='test')
+    c.default = list(c.choices)
+    Debug.click_choices(c, c.choices[0])
+    s = Select(p, choices=['Hello','World'], multiple=True, var='test')
+    s.default = list(s.choices)
+    Debug.click_choices(s, s.choices[1])
+
+    return b
+
     """Require and type validation"""
     p = Page(b)
 

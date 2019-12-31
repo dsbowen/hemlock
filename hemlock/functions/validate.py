@@ -318,11 +318,11 @@ def match(question, pattern, error_msg=None):
 @Validate.register
 def correct_choices(question, error_msg=None):
     """Validate that selected choice(s) is (are) correct"""
-    if _correct_choices(question):
+    if not _correct_choices(question):
         if error_msg is not None:
             return error_msg
         if question.multiple:
             return '<p>Please select the correct choice(s).</p>'
-        if len(correct) == 1:
+        if len([c for c in question.choices if c.value]) == 1:
             return '<p>Please select the correct choice.</p>'
         return '<p>Please select one of the correct choices.</p>'
