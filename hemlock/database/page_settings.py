@@ -12,7 +12,7 @@ def default_css():
             'id': 'bootstrap-css'
         },
         {
-            'href': url_for('hemlock.static', filename='css/default.css'),
+            'href': '/hemlock/static/css/default.css',
             'id': 'hemlock-css'
         }
     ]
@@ -35,7 +35,7 @@ def default_js():
             'id': 'bootstrap-js'
         },
         {
-            'src': url_for('hemlock.static', filename='js/default.js'),
+            'src': '/hemlock/static/js/default.js',
             'id': 'hemlock-js'
         }
     ]

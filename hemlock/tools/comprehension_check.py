@@ -8,11 +8,11 @@ ERROR_MSG = """
 def comprehension_check(instructions=[], checks=[], attempts=None):
     assert instructions and checks, '`instructions` and `checks` must be non-empty lists of Pages'
     from hemlock.app import db
-    from hemlock.database import Branch, SubmitFn
+    from hemlock.database import Branch, Submit
     b = Branch(pages=(instructions+checks))
     for check in checks:
         check.back_to = instructions[0]
-        SubmitFn(check, verify_data, kwargs={
+        Submit(check, verify_data, kwargs={
             'last_instr_page': instructions[-1],
             'curr_attempt': 1,
             'attempts': attempts

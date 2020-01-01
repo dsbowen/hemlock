@@ -2,10 +2,12 @@
 
 from hemlock.app import db
 from hemlock.database.bases import BranchingBase
+from hemlock.database.workers import NavigateWorker
 
 from flask import current_app
 from flask_login import current_user
 from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy.orm import validates
 
 
 class Branch(BranchingBase, db.Model):
@@ -82,6 +84,14 @@ class Branch(BranchingBase, db.Model):
         backref='branch', 
         uselist=False
     )
+
+    @validates('navigate_worker')
+    def validate_navigate_worker(self, key, val):
+        if isinstance(val, bool):
+            if val:
+                return NavigateWorker()
+            return None
+        return val
 
     is_root = db.Column(db.Boolean)
 

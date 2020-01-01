@@ -11,7 +11,7 @@ from hemlock import *
 #     Label(p, label='Hello World')
 #     return b
 
-# @route('/survey')
+@route('/survey')
 def Start(origin=None):
     b = Branch()
     Navigate.QuestionPolymorphs(b)
@@ -23,5 +23,5 @@ def Start(origin=None):
 def End(origin=None):
     b = Branch()
     p = Page(b, terminal=True)
-    Label(p, label='Goodbye World')
+    Label(p, label='<p>Thank you for completing the Hemlock tutorial.</p>')
     return b

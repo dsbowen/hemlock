@@ -1,8 +1,6 @@
 """Worker models"""
 
 from hemlock.app import db
-from hemlock.database.branch import Branch
-from hemlock.database.page import Page
 from hemlock.database.bases import Base
 
 from flask_worker import WorkerMixin as WorkerBaseMixin
@@ -24,6 +22,7 @@ class WorkerMixin(WorkerBaseMixin, Base):
     def employer(self, value):
         self.page = value
 
+    @Base.init('Worker')
     def __init__(self, employer=None, *args, **kwargs):
         self.employer = employer
         super().__init__(*args, **kwargs)
@@ -51,9 +50,10 @@ class NavigateWorker(WorkerMixin, db.Model):
 
     @employer.setter
     def employer(self, value):
+        from hemlock.database import Branch, Page
         if isinstance(value, Branch):
-            self.branch = value
             self.page = None
+            self.branch = value
         elif isinstance(value, Page):
             self.branch = None
             self.page = value

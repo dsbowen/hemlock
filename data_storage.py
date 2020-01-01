@@ -9,7 +9,7 @@ from random import shuffle
 @Navigate.register
 def DataStorage(origin=None):
     b = Branch()
-    Navigate.End(b)
+    Navigate.CompileFunctions(b)
 
     """Variable setting"""
     p = Page(b)
@@ -17,6 +17,43 @@ def DataStorage(origin=None):
         p, 
         label="<p>Set a question's variable to store its data.</p>", 
         var='TestVar'
+    )
+
+    """Date and time inputs"""
+    p = Page(b)
+    Label(
+        p,
+        label='<p>Date and time input data are converted to `datetime` objects on submission.</p>'
+    )
+    Input(
+        p, 
+        label='<p>This is a `date` input.</p>',
+        input_type='date',
+        var='Date'
+    )
+    Input(
+        p, 
+        label='<p>This is a `datetime-local` input.</p>',
+        input_type='datetime-local',
+        var='Datetime'
+    )
+    Input(
+        p, 
+        label='<p>This is a `month` input.</p>',
+        input_type='month',
+        var='Month'
+    )
+    Input(
+        p, 
+        label='<p>This is a `time` input.</p>',
+        input_type='time',
+        var='Time'
+    )
+    Input(
+        p, 
+        label='<p>This is a `week` input.</p>',
+        input_type='week',
+        var='Week'
     )
 
     """Choice questions"""

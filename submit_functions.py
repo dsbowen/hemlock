@@ -8,9 +8,10 @@ import validate_functions
 
 from hemlock import *
 
+@Navigate.register
 def SubmitFunctions(origin=None):
     b = Branch()
-    Navigate.End(b)
+    Navigate.ValidateFunctions(b)
 
     input_p = Page(b)
 

@@ -109,7 +109,9 @@ def random_str(question, driver, magnitude=2, p_whitespace=.2):
     )
 
 @Debug.register
-def random_number(question, driver, *args, **kwargs):
+def random_number(question, driver, p_exec=1, *args, **kwargs):
+    if random() > p_exec:
+        return
     send_keys(question, driver, str(gen_number(*args, **kwargs)))
 
 def gen_number(

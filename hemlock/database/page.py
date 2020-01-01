@@ -3,11 +3,13 @@
 from hemlock.app import db
 from hemlock.database.bases import BranchingBase, HTMLMixin
 from hemlock.database.data import Timer
+from hemlock.database.workers import CompileWorker, ValidateWorker, SubmitWorker, NavigateWorker
 import hemlock.database.page_settings
 
 from bs4 import BeautifulSoup, Tag
 from flask import Markup, current_app, render_template, request
 from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy.orm import validates
 from sqlalchemy_mutable import MutableType
 
 from random import random, shuffle
@@ -76,6 +78,13 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         return timer + self.embedded + self.questions
     
     """Relationships to function models and workers"""
+    def _set_worker(self, val, worker_model):
+        if isinstance(val, bool):
+            if val:
+                return worker_model()
+            return None
+        return val
+
     cache_compile = db.Column(db.Boolean)
     compile_functions = db.relationship(
         'Compile',
@@ -89,6 +98,10 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         uselist=False
     )
 
+    @validates('compile_worker')
+    def validate_compile_worker(self, key, val):
+        return self._set_worker(val, CompileWorker)
+
     validate_functions = db.relationship(
         'Validate',
         backref='page',
@@ -101,6 +114,10 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         uselist=False
     )
 
+    @validates('validate_worker')
+    def validate_validate_worker(self, key, val):
+        return self._set_worker(val, ValidateWorker)
+
     submit_functions = db.relationship(
         'Submit',
         backref='page',
@@ -112,6 +129,10 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         backref='page',
         uselist=False
     )
+
+    @validates('submit_worker')
+    def validate_submit_worker(self, key, val):
+        return self._set_worker(val, SubmitWorker)
 
     debug_functions = db.relationship(
         'Debug',
@@ -130,10 +151,15 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         backref='page', 
         uselist=False
     )
+
+    @validates('navigate_worker')
+    def validate_navigate_worker(self, key, val):
+        return self._set_worker(val, NavigateWorker)
     
     """Columns"""
     direction_from = db.Column(db.String(8))
     direction_to = db.Column(db.String(8))
+    name = db.Column(db.String)
     terminal = db.Column(db.Boolean)
     
     @BranchingBase.init('Page')
@@ -212,10 +238,13 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     
     def first_page(self):
         """Indicate that this is the first Page in the survey"""
-        return (
-            self.branch is not None and self.branch.is_root 
-            and self.index == 0
-        )
+        if self.part is None:
+            return False
+        for b in self.part.branch_stack:
+            if b.pages:
+                first_nonempty_branch = b
+                break
+        return self.branch == first_nonempty_branch and self.index == 0
 
     def is_valid(self):
         """Indicates response was valid"""

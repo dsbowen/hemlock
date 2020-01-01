@@ -41,9 +41,9 @@ def gen_external_js(**attrs):
     return gen_soup('<script></script>', **attrs)
 
 
-class Static(SoupBase):
+class Static():
     def __init__(self, template, **kwargs):
-        self.body = BeautifulSoup(render_template(template), 'html.parser')
+        self.body = SoupBase(render_template(template), 'html.parser')
         self.src_parms = {}
         [setattr(self, key, val) for key, val in kwargs.items()]
 
@@ -83,7 +83,7 @@ class Img(Static):
 
     @caption.setter
     def caption(self, val):
-        self.body._set_element(val, 'figcaption')
+        self.body._set_element('figcaption', val)
 
     @property
     def alignment(self):

@@ -13,22 +13,12 @@ def QuestionPolymorphs(origin=None):
     b = Branch()
     Navigate.DataStorage(b)
     
-    """Inputs and Textarea"""
+    """Input"""
     p = Page(b)
     Input(p, label='<p>Inputs default to text inputs.</p>')
     Input(
         p, 
-        label='<p>...but can be changed to date inputs.</p>', 
-        input_type='date'
-    )
-    Input(
-        p, 
-        label='<p>...or time inputs.</p>', 
-        input_type='time'
-    )
-    Input(
-        p, 
-        label='<p>...or any HTML input type. For example, a `color` input.</p>', 
+        label='<p>...but can be changed to any HTML input type. For example, a `color` input.</p>',
         input_type='color'
     )
     Input(

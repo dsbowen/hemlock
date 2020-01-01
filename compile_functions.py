@@ -7,6 +7,7 @@ import submit_functions
 
 from hemlock import *
 
+@Navigate.register
 def CompileFunctions(origin=None):
     b = Branch()
     Navigate.SubmitFunctions(b)

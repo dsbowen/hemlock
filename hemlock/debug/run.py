@@ -12,7 +12,7 @@ import warnings
 
 SERVER_ERR = 'Internal Server Error'
 WERKZEUG_ERR = "Brought to you by DON'T PANIC, your friendly Werkzeug powered traceback interpreter."
-ERROR_MSG = '{ai.part} encountered an error.'
+ERROR_MSG = "{ai.part} encountered an error. \n\nDon't give up."
 
 
 class AIParticipant(unittest.TestCase):
@@ -36,11 +36,18 @@ class AIParticipant(unittest.TestCase):
                 self.driver.refresh()
                 sleep(3)
             else:
+                print('Debugging page ', current_page, current_page.name)
                 current_page._debug(self.driver)
             current_page = self.get_current_page()
 
     def get_current_page(self):
         """Get the current page"""
+        try:
+            # Accept all alerts at the start of the page
+            while True:
+                self.driver.switch_to_alert().accept()
+        except:
+            pass
         try:
             page_tag = self.driver.find_element_by_tag_name('page')
         except:
