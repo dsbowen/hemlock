@@ -37,28 +37,6 @@ input[type="checkbox"]:checked:hover + label {
     background-color: #BEBEBE;
 }
 
-/* Object alignment */
-/* e.g. for use with images */
-.left {
-    display: block;
-    margin-left: 0px;
-    margin-right: auto;
-}
-.center {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-.right {
-    display: block;
-    margin-left: auto;
-    margin-right: 0px;
-}
-.fit {
-    max-width: 100%;
-    max-height: 100vh;
-}
-
 /* Video formatting */
 /* 16:9 aspect ratio */
 .video-wrapper {

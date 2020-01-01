@@ -1,4 +1,8 @@
-"""Page settings"""
+"""Page settings
+
+This file defines a `Page`'s default css and javascript, and compile, 
+validate, and submit functions.
+"""
 
 from hemlock.app import Settings
 from hemlock.tools import gen_external_css, gen_external_js, url_for

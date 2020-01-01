@@ -1,9 +1,38 @@
-"""Page database model"""
+"""Page database model
+
+`Page`s are nested in `Branch`es. A `Page` contains a list of `Question`s, 
+which it displays on the HTML page in `index` order.
+
+The survey 'flow' proceeds as follows:
+
+1. Run the `_compile` method. This method executes a page's `Compile` 
+functions. By default, a page's first compile function runs its questions' 
+`_compile` methods in `index` order.
+
+2. Render the page.
+
+3. After the participant submits the page, validate the responses. As with 
+the `_compile` method, the `_validate` method executes a page's `Validate` 
+functions in index order. By default, a page's first validate function runs 
+its questions' `_validate` methods in `index` order.
+
+4. Record data and run submit functions. As before, the `_submit` method 
+executes the page's `Submit` functions. By default, a page's first submit 
+function runs its questions' `_submit` methods in `index` order.
+
+5. If the page has a `Navigate` function, create a new branch originating 
+from this page.
+
+A `Page` supplies `data_elements` to its `Branch`. The 'order' of the data 
+elements is:
+1. A page's timer.
+2. A page's embedded data.
+3. A page's questions.
+"""
 
 from hemlock.app import db
 from hemlock.database.bases import BranchingBase, HTMLMixin
 from hemlock.database.data import Timer
-from hemlock.database.workers import CompileWorker, ValidateWorker, SubmitWorker, NavigateWorker
 import hemlock.database.page_settings
 
 from bs4 import BeautifulSoup, Tag
@@ -78,13 +107,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         return timer + self.embedded + self.questions
     
     """Relationships to function models and workers"""
-    def _set_worker(self, val, worker_model):
-        if isinstance(val, bool):
-            if val:
-                return worker_model()
-            return None
-        return val
-
     cache_compile = db.Column(db.Boolean)
     compile_functions = db.relationship(
         'Compile',
@@ -98,10 +120,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         uselist=False
     )
 
-    @validates('compile_worker')
-    def validate_compile_worker(self, key, val):
-        return self._set_worker(val, CompileWorker)
-
     validate_functions = db.relationship(
         'Validate',
         backref='page',
@@ -114,10 +132,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         uselist=False
     )
 
-    @validates('validate_worker')
-    def validate_validate_worker(self, key, val):
-        return self._set_worker(val, ValidateWorker)
-
     submit_functions = db.relationship(
         'Submit',
         backref='page',
@@ -129,10 +143,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         backref='page',
         uselist=False
     )
-
-    @validates('submit_worker')
-    def validate_submit_worker(self, key, val):
-        return self._set_worker(val, SubmitWorker)
 
     debug_functions = db.relationship(
         'Debug',
@@ -151,10 +161,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         backref='page', 
         uselist=False
     )
-
-    @validates('navigate_worker')
-    def validate_navigate_worker(self, key, val):
-        return self._set_worker(val, NavigateWorker)
     
     """Columns"""
     direction_from = db.Column(db.String(8))
@@ -176,7 +182,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     @error.setter
     def error(self, val):
-        self.body._set_element(
+        self.body.set_element(
             'span.error-msg', val,
             target_selector='div.error-msg', 
             gen_target=self._gen_error
@@ -196,7 +202,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     @back.setter
     def back(self, val):
         val = '<<' if val is True else val
-        self.body._set_element(
+        self.body.set_element(
             'span.back-btn', val,
             target_selector='#back-btn', 
             gen_target=self._gen_submit,
@@ -210,7 +216,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     @forward.setter
     def forward(self, val):
         val = '>>' if val is True else val
-        self.body._set_element(
+        self.body.set_element(
             'span.forward-btn', val,
             target_selector='#forward-btn', 
             gen_target=self._gen_submit,
@@ -263,7 +269,13 @@ class Page(HTMLMixin, BranchingBase, db.Model):
             self.compile_worker = None
     
     def _render(self):
-        """Render page"""
+        """Render page
+        
+        This method performs the following functions:
+        1. Add page metadata and catch possible submit button errors
+        2. Append question HTML
+        3. Start the timer
+        """
         html = render_template('page.html', page=self)
         soup = BeautifulSoup(html, 'html.parser')
         self._add_page_metadata(soup)
@@ -275,7 +287,18 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         return str(soup)
     
     def _add_page_metadata(self, soup):
-        """Add page metadata to soup"""
+        """Add page metadata to soup
+        
+        Page metadata is its participant's `id` and strongly random `key`. 
+        For security, these must match for a participant to access a page.
+
+        Metadata are only necessary for debugging, where a researcher may 
+        want to have multiple survey windows open simultaneously. In this 
+        case, page metadata are used to associate participants with their 
+        pages, rather than Flask-Login's `current_user`.
+
+        To use this functionality, access the URL as {ULR}/?Test=1.
+        """
         meta_html = render_template('page-meta.html', page=self)
         meta_soup = BeautifulSoup(meta_html, 'html.parser')
         form = soup.select_one('form')

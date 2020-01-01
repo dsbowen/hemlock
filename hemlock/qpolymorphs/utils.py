@@ -14,7 +14,7 @@ class InputGroup():
 
     @prepend.setter
     def prepend(self, val):
-        self.body._set_element(
+        self.body.set_element(
             '.input-group-prepend', val,
             target_selector='span.input-group-text', 
             gen_target=self._gen_input_group_text,
@@ -27,7 +27,7 @@ class InputGroup():
     
     @append.setter
     def append(self, val):
-        self.body._set_element(
+        self.body.set_element(
             '.input-group-append', val,
             target_selector='span.input-group-text',
             gen_target=self._gen_input_group_text,

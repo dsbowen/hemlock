@@ -1,8 +1,16 @@
-"""Branch database model"""
+"""Branch database model
+
+`Branch`es are nested in a `Participant`'s `branch_stack`. A `Branch` contains a list of `Page`s which it displays to its `Participant`, `part`. A `Branch` displays its `Page`s in `index` order by default.
+
+A `Branch` also relates to a `Navigate` function which returns the next branch. If branch A's navigate function returns branch B, B is A's `next_branch` and A is B's `origin_branch`. Branches can also originate from `Page`s.
+
+A `Branch` supplies `data_elements` to its `Participant`, which are recorded in the dataset. The 'order' of the data elements is:
+1. The branch's `embedded` data, in index order.
+2. The branch's page's data elements, in page index order
+"""
 
 from hemlock.app import db
 from hemlock.database.bases import BranchingBase
-from hemlock.database.workers import NavigateWorker
 
 from flask import current_app
 from flask_login import current_user
@@ -84,14 +92,6 @@ class Branch(BranchingBase, db.Model):
         backref='branch', 
         uselist=False
     )
-
-    @validates('navigate_worker')
-    def validate_navigate_worker(self, key, val):
-        if isinstance(val, bool):
-            if val:
-                return NavigateWorker()
-            return None
-        return val
 
     is_root = db.Column(db.Boolean)
 

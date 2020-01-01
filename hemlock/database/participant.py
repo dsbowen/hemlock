@@ -1,4 +1,20 @@
-"""Participant database models"""
+"""Participant database models
+
+A `Participant` has the following primary responsibilities:
+1. Navigation. A `Participant` contains a `branch_stack` and `_router` for 
+navigation.
+2. Data recording. Participants gather and store their data elements in the 
+`DataStore`.
+
+A participant may have one of three `status`es: InProgress, Completed, 
+TimedOut. When a participant's status changes to Completed or TimedOut, a 
+participant's data probably will not change, so it caches its data in the 
+`DataStore`. (However, if a participant's status changes back to InProgress,
+its data will be re-recorded.)
+
+Participants also contain a mutable dictionary, `g`, as well as a dictonary 
+of metadata, `meta`.
+"""
 
 from hemlock.app import db
 from hemlock.database.bases import Base

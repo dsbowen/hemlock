@@ -2,7 +2,6 @@
 
 from hemlock.app.settings import Config, Settings, get_app_settings, get_screenouts
 
-from datetime import datetime, timedelta
 from flask import Flask, Blueprint
 from flask_apscheduler import APScheduler
 from flask_bootstrap import Bootstrap
@@ -15,8 +14,11 @@ from google.cloud import storage
 from redis import Redis
 from rq import Queue
 import eventlet
+
+from datetime import datetime, timedelta
 import os
 
+"""Extensions and blueprint registration"""
 bootstrap = Bootstrap()
 bp = Blueprint(
     'hemlock', 

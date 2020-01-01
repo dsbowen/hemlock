@@ -1,3 +1,15 @@
+"""Question and ChoiceQuestion bases
+
+`Question`s are nested in their `Page`. They contribute css, javascript, 
+and HTML (`body`).
+
+The two primary HTML attributes of any question are its `label` and `error`.
+
+Like `Page`s, they execute `Compile`, `Validate`, `Submit`, and `Debug` 
+functions with their eponymous methods.
+
+`ChoiceQuestion`s additionally contain a list of `Choice`s.
+"""
 
 from hemlock.app import Settings, db
 from hemlock.database.bases import Base, HTMLMixin
@@ -65,13 +77,16 @@ class Question(Data, HTMLMixin, MutableModelBase):
         super().__init__()
         return {'page': page, **kwargs}
 
-    """Shortcuts for modifying soup"""
+    """Shortcuts for modifying `body`"""
     @property
     def error(self):
         return self.body.text('.error-txt')
 
     @error.setter
     def error(self, val):
+        """
+        Add the 'error' class to the form-group tag and set the error text
+        """
         form_grp_cls = self.body.select_one('div.form-group')['class']
         if not val:
             try:
@@ -80,7 +95,7 @@ class Question(Data, HTMLMixin, MutableModelBase):
                 pass
         elif 'error' not in form_grp_cls:
             form_grp_cls.append('error')
-        self.body._set_element('span.error-txt', val)
+        self.body.set_element('span.error-txt', val)
 
     @property
     def label(self):
@@ -88,7 +103,7 @@ class Question(Data, HTMLMixin, MutableModelBase):
 
     @label.setter
     def label(self, val):
-        self.body._set_element('.label-txt', val)
+        self.body.set_element('.label-txt', val)
 
     def clear_error(self):
         self.error = None
@@ -142,6 +157,11 @@ class ChoiceQuestion(Question):
 
     @validates('choices')
     def validate_choice(self, key, val):
+        """Convert the assigned value if it is not alread a `Choice` object
+
+        This allows for the following syntax:
+        question.choices = ['Red','Green','Blue']
+        """
         if isinstance(val, Choice):
             return val
         val = str(val)
@@ -154,6 +174,7 @@ class ChoiceQuestion(Question):
         return super().__init__(*args, **kwargs)
 
     def _render(self, body=None):
+        """Add choice HTML to `body`"""
         body = body or self.body.copy()
         choice_wrapper = self._choice_wrapper(body)
         [choice_wrapper.append(c._render()) for c in self.choices]
@@ -163,6 +184,11 @@ class ChoiceQuestion(Question):
         return (body or self.body).select_one('.choice-wrapper')
 
     def _record_response(self):
+        """Record response
+
+        The `response` is a `Choice` (if not `multiple`) or a list of 
+        `Choice`s.
+        """
         if not self.multiple:
             response_id = request.form.get(self.model_id)
             self.response = Choice.query.get(response_id)
@@ -171,6 +197,14 @@ class ChoiceQuestion(Question):
             self.response = [Choice.query.get(id) for id in response_ids]
 
     def _record_data(self):
+        """Record data
+
+        For single choice questions, the data is the selected choice's 
+        `value`.
+
+        For multiple choice questions, the data is a dictionary mapping 
+        each choice's `value` to a binary indicator that it was selected.
+        """
         if not self.multiple:
             self.data = None if self.response is None else self.response.value
         else:
@@ -180,6 +214,10 @@ class ChoiceQuestion(Question):
             }
     
     def _pack_data(self):
+        """Pack data for storage in the `DataStore`
+
+        For multiple choice questions, the packed data dictionary is similar to the data, but with the question's variable prepended to the key.
+        """
         var = self.var
         if not self.multiple or var is None:
             return super()._pack_data()

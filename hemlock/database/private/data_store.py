@@ -1,4 +1,13 @@
-"""Data store database model"""
+"""Data store database model
+
+Each app has a unique `DataStore`.
+
+The `DataStore` contains three dataframes:
+1. `data`. The primary dataframe
+2. `meta`. Participant metadata, used to detect screenouts and duplicates.
+3. `status_log`. Timestamps of how many participants were in which stage of 
+the survey.
+"""
 
 from hemlock.app.factory import db, socketio
 from hemlock.database.types import DataFrameType

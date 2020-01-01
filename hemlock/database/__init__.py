@@ -9,4 +9,3 @@ from hemlock.database.question import Question, ChoiceQuestion
 from hemlock.database.choice import Choice, Option
 from hemlock.database.functions import *
 from hemlock.database.workers import *
-

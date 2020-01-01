@@ -1,12 +1,14 @@
 """Function models
 
-Compile functions are called before a page compiles its html.
-Validate functions are called to validate a participant's response.
-Submit functions are called after a page has been successfully submitted.
-Navigate functions are called when navigating forward to grow new branches.
+`Compile` functions are called before a page compiles its HTML.
+`Validate` functions are called to validate a participant's response.
+`Submit` functions are called after a page has been successfully submitted.
+`Navigate` functions are called when navigating forward to grow new branches.
 
 Note that compile and submit functions act as wrappers for the normal 
 workflow.
+
+A `Function`'s `parent` may be a `Branch`, `Page`, or `Question`.
 """
 
 from hemlock.app import db
@@ -46,6 +48,14 @@ class Function(FunctionMixin, Base):
 
     @parent.setter
     def parent(self, parent=None):
+        """
+        Note: the parent must be set *after* the other attributes are set to None. e.g. 
+        
+        self.page = self.question = None
+        self.branch = parent
+
+        Otherwise, `OrderingItem` will clear the index.
+        """
         if isinstance(parent, Branch):
             self.page = self.question = None
             self.branch = parent

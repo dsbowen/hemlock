@@ -1,4 +1,4 @@
-"""Application settings and configuration objects
+"""Application settings and configuration object
 
 time_limit and status_logger_period must be in 'hh:mm:ss' format.
 """
@@ -29,8 +29,9 @@ class Settings():
     def register(cls, obj_name):
         """Register a settings function
 
-        A settings function returns a dict of settings associated with an 
-        object name.
+        A settings function returns a settings dict associated with an 
+        object name. The settings dict maps object attribute names to 
+        values. These attributes are set when an object is initialized.
         """
         def wrapper(func):
             if obj_name not in cls.settings_funcs:
@@ -69,7 +70,7 @@ SCREENOUT_TXT = """
 SOCKET_JS_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js'
 
 @Settings.register('app')
-def app_settings():
+def settings():
     return {
         'clean_data': None,
         'duplicate_keys': [],
@@ -89,7 +90,7 @@ def app_settings():
     }
 
 @Settings.register('manager')
-def manager_settings():
+def settings():
     return {
         'blueprint': 'hemlock'
     }
@@ -107,7 +108,7 @@ def get_app_settings():
     to_timedelta(settings, 'time_limit')
     to_timedelta(settings, 'status_log_period')
 
-    password = settings.pop('password')
+    password = settings.pop('password', '')
     settings['password_hash'] = generate_password_hash(password)
     static = os.path.join(os.getcwd(), settings.pop('static_folder'))
     templates = os.path.join(os.getcwd(), settings.pop('template_folder'))

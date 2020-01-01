@@ -1,6 +1,18 @@
-"""Worker models"""
+"""Worker models
+
+`Worker`s may be attached to `Page` and `Branch` models. A `CompileWorker` 
+handles a `Page`'s `Compile` function, a `ValidateWorker` the `Validate` 
+function, etc..
+
+`Worker`s send their `employer`'s job to a Redis Queue. While the job is 
+enqueued or being processed, the worker sends the participant a loading 
+page.
+
+More detail at dsbowen.github.io/flask-worker.
+"""
 
 from hemlock.app import db
+from hemlock.database import Branch, Page
 from hemlock.database.bases import Base
 
 from flask_worker import WorkerMixin as WorkerBaseMixin
@@ -50,7 +62,6 @@ class NavigateWorker(WorkerMixin, db.Model):
 
     @employer.setter
     def employer(self, value):
-        from hemlock.database import Branch, Page
         if isinstance(value, Branch):
             self.page = None
             self.branch = value

@@ -1,23 +1,17 @@
 """Debug functions
 
-Page:
-1. forward navigation
-2. back navigation
-3. navigate randomly
+Users will likely rely most on the following debug functions.
 
-Textarea and text Input:
+Page debugging:
+1. `forward`. Navigate forward.
+2. `back`. Navigate backward.
+3. `navigate`. Navigate in a random direction (or refresh the page)
 
-Date and time input:
+Textarea and Input debugging:
+1. `send_keys`. Send specified keys to the input (or textarea) tag.
 
-Default input debugger
-
-ChoiceQuestion:
-???
-
-Page:
-1. click_forward
-2. click_back
-3. random_navigate
+Choice question debugging:
+1. `click_choices`. Click on the input choices.
 """
 
 from hemlock.app import Settings
@@ -63,7 +57,7 @@ def navigate(page, driver, p_forward=.8, p_back=.1, sleep_time=3):
         sleep(sleep_time)
     driver.refresh()
 
-def debug_fn(page, driver):
+def debug_func(page, driver):
     """Run the question debug functions in random order"""
     order = list(range(len(page.questions)))
     shuffle(order)
@@ -71,7 +65,7 @@ def debug_fn(page, driver):
 
 @Settings.register('Page')
 def settings():
-    return {'debug_functions': [debug_fn, navigate]}
+    return {'debug_functions': [debug_func, navigate]}
 
 """Textarea and text Input debugging"""
 @Debug.register

@@ -43,10 +43,17 @@ def render_profile(profile_p):
     except:
         profile_p.error = PROFILE_CREATION_ERR
         return profile_p._render()
-    return profile_p.g['profile_report'].to_html()
+    profile_report = profile_p.g.get('profile_report')
+    if profile_report is None:
+        profile_p.error = PROFILE_CREATION_ERR
+        return profile_p._render()
+    return profile_report.to_html()
 
 def create_profile(profile_p):
     df = pd.DataFrame(DataStore.query.first().data)
     if hasattr(current_app, 'clean_data') and current_app.clean_data:
         df = current_app.clean_data(df)
-    profile_p.g = {'profile_report': df.profile_report()}
+    try:
+        profile_p.g = {'profile_report': df.profile_report()}
+    except:
+        pass

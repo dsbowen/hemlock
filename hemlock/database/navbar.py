@@ -1,4 +1,9 @@
-"""Navigation bar database model"""
+"""Navigation bar database model
+
+A `Navbar` is associated with a `Page`, and is rendered in a 
+Flask-Bootstrap4 Jinja template. See dsbowen.github.io/sqlalchemy-nav for 
+more details.
+"""
 
 from hemlock.app import db
 from hemlock.database.bases import Base

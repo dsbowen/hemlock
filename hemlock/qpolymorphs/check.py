@@ -1,3 +1,11 @@
+"""Check question
+
+`Check` questions use radio inputs (if not `multiple`) or checkbox inputs 
+(if `multiple`).
+
+By default, choices are positioned vertically. To position them 
+horizontally, set `inline` to True.
+"""
 
 from hemlock.qpolymorphs.utils import *
 
@@ -21,6 +29,7 @@ class Check(ChoiceQuestion):
 
     @center.setter
     def center(self, val):
+        """Add the 'text-center' class to the choice wrapper"""
         assert isinstance(val, bool)
         if val == self.center:
             return

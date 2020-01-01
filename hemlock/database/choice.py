@@ -1,4 +1,25 @@
-"""Choice database model"""
+"""Choice database model
+
+`Choice`s are nested in a `ChoiceQuestion`'s `choices`. The choice question 
+displays choices in `index` order.
+
+A choice contains the following basic attributes:
+1. `label`. The choice label as it appears on the page
+2. `name`. The name by which the choice is referenced in data recording
+3. `value`.
+    3.1. For single choice questions, the value of the data if this choice 
+    is selected.
+    3.2. For multiple choice questions, the variable name for one-hot 
+    encoding.
+
+An `Option` is a `Choice` polymorph, and is functionally similar to it. The 
+difference is the `Choice`s are for `Check` questions, while `Option`s are 
+for `Select` questions.
+
+The use of `Choice` and `Option` models is not due to any deep functional 
+difference between them. Rather, it reflects differences in the underlying 
+HTML.
+"""
 
 from hemlock.app import db
 from hemlock.database.bases import HTMLMixin, InputBase
@@ -34,7 +55,7 @@ class Choice(InputBase, HTMLMixin, db.Model):
 
     @label.setter
     def label(self, val):
-        self.body._set_element('label.choice', val)
+        self.body.set_element('label.choice', val)
 
     def set_all(self, val):
         self.label = self.name = self.value = val
@@ -52,6 +73,11 @@ class Choice(InputBase, HTMLMixin, db.Model):
         return self == default
     
     def _render(self, body=None):
+        """Render the choice HTML
+
+        Set the input name to reference the quesiton `model_id`. Then set 
+        the `checked` attribute to reflect whether the choice is a default.
+        """
         body = body or self.body.copy()
         inpt = body.select_one('input#'+self.model_id)
         inpt['name'] = self.question.model_id
@@ -63,7 +89,7 @@ class Choice(InputBase, HTMLMixin, db.Model):
         return body
 
     def _handle_multiple(self, body, inpt):
-        """Appropriately converts body html for single or multiple choice"""
+        """Appropriately converts body HTML for single or multiple choice"""
         div_class = body.select_one('div.custom-control')['class']
         rm_classes = [
             'custom-radio', 'custom-checkbox', 'custom-control-inline'
@@ -100,7 +126,7 @@ class Option(Choice):
     
     @label.setter
     def label(self, val):
-        self.body._set_element('option', val)
+        self.body.set_element('option', val)
     
     def _render(self, body=None):
         body = body or self.body.copy()

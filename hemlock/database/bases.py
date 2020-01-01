@@ -1,11 +1,17 @@
 """Base classes for public database models
 
-Base is a generic base class for all Hemlock models. 
+`Base` is a generic base class for all Hemlock models. It defines an `init` 
+decorator for `__init__` methods of Hemlock models. 
 
-BranchingBase contains methods for growing and inserting new branches to a 
-Participant's branch_stack. 
+`BranchingBase` defines a method which determines whether the branching 
+object is eligible to insert its next branch into a `Participant`'s branch 
+stack. 
 
-HTMLMixin contains convenience methods for models which manipulate HTML.
+`HTMLMixin` contains `css`, `js`, and `body` `MutableSoup` columns. This is 
+subclassed by objects which contribute HTML to a suvey page.
+
+`InputBase` defines convenience methods for objects whose `body` is an 
+`input` Tag (e.g. `Input` and `Choice` objects).
 """
 
 from hemlock.app import Settings, db
@@ -79,6 +85,7 @@ class InputBase():
         return driver.find_element_by_css_selector('#'+self.model_id)
 
     def label_from_driver(self, driver):
+        """Get label from driver for debugging"""
         selector = 'label[for={}]'.format(self.model_id)
         return driver.find_element_by_css_selector(selector)
 

@@ -83,7 +83,7 @@ class Img(Static):
 
     @caption.setter
     def caption(self, val):
-        self.body._set_element('figcaption', val)
+        self.body.set_element('figcaption', val)
 
     @property
     def alignment(self):

@@ -1,3 +1,18 @@
+"""Data elements base, Embedded data models, and Timer models
+
+The `Data` model is a base for data elements (`Embedded` data and 
+`Question`s). Data elements contribute data to the dataset, by 'packing' 
+their data and returning it to a `Participant`, who in turn sends it to the 
+`DataStore`.
+
+Unlike `Question`s, `Embedded` data do not derive their data directly from 
+participant input. Rather, the data are set by a programmer. `Embedded` 
+data are stored in a `Branch` or `Page` separately from questions.
+
+`Timer`s are a type of `Embedded` data. Each `Page` has a `Timer` by 
+default. To record a `Timer`'s data, set its variable (e.g. 
+timer.var='MyTimingVariable').
+"""
 
 from hemlock.app import db
 from hemlock.database.bases import Base, HTMLMixin

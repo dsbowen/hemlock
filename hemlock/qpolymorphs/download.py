@@ -1,4 +1,8 @@
-"""Download button"""
+"""Download button
+
+The `Download` polymorph is derived from Flask-Download-Btn. See 
+dsbowen.github.io/flask-download-btn for more details.
+"""
 
 from hemlock.database.bases import Base
 from hemlock.qpolymorphs.utils import *

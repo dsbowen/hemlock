@@ -4,8 +4,9 @@ from hemlock import *
 
 @Navigate.register
 def Workers(origin=None):
-    b = Branch(navigate_worker=True)
+    b = Branch()
     Navigate.End(b)
+    NavigateWorker(b) # `NavigateWorker` is available for both `Branch`es and `Page`s
     
     p = Page(b)
     Label(
@@ -13,11 +14,12 @@ def Workers(origin=None):
         label="""
         <p>Sometimes a compile, validate, submit, or navigate function will take a while (10+ seconds) to run.</p>
         <p>You can use a `Worker` to show participants a loading page while these functions are processed by a Redis Queue.</p>
-        <p>Active a worker by settings a `Page`'s `compile_worker`, 'validate_worker`, etc. attribute to `True`.</p>
+        <p>Active a worker by attaching a `CompileWorker`, `ValidateWorker`, etc. to a `Page`.</p>
         """
     )
 
-    p = Page(b, compile_worker=True)
+    p = Page(b)
+    CompileWorker(p)
     l = Label(
         p,
         label="""
@@ -26,7 +28,8 @@ def Workers(origin=None):
         """
     )
 
-    p = Page(b, compile_worker=True, cache_compile=True)
+    p = Page(b, cache_compile=True)
+    CompileWorker(p)
     l = Label(
         p,
         label='<p>Refresh this page and notice that it does not run a compile worker.</p>'

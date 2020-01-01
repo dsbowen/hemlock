@@ -174,7 +174,7 @@ def add_dataframe_to_zip(btn, data_frame):
 def create_views(btn, *part_ids):
     """Create survey views for all selected participants"""
     parts = [Participant.query.get(id) for id in part_ids]
-    driver = chromedriver()
+    driver = chromedriver(headless=True)
     gen = chain.from_iterable([create_view(btn, p, driver) for p in parts])
     for event in gen:
         yield event
@@ -196,6 +196,7 @@ def add_page_to_doc(doc, page, driver):
     """Add survey view page to survey view doc"""
     page.convert_to_abs_paths()
     driver.get('data:text/html,'+page.html)
+    accept_alerts(driver)
     width = driver.get_window_size()['width']
     height = driver.execute_script(
         'return document.body.parentNode.scrollHeight'
@@ -206,6 +207,14 @@ def add_page_to_doc(doc, page, driver):
     page_bytes.write(form.screenshot_as_png)
     doc.add_picture(page_bytes, width=SURVEY_VIEW_IMG_WIDTH)
     page_bytes.close()
+
+def accept_alerts(driver):
+    """Accept any alerts which prevent page HTML from loading"""
+    try:
+        while True:
+            driver.switch_to_alert().accept()
+    except:
+        pass
 
 def add_doc_to_zip(btn, doc, part_id):
     """Add survey view doc to download zip file"""
