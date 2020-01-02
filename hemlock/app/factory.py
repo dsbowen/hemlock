@@ -63,6 +63,6 @@ def create_app():
     bucket = os.environ.get('BUCKET')
     if bucket is not None:
         app.gcp_client = storage.Client()
-        app.gcp_bucket = gcp_client.get_bucket(bucket)
+        app.gcp_bucket = app.gcp_client.get_bucket(bucket)
     
     return app

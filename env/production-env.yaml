@@ -1,1 +1,3 @@
+BUCKET: hemlock-bucket-1d0o3eippf
 CHROMEDRIVER_PATH: /app/.chromedriver/bin/chromedriver
+GOOGLE_APPLICATION_CREDENTIALS: env/gcp-credentials.json

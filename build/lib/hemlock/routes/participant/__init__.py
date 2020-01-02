@@ -85,6 +85,8 @@ def time_out(app, part_id):
 """Screenout and duplicate handling"""
 def is_screenout(meta):
     """Look for a match between visitor metadata and screenouts"""
+    if current_app.screenouts is None:
+        return False
     tracked_meta = current_app.screenouts
     keys = current_app.screenout_keys
     return match_found(visitor=meta, tracked=tracked_meta, keys=keys)

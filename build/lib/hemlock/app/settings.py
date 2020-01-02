@@ -78,7 +78,7 @@ def settings():
         'password': '',
         'restart_option': True,
         'restart_text': RESTART_TXT,
-        'screenout_folder': 'screenouts',
+        'screenout_folder': None,
         'screenout_keys': ['IPv4', 'workerId'],
         'screenout_text': SCREENOUT_TXT,
         'socket_js_src': SOCKET_JS_SRC,
@@ -124,6 +124,9 @@ def to_timedelta(settings, key):
 
 def get_screenouts(app):
     """Store screenouts dictionary as application attribute"""
+    if not app.screenout_folder:
+        app.screenouts = None
+        return
     app.screenout_folder = os.path.join(os.getcwd(), app.screenout_folder)
     screenout_csvs = glob(app.screenout_folder+'/*.csv')
     df = pd.concat([pd.read_csv(csv) for csv in screenout_csvs]).astype(str)

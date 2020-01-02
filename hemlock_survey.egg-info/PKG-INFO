@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
-Name: hemlock-survey-dsbowen
-Version: 0.0.2
+Name: hemlock-survey
+Version: 0.0.3
 Summary: A package for creating and deploying surveys
 Home-page: https://github.com/dsbowen/hemlock
 Author: Dillon Bowen
@@ -19,6 +19,12 @@ Description: # Hemlock
         Hemlock was created first and foremost as a free, open-source tool for academic and non-profit research. I aim to obtain a license permitting unlimited free use for legitimate academic and non-profit research by February 2020.
         
         Until I obtain this license, I require that all Hemlock users obtain written permission from its copyright holder, Dillon Bowen. Any use without written permission from the copyright holder is strictly prohibited.
+        
+        ## Acknowledgments
+        
+        I would like to thank my academic advisors Joseph Simmons, Philip Tetlock, and Barbara Mellers, for supporting me throughout this project.
+        
+        I would also like to thank Sarah Yang Fenton Reed, an extraordinary coder, for her invaluable technical advice.
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: Operating System :: OS Independent

@@ -1,2 +1,2 @@
-hemlock
+hemlock-survey
 psycopg2=2.8.4

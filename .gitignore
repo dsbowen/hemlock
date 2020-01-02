@@ -4,5 +4,4 @@ hemlock_survey_dsbowen.egg-info/
 hemlock-venv/
 __pycache__
 data.db
-cors.json
 test.py
