@@ -1,3 +1,9 @@
+"""InputGroup
+
+`InputGroup` defines methods for interacting with a Bootstrap input-group.
+
+An input-group has prepended and appended text wrapping the input.
+"""
 
 from hemlock.app import Settings, db
 from hemlock.database import Question, ChoiceQuestion
@@ -44,6 +50,7 @@ class InputGroup():
         return span
     
     def _render(self, body=None):
+        """Remove prepend and append div Tags if they are empty"""
         body = body or self.body.copy()
         if not self.prepend:
             body.select_one('div.input-group-prepend').extract()

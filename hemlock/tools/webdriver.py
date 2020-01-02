@@ -1,4 +1,8 @@
-"""Selenium webdrivers"""
+"""Selenium webdrivers
+
+Note: driver should be headless in the production environment and when 
+creating a survey view.
+"""
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options

@@ -5,4 +5,3 @@ from hemlock.tools.randomization import random_key, even_randomize, random_assig
 from hemlock.tools.statics import *
 from hemlock.tools.url_for import url_for
 from hemlock.tools.webdriver import chromedriver
-# from hemlock.tools.randomization import even_randomize, random_assignment

@@ -1,4 +1,9 @@
-"""Tool for generating statics"""
+"""Tool for generating statics
+
+These tools group into:
+1. Custom css and javascript
+2. Images and Videos
+"""
 
 from bs4 import BeautifulSoup
 from flask import render_template
@@ -14,6 +19,7 @@ __all__ = [
     'Vid',
 ]
 
+"""Custom css and javascript"""
 def gen_soup(template, selector=None, **attrs):
     soup = BeautifulSoup(template, 'html.parser')
     tag = soup.select_one(selector) if selector else list(soup.children)[0]
@@ -41,7 +47,12 @@ def gen_external_js(**attrs):
     return gen_soup('<script></script>', **attrs)
 
 
+"""Images and videos"""
 class Static():
+    """Static base
+
+    This base stores its HTML in a `MutableSoup` object called `body`. The source parameters are stored separately in a `src_parms` dictionary. These are added to the src attribute when rendering.
+    """
     def __init__(self, template, **kwargs):
         self.body = SoupBase(render_template(template), 'html.parser')
         self.src_parms = {}
@@ -58,6 +69,7 @@ class Static():
 
 
 class Img(Static):
+    """Image"""
     def __init__(self, **kwargs):
         super().__init__('img.html', **kwargs)
 
@@ -117,6 +129,7 @@ YOUTUBE_ATTRS = {
 
 
 class Vid(Static):
+    """Video"""
     def __init__(self, **kwargs):
         super().__init__('vid.html', **kwargs)
 
@@ -133,6 +146,7 @@ class Vid(Static):
         super()._set_src(self.iframe, val)
 
     def from_youtube(src):
+        """Capture the YouTube video id and create an embedded src"""
         vid = Vid()
         parms = parse_qs(urlparse(src).query)
         id = parms.pop('v')[0] # video id

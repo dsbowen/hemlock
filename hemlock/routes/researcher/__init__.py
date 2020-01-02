@@ -1,4 +1,4 @@
-"""Reesearcher routes"""
+"""Researcher routes"""
 
 import hemlock.routes.researcher.login
 import hemlock.routes.researcher.status

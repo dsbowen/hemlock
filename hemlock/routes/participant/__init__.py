@@ -142,6 +142,11 @@ def restart():
 
 """Main survey view function"""
 def route(path, default=False):
+    """Decorator for registering a view function
+
+    This decorator wraps a navigate function and converts it into a view 
+    function.
+    """
     def register_view(root_f):
         if default or not hasattr(bp, 'default_route'):
             bp.default_route = root_f.__name__
@@ -158,6 +163,14 @@ def route(path, default=False):
     return register_view
 
 def get_part():
+    """Get participant
+
+    Normally, a participant is the `current_user` from Flask-Login.
+
+    However, for testing, it is often useful to have multiple surveys open 
+    simultaneously. To support this, a participant can also be retrieved by 
+    `id` and `_key`. Navigate to {URL}/?Test=1.
+    """
     if request.method == 'GET':
         part_id = request.args.get('part_id')
         part_key = request.args.get('part_key')

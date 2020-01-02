@@ -100,7 +100,7 @@ def QuestionPolymorphs(origin=None):
     )
 
     """File upload"""
-    # Use the `hlk google-bucket` command to set up Google storage for file uploads
+    # Use the `hlk gcloud-bucket` command to set up Google storage for file uploads
     p = Page(b)
     Label(p, label='Uploads are stored in your Google bucket.')
     File(

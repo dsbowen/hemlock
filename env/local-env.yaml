@@ -1,6 +1,4 @@
-BUCKET: hemlock-local-bucket2357
-CURRENT_ENV: production-lite
+BUCKET: hemlock-local-bucket-knbus28aqv
 FLASK_APP: app
 GOOGLE_APPLICATION_CREDENTIALS: env/gcp-credentials.json
 URL_ROOT: http://localhost:5000
-WORKER: 'False'

@@ -1,4 +1,15 @@
-"""Comprehension check"""
+"""Comprehension check
+
+A comprehension check consists of 'instruction' pages followed by 'check' 
+pages. 
+
+The data in all questions of a check page must evaluate to `True` to pass 
+the check.
+
+When you fail a check, you are brought back to the first instructions page. 
+However, once you reread the instructions, you do not have to repeat any 
+checks you already passed.
+"""
 
 ERROR_MSG = """
 <p>Your response was incorrect.</p>
@@ -6,6 +17,7 @@ ERROR_MSG = """
 """
 
 def comprehension_check(instructions=[], checks=[], attempts=None):
+    """Return a comprehension check branch"""
     assert instructions and checks, '`instructions` and `checks` must be non-empty lists of Pages'
     from hemlock.app import db
     from hemlock.database import Branch, Submit

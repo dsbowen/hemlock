@@ -50,6 +50,7 @@ def render_profile(profile_p):
     return profile_report.to_html()
 
 def create_profile(profile_p):
+    """Create the data profile"""
     df = pd.DataFrame(DataStore.query.first().data)
     if hasattr(current_app, 'clean_data') and current_app.clean_data:
         df = current_app.clean_data(df)
