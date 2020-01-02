@@ -29,8 +29,6 @@ bp = Blueprint(
 )
 db = SQLAlchemy()
 download_btn_manager = DownloadBtnManager(db=db)
-gcp_client = storage.Client()
-gcp_bucket = gcp_client.get_bucket(os.environ.get('BUCKET'))
 login_manager = LoginManager()
 login_manager.login_view = 'hemlock.index'
 login_manager.login_message = None
@@ -48,10 +46,6 @@ def create_app():
     app = Flask(__name__, static_folder=static, template_folder=templates)
     app.__dict__.update(app_settings)
     app.config.from_object(Config)
-    app.gcp_client = gcp_client
-    app.gcp_bucket = gcp_bucket
-    app.redis = Redis.from_url(app.config['REDIS_URL'])
-    app.task_queue = Queue('hemlock-task-queue', connection=app.redis)
     app.register_blueprint(bp)
     get_screenouts(app)
     
@@ -63,5 +57,15 @@ def create_app():
     scheduler.start()
     socketio.init_app(app, message_queue=app.config['REDIS_URL'])
     manager.init_app(app, **Settings.get('manager'))
+
+    bucket = os.environ.get('BUCKET')
+    if bucket is not None:
+        app.gcp_client = storage.Client()
+        app.gcp_bucket = gcp_client.get_bucket(bucket)
+        
+    redis_url = os.environ.get('REDIS_URL')
+    if redis_url is not None:
+        app.redis = Redis.from_url(redis_url)
+        app.task_queue = Queue('hemlock-task-queue', connection=app.redis)
     
     return app

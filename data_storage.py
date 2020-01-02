@@ -60,7 +60,7 @@ def DataStorage(origin=None):
     p = Page(b)
     c = Check(
         p,
-        label='<p>Values for choice questions can be set in the `Choice` object.<.p>',
+        label='<p>Values for choice questions can be set in the `Choice` object.<p>',
         var='ChoiceVar'
     )
     Choice(c, label='Yes', value=1)

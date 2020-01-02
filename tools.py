@@ -66,7 +66,7 @@ def Tools(origin=None):
 
     """Videos"""
     p = Page(b)
-    vid = Vid.from_youtube('https://www.youtube.com/watch?v=9d4ui9q7eDM')
+    vid = Vid.from_youtube('https://www.youtube.com/watch?v=fJ9rUzIMcZQ')
     vid.parms['autoplay'] = 1
     Label(p, label=vid.render())
 
@@ -89,7 +89,7 @@ def ComprehensionCheck(origin=None):
     instructions.append(p)
 
     p = Page()
-    Label(p, label='<p>Instrucitons page 2.</p>')
+    Label(p, label='<p>Instructions page 2.</p>')
     instructions.append(p)
 
     p = Page()

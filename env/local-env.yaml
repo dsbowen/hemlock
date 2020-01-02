@@ -1,4 +1,3 @@
-BUCKET: hemlock-local-bucket-knbus28aqv
 FLASK_APP: app
-GOOGLE_APPLICATION_CREDENTIALS: env/gcp-credentials.json
+REDIS_URL: redis://
 URL_ROOT: http://localhost:5000
