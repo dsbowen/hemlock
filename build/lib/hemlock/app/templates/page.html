@@ -1,0 +1,33 @@
+<!-- Default survey template -->
+
+{% extends 'bootstrap/base.html' %}
+
+{% block styles %}
+{{ page.css.render() }}
+{% for q in page.questions %}
+    {{ q.css.render() }}
+    {% for opt in q.options %}
+        {{ opt.css.render() }}
+    {% endfor %}
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+{{ page.js.render() }}
+{% for q in page.questions %}
+    {{ q.js.render() }}
+    {% for opt in q.options %}
+        {{ opt.js.render() }}
+    {% endfor %}
+{% endfor %}
+{% endblock %}
+
+{% block navbar %}
+{% if page.navbar is not none %}
+    {{ page.navbar.render() }}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{{ page.body.render() }}
+{% endblock %}

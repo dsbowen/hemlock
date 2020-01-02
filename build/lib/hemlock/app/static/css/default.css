@@ -1,0 +1,50 @@
+/* Default css file */
+
+/* Set body and html to viewport width */
+body, html {
+    height: 100%;
+    width: 100%;
+}
+
+/* Form margins */
+form.form-margins {
+    margin: 20px 0px;
+}
+
+/* Question div formatting */
+div.error {
+    border-style: solid;
+    border-width: thin;
+    border-radius: 5px;
+    background-color: #f2dede;
+    border-color: #ebcccc;
+}
+
+/* Choice formatting */
+.choice {
+    padding-left: 3px;
+    padding-right: 3px;
+    border-radius: 3px;
+    background-clip: padding-box;
+}
+input:hover + label {
+    background-color: lightgray;
+}
+input:checked + label {
+    background-color: darkgray;
+}
+input[type="checkbox"]:checked:hover + label {
+    background-color: #BEBEBE;
+}
+
+/* Video formatting */
+/* 16:9 aspect ratio */
+.video-wrapper {
+    padding-bottom: 56.25%;
+    position: relative;
+}
+.video {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}

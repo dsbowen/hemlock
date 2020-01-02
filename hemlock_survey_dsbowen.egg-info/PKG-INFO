@@ -1,0 +1,26 @@
+Metadata-Version: 2.1
+Name: hemlock-survey-dsbowen
+Version: 0.0.1
+Summary: A package for creating and deploying surveys
+Home-page: https://github.com/dsbowen/hemlock
+Author: Dillon Bowen
+Author-email: dsbowen@wharton.upenn.edu
+License: UNKNOWN
+Description: # Hemlock
+        
+        Hemlock provides tools and models for creating and deploying surveys. It aspires to be the most powerful and flexible method of survey creation.
+        
+        ## Documentation
+        
+        You can find the latest documentation at [dsbowen.github.io/hemlock](dsbowen.github.io/hemlock).
+        
+        ## License
+        
+        Hemlock was created first and foremost as a free, open-source tool for academic and non-profit research. I aim to obtain a license permitting unlimited free use for legitimate academic and non-profit research by February 2020.
+        
+        Until I obtain this license, I require that all Hemlock users obtain written permission from its copyright holder, Dillon Bowen. Any use without written permission from the copyright holder is strictly prohibited.
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
