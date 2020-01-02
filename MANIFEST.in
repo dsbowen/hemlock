@@ -1,0 +1,4 @@
+include hemlock/app/static/worker_loading.gif
+include hemlock/app/static/css/*
+include hemlock/app/static/js/*
+include hemlock/app/templates/*
