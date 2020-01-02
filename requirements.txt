@@ -19,6 +19,7 @@ rq
 selenium
 sqlalchemy
 sqlalchemy-function==0.0.3
+sqlalchemy-modelid==0.0.1
 sqlalchemy-mutable==0.0.6
 sqlalchemy-mutablesoup==0.0.3
 sqlalchemy-nav==0.0.3
