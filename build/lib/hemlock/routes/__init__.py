@@ -19,13 +19,14 @@ def init_app():
     if not DataStore.query.first():
         DataStore()
     db.session.commit()
-    current_app.apscheduler.add_job(
-        func=log_current_status, 
-        trigger='interval',
-        seconds=current_app.status_log_period.seconds,
-        args=[current_app._get_current_object()], 
-        id='log_status'
-    )
+    # FIX THIS
+    # current_app.apscheduler.add_job(
+    #     func=log_current_status, 
+    #     trigger='interval',
+    #     seconds=current_app.status_log_period.seconds,
+    #     args=[current_app._get_current_object()], 
+    #     id='log_status'
+    # )
 
 def log_current_status(app):
     """Log participants' status"""

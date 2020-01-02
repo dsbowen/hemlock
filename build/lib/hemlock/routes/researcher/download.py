@@ -46,7 +46,7 @@ def download_page():
     download_p = Page(navbar=researcher_navbar(), back=False, forward=False)
     data_q = Check(download_p, label=SELECT_FILES_TXT, multiple=True)
     Choice(data_q, label='Metadata', value='meta')
-    Choice(data_q, label='Status Log', value='status')
+    # Choice(data_q, label='Status Log', value='status')
     Choice(data_q, label='Dataframe', value='data')
     survey_view_q = Input(download_p, label=SURVEY_VIEW_TXT)
     Validate(survey_view_q, valid_part_ids)

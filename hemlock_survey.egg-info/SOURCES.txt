@@ -82,4 +82,5 @@ hemlock/tools/webdriver.py
 hemlock_survey.egg-info/PKG-INFO
 hemlock_survey.egg-info/SOURCES.txt
 hemlock_survey.egg-info/dependency_links.txt
+hemlock_survey.egg-info/requires.txt
 hemlock_survey.egg-info/top_level.txt
