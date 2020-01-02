@@ -29,6 +29,10 @@ bp = Blueprint(
 )
 db = SQLAlchemy()
 download_btn_manager = DownloadBtnManager(db=db)
+bucket = os.environ.get('BUCKET')
+if bucket is not None:
+    gcp_client = storage.Client()
+    gcp_bucket = gcp_client.get_bucket(bucket)
 login_manager = LoginManager()
 login_manager.login_view = 'hemlock.index'
 login_manager.login_message = None
@@ -62,7 +66,7 @@ def create_app():
 
     bucket = os.environ.get('BUCKET')
     if bucket is not None:
-        app.gcp_client = storage.Client()
-        app.gcp_bucket = app.gcp_client.get_bucket(bucket)
+        app.gcp_client = gcp_client
+        app.gcp_bucket = gcp_bucket
     
     return app
