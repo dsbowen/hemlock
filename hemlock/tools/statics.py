@@ -10,6 +10,7 @@ from flask import render_template
 from sqlalchemy_mutablesoup import SoupBase
 
 from urllib.parse import parse_qs, urlparse, urlencode
+import os
 
 __all__ = [
     'gen_external_css', 
@@ -54,7 +55,9 @@ class Static():
     This base stores its HTML in a `MutableSoup` object called `body`. The source parameters are stored separately in a `src_parms` dictionary. These are added to the src attribute when rendering.
     """
     def __init__(self, template, **kwargs):
-        self.body = SoupBase(render_template(template), 'html.parser')
+        path = os.path.dirname(os.path.realpath(__file__))
+        html = open(os.path.join(path, template)).read()
+        self.body = SoupBase(html, 'html.parser')
         self.src_parms = {}
         [setattr(self, key, val) for key, val in kwargs.items()]
 
