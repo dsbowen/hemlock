@@ -223,14 +223,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
             args=['forward']
         )
 
-    @property
-    def icon(self):
-        return self.body.select_one('.icon')
-    
-    @icon.setter
-    def icon(self, val):
-        self.body.set_element('span.icon', val)
-
     def _gen_submit(self, direction):
         """Generate submit (back or forward) button"""
         btn = Tag(name='button')
@@ -242,6 +234,14 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         btn['style'] = 'float: {};'.format(float_)
         btn['value'] = direction
         return btn
+
+    @property
+    def icon(self):
+        return self.body.select_one('span.icon')
+    
+    @icon.setter
+    def icon(self, val):
+        self.body.set_element('span.icon', val)
 
     def clear_error(self):
         self.error = None
