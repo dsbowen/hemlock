@@ -182,6 +182,7 @@ def get_part():
     if part_id is None:
         part = current_user
     else:
+        print(request.args)
         part = Participant.query.get(part_id)
         assert part_key == part._key
     return part

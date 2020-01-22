@@ -30,6 +30,7 @@ setuptools.setup(
         'pandas-profiling==2.3.0',
         'python-docx==0.8.10',
         'redis==3.3.11',
+        'rq==1.2.0',
         'selenium==3.141.0',
         'sqlalchemy==1.3.12',
         'sqlalchemy-function',

@@ -92,7 +92,7 @@ def settings():
 @Settings.register('manager')
 def settings():
     return {
-        'blueprint': 'hemlock'
+        'loading_img_blueprint': 'hemlock'
     }
 
 def get_app_settings():

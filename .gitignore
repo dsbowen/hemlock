@@ -1,8 +1,7 @@
-build/
+__pycache__/
+*.egg-info/
 dist/
 env/gcp-credentials.json
-hemlock_survey_dsbowen.egg-info/
 hemlock-venv/
-__pycache__
 data.db
 test.py

@@ -2,6 +2,7 @@
 
 from hemlock import *
 
+@route('/survey')
 @Navigate.register
 def Workers(origin=None):
     b = Branch()
