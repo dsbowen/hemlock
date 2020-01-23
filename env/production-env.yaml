@@ -1,4 +1,4 @@
-BUCKET: hemlock-bucket-qazvn64vnz
+BUCKET: hemlock-bucket-nwiwjz3py2
 CHROMEDRIVER_PATH: /app/.chromedriver/bin/chromedriver
 GOOGLE_APPLICATION_CREDENTIALS: env/gcp-credentials.json
 URL_ROOT: http://hlk-test235.herokuapp.com

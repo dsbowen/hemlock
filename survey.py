@@ -1,7 +1,5 @@
 """Hello World: a starting example"""
 
-#Hello world
-
 import questions
 
 from hemlock import *

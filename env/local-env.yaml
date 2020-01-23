@@ -1,4 +1,4 @@
-BUCKET: hemlock-local-bucket-tiluvromhi
+BUCKET: hemlock-local-bucket-7hv2egpmr0
 FLASK_APP: app
 GOOGLE_APPLICATION_CREDENTIALS: env/gcp-credentials.json
 REDIS_URL: redis://
