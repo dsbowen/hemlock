@@ -8,7 +8,7 @@ from hemlock import *
 # def Start(origin=None):
 #     b = Branch()
 #     p = Page(b, terminal=True)
-#     Label(p, label='Hello World')
+#     Label(p, label='<p>Hello World</p>')
 #     return b
 
 @route('/survey')
@@ -16,7 +16,7 @@ def Start(origin=None):
     b = Branch()
     Navigate.QuestionPolymorphs(b)
     p = Page(b)
-    Label(p, label='Hello World')
+    Label(p, label='<p>Hello World</p>')
     return b
 
 @Navigate.register
