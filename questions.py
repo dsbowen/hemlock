@@ -18,6 +18,15 @@ def settings():
 def QuestionPolymorphs(origin=None):
     b = Branch()
     Navigate.DataStorage(b)
+
+    p = Page(b)
+    Label(p, label='Uploads are stored in your Google bucket.')
+    File(
+        p, 
+        label='Upload a .jpg file.',
+        filename='test-picture',
+        allowed_extensions=['.jpg'],
+    )
     
     """Input"""
     p = Page(b)

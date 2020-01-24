@@ -30,10 +30,9 @@ elements is:
 3. A page's questions.
 """
 
-from hemlock.app import db
+from hemlock.app import Settings, db
 from hemlock.database.bases import BranchingBase, HTMLMixin
 from hemlock.database.data import Timer
-import hemlock.database.page_settings
 
 from bs4 import BeautifulSoup, Tag
 from flask import Markup, current_app, render_template, request
@@ -41,8 +40,30 @@ from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import validates
 from sqlalchemy_mutable import MutableType
 
-from random import random, shuffle
-from time import sleep
+import os
+
+TEMPLATES = 'hemlock/app/templates'
+
+def compile_func(page):
+    [q._compile() for q in page.questions]
+
+def validate_func(page):
+    [q._validate() for q in page.questions]
+    
+def submit_func(page):
+    [q._submit() for q in page.questions]
+
+@Settings.register('Page')
+def page_settings():
+    return {
+        'css': open(os.path.join(TEMPLATES, 'page-css.html'), 'r').read(),
+        'js': open(os.path.join(TEMPLATES, 'page-js.html'), 'r').read(),
+        'back': False,
+        'forward': True,
+        'compile_functions': compile_func,
+        'validate_functions': validate_func,
+        'submit_functions': submit_func,
+    }
 
 
 class Page(HTMLMixin, BranchingBase, db.Model):
