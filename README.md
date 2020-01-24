@@ -14,6 +14,4 @@ Until I obtain this license, I require that all Hemlock users obtain written per
 
 ## Acknowledgments
 
-I would like to thank my academic advisors Joseph Simmons, Philip Tetlock, and Barbara Mellers, for supporting me throughout this project.
-
-I would also like to thank Sarah Yang Fenton Reed, an extraordinary coder, for her invaluable technical advice.
+I would like to thank Sarah Yang Fenton Reed, an extraordinary coder, for her invaluable technical advice.
