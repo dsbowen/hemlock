@@ -26,6 +26,8 @@ from sqlalchemy_orderingitem import OrderingItem
 
 
 class Base(FunctionRelator, OrderingItem, ModelIdBase):
+    name = db.Column(db.String)
+
     def init(*settings_keys):
         """Decorator for initialization function
 

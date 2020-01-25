@@ -1,6 +1,6 @@
 """Tools"""
 
-import workers
+import gcloud_bucket
 
 from hemlock import *
 
@@ -113,5 +113,5 @@ def ComprehensionCheck(origin=None):
     checks.append(p)
 
     b = comprehension_check(instructions=instructions, checks=checks, attempts=2)
-    Navigate.Workers(b)
+    Navigate.GCloudBucket(b)
     return b

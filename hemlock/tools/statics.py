@@ -2,8 +2,36 @@
 
 from sqlalchemy_mutablesoup import SoupBase
 
+from flask import current_app
+
+from datetime import timedelta
 from urllib.parse import parse_qs, urlparse, urlencode
+import re
 import os
+
+def src_from_bucket(*args, **kwargs):
+    """Get `src` attribute from Google bucket
+
+    Note that the `generate_signed_url` method generates a url with an 
+    incorrect domain. This command is in beta and will probably require 
+    updating soon.
+    """
+    url = url_from_bucket(*args, **kwargs)
+    return url.replace('googleapis', 'cloud.google')
+
+def url_from_bucket(filename, **kwargs):
+    """Get url attribute from Google bucket
+
+    By default, the link expires in 3600 seconds.
+    """
+    assert hasattr(current_app, 'gcp_bucket'), (
+        '''Enable a Google Cloud Bucket to use this feature
+        \n  See `hlk gcloud-bucket`
+        '''
+    )
+    kwargs['expiration'] = kwargs.get('expriation') or timedelta(3600)
+    blob = current_app.gcp_bucket.blob(filename)
+    return blob.generate_signed_url(**kwargs)
 
 
 class Static():

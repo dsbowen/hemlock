@@ -114,15 +114,4 @@ def QuestionPolymorphs(origin=None):
         downloads=[(url, 'hello-world.txt')]
     )
 
-    """File upload"""
-    # Use the `hlk gcloud-bucket` command to set up Google storage for file uploads
-    p = Page(b)
-    Label(p, label='Uploads are stored in your Google bucket.')
-    File(
-        p, 
-        label='Upload a .jpg file.',
-        filename='test-picture',
-        allowed_extensions=['.jpg'],
-    )
-
     return b
