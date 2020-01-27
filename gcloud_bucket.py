@@ -21,12 +21,15 @@ def GCloudBucket(origin=None):
         label='<p>Buckets are useful for several purposes, including embedding images and uploading and downloading files.</p>'
     )
 
-    """Embed images"""
+    """Embed images
+    
+    Note that you will have to make make the image public: https://cloud.google.com/storage/docs/access-control/making-data-public
+    """
     img = Img(
         caption='Computer Problems',
         alignment='center',
-        # src=src_from_bucket('computer_problems.png')
-        src=url_from_bucket('computer_problems.png')
+        src=src_from_bucket('computer_problems.png'),
+        # src=url_from_bucket('computer_problems.png')
     )
     Label(p, label=img.render())
 

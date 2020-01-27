@@ -45,6 +45,12 @@ import os
 
 TEMPLATES = 'hemlock/app/templates'
 
+BANNER = Img(
+    src='/hemlock/static/img/hemlock_banner.svg',
+    alignment='center'
+)
+BANNER.img['style'] = 'max-width:300px;'
+
 def compile_func(page):
     [q._compile() for q in page.questions]
 
@@ -56,17 +62,12 @@ def submit_func(page):
 
 @Settings.register('Page')
 def page_settings():
-    img = Img(
-        src='/hemlock/static/img/hemlock_banner.svg',
-        alignment='center'
-    )
-    img.img['style'] = 'max-width:300px;'
     return {
         'css': open(os.path.join(TEMPLATES, 'page-css.html'), 'r').read(),
         'js': open(os.path.join(TEMPLATES, 'page-js.html'), 'r').read(),
         'back': False,
         'forward': True,
-        'banner': img.render(),
+        'banner': BANNER.render(),
         'compile_functions': compile_func,
         'validate_functions': validate_func,
         'submit_functions': submit_func,
