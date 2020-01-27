@@ -33,6 +33,7 @@ elements is:
 from hemlock.app import Settings, db
 from hemlock.database.bases import BranchingBase, HTMLMixin
 from hemlock.database.data import Timer
+from hemlock.tools import Img
 
 from bs4 import BeautifulSoup, Tag
 from flask import Markup, current_app, render_template, request
@@ -55,11 +56,17 @@ def submit_func(page):
 
 @Settings.register('Page')
 def page_settings():
+    img = Img(
+        src='/hemlock/static/img/hemlock_banner.svg',
+        alignment='center'
+    )
+    img.img['style'] = 'max-width:300px;'
     return {
         'css': open(os.path.join(TEMPLATES, 'page-css.html'), 'r').read(),
         'js': open(os.path.join(TEMPLATES, 'page-js.html'), 'r').read(),
         'back': False,
         'forward': True,
+        'banner': img.render(),
         'compile_functions': compile_func,
         'validate_functions': validate_func,
         'submit_functions': submit_func,
@@ -257,12 +264,12 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         return btn
 
     @property
-    def icon(self):
-        return self.body.select_one('span.icon')
+    def banner(self):
+        return self.body.select_one('span.banner')
     
-    @icon.setter
-    def icon(self, val):
-        self.body.set_element('span.icon', val)
+    @banner.setter
+    def banner(self, val):
+        self.body.set_element('span.banner', val)
 
     def clear_error(self):
         self.error = None

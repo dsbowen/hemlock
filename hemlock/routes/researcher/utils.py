@@ -17,9 +17,13 @@ PROFILE_SFX_LABELS = [
     ('sample', 'Sample')
 ]
 
+BRAND = '''
+<img src="/hemlock/static/img/hemlock_favicon.svg" class="d-inline-block align-top" alt="" style="max-height:30px;"> 
+'''
+
 def researcher_navbar():
     """Create a researcher navigation bar"""
-    navbar = Navbar(label='Hemlock', href='https://dsbowen.github.io/hemlock')
+    navbar = Navbar(label=BRAND, href='https://dsbowen.github.io/hemlock')
     navbar.a['target'] = '_blank'
     Navitem(navbar, label='Participant Status', href=url_for('hemlock.status'))
     Navitem(navbar, label='Download', href=url_for('hemlock.download'))

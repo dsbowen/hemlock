@@ -3,7 +3,6 @@
 {% extends 'bootstrap/base.html' %}
 
 {% block styles %}
-<link rel="shortcut icon" type="image/png" href="/static/hemlock_favicon.png"/>
 {{ page.css.render() }}
 {% for q in page.questions %}
     {{ q.css.render() }}

@@ -6,13 +6,7 @@ from hemlock import *
 
 @Settings.register('Page')
 def settings():
-    img = Img(
-        src='/static/oid.png',
-        alignment='center'
-    )
-    figure = img.body.select_one('figure')
-    figure['style'] = 'padding-right:20%; padding-left:20%;'
-    return {'back': True, 'icon': img.render()}
+    return {'back': True}
 
 @Navigate.register
 def QuestionPolymorphs(origin=None):
