@@ -6,7 +6,7 @@ from hemlock import *
 
 from random import choice
 
-@route('/survey')
+# @route('/survey')
 def Start(origin=None):
     b = Branch()
     Navigate.End(b)

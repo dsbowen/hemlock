@@ -103,6 +103,7 @@ def ComprehensionCheck(origin=None):
     s = Select(p, label='<p>Select the correct answer.</p>')
     Option(s, label='Incorrect', value=0)
     Option(s, label='Correct', value=1)
+    Compile.rerandomize(s)
     Debug.click_choices(s, s.choices[-1], p_exec=.9)
     checks.append(p)
 
