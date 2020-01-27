@@ -49,7 +49,7 @@ BANNER = Img(
     src='/hemlock/static/img/hemlock_banner.svg',
     alignment='center'
 )
-BANNER.img['style'] = 'max-width:300px;'
+BANNER.img['style'] = 'max-width:200px;'
 
 def compile_func(page):
     [q._compile() for q in page.questions]

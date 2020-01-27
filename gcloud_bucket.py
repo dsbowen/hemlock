@@ -28,8 +28,7 @@ def GCloudBucket(origin=None):
     img = Img(
         caption='Computer Problems',
         alignment='center',
-        src=src_from_bucket('computer_problems.png'),
-        # src=url_from_bucket('computer_problems.png')
+        src=src_from_bucket('computer_problems.png')
     )
     Label(p, label=img.render())
 
