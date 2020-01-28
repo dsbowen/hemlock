@@ -34,7 +34,9 @@ class ViewingPage(OrderingItem, db.Model):
         [self.convert_to_abs_path(s, 'href') for s in sheets]
         scripts = soup.select('script')
         [self.convert_to_abs_path(s, 'src') for s in scripts]
-        soup.select_one('span.banner').string = ''
+        banner = soup.select_one('span.banner')
+        if banner is not None:
+            banner.string = ''
         self.html = str(soup)
 
     def convert_to_abs_path(self, element, url_attr):

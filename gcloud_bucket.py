@@ -8,12 +8,10 @@ import workers
 
 from hemlock import *
 
-@route('/survey')
 @Navigate.register
 def GCloudBucket(origin=None):
     b = Branch()
-    # Navigate.Workers(b)
-    Navigate.End(b)
+    Navigate.Workers(b)
 
     p = Page(b)
     Label(

@@ -44,10 +44,12 @@ class Static():
         self.src_parms = {}
         [setattr(self, key, val) for key, val in kwargs.items()]
 
-    def render(self, tag=None):
-        if tag is not None:
-            tag.attrs['src'] = tag['src']+'?'+urlencode(self.parms)
-        return str(self.body)
+    def render(self, tag_selector=None):
+        body = self.body.copy()
+        if tag_selector is not None:
+            tag = body.select_one(tag_selector)
+            tag['src'] = tag.get('src')+'?'+urlencode(self.parms)
+        return str(body)
 
     def _set_src(self, tag, url):
         self.parms = parse_qs(urlparse(url).query)
@@ -104,7 +106,7 @@ class Img(Static):
             self.figure['class'].append(align)
 
     def render(self):
-        return super().render(self.img)
+        return super().render('img')
 
 
 YOUTUBE_ATTRS = {
@@ -142,4 +144,4 @@ class Vid(Static):
         return vid
         
     def render(self):
-        return super().render(self.iframe)
+        return super().render('iframe')

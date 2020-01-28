@@ -46,13 +46,13 @@ def display_participant_response(page):
 #     Label(p, label='<p>Hello World</p>')
 #     return b
 
-# @route('/survey')
-# def Start(origin=None):
-#     b = Branch()
-#     Navigate.QuestionPolymorphs(b)
-#     p = Page(b)
-#     Label(p, label='<p>Hello World</p>')
-#     return b
+@route('/survey')
+def Start(origin=None):
+    b = Branch()
+    Navigate.QuestionPolymorphs(b)
+    p = Page(b)
+    Label(p, label='<p>Hello World</p>')
+    return b
 
 @Navigate.register
 def End(origin=None):
