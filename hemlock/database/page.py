@@ -43,7 +43,7 @@ from sqlalchemy_mutable import MutableType
 
 import os
 
-TEMPLATES = 'hemlock/app/templates'
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 BANNER = Img(
     src='/hemlock/static/img/hemlock_banner.svg',
@@ -63,8 +63,8 @@ def submit_func(page):
 @Settings.register('Page')
 def page_settings():
     return {
-        'css': open(os.path.join(TEMPLATES, 'page-css.html'), 'r').read(),
-        'js': open(os.path.join(TEMPLATES, 'page-js.html'), 'r').read(),
+        'css': open(os.path.join(DIR_PATH, 'page-css.html'), 'r').read(),
+        'js': open(os.path.join(DIR_PATH, 'page-js.html'), 'r').read(),
         'back': False,
         'forward': True,
         'banner': BANNER.render(),
