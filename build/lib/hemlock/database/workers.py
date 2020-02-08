@@ -11,7 +11,7 @@ page.
 More detail at dsbowen.github.io/flask-worker.
 """
 
-from hemlock.app import db
+from hemlock.app import Settings, db
 from hemlock.database import Branch, Page
 from hemlock.database.bases import Base
 

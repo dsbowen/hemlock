@@ -92,7 +92,8 @@ def settings():
 @Settings.register('manager')
 def settings():
     return {
-        'blueprint': 'hemlock'
+        'loading_img_blueprint': 'hemlock',
+        'loading_img_filename': 'img/worker_loading.gif'
     }
 
 def get_app_settings():

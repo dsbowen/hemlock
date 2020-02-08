@@ -1,67 +1,55 @@
-"""Tool for generating statics
+"""Tool for generating statics (embedded images and videos)"""
 
-These tools group into:
-1. Custom css and javascript
-2. Images and Videos
-"""
-
-from bs4 import BeautifulSoup
-from flask import render_template
 from sqlalchemy_mutablesoup import SoupBase
 
+from flask import current_app
+
+from datetime import timedelta
 from urllib.parse import parse_qs, urlparse, urlencode
+import re
+import os
 
-__all__ = [
-    'gen_external_css', 
-    'gen_internal_css', 
-    'gen_external_js',
-    'Img',
-    'Vid',
-]
+NO_BUCKET_ERR_MSG = '''
+Enable a Google Cloud Bucket to access this feature.
+\n  See `hlk gcloud-bucket`
+'''
+SRC_ROOT = 'https://storage.googleapis.com'
 
-"""Custom css and javascript"""
-def gen_soup(template, selector=None, **attrs):
-    soup = BeautifulSoup(template, 'html.parser')
-    tag = soup.select_one(selector) if selector else list(soup.children)[0]
-    [tag.__setitem__(key, val) for key, val in attrs.items()]
-    return soup
+def src_from_bucket(filename):
+    """Get `src` attribute from Google bucket"""
+    bucket_name = os.environ.get('BUCKET')
+    assert bucket_name is not None, NO_BUCKET_ERR_MSG
+    return '/'.join([SRC_ROOT, bucket_name, filename])
 
-def gen_external_css(**attrs):
-    return gen_soup('<link rel="stylesheet" type="text/css"/>', **attrs)
+def url_from_bucket(filename, **kwargs):
+    """Get url attribute from Google bucket
 
-def gen_internal_css(style):
-    """Style maps css selectors to a dictionary of style attributes"""
-    html = '<style></style>'
-    soup = BeautifulSoup(html, 'html.parser')
-    [
-        soup.style.append(format_style(selector, attrs)) 
-        for selector, attrs in style.items()
-    ]
-    return soup
-
-def format_style(selector, attrs):
-    attrs = ' '.join([attr+': '+val+';' for attr, val in attrs.items()])
-    return selector+' {'+attrs+'}'
-
-def gen_external_js(**attrs):
-    return gen_soup('<script></script>', **attrs)
+    By default, the link expires in 3600 seconds.
+    """
+    assert hasattr(current_app, 'gcp_bucket'), NO_BUCKET_ERR_MSG
+    kwargs['expiration'] = kwargs.get('expriation') or timedelta(3600)
+    blob = current_app.gcp_bucket.blob(filename)
+    return blob.generate_signed_url(**kwargs)
 
 
-"""Images and videos"""
 class Static():
     """Static base
 
     This base stores its HTML in a `MutableSoup` object called `body`. The source parameters are stored separately in a `src_parms` dictionary. These are added to the src attribute when rendering.
     """
     def __init__(self, template, **kwargs):
-        self.body = SoupBase(render_template(template), 'html.parser')
+        path = os.path.dirname(os.path.realpath(__file__))
+        html = open(os.path.join(path, template)).read()
+        self.body = SoupBase(html, 'html.parser')
         self.src_parms = {}
         [setattr(self, key, val) for key, val in kwargs.items()]
 
-    def render(self, tag=None):
-        if tag is not None:
-            tag.attrs['src'] = tag['src']+'?'+urlencode(self.parms)
-        return str(self.body)
+    def render(self, tag_selector=None):
+        body = self.body.copy()
+        if tag_selector is not None:
+            tag = body.select_one(tag_selector)
+            tag['src'] = tag.get('src')+'?'+urlencode(self.parms)
+        return str(body)
 
     def _set_src(self, tag, url):
         self.parms = parse_qs(urlparse(url).query)
@@ -118,7 +106,7 @@ class Img(Static):
             self.figure['class'].append(align)
 
     def render(self):
-        return super().render(self.img)
+        return super().render('img')
 
 
 YOUTUBE_ATTRS = {
@@ -156,4 +144,4 @@ class Vid(Static):
         return vid
         
     def render(self):
-        return super().render(self.iframe)
+        return super().render('iframe')

@@ -23,13 +23,13 @@ class Textarea(InputGroup, Question):
         return driver.find_element_by_css_selector('textarea#'+self.model_id)
 
     @property
-    def size(self):
-        return self.textarea.attrs.get('size')
+    def rows(self):
+        return self.textarea.attrs.get('rows')
 
-    @size.setter
-    def size(self, val):
+    @rows.setter
+    def rows(self, val):
         assert isinstance(val, int)
-        self.textarea['size'] = val
+        self.textarea['rows'] = val
         self.body.changed()
 
     def _render(self, body=None):

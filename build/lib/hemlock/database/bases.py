@@ -26,6 +26,8 @@ from sqlalchemy_orderingitem import OrderingItem
 
 
 class Base(FunctionRelator, OrderingItem, ModelIdBase):
+    name = db.Column(db.String)
+
     def init(*settings_keys):
         """Decorator for initialization function
 
@@ -73,6 +75,59 @@ class HTMLMixin(Base):
     body = db.Column(MutableSoupType)
     css = db.Column(MutableSoupType)
     js = db.Column(MutableSoupType)
+
+    def _update_col(self, col, template, attrs, input_attrs):
+        """Update a `Column` (self.css or self.js)
+
+        This method beings by translating the default attributes, `attrs`, 
+        and the user input attributes, `input_attrs` into HTML format. It 
+        then inserts the formatted attributes into an HTML `template`. 
+        Finally, it updates the column, `col`.
+        """
+        attrs.update(input_attrs)
+        html_attrs = ' '.join([key+'="'+val+'"' for key,val in attrs.items()])
+        html = template.format(html_attrs)
+        col.append(BeautifulSoup(html, 'html.parser'))
+        col.changed()
+
+    def add_external_css(self, **input_attrs):
+        """`input_attrs` maps attribute to value in <link/> tag"""
+        self._update_col(
+            col=self.css,
+            template='<link {}/>',
+            attrs={'rel': 'stylesheet', 'type': 'text/css'},
+            input_attrs=input_attrs
+        )
+
+    def add_external_js(self, **input_attrs):
+        """`input_attrs` maps attibute to value in <script> tag"""
+        self._update_col(
+            col=self.js,
+            template='<script {}></script>',
+            attrs={},
+            input_attrs=input_attrs
+        )
+    
+    def add_internal_css(self, style):
+        """`style` maps css selectors to a dictionary of style attributes"""
+        css = ' '.join(
+            [self._format_style(key, val) for key, val in style.items()]
+        )
+        html = '<style>{}</style>'.format(css)
+        self.css.append(BeautifulSoup(html, 'html.parser'))
+        self.css.changed()
+            
+    def _format_style(self, selector, attrs):
+        """`attrs` maps attribute names to values"""
+        attrs = ' '.join([key+':'+val+';' for key, val in attrs.items()])
+        return selector+' {'+attrs+'}'
+
+    def add_internal_js(self, js):
+        """`js` is a string of Javascript code"""
+        if not js.startswith('<script>'):
+            js = '<script>{}</script>'.format(js)
+        self.js.append(BeautifulSoup(js, 'html.parser'))
+        self.js.changed()
 
 
 class InputBase():

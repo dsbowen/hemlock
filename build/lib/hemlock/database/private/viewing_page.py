@@ -23,13 +23,20 @@ class ViewingPage(OrderingItem, db.Model):
         self.html = html
         self.url_root = request.url_root
 
-    def convert_to_abs_paths(self):
-        """Convert stylesheets and scripts from relative to absolute paths"""
+    def process(self):
+        """Process HTML for viewing
+        
+        Convert stylesheets and scripts from relative to absolute paths and 
+        remove icon.
+        """
         soup = BeautifulSoup(self.html, 'html.parser')
         sheets = soup.select('link')
         [self.convert_to_abs_path(s, 'href') for s in sheets]
         scripts = soup.select('script')
         [self.convert_to_abs_path(s, 'src') for s in scripts]
+        banner = soup.select_one('span.banner')
+        if banner is not None:
+            banner.string = ''
         self.html = str(soup)
 
     def convert_to_abs_path(self, element, url_attr):

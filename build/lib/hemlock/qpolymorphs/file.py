@@ -107,7 +107,7 @@ def upload_to_bucket(question):
     plain'.
     """
     path, upload = question.path, question.upload
-    if not path:
+    if not path or not upload:
         return
     blob = current_app.gcp_bucket.blob(path)
     if not path.endswith('.txt'):

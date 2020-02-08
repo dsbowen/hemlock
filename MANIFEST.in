@@ -1,2 +1,6 @@
-include hemlock/app/static/img *
+include hemlock/app/static/css/*
+include hemlock/app/static/img/*
+include hemlock/app/static/js/*
 include hemlock/app/templates/*
+include hemlock/database/*.html
+include hemlock/tools/*.html

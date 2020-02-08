@@ -194,7 +194,7 @@ def create_view(btn, part, driver):
 
 def add_page_to_doc(doc, page, driver):
     """Add survey view page to survey view doc"""
-    page.convert_to_abs_paths()
+    page.process()
     driver.get('data:text/html,'+page.html)
     accept_alerts(driver)
     width = driver.get_window_size()['width']

@@ -50,10 +50,20 @@ def create_app():
     app = Flask(__name__, static_folder=static, template_folder=templates)
     app.__dict__.update(app_settings)
     app.config.from_object(Config)
-    app.redis = Redis.from_url(app.config['REDIS_URL'])
-    app.task_queue = Queue('hemlock-task-queue', connection=app.redis)
     app.register_blueprint(bp)
     get_screenouts(app)
+
+    if bucket is not None:
+        app.gcp_client, app.gcp_bucket = gcp_client, gcp_bucket
+    else:
+        app.gcp_client = app.gcp_bucket = None
+
+    redis_url = os.environ.get('REDIS_URL')
+    if redis_url is not None:
+        app.redis = Redis.from_url(redis_url)
+        app.task_queue = Queue('hemlock-task-queue', connection=app.redis)
+    else:
+        app.redis = app.task_queue = None
     
     bootstrap.init_app(app)
     db.init_app(app)
@@ -61,12 +71,7 @@ def create_app():
     login_manager.init_app(app)
     scheduler.init_app(app)
     scheduler.start()
-    socketio.init_app(app, message_queue=app.config['REDIS_URL'])
+    socketio.init_app(app, message_queue=redis_url)
     manager.init_app(app, **Settings.get('manager'))
-
-    bucket = os.environ.get('BUCKET')
-    if bucket is not None:
-        app.gcp_client = gcp_client
-        app.gcp_bucket = gcp_bucket
     
     return app
