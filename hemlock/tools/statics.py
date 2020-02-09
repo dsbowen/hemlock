@@ -48,7 +48,8 @@ class Static():
         body = self.body.copy()
         if tag_selector is not None:
             tag = body.select_one(tag_selector)
-            tag['src'] = tag.get('src')+'?'+urlencode(self.parms)
+            if self.parms:
+                tag['src'] = tag.get('src')+'?'+urlencode(self.parms)
         return str(body)
 
     def _set_src(self, tag, url):
