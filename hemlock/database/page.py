@@ -46,7 +46,7 @@ import os
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 BANNER = Img(
-    src='/hemlock/static/img/hemlock_banner.svg',
+    src='/hemlock/static/img/hemlock_banner.png',
     alignment='center'
 )
 BANNER.img['style'] = 'max-width:200px;'

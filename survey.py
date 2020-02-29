@@ -9,8 +9,8 @@ from random import choice
 @route('/survey')
 def Start(origin=None):
     b = Branch()
-    Navigate.QuestionPolymorphs(b)
-    p = Page(b)
+    # Navigate.QuestionPolymorphs(b)
+    p = Page(b, terminal=True)
     Label(p, label='<p>Hello World</p>')
     return b
 
