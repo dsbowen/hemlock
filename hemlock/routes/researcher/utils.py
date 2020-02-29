@@ -19,7 +19,7 @@ PROFILE_SFX_LABELS = [
 
 BRAND = '''
 <img src="/hemlock/static/img/hemlock_favicon.svg" class="d-inline-block align-top" alt="" style="max-height:30px;">
-<span style="color:rgb(78,64,143);">Hemlock</span>
+<span style="font-family:'Josefin Sans';">HEMLOCK</span>
 '''
 
 def researcher_navbar():

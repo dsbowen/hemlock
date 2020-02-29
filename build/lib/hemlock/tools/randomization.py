@@ -67,7 +67,7 @@ class Randomizer(db.Model):
         db.session.flush([self])
         self.tag = tag
         if combination:
-            iter_ = combinations(list(range(n_elments)), r)
+            iter_ = combinations(list(range(n_elements)), r)
         else:
             iter_ = permutations(list(range(n_elements)), r)
         iter_ = list(iter_)

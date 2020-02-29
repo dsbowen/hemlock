@@ -45,7 +45,8 @@ class AIParticipant(unittest.TestCase):
         try:
             # Accept all alerts at the start of the page
             while True:
-                self.driver.switch_to_alert().accept()
+                # self.driver.switch_to_alert().accept() # Deprecated
+                self.driver.switch_to.alert.accept()
         except:
             pass
         try:
