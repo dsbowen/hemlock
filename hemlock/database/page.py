@@ -84,6 +84,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _branch_head_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    _viewed = db.Column(db.Boolean, default=False)
     g = db.Column(MutableType)
     index = db.Column(db.Integer)
 

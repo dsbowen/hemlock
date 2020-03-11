@@ -16,11 +16,13 @@ class ViewingPage(OrderingItem, db.Model):
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     index = db.Column(db.Integer)
     html = db.Column(db.String)
+    first_presentation = db.Column(db.Boolean)
     url_root = db.Column(db.String)
     
-    def __init__(self, part, html):
+    def __init__(self, part, html, first_presentation=False):
         self.part = part
         self.html = html
+        self.first_presentation = first_presentation
         self.url_root = request.url_root
 
     def process(self):
