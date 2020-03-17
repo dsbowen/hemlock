@@ -47,8 +47,10 @@ def researcher_page(key):
     """
     def wrapper(create_page):
         def get_or_create_page():
-            if key in session:
+            try:
                 return Page.query.get(session[key])
+            except:
+                pass
             p = create_page()
             session_store(key, p.id)
             return p

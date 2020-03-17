@@ -46,7 +46,7 @@ import os
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 BANNER = Img(
-    src='/hemlock/static/img/hemlock_banner.svg',
+    src='/hemlock/static/img/hemlock_banner.png',
     alignment='center'
 )
 BANNER.img['style'] = 'max-width:200px;'
@@ -84,6 +84,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _branch_head_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    _viewed = db.Column(db.Boolean, default=False)
     g = db.Column(MutableType)
     index = db.Column(db.Integer)
 

@@ -44,13 +44,23 @@ def download_page():
     by commas or spaces.
     """
     download_p = Page(navbar=researcher_navbar(), back=False, forward=False)
-    data_q = Check(download_p, label=SELECT_FILES_TXT, multiple=True)
-    Choice(data_q, label='Metadata', value='meta')
+    
+    Check(
+        download_p, 
+        label=SELECT_FILES_TXT,
+        choices=['Metadata', 'Dataframe'],
+        multiple=True
+    )
     # Choice(data_q, label='Status Log', value='status')
-    Choice(data_q, label='Dataframe', value='data')
+
     survey_view_q = Input(download_p, label=SURVEY_VIEW_TXT)
     Validate(survey_view_q, valid_part_ids)
     Submit(survey_view_q, store_part_ids)
+
+    present_q = Select(download_p, label=SURVEY_VIEW_PRESENTATION_TXT)
+    Option(present_q, label='First presentation only', value='first')
+    Option(present_q, label='All presentations', value='all')
+
     btn = Download(
         download_p,
         callback=request.url,
@@ -99,29 +109,28 @@ def handle_download_form(btn, response):
     btn.downloads = []
     btn.create_file_functions = []
     download_p._record_response()
-    downloads_q, views_q, _ = download_p.questions
+    data_q, view_q, present_q, _ = download_p.questions
     if download_p._validate():
         download_p._submit()
-        data_q, survey_view_q, _ = download_p.questions
         select_data(btn, data_q.data)
-        select_survey_view(btn, survey_view_q.data)
+        select_survey_view(btn, view_q.data, present_q.data)
         CreateFile(btn, zip_files)
     db.session.commit()
 
 def select_data(btn, files):
     """Add file creation functions for selected data download files"""
-    if files.get('meta'):
+    if files.get('Metadata'):
         CreateFile(btn, create_meta)
-    if files.get('status'):
+    if files.get('Status Log'):
         CreateFile(btn, create_status)
-    if files.get('data'):
+    if files.get('Dataframe'):
         CreateFile(btn, create_data)
 
-def select_survey_view(btn, part_ids):
+def select_survey_view(btn, part_ids, present):
     """Add file creation function for selected survey view download files"""
     if not part_ids:
         return
-    CreateFile(btn, create_views, args=part_ids)
+    CreateFile(btn, create_views, args=part_ids, kwargs={'present': present})
 
 """2. Create data download files"""
 def create_meta(btn):
@@ -171,21 +180,26 @@ def add_dataframe_to_zip(btn, data_frame):
     zipfunc.args.append(data_frame.get_download_file())
 
 """3. Create survey view download files"""
-def create_views(btn, *part_ids):
+def create_views(btn, *part_ids, present):
     """Create survey views for all selected participants"""
     parts = [Participant.query.get(id) for id in part_ids]
     driver = chromedriver(headless=True)
-    gen = chain.from_iterable([create_view(btn, p, driver) for p in parts])
+    gen = chain.from_iterable(
+        [create_view(btn, p, present, driver) for p in parts]
+    )
     for event in gen:
         yield event
     driver.close()
 
-def create_view(btn, part, driver):
+def create_view(btn, part, present, driver):
     """Create survey view for a single participant"""
     stage = 'Creating Survey View for Participant {}'.format(part.id)
     yield btn.reset(stage, 0)
     doc = Document()
-    pages = part._viewing_pages
+    if present == 'all':
+        pages = part._viewing_pages
+    elif present == 'first':
+        pages = [p for p in part._viewing_pages if p.first_presentation]
     for i, page in enumerate(pages):
         yield btn.report(stage, 100.0*i/len(pages))
         add_page_to_doc(doc, page, driver)

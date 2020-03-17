@@ -91,7 +91,8 @@ class Router(RouterMixin, db.Model):
             part.update_end_time()
             part.completed = True
         page_html = page._render()
-        ViewingPage(part, page_html)
+        ViewingPage(part, page_html, first_presentation=not page._viewed)
+        page._viewed = True
         return page_html
     
     """Submit track"""
