@@ -35,9 +35,11 @@ PARTICIPANTS = """
 
 SELECT_FILES_TXT = "<p>Select files to download.</p>"
 
+SURVEY_VIEW_TXT = "<p>Enter participant IDs for survey viewing.</p>"
+
 SURVEY_VIEW_PRESENTATION_TXT = "<p>Select presentation for viewing.</p>"
 
-SURVEY_VIEW_TXT = "<p>Enter participant IDs for survey viewing.</p>"
+SURVEY_VIEW_FILE_TXT = "<p>Select the type of download.</p>"
 
 INVALID_ID = "<p>The following participant ID was invalid: {}."
 
