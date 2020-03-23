@@ -1,6 +1,9 @@
 """Application settings and configuration object
 
 time_limit and status_logger_period must be in 'hh:mm:ss' format.
+
+validation : boolean
+    Turns all validation on or off. Developers may want to turn all validation off during testing.
 """
 
 from datetime import datetime, timedelta
@@ -87,6 +90,7 @@ def settings():
         'template_folder': 'templates',
         'time_expired_text': TIME_EXPIRED_TXT,
         'time_limit': None,
+        'validation': True,
     }
 
 @Settings.register('manager')

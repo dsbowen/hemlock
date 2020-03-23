@@ -5,6 +5,9 @@ body, html {
     height: 100%;
     width: 100%;
 }
+body {
+    padding-top: 40px;
+}
 
 /* Form margins */
 form.form-margins {

@@ -90,7 +90,7 @@ def settings():
         'template_folder': 'templates',
         'time_expired_text': TIME_EXPIRED_TXT,
         'time_limit': None,
-        'validation': True,
+        'validation': True, # set to False to turn all validation off for testing
     }
 
 @Settings.register('manager')

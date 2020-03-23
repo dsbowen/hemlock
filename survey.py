@@ -4,21 +4,12 @@ import questions
 
 from hemlock import *
 
-from random import choice
-
-@Settings.register('app')
-def settings():
-    return {'validation': True}
-
 @route('/survey')
 def Start(origin=None):
     b = Branch()
-    # Navigate.QuestionPolymorphs(b)
-    Navigate.End(b)
+    Navigate.QuestionPolymorphs(b)
     p = Page(b)
-    i = Input(p, label='required')
-    Validate.require(i)
-    Label(p, label='<p>Hello World</p>')
+    Label(p, '<p>Hello World!</p>')
     return b
 
 @Navigate.register

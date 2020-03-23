@@ -5,6 +5,9 @@ This module performs the following download processes:
 2. Create data download files.
 3. Create survey view download files.
 4. Zip download files.
+
+TODO
+Make download survey viewer a class
 """
 
 from hemlock.routes.researcher.utils import *
@@ -14,6 +17,7 @@ from hemlock.tools import chromedriver
 from docx import Document
 from docx.shared import Inches
 
+from bs4 import BeautifulSoup
 from base64 import b64encode
 from datetime import timedelta
 from io import BytesIO
@@ -60,6 +64,10 @@ def download_page():
     present_q = Select(download_p, label=SURVEY_VIEW_PRESENTATION_TXT)
     Option(present_q, label='First presentation only', value='first')
     Option(present_q, label='All presentations', value='all')
+
+    file_q = Select(download_p, label=SURVEY_VIEW_FILE_TXT)
+    Option(file_q, label='Screenshots', value='screenshot')
+    Option(file_q, label='Raw text', value='text')
 
     btn = Download(
         download_p,
@@ -109,11 +117,11 @@ def handle_download_form(btn, response):
     btn.downloads = []
     btn.create_file_functions = []
     download_p._record_response()
-    data_q, view_q, present_q, _ = download_p.questions
+    data_q, view_q, present_q, file_q, _ = download_p.questions
     if download_p._validate():
         download_p._submit()
         select_data(btn, data_q.data)
-        select_survey_view(btn, view_q.data, present_q.data)
+        select_survey_view(btn, view_q.data, present_q.data, file_q.data)
         CreateFile(btn, zip_files)
     db.session.commit()
 
@@ -126,11 +134,16 @@ def select_data(btn, files):
     if files.get('Dataframe'):
         CreateFile(btn, create_data)
 
-def select_survey_view(btn, part_ids, present):
+def select_survey_view(btn, part_ids, present, file_type):
     """Add file creation function for selected survey view download files"""
     if not part_ids:
         return
-    CreateFile(btn, create_views, args=part_ids, kwargs={'present': present})
+    CreateFile(
+        btn, 
+        create_views, 
+        args=part_ids, 
+        kwargs={'present': present, 'file_type': file_type}
+    )
 
 """2. Create data download files"""
 def create_meta(btn):
@@ -180,16 +193,17 @@ def add_dataframe_to_zip(btn, data_frame):
     zipfunc.args.append(data_frame.get_download_file())
 
 """3. Create survey view download files"""
-def create_views(btn, *part_ids, present):
+def create_views(btn, *part_ids, present, file_type):
     """Create survey views for all selected participants"""
     parts = [Participant.query.get(id) for id in part_ids]
-    driver = chromedriver(headless=True)
+    driver = chromedriver(headless=True) if file_type=='screenshot' else None
     gen = chain.from_iterable(
         [create_view(btn, p, present, driver) for p in parts]
     )
     for event in gen:
         yield event
-    driver.close()
+    if driver is not None:
+        driver.close()
 
 def create_view(btn, part, present, driver):
     """Create survey view for a single participant"""
@@ -209,6 +223,10 @@ def create_view(btn, part, present, driver):
 def add_page_to_doc(doc, page, driver):
     """Add survey view page to survey view doc"""
     page.process()
+    if driver is None:
+        text = BeautifulSoup(page.html, 'html.parser').text.strip('\n')
+        doc.add_paragraph(text)
+        return
     driver.get('data:text/html,'+page.html)
     accept_alerts(driver)
     width = driver.get_window_size()['width']
@@ -226,7 +244,7 @@ def accept_alerts(driver):
     """Accept any alerts which prevent page HTML from loading"""
     try:
         while True:
-            driver.switch_to_alert().accept()
+            driver.switch_to.alert.accept()
     except:
         pass
 
