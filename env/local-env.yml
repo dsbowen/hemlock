@@ -1,5 +1,5 @@
+APP_IMPORT: app.app
 BUCKET: hemlock-local-bucket-zm1cy0vvah
-FLASK_APP: app
 GOOGLE_APPLICATION_CREDENTIALS: env/gcp-credentials.json
 REDIS_URL: redis://
 URL_ROOT: http://localhost:5000

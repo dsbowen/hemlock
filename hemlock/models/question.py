@@ -1,20 +1,8 @@
-"""Question and ChoiceQuestion bases
+"""# Question mixins"""
 
-`Question`s are nested in their `Page`. They contribute css, javascript, 
-and HTML (`body`).
-
-The two primary HTML attributes of any question are its `label` and `error`.
-
-Like `Page`s, they execute `Compile`, `Validate`, `Submit`, and `Debug` 
-functions with their eponymous methods.
-
-`ChoiceQuestion`s additionally contain a list of `Choice`s.
-"""
-
-from hemlock.app import Settings, db
-from hemlock.database.bases import Base, HTMLMixin
-from hemlock.database.data import Data
-from hemlock.database.choice import Choice, Option
+from ..app import settings, db
+from .bases import Data, HTMLMixin
+from .choice import Choice, Option
 
 from flask import request
 from sqlalchemy.ext.orderinglist import ordering_list
@@ -23,12 +11,61 @@ from sqlalchemy_mutable import MutableType, MutableModelBase
 
 from copy import copy
 
-@Settings.register('Question')
-def settings():
-    return {'css': '', 'js': ''}
+settings['Question'] = {'css': '', 'js': ''}
 
 
 class Question(Data, HTMLMixin, MutableModelBase):
+    """
+    Base object for questions. Questions are displayed on their page in index order.
+
+    It inherits from `hemlock.Data` and `hemlock.HTMLMixin`.
+
+    Parameters
+    ----------
+    page : hemlock.Page or None, default=None
+        The page to which this question belongs.
+
+    template : str, default='form-group.html'
+        Template for the question `body`.
+
+    Attributes
+    ----------
+    default : sqlalchemy_mutable.MutableType
+        Default question response.
+
+    error : str or None, default=None
+        Text of the question error message.
+
+    label : str or None, default=None
+        Question label.
+
+    response : sqlalchemy_mutable.MutableType
+        Participant's response.
+
+    Relationships
+    -------------
+    part : hemlock.Participant
+        The participant to which this question belongs. Derived from 
+        `self.page`.
+
+    branch : hemlock.Branch
+        The branch to which this question belongs. Derived from `self.page`.
+
+    page : hemlock.Page
+        The page to which this question belongs.
+
+    compile_functions : list of hemlock.Compile, default=[]
+        List of compile functions; run before the question is rendered.
+
+    validate_functions : list of hemlock.Validate, default=[]
+        List of validate functions; run to validate the participant's response.
+
+    submit_functions : list of hemlock.Submit, default=[]
+        List of submit functions; run after the participant's responses have been validated for all questions on a page.
+
+    debug_functions : list of hemlock.Debug, default=[]
+        List of debug functions; run during debugging. The default debug function is unique to the question type.
+    """
     id = db.Column(db.Integer, db.ForeignKey('data.id'), primary_key=True)
     question_type = db.Column(db.String)
     __mapper_args__ = {
@@ -36,11 +73,17 @@ class Question(Data, HTMLMixin, MutableModelBase):
         'polymorphic_on': question_type
     }
 
+    # relationships
     @property
     def part(self):
         return None if self.page is None else self.page.part
 
-    """Relationships to Function models"""
+    @property
+    def branch(self):
+        return None if self.page is None else self.page.branch
+
+    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+
     compile_functions = db.relationship(
         'Compile',
         backref='question',
@@ -69,15 +112,15 @@ class Question(Data, HTMLMixin, MutableModelBase):
         collection_class=ordering_list('index')
     )
 
+    # Column attributes
     default = db.Column(MutableType)
     response = db.Column(MutableType)
 
-    @Data.init('Question')
-    def __init__(self, page=None, **kwargs):
-        super().__init__()
-        return {'page': page, **kwargs}
+    def __init__(self, page=None, template='form-group.html', **kwargs):
+        self.page = page
+        super().__init__(template, **kwargs)
 
-    """Shortcuts for modifying `body`"""
+    # BeautifulSoup shortcuts
     @property
     def error(self):
         return self.body.text('.error-txt')
@@ -105,15 +148,32 @@ class Question(Data, HTMLMixin, MutableModelBase):
     def label(self, val):
         self.body.set_element('.label-txt', val)
 
+    # methods
     def clear_error(self):
+        """
+        Clear the error message.
+
+        Returns
+        -------
+        self : hemlock.Question
+        """
         self.error = None
+        return self
 
     def clear_response(self):
-        self.response = None
+        """
+        Clear the response.
 
-    """Methods executed during study"""
+        Returns
+        -------
+        self : hemlock.Question
+        """
+        self.response = None
+        return self
+
+    # methods executed during study
     def _compile(self):
-        [compile_func() for compile_func in self.compile_functions]
+        [compile_func(self) for compile_func in self.compile_functions]
 
     def _render(self, body=None):
         return body or self.body.copy()
@@ -129,7 +189,7 @@ class Question(Data, HTMLMixin, MutableModelBase):
         and return False. Otherwise, return True.
         """
         for validate_func in self.validate_functions:
-            error = validate_func()
+            error = validate_func(self)
             if error:
                 self.error = error
                 return False
@@ -140,13 +200,28 @@ class Question(Data, HTMLMixin, MutableModelBase):
         self.data = self.response
     
     def _submit(self):
-        [submit_func() for submit_func in self.submit_functions]
+        [submit_func(self) for submit_func in self.submit_functions]
 
     def _debug(self, driver):
-        [debug_func(driver) for debug_func in self.debug_functions]
+        [debug_func(driver, self) for debug_func in self.debug_functions]
 
 
 class ChoiceQuestion(Question):
+    """
+    A question which contains choices. Inherits from `hemlock.Question`.
+
+    Attributes
+    ----------
+    multiple : bool, default=False
+        Indicates that the participant can select multiple choices.
+
+    Relationships
+    -------------
+    choices : list of hemlock.Choice, default=[]
+        Possible choices from which a participant can select.
+    """
+    multiple = db.Column(db.Boolean, default=False)
+
     choices = db.relationship(
         'Choice', 
         backref='question',
@@ -169,25 +244,17 @@ class ChoiceQuestion(Question):
             return Option(label=val)
         return Choice(label=val)
 
-    @Question.init('ChoiceQuestion')
-    def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
-
     def _render(self, body=None):
         """Add choice HTML to `body`"""
         body = body or self.body.copy()
-        choice_wrapper = self._choice_wrapper(body)
+        choice_wrapper = body.select_one('.choice-wrapper')
         [choice_wrapper.append(c._render()) for c in self.choices]
         return body
-    
-    def _choice_wrapper(self, body=None):
-        return (body or self.body).select_one('.choice-wrapper')
 
     def _record_response(self):
         """Record response
 
-        The `response` is a `Choice` (if not `multiple`) or a list of 
-        `Choice`s.
+        The response is a single choice or a list of choices (if multiple choices are allowed).
         """
         if not self.multiple:
             response_id = request.form.get(self.model_id)
@@ -223,7 +290,8 @@ class ChoiceQuestion(Question):
             return super()._pack_data()
         if self.data is None:
             packed_data = {
-                var+c.value:None for c in self.choices if c.value is not None
+                var+c.value: None 
+                for c in self.choices if c.value is not None
             }
         elif isinstance(self.data, dict):
             packed_data = {var+key: val for key, val in self.data.items()}

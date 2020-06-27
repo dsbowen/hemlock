@@ -1,32 +1,31 @@
-"""Data store database model
+"""Data store"""
 
-Each app has a unique `DataStore`.
+from ...app import db, socketio
+from .data_frame import DataFrameType
 
-The `DataStore` contains three dataframes:
-1. `data`. The primary dataframe
-2. `meta`. Participant metadata, used to detect screenouts and duplicates.
-3. `status_log`. Timestamps of how many participants were in which stage of 
-the survey.
-"""
-
-from hemlock.app.factory import db, socketio
-from hemlock.database.types import DataFrameType
-
-from datetime import datetime
-from sqlalchemy_mutable import MutableDictType
 import json
 import pandas as pd
+from sqlalchemy_mutable import MutableDictType
+
+from datetime import datetime
 
 STATUS = ['Completed', 'InProgress', 'TimedOut']
 DEFAULT_STATUS = {s: 0 for s in STATUS}
 
 
 class DataStore(db.Model):
+    """
+    Each app has a unique data store.
+
+    It contains two dataframes:
+
+    1. `data`. The primary dataframe
+    2. `meta`. Participant metadata, used to detect screenouts and duplicates.
+    """
     id = db.Column(db.Integer, primary_key=True)
     _current_status = db.Column(MutableDictType, default=DEFAULT_STATUS)
-    data = db.Column(DataFrameType, default={})
-    meta = db.Column(DataFrameType, default={})
-    status_log = db.Column(DataFrameType, default={})
+    data = db.Column(DataFrameType)
+    meta = db.Column(DataFrameType)
     parts_stored = db.relationship('Participant')
     
     @property
@@ -39,16 +38,8 @@ class DataStore(db.Model):
     def __init__(self):
         db.session.add(self)
         db.session.flush([self])
-        self.data.filename = 'Data.csv'
-        self.meta.filename = 'Metadata.csv'
-        self.status_log.filename = 'StatusLog.csv'
-        self.log_status()
-    
-    def log_status(self):
-        """Append current status to the status log"""
-        current_status = self.current_status
-        current_status['Time'] = datetime.utcnow()
-        self.status_log.append(current_status)
+        self.data.filename = 'data.csv'
+        self.meta.filename = 'metadata.csv'
     
     def update_status(self, part):
         """Update current status
@@ -67,7 +58,7 @@ class DataStore(db.Model):
     def store_participant(self, part):
         """Store data for given Participant"""
         self.remove_participant(part)
-        self.data.append(part.data)
+        self.data.append(part.get_data())
         self.parts_stored.append(part)
         part.updated = False
         
@@ -81,7 +72,16 @@ class DataStore(db.Model):
             end += 1
         self.data.remove(start, end)
         
-    def print_data(self, data=None):
-        data = self.data if data is None else data
-        df = pd.DataFrame(data)
-        print(df)
+    def to_pandas(self, dataframe='data'):
+        """
+        Parameters
+        ----------
+        dataframe : str
+            Name of the dataframe to convert to pandas.
+
+        Returns
+        -------
+        df : pandas.DataFrame
+            Dataframe representation of the participant data.
+        """
+        return pd.DataFrame(getattr(self, df) or {})

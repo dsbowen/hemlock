@@ -1,42 +1,29 @@
-"""Participant database models
+"""# Participant"""
 
-A `Participant` has the following primary responsibilities:
-1. Navigation. A `Participant` contains a `branch_stack` and `_router` for 
-navigation.
-2. Data recording. Participants gather and store their data elements in the 
-`DataStore`.
+from ..app import db, settings
+from ..tools import random_key
+from .bases import Base
+from .private import DataStore, Router
+from .types import DataFrame
 
-A participant may have one of three `status`es: InProgress, Completed, 
-TimedOut. When a participant's status changes to Completed or TimedOut, a 
-participant's data probably will not change, so it caches its data in the 
-`DataStore`. (However, if a participant's status changes back to InProgress,
-its data will be re-recorded.)
-
-Participants also contain a mutable dictionary, `g`, as well as a dictonary 
-of metadata, `meta`.
-"""
-
-from hemlock.app import db
-from hemlock.database.bases import Base
-from hemlock.database.private import DataStore, Router
-from hemlock.database.types import DataFrame
-from hemlock.tools import random_key
-
-from datetime import datetime
 from flask_login import UserMixin
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import MutableDictType
 
-def send_data(func):
+from datetime import datetime
+
+settings['Participant'] = {'g': {}, 'meta': {}}
+
+def _send_data(func):
     """Send data to the DataStore
     
     Begin by recording the Participant's previous status. If the status has
-    changed as a result of the update, register the change in the DataStore.
+    changed as a result of the update, register the change in the `DataStore`.
     """
     def status_update(part, update):
-        part.previous_status = part.status
+        part._previous_status = part.status
         return_val = func(part, update)
-        if part.previous_status == part.status:
+        if part._previous_status == part.status:
             return return_val
         DataStore.query.first().update_status(part)
         return return_val
@@ -44,11 +31,68 @@ def send_data(func):
 
 
 class Participant(UserMixin, Base, db.Model):
+    """
+    The Participant class stores data for an individual survey participant and
+    handles navigation for that participant.
+
+    Attributes
+    ----------
+    completed : bool, default=False
+        Indicates that the participant has completed the survey.
+
+    end_time : datetime.datetime
+        Last time the participant submitted a page.
+
+    g : dict, default={}
+        Dictionary of miscellaneous objects.
+
+    meta : dict, default={}
+        Participant metadata, such as IP address.
+
+    start_time : datetime.datetime
+        Time at which the participant started he survey.
+
+    status : str
+        Participant's current status; `'InProgress'`, `'TimedOut'`, or 
+        `'Completed'`. Read only; derived from `self.completed` and 
+        `self.time_expired`.
+
+    time_expired : bool, default=False
+        Indicates that the participant has exceeded their allotted time for 
+        the survey.
+
+    updated : bool, default=True
+        Indicates that the participant's data was updated after the last time 
+        their data was stored; if `True`, the participant's data will be 
+        re-stored when data are downloaded.
+
+    Relationships
+    -------------
+    branch_stack : list of hemlock.Branch
+        A stack of branches.
+
+    current_branch : hemlock.Branch
+        Participant's current `Branch` (head of `self.branch_stack`).
+
+    current_page : hemlock.Page
+        Participant's current `Page` (head of `self.current_branch`).
+
+    pages : list of hemlock.Page
+        List of all `Page`s belonging to the participant.
+
+    data_elements : list of hemlock.DataElement
+        List of all `DataElement`s belonging to the participant, ordered by 
+        `id`.
+    """
     id = db.Column(db.Integer, primary_key=True)
     _key = db.Column(db.String(90))
     _data_store_id = db.Column(db.Integer, db.ForeignKey('data_store.id'))
 
-    _router = db.relationship('Router', backref='part', uselist=False)
+    _router = db.relationship(
+        'Router', 
+        backref='part', 
+        uselist=False
+    )
     
     branch_stack = db.relationship(
         'Branch',
@@ -85,21 +129,21 @@ class Participant(UserMixin, Base, db.Model):
         collection_class=ordering_list('index')
     )
 
-    g = db.Column(MutableDictType)
+    _previous_status = db.Column(db.String(16))
     _completed = db.Column(db.Boolean, default=False)
     end_time = db.Column(db.DateTime)
-    _meta = db.Column(MutableDictType, default={})
-    previous_status = db.Column(db.String(16))
-    updated = db.Column(db.Boolean, default=True)
+    g = db.Column(MutableDictType)
+    meta = db.Column(MutableDictType)
     start_time = db.Column(db.DateTime)
     _time_expired = db.Column(db.Boolean, default=False)
+    updated = db.Column(db.Boolean, default=True)
     
     @property
     def completed(self):
         return self._completed
         
     @completed.setter
-    @send_data
+    @_send_data
     def completed(self, completed):
         self._completed = completed
         
@@ -108,7 +152,7 @@ class Participant(UserMixin, Base, db.Model):
         return self._time_expired
         
     @time_expired.setter
-    @send_data
+    @_send_data
     def time_expired(self, time_expired):
         self._time_expired = time_expired
     
@@ -120,60 +164,74 @@ class Participant(UserMixin, Base, db.Model):
             return 'TimedOut'
         return 'InProgress'
     
-    @Base.init('Participant')
-    def __init__(self, meta={}):
-        """Initialize Participant"""
-        super().__init__()
-        
+    def __init__(self, **kwargs):
+        self._key = random_key()
+        self.end_time = self.start_time = datetime.utcnow()
+        super().__init__(**kwargs)
+
         ds = DataStore.query.first()
-        ds.meta.append(meta)
+        ds.meta.append(self.meta)
         ds.update_status(self)
         db.session.commit()
 
-        self._key = random_key()
-        self.end_time = self.start_time = datetime.utcnow()
-        self.meta = meta.copy()
-        self.g = {}
+    def _init_tree(self, gen_root):
+        """
+        Initialize a new tree.
+        
+        Parameters
+        ----------
+        gen_root : callable
+            Generates the root branch of the tree.
 
-    def update_end_time(self):
-        self.end_time = datetime.utcnow()
-
-    def _init_tree(self, root_f):
-        """Initialize a new tree"""
-        self._router = Router(root_f)
-        self.current_branch = root = root_f()
+        Returns
+        -------
+        self
+        """
+        self._router = Router(gen_root)
+        self.current_branch = root = gen_root()
         self.branch_stack.append(root)
         root.current_page = root.start_page
-        root.is_root = True
         if not self.current_branch.pages:
             self._router.navigator.forward_recurse()
+        return self
     
-    """Data packaging"""
-    @property
-    def meta(self):
-        self._meta['ID'] = self.id
-        self._meta['EndTime'] = self.end_time
-        self._meta['StartTime'] = self.start_time
-        self._meta['Status'] = self.status
-        return self._meta
-        
-    @meta.setter
-    def meta(self, meta):
-        self._meta = meta
+    def get_meta(self):
+        """
+        This is where it gets meta.
+
+        Returns
+        -------
+        meta : dict
+            Participant's metadata, including the ID, end time, start time, 
+            and current status.
+        """
+        meta = self.meta.copy()
+        meta.update({
+            'ID': self.id,
+            'EndTime': self.end_time,
+            'StartTime': self.start_time,
+            'Status': self.status
+        })
+        return meta
     
-    @property
-    def data(self):
-        """Participant data
-        
-        Note that Questions are added to the dataframe in the order in which 
-        they were created (i.e. by id). This is not necessarily the order in 
-        which they appeared to the Participant.
+    def get_data(self):
+        """
+        Returns
+        -------
+        df : hemlock.models.private.DataFrame
+            Data associated with the current Participant.
+
+        Notes
+        -----
+        Data elements are added to the dataframe in the order in which they 
+        were created (i.e. by id). This is not necessarily the order in which 
+        they appeared to the Participant.
         """
         self._set_order()
         elements = self.data_elements
         df = DataFrame()
-        df.add(data=self.meta, all_rows=True)
-        [df.add(data=e._pack_data(), all_rows=e.all_rows) for e in elements]
+        df.add(data=self.get_meta, rows=-1)
+        [df.add(data=e._pack_data(), rows=e.rows) for e in elements]
         df.pad()
         return df
     

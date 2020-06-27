@@ -1,0 +1,27 @@
+site_name: Hemlock
+docs_dir: docs_md
+site_dir: docs
+repo_url: https://github.com/dsbowen/hemlock
+edit_uri: edit/master/docs_md
+nav:
+  - Home: index.md
+  - Setup:
+    - Recommended software: software.md
+    - Windows: win_setup.md
+  - API:
+    - Application: app.md
+    - Debugging: debug.md
+    - Models:
+      - Bases: bases.md
+      - Branch: branch.md
+      - Choice: choice.md
+      - Embedded data and timers: embedded.md
+      - Functions: functions.md
+      - Navbar: navbar.md
+      - Page: page.md
+      - Participant: participant.md
+      - Question mixins: question.md
+      - Workers: workers.md
+theme: readthedocs
+extra_css:
+  - css/extra.css

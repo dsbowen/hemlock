@@ -7,76 +7,122 @@ participant requests a new page, the router moves through the 'request'
 track. The request track compiles and renders a new survey page. When the 
 participant submits a page, the router moves through the 'submit' track. The 
 submit track records the participant's response, validates it, submits it, 
-navigates forward, and redirects with a new page request.
+navigates, and redirects with a new page request.
 
 The secondary Navigator router is nested in the main Router. It handles 
 backward and forward navigation.
 """
 
-from hemlock.app import db
-from hemlock.database.private.viewing_page import ViewingPage
+from ...app import db
+from .viewing_page import ViewingPage
 
 from flask import current_app, request, redirect, url_for
 from flask_worker import RouterMixin as RouterMixinBase
 from flask_worker import set_route
 
+from datetime import datetime
+
 
 class RouterMixin(RouterMixinBase):
-    def run_worker(self, func, worker, next_route, args=[], kwargs={}):
-        """Run worker overload"""
+    def run_worker(self, func, worker, next_route, *args, **kwargs):
+        """
+        Run a worker if applicable.
+
+        Parameters
+        ----------
+        func : callable
+            Function to run before navigating to the next route if there is no 
+            worker.
+
+        worker : hemlock.WorkerMixin or None
+            Worker which executes `func`, if applicable.
+
+        next_route : router method
+            The next route to navigate to after executing `func`.
+
+        \*args, \*\*kwargs :
+            Arguments and keyword arguments for `next_route`.
+
+        Returns
+        -------
+        page : str (html)
+            Page for the client. This will be a loading page, if the worker is 
+            running, or the next page of the survey.        
+        """
         if worker is not None:
-            page = super().run_worker(worker, next_route, args, kwargs)
             if worker.job_finished:
                 worker.reset()
-            return page
+                return next_route(*args, **kwargs)
+            else:
+                return worker()
         func()
         return next_route(*args, **kwargs)
 
 
 class Router(RouterMixin, db.Model):
-    """Main router
-    
+    """
     The main router belongs to a Participant. It handles the request and 
     submit tracks.
+
+    Parameters
+    ----------
+    gen_root : callable
+        Callable which generates the root branch.
+
+    Attributes
+    ----------
+    part : hemlock.Participant
+        Participant to whom this router belongs.
+
+    page : hemlock.Page
+        The participant's current page.
+
+    view_function : str
+        Name of the function which generated the root branch. It is also the 
+        name of the view function associated with this router. On redirect, 
+        the router, redirects to `url_for(self.view_function)`.
+
+    navigator : hemlock.models.private.Navigator
+        A navigator router which handles navigation between pages.
     """
     id = db.Column(db.Integer, primary_key=True)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
-    root_name = db.Column(db.String)
+    view_function = db.Column(db.String)
     navigator = db.relationship('Navigator', backref='router', uselist=False)
 
     @property
     def page(self):
         return self.part.current_page
 
-    def __init__(self, root_f):
-        self.root_name = root_f.__name__
-        self.reset()
+    def __init__(self, gen_root):
+        self.view_function = gen_root.__name__
         self.navigator = Navigator()
+        super().__init__(self.compile)
 
-    def reset(self):
-        self.current_route = 'compile'
-        self.args, self.kwargs = [], {}
-
-    def route(self):
+    def __call__(self):
         """Route overload
 
         If the participant's time has expired, render the current page with 
         a time expired error message.
 
-        By default, the router starts at the beginning of the request track. 
-        If the participant has just submitted a page (indicated by a POST 
-        request and current route is 'compile'), the router moves to the 
-        beginning of the submit track ('record response'). Then route as 
-        normal.
+        The router starts at the beginning of the request track (compile). If 
+        the participant has just submitted a page, the router moves to the 
+        beginning of the submit track (record response). Then route as normal.
+
+        Returns
+        -------
+        page : str (html)
+            HTML of the participant's next page, or a loading page.
         """
         part, page = self.part, self.page
         if part.time_expired:
             page.error = current_app.time_expired_text
             db.session.commit()
             return page._render()
-        if request.method == 'POST' and self.current_route == 'compile':
-            self.current_route = 'record_response'
-        return super().route()
+        if request.method == 'POST' and self.func == self.render:
+            # participant has just submitted the page
+            self.func = self.record_response
+        return super().__call__()
 
     """Request track"""
     @set_route
@@ -85,20 +131,22 @@ class Router(RouterMixin, db.Model):
             self.page._compile, self.page.compile_worker, self.render
         )
     
+    @set_route
     def render(self):
         part, page = self.part, self.page
         if page.terminal and not part.completed:
-            part.update_end_time()
+            part.end_time = datetime.utcnow()
             part.completed = True
         page_html = page._render()
-        ViewingPage(part, page_html, first_presentation=not page._viewed)
-        page._viewed = True
+        ViewingPage(part, page_html, first_presentation=not page.viewed)
+        page.viewed = True
         return page_html
     
     """Submit track"""
+    @set_route
     def record_response(self):
         part, page = self.part, self.page
-        part.update_end_time()
+        part.end_time = datetime.utcnow()
         part.completed = False
         part.updated = True
         page._record_response()
@@ -109,8 +157,8 @@ class Router(RouterMixin, db.Model):
     
     @set_route
     def validate(self):
-        # Validation may be off for testing purposes
-        if not current_app.validation:
+        if not current_app.validate:
+            # validation may be off for testing purposes
             return self.submit()
         return self.run_worker(
             self.page._validate, self.page.validate_worker, self.submit
@@ -120,11 +168,13 @@ class Router(RouterMixin, db.Model):
     def submit(self):
         page = self.page
         if not page.is_valid():
+            # will redirect to the same page with error messages
             return self.redirect()
         return self.run_worker(
             page._submit, page.submit_worker, self.forward_prep, 
         )
 
+    @set_route
     def forward_prep(self):
         """Prepare for forward navigation
         
@@ -142,51 +192,65 @@ class Router(RouterMixin, db.Model):
     
     @set_route
     def forward(self, forward_to):
-        """Forward navigation
-
+        """
         Forward navigation uses the Navigator subrouter. If the navigator 
-        has not yet started forward navigation (i.e. not nav.in_progress), 
-        the main router gets a loading page from nav.forward. Otherwise, it 
-        gets a loading page from nav.route.
+        has not yet started forward navigation (i.e. `not nav.in_progress`), 
+        the main router gets a loading page from `nav.forward`. Otherwise, it 
+        gets a loading page from `nav.__call__`.
 
         The navigator may need a worker to generate a new branch. While the 
         worker's job is in progress, the navigator returns a loading page 
-        (which is not None).
+        (which is not `None`).
 
-        When it finds the next survey page, the navigator return None as the 
+        When it finds the next survey page, the navigator return `None`
         loading page. However, if there is a specified page to which the 
-        router is navigating forward (forward_to is not None), it may be 
-        necessary to call nav.forward again.
+        router is navigating forward (`forward_to is not None`), it may be 
+        necessary to call `nav.forward` again.
         
         When the navigator has finished, the router redirects the 
         participant to the new survey page.
+
+        Parameters
+        ----------
+        forward_to : hemlock.Page
+            Page to which to navigate.
         """
         nav = self.navigator
         loading_page = (
-            nav.forward(forward_to) if not nav.in_progress else nav.route() 
+            nav.forward(forward_to) if not nav.in_progress else nav() 
         )
         if loading_page is None and forward_to is not None:
             loading_page = nav.forward(forward_to)
         return loading_page or self.redirect()
 
+    @set_route
     def redirect(self):
         self.reset()
         part = self.part
-        url_arg = 'hemlock.{}'.format(self.root_name)
+        url_arg = 'hemlock.{}'.format(self.view_function)
         if part.meta.get('Test') is None:
             return redirect(url_for(url_arg))
+        # during testing, you may have multiple users running at once
+        # in this case, participants much be found be ID, not `current_user`
         return redirect(url_for(url_arg, part_id=part.id, part_key=part._key))
 
 
 class Navigator(RouterMixin, db.Model):
-    """Navigator subrouter
-    
+    """    
     The navigator subrouter is nexted in the main router. It handles forward 
     and backward navigation.
+
+    Attributes
+    ----------
+    router : hemlock.models.private.Router
+        Main router with which the navigator is associated.
+
+    in_progress : bool, default=False
+        Indicates that navigation is in progress.
     """
     id = db.Column(db.Integer, primary_key=True)
     router_id = db.Column(db.Integer, db.ForeignKey('router.id'))
-    in_progress = db.Column(db.Boolean)
+    in_progress = db.Column(db.Boolean, default=False)
 
     @property
     def part(self):
@@ -209,10 +273,11 @@ class Navigator(RouterMixin, db.Model):
         return self.part.current_page
 
     def reset(self):
-        self.args, self.kwargs = [], {}
+        super().reset()
         self.in_progress = False
 
     """Forward navigation"""
+    @set_route
     def forward(self, forward_to):
         """Advance forward to specified Page"""
         self.in_progress = True
@@ -223,6 +288,7 @@ class Navigator(RouterMixin, db.Model):
             if loading_page is not None:
                 return loading_page
     
+    @set_route
     def forward_one(self):
         """Advance forward one page"""
         if self.page._eligible_to_insert_branch():
@@ -237,9 +303,10 @@ class Navigator(RouterMixin, db.Model):
             origin.navigate_function, 
             origin.navigate_worker, 
             self._insert_branch, 
-            args=[origin]
+            origin
         )
     
+    @set_route
     def _insert_branch(self, origin):
         branch = origin.next_branch
         self.branch_stack.insert(self.branch.index+1, branch)

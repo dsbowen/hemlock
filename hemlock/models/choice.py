@@ -1,24 +1,11 @@
-"""Choice database model
+"""# Choices and Options
 
-`Choice`s are nested in a `ChoiceQuestion`'s `choices`. The choice question 
-displays choices in `index` order.
-
-A choice contains the following basic attributes:
-1. `label`. The choice label as it appears on the page
-2. `name`. The name by which the choice is referenced in data recording
-3. `value`.
-    3.1. For single choice questions, the value of the data if this choice 
-    is selected.
-    3.2. For multiple choice questions, the variable name for one-hot 
-    encoding.
-
-An `Option` is a `Choice` polymorph, and is functionally similar to it. The 
-difference is the `Choice`s are for `Check` questions, while `Option`s are 
-for `Select` questions.
+The difference between `Choice` and `Option` is the former are for `Check` 
+questions, while latter are for `Select` questions.
 
 The use of `Choice` and `Option` models is not due to any deep functional 
 difference between them. Rather, it reflects differences in the underlying 
-HTML.
+html.
 """
 
 from hemlock.app import db
@@ -29,25 +16,66 @@ from sqlalchemy_mutable import MutableType
 
 
 class Choice(InputBase, HTMLMixin, db.Model):
+    """
+    Choices are displayed as part of their question in index order. This 
+    class also serves as a polymorphic base for other choice objects, such as 
+    options.
+
+    It inherits from `hemlock.InputBase` and `hemlock.HTMLMixin`.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+        The question to which this choice belongs.
+
+    template : str, default='choice.html'
+        Template for the choice `body`.
+
+    Attributes
+    ----------
+    index : int or None, default=None
+        Order in which this choice appears in its question.
+
+    label : str, default=''
+        The choice label.
+
+    name : str or None, default=None
+        Name of the choice column in the dataframe.
+
+    value : sqlalchemy_mutable.MutableType or None, default=None
+        Value of the data associated with the choice. For a question where 
+        only one choice can be selected, this is the value of the question's 
+        data if this choice is selected. For a question where multiple 
+        choices may be selected, data are one-hot encoded; the value is the 
+        suffix of the column associated with the indicator variable that this 
+        choice was selected.
+
+    Relationships
+    -------------
+    question : hemlock.Question
+        The question to which this choice belongs.
+
+    Notes
+    -----
+    Passing `label` into the constructor is equivalent to calling 
+    `self.set_all(label)`.
+    """
     id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String)
+    choice_type = db.Column(db.String)
     __mapper_args__ = {
         'polymorphic_identity': 'choice',
-        'polymorphic_on': type
+        'polymorphic_on': choice_type
     }
     
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
 
-    index = db.Column(db.Integer)    
-    name = db.Column(db.Text)
+    index = db.Column(db.Integer)
     value = db.Column(MutableType)
     
-    @HTMLMixin.init('Choice')
-    def __init__(self, question=None, **kwargs):
-        super().__init__()
-        self.body = render_template('choice.html', c=self)
+    def __init__(self, question=None, template='choice.html', **kwargs):
+        self.body = render_template('choice.html', choice=self)
         self.set_all(kwargs.pop('label', None))
-        return {'question': question, **kwargs}
+        super().__init__(**kwargs)
 
     @property
     def label(self):
@@ -58,12 +86,33 @@ class Choice(InputBase, HTMLMixin, db.Model):
         self.body.set_element('label.choice', val)
 
     def set_all(self, val):
+        """
+        Set the choice's label, name, and value.
+
+        Parameters
+        ----------
+        val : 
+            Value to which the choice's label, name, and value should be set.
+
+        Returns
+        -------
+        self : hemlock.Choice
+        """
         self.label = self.name = self.value = val
+        return self
     
     def is_default(self):
-        """Indicate if self is a default choice
+        """
+        Returns
+        -------
+        is_default : bool
+            Indicate that this choice is (one of) its question's default 
+            choice(s).
 
-        Default is assumed to a be a choice or list of choices.
+        Notes
+        -----
+        The question's default choice(s) is the question's `response`, if not 
+        `None` or the question's `default`.
         """
         if self.question is None:
             return False
@@ -110,15 +159,24 @@ class Choice(InputBase, HTMLMixin, db.Model):
             
 
 class Option(Choice):
+    """
+    Options are a choice polymorph specific to `Select` questions.
+
+    Inherits from `hemlock.Choice`.
+
+    Parameters
+    ----------
+    question : hemlock.Question or None, default=None
+        The question to which this option belongs.
+
+    template : str, default='option.html'
+        Template for the option `body`.
+    """
     id = db.Column(db.Integer, db.ForeignKey('choice.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'option'}
 
-    @Choice.init('Option')
-    def __init__(self, question=None, **kwargs):
-        super(HTMLMixin, self).__init__()
-        self.body = render_template('option.html', opt=self)
-        self.set_all(kwargs.pop('label', None))
-        return {'question': question, **kwargs}
+    def __init__(self, question=None, template='option.html', **kwargs):
+        super().__init__(question, template, **kwargs)
 
     @property
     def label(self):

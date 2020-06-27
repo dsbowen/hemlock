@@ -1,0 +1,162 @@
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<link rel="stylesheet" href="https://assets.readthedocs.org/static/css/readthedocs-doc-embed.css" type="text/css" />
+
+<style>
+    a.src-href {
+        float: right;
+    }
+    p.attr {
+        margin-top: 0.5em;
+        margin-left: 1em;
+    }
+    p.func-header {
+        background-color: gainsboro;
+        border-radius: 0.1em;
+        padding: 0.5em;
+        padding-left: 1em;
+    }
+    table.field-table {
+        border-radius: 0.1em
+    }
+</style># Participant
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        
+    </tbody>
+</table>
+
+
+
+##hemlock.**Participant**
+
+<p class="func-header">
+    <i>class</i> hemlock.<b>Participant</b>(<i>**kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L33">[source]</a>
+</p>
+
+The Participant class stores data for an individual survey participant and
+handles navigation for that participant.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Attributes:</b></td>
+    <td class="field-body" width="100%"><b>completed : <i>bool, default=False</i></b>
+<p class="attr">
+    Indicates that the participant has completed the survey.
+</p>
+<b>end_time : <i>datetime.datetime</i></b>
+<p class="attr">
+    Last time the participant submitted a page.
+</p>
+<b>g : <i>dict, default={}</i></b>
+<p class="attr">
+    Dictionary of miscellaneous objects.
+</p>
+<b>meta : <i>dict, default={}</i></b>
+<p class="attr">
+    Participant metadata, such as IP address.
+</p>
+<b>start_time : <i>datetime.datetime</i></b>
+<p class="attr">
+    Time at which the participant started he survey.
+</p>
+<b>status : <i>str</i></b>
+<p class="attr">
+    Participant's current status; <code>'InProgress'</code>, <code>'TimedOut'</code>, or <code>'Completed'</code>. Read only; derived from <code>self.completed</code> and <code>self.time_expired</code>.
+</p>
+<b>time_expired : <i>bool, default=False</i></b>
+<p class="attr">
+    Indicates that the participant has exceeded their allotted time for the survey.
+</p>
+<b>updated : <i>bool, default=True</i></b>
+<p class="attr">
+    Indicates that the participant's data was updated after the last time their data was stored; if <code>True</code>, the participant's data will be re-stored when data are downloaded.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Relationships:</b></td>
+    <td class="field-body" width="100%"><b>branch_stack : <i>list of hemlock.Branch</i></b>
+<p class="attr">
+    A stack of branches.
+</p>
+<b>current_branch : <i>hemlock.Branch</i></b>
+<p class="attr">
+    Participant's current <code>Branch</code> (head of <code>self.branch_stack</code>).
+</p>
+<b>current_page : <i>hemlock.Page</i></b>
+<p class="attr">
+    Participant's current <code>Page</code> (head of <code>self.current_branch</code>).
+</p>
+<b>pages : <i>list of hemlock.Page</i></b>
+<p class="attr">
+    List of all <code>Page</code>s belonging to the participant.
+</p>
+<b>data_elements : <i>list of hemlock.DataElement</i></b>
+<p class="attr">
+    List of all <code>DataElement</code>s belonging to the participant, ordered by <code>id</code>.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+####Methods
+
+
+
+<p class="func-header">
+    <i></i> <b>get_meta</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L198">[source]</a>
+</p>
+
+This is where it gets meta.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>meta : <i>dict</i></b>
+<p class="attr">
+    Participant's metadata, including the ID, end time, start time, and current status.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+
+
+<p class="func-header">
+    <i></i> <b>get_data</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L217">[source]</a>
+</p>
+
+
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>df : <i>hemlock.models.private.DataFrame</i></b>
+<p class="attr">
+    Data associated with the current Participant.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+####Notes
+
+Data elements are added to the dataframe in the order in which they
+were created (i.e. by id). This is not necessarily the order in which
+they appeared to the Participant.
