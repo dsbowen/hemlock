@@ -1,4 +1,4 @@
-"""Debug functions
+"""# Debug functions
 
 Users will likely rely most on the following debug functions.
 
@@ -14,9 +14,9 @@ Choice question debugging:
 1. `click_choices`. Click on the input choices.
 """
 
-from hemlock.app import Settings
-from hemlock.database import Debug
-from hemlock.qpolymorphs import Check
+from ..app import settings
+from ..models import Debug
+from ..qpolymorphs import Check
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -26,17 +26,17 @@ from random import choice, randint, random, shuffle
 from string import ascii_letters, digits
 from time import sleep
 
-"""Page debugging"""
+"""## Page debugging"""
 @Debug.register
-def forward(page, driver):
+def forward(driver, page):
     driver.find_element_by_id('forward-btn').click()
 
 @Debug.register
-def back(page, driver):
+def back(driver, page):
     driver.find_element_by_id('back-btn').click()
 
 @Debug.register
-def navigate(page, driver, p_forward=.8, p_back=.1, sleep_time=3):
+def navigate(driver, page, p_forward=.8, p_back=.1, sleep_time=3):
     """Navigate randomly
 
     This method randomly navigates forward or backward, or refreshes the 
@@ -45,19 +45,19 @@ def navigate(page, driver, p_forward=.8, p_back=.1, sleep_time=3):
     forward_exists = back_exists = True
     if random() < p_forward:
         try:
-            return forward(page, driver)
+            return forward(driver, page)
         except:
             forward_exists = False
     if random() < p_back / (1 - p_forward):
         try:
-            return back(page, driver)
+            return back(driver, page)
         except:
             back_exists = False
     if not (forward_exists or back_exists):
         sleep(sleep_time)
     driver.refresh()
 
-def debug_func(page, driver):
+def debug_func(driver, page):
     """Run the question debug functions in random order"""
     order = list(range(len(page.questions)))
     shuffle(order)
@@ -69,7 +69,7 @@ def settings():
 
 """Textarea and text Input debugging"""
 @Debug.register
-def send_keys(question, driver, keys, p_exec=1):
+def send_keys(driver, question, keys, p_exec=1):
     """Send keys method
 
     This debugger sends the specified keys or list or keys to the textarea 
@@ -88,7 +88,7 @@ def send_keys(question, driver, keys, p_exec=1):
         inpt.send_keys(keys)
 
 @Debug.register
-def random_str(question, driver, magnitude=2, p_whitespace=.2):
+def random_str(driver, question, magnitude=2, p_whitespace=.2):
     """Random string
 
     This debugger sends a random string to the textarea. `magnitude` is the 
@@ -99,14 +99,14 @@ def random_str(question, driver, magnitude=2, p_whitespace=.2):
     chars = list(chars) + [' '] * int(p_whitespace*len(chars))
     length = int(random() * 10**randint(1,magnitude))
     send_keys(
-        question, driver, ''.join([choice(chars) for i in range(length)])
+        driver, question, ''.join([choice(chars) for i in range(length)])
     )
 
 @Debug.register
-def random_number(question, driver, p_exec=1, *args, **kwargs):
+def random_number(driver, question, p_exec=1, *args, **kwargs):
     if random() > p_exec:
         return
-    send_keys(question, driver, str(gen_number(*args, **kwargs)))
+    send_keys(driver, question, str(gen_number(*args, **kwargs)))
 
 def gen_number(
         integer=False, magnitude_lb=0, magnitude_ub=10, p_negative=.1, 
@@ -128,7 +128,7 @@ def gen_number(
     return round(num, randint(0, max_decimals))
 
 @Debug.register
-def random_keys(question, driver, p_str=.5, p_int=.25):
+def random_keys(driver, question, p_str=.5, p_int=.25):
     """Send random keys
 
     This method sends random keys to a textarea or input. 
@@ -139,15 +139,15 @@ def random_keys(question, driver, p_str=.5, p_int=.25):
     Otherwise, it sends a floating point number.
     """
     if random() < p_str:
-        return random_str(question, driver)
+        return random_str(driver, question)
     integer = random() < p_int / (1-p_str)
-    random_number(question, driver, integer=integer)
+    random_number(driver, question, integer=integer)
 
-def default_textarea_debug(question, driver, p_skip=.1):
+def default_textarea_debug(driver, question, p_skip=.1):
     """Skip or send random string"""
     if random() < p_skip:
         return
-    random_str(question, driver)
+    random_str(driver, question)
     
 @Settings.register('Textarea')
 def settings():
@@ -155,32 +155,32 @@ def settings():
 
 """Date and time input"""
 @Debug.register
-def random_date(question, driver, **kwargs):
+def random_date(driver, question, **kwargs):
     dt = gen_datetime(**kwargs)
-    send_keys(question, driver, dt.strftime('%m%d%Y'))
+    send_keys(driver, question, dt.strftime('%m%d%Y'))
 
 @Debug.register
-def random_datetime(question, driver, **kwargs):
+def random_datetime(driver, question, **kwargs):
     dt = gen_datetime(**kwargs)
     date = dt.strftime('%m%d%Y')
     time = dt.strftime('%I%M%p')
-    send_keys(question, driver, [date, Keys.TAB, time])
+    send_keys(driver, question, [date, Keys.TAB, time])
 
 @Debug.register
-def random_month(question, driver, **kwargs):
+def random_month(driver, question, **kwargs):
     dt = gen_datetime(**kwargs)
     month = dt.strftime('%B')
-    send_keys(question, driver, [month, Keys.TAB, str(dt.year)])
+    send_keys(driver, question, [month, Keys.TAB, str(dt.year)])
 
 @Debug.register
-def random_time(question, driver, **kwargs):
+def random_time(driver, question, **kwargs):
     dt = gen_datetime(**kwargs)
-    send_keys(question, driver, dt.strftime('%I%M%p'))
+    send_keys(driver, question, dt.strftime('%I%M%p'))
 
 @Debug.register
-def random_week(question, driver, **kwargs):
+def random_week(driver, question, **kwargs):
     dt = gen_datetime(**kwargs)
-    send_keys(question, driver, dt.strftime('%U%Y'))
+    send_keys(driver, question, dt.strftime('%U%Y'))
 
 def gen_datetime(p_future=.5, **kwargs):
     """Randomly generate datetime
@@ -203,11 +203,11 @@ input_debug_fn_map = {
     'week': random_week,
 }
 
-def default_input_debug(question, driver, p_skip=.1):
+def default_input_debug(driver, question, p_skip=.1):
     if random() < p_skip:
         return
     debug_fn = input_debug_fn_map.get(question.input_type) or random_keys
-    debug_fn(question, driver)
+    debug_fn(driver, question)
 
 @Settings.register('Input')
 def settings():
@@ -217,7 +217,7 @@ def settings():
 
 """Range debugger"""
 @Debug.register
-def drag_range(question, driver, xoffset=None):
+def drag_range(driver, question, xoffset=None):
     """Drag the range slider to xoffset"""
     xoffset = xoffset or randint(-300,300)
     inpt = question.input_from_driver(driver)
@@ -229,18 +229,18 @@ def settings():
 
 """Choice question debugger"""
 @Debug.register
-def click_choices(question, driver, *choices, p_exec=1):
+def click_choices(driver, question, *choices, p_exec=1):
     """Click on input choices"""
     if random() > p_exec:
         return
     if question.multiple:
-        clear_choices(question, driver)
+        clear_choices(driver, question)
     if isinstance(question, Check):
         return [c.label_from_driver(driver).click() for c in choices]
     return [c.input_from_driver(driver).click() for c in choices]
 
 @Debug.register
-def clear_choices(question, driver, p_exec=1):
+def clear_choices(driver, question, p_exec=1):
     if random() > p_exec or not question.choices:
         return
     if not question.multiple:
@@ -254,7 +254,7 @@ def clear_choices(question, driver, p_exec=1):
                 c.input_from_driver(driver).click()
                 
 
-def default_choice_question_debug(question, driver, p_skip=.1):
+def default_choice_question_debug(driver, question, p_skip=.1):
     """Default choice question debugging function
 
     This method randomly selects choices to click on. The number of choices 
@@ -267,7 +267,7 @@ def default_choice_question_debug(question, driver, p_skip=.1):
     shuffle(order)
     num_clicks = randint(0, len(choices))
     to_click = [question.choices[i] for i in order[0:num_clicks]]
-    click_choices(question, driver, *to_click)
+    click_choices(driver, question, *to_click)
 
 @Settings.register('ChoiceQuestion')
 def settings():

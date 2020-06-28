@@ -11,6 +11,10 @@ nav:
   - API:
     - Application: app.md
     - Debugging: debug.md
+    - Functions:
+      - Compile: compile_functions.md
+      - Submit: submit_functions.md
+      - Validate: validate_functions.md
     - Models:
       - Bases: bases.md
       - Branch: branch.md

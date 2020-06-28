@@ -18,6 +18,14 @@ soup = PySoup(path=path, parser='sklearn', src_href=src_href)
 soup.keep_objects('debug', 'run_batch', 'run_participant')
 compile_md(soup, compiler='sklearn', outfile='docs_md/debug.md')
 
+"""Functions"""
+function_filenames = ['compile', 'debug', 'submit', 'validate']
+for filename in function_filenames:
+    path = os.path.join('hemlock/functions', filename+'.py')
+    soup = PySoup(path=path, parser='sklearn', src_href=src_href)
+    outfile = os.path.join('docs_md', filename+'_functions.md')
+    compile_md(soup, compiler='sklearn', outfile=outfile)
+
 """Models"""
 def mod_base_soup(soup):
     soup.rm_objects('BranchingBase')

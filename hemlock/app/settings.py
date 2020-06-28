@@ -22,8 +22,12 @@ restart_text : str, default='Click << to return...'
     Text displayed to participants when given the option to restart or 
     continue with the survey.
 
-screenout_csv : str or None, default=None
+screenout_csv : str, default='screenout.csv'
     Name of the csv file containing criteria for screening out participants.
+
+screenout_keys : list, default=[]
+    List of keys (column names) on which to screen out participants. If empty,
+    participants will be screened out based on all keys in the screenout csv.
 
 screenout_text : str, default='...you have already participated...'
     Text displayed to participants who are ineligible to participate in this 
@@ -107,8 +111,8 @@ settings = {
     'password': '',
     'restart_option': True,
     'restart_text': RESTART_TXT,
-    'screenout_csv': None,
-    'screenout_keys': None,
+    'screenout_csv': 'screenout.csv',
+    'screenout_keys': [],
     'screenout_text': SCREENOUT_TXT,
     'socket_js_src': SOCKET_JS_SRC,
     'static_folder': 'static',

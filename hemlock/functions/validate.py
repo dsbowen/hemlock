@@ -1,46 +1,36 @@
-"""Response validation
+"""# Validation functions
 
-This file specifies the following types of validation:
-1. Require and type
-2. Set (response is or is not in a set)
-3. Value
-4. Number of characters or selected choices
-5. Number of words
-6. Number of decimals
-7. Regex
-8. Correct choice (choice value evaluates to True)
+These are built-in functions to validate a participant's response to a 
+question. They return `None` if the response is valid, and an error message if 
+the repsonse is invalid.
 
-For value and number of xxx validation, programmers can set the minimum 
-value, the maximum value, the range of accepted values, or the exact value.
-
-For example, if you want a dollar amount to the cent, use the 
-`exact_decimals` function with a `value` of 2.
+You can input a custom error message for any of these functions with the 
+`error_msg` argument.
 """
 
-from hemlock.database import Validate
-from hemlock.functions.utils import _correct_choices
+from ..models import Validate
+from ..tools.lang import indef_article, plural
+from .utils import convert, correct_choices 
 
-from operator import __ge__, __le__
 import re
+from operator import __ge__, __le__
 
-"""Utils"""
+# Require and type validation
 
-def indef_article(string):
-    return 'an ' if string[0] in 'aeiou' else 'a '
-
-def plural(val):
-    return '' if val == 1 else 's'
-
-"""Require and type validation"""
+IS_TYPE_MSG = '<p>Please enter {}.</p>'
 
 @Validate.register
-def require(question, error_msg=None):
-    if not question.response:
-        return error_msg or '<p>Please respond to this question.<p>'
+def is_type(question, resp_type, error_msg=None):
+    """
+    Validate that the response can be converted to a given type.
+    
+    Parameters
+    ----------
+    question : hemlock.Question
 
-@Validate.register
-def is_type(question, resp_type, type_name=None, error_msg=None):
-    """Validate that the response can be converted to a given type"""
+    resp_type : class
+        The required type of response.
+    """
     try:
         resp_type(question.response)
         return
@@ -48,94 +38,201 @@ def is_type(question, resp_type, type_name=None, error_msg=None):
         pass
     if error_msg is not None:
         return error_msg
-    if type_name is None:
-        if resp_type == int:
-            type_name = 'integer'
-        elif resp_type == float:
-            type_name = 'number'
-    if type_name is not None:
-        type_name = indef_article(type_name) + type_name
-    else:
-        type_name = 'the correct type of response'
-    return '<p>Please enter {}.</p>'.format(type_name)
+    if resp_type == int:
+        return IS_TYPE_MSG.format('an integer')
+    if resp_type == float:
+        return IS_TYPE_MSG.format('a number')
+    return IS_TYPE_MSG.format('the correct type of response')
 
-"""Set validation"""
+REQUIRE_MSG = '<p>Please respond to this question.<p>'
+
+@Validate.register
+def require(question, error_msg=None):
+    """
+    Require a response to this question.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+    """
+    if not question.response:
+        return error_msg or REQUIRE_MSG
+
+# Set validation
 
 IS_IN_MSG = '<p>Please enter one of the following: {}.</p>'
 
 @Validate.register
 def is_in(question, valid_set, resp_type=None, error_msg=None):
-    if _convert_resp(question.response, resp_type) not in valid_set:
-        s = ', '.join([str(s) for s in valid_set])
-        return error_msg or IS_IN_MSG.format(s)
+    """
+    Validate that the question response is in a set of valid responses.
 
-IS_NOT_IN = '<p>Please do not enter any of the following: {}.</p>'
+    Parameters
+    ----------
+    question : hemlock.Question
+    
+    valid_set : iterable
+        Set of valid responses.
+
+    resp_type : class or None, default=None
+        Type of response expected; should match the type of elements in 
+        `valid_set`.
+    """
+    resp, _ = convert(question.response, resp_type)
+    if resp not in valid_set:
+        if error_msg is not None:
+            return error_msg
+        return IS_IN_MSG.format(', '.join([str(i) for i in valid_set]))
+
+NOT_IN_MSG = '<p>Please do not enter any of the following: {}.</p>'
 
 @Validate.register
 def is_not_in(question, invalid_set, resp_type=None, error_msg=None):
-    if _convert_resp(question.response, resp_type) in invalid_set:
-        s = ', '.join([str(s) for s in invalid_set])
-        return error_msg or IS_NOT_IN.format(s)
+    """
+    Validate that the question response is *not* in a set of invalid 
+    responses.
 
-def _convert_resp(resp, resp_type):
-    return resp if resp_type is None else resp_type(resp)
+    Parameters
+    ----------
+    question : hemlock.Question
 
-"""Range validation
+    invalid_set : iterable
+        Set of invalid responses.
 
-`resp_type` specifies the type into which the participant's response is 
-converted for comparison against a min or max value. If none is specified, 
-these methods assume the response type is that of the min or max value.
-"""
+    resp_type : class or None, default=None
+        Type of response expected; should match the type of elements in
+        `invalid_set`.
+    """
+    resp, _ = convert(question.response, resp_type)
+    if resp in invalid_set:
+        if error_msg is not None:
+            return error_msg
+        return NOT_IN_MSG.format(', '.join([str(i) for i in invalid_set]))
+
+# Range validation
 
 MAX_MSG = '<p>Please enter a response less than {}.</p>'
 
 @Validate.register
 def max_val(question, max, resp_type=None, error_msg=None):
     error_msg = error_msg or MAX_MSG.format(max)
-    return _in_range(question, max, resp_type, error_msg, __le__)
+    return _compare_resp(question, max, resp_type, error_msg, __le__)
 
 MIN_MSG = '<p>Please enter a response greater than {}.</p>'
 
 @Validate.register
 def min_val(question, min, resp_type=None, error_msg=None):
     error_msg = error_msg or MIN_MSG.format(min)
-    return _in_range(question, min, resp_type, error_msg, __ge__)
+    return _compare_resp(question, min, resp_type, error_msg, __ge__)
 
-def _in_range(question, val, resp_type, error_msg, comparator):
+def _compare_resp(question, val, comparator, error_msg, resp_type=None):
+    """
+    Compare question response.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+
+    val :
+        Comparison value.
+
+    comparator : callable
+        Takes `question.resposne` and `val` and returns a bool indicating that 
+        the comparison was 'successful'.
+
+    error_msg : str
+        Error message to be displayed if comparison is unsuccessful.
+
+    resp_type : class or None, default=None
+        Expected type of response. If `None`, the type of `val` will be used.
+    """
     resp_type = resp_type or type(val)
     type_error_msg = is_type(question, resp_type)
     if type_error_msg is not None:
-        return type_error_msg or error_msg
+        return type_error_msg
     if not comparator(resp_type(question.response), val):
         return error_msg
 
-RANGE_MSG = '<p>Please enter a response between {min} and {max}.</p>'
+RANGE_MSG = '<p>Please enter a response between {0} and {1}.</p>'
 
 @Validate.register
 def range_val(question, min, max, resp_type=None, error_msg=None):
+    """
+    Validate that the response is in a given range.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+    
+    min : 
+        Minimum value for the question response.
+
+    max :
+        Maximum value for the question response.
+
+    resp_type : class or None, default=None
+        Expected type of response. If `None`, the expected response type is the type of `min` and `max`, which must be of the same type.
+    """
     if resp_type is None:
         assert type(min) == type(max)
         resp_type = type(min)
     type_error_msg = is_type(question, resp_type)
     if type_error_msg is not None:
-        return error_msg or type_error_msg
+        return type_error_msg
     if not (min <= resp_type(question.response) <= max):
-        return error_msg or RANGE_MSG.format(min=min, max=max)
+        return error_msg or RANGE_MSG.format(min, max)
 
-"""Length validation
+# Length validation
 
-Note that length validation applies to the length of a string response, or 
-the number of selected choices for a `ChoiceQuestion`. This is because 
-`response` stores a list of selected choices.
-"""
+EXACT_CHOICES_MSG = '<p>Please select exactly {0} {choice}.</p>'
+EXACT_LEN_MSG = '<p>Please enter a response exactly {0} {character} long.</p>'
 
-MAX_CHOICES_MSG = '<p>Please select at most {0} choice{1}.</p>'
-MAX_LEN_MSG = '<p>Please enter a response at most {0} character{1} long.</p>'
+@Validate.register
+def exact_len(question, len_, error_msg=None):
+    """
+    Validates the exact length of the repsonse. For a string response, this is 
+    the length of the string. For a choices response, this is the number of 
+    choices selected.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+
+    len_ : int
+        Required length of the response.
+    """
+    msg = require(question)
+    if len_ and msg is not None:
+        return error_msg or msg
+    if len(question.response) == len_:
+        return
+    if error_msg is not None:
+        return error_msg
+    if isinstance(question.response, list):
+        return EXACT_CHOICES_MSG.format(len_, choice=plural(len_, 'choice'))
+    return EXACT_LEN_MSG.format(len_, character=plural(len_, 'character'))
+
+MAX_CHOICES_MSG = '<p>Please select at most {0} {choice}.</p>'
+MAX_LEN_MSG = '<p>Please enter a response at most {0} {character} long.</p>'
 
 @Validate.register
 def max_len(question, max, error_msg=None):
     """
-    Note that a response of None satisfies all max length validation.
+    Validates the maximum length of the response. For a string response, this 
+    is the length of the string. For a choices response, this is the number of 
+    choices selected.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+
+    max : int
+        Maximum length of the response.
+
+    Notes
+    -----
+    A response of `None` is assumed to satisfy the max length validation. Use 
+    `Validate.require` to require a response that is not `None`.
     """
     if not question.response:
         return
@@ -144,14 +241,26 @@ def max_len(question, max, error_msg=None):
     if error_msg is not None:
         return error_msg
     if isinstance(question.response, list):
-        return MAX_CHOICES_MSG.format(max, plural(max))
-    return MAX_LEN_MSG.format(max, plural(max))
+        return MAX_CHOICES_MSG.format(max, choice=plural(max, 'choice'))
+    return MAX_LEN_MSG.format(max, character=plural(max, 'character'))
 
 MIN_CHOICES_MSG = '<p>Please select at least {0} choice{1}.</p>'
 MIN_LEN_MSG = '<p>Please enter a response at least {0} character{1} long.</p>'
 
 @Validate.register
 def min_len(question, min, error_msg=None):
+    """
+    Valiadates the minimum length of the response. For a string response, this 
+    is the length of the string. For a choices response, this is the number of 
+    choices selected.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+    
+    min : int
+        Minimum length of the response.
+    """
     msg = require(question)
     if min and msg is not None:
         return error_msg or msg
@@ -160,14 +269,29 @@ def min_len(question, min, error_msg=None):
     if error_msg is not None:
         return error_msg
     if isinstance(question.response, list):
-        return MIN_CHOICES_MSG.format(min, plural(min))
-    return MIN_LEN_MSG.format(min, plural(min))
+        return MIN_CHOICES_MSG.format(min, choice=plural(min, 'choice'))
+    return MIN_LEN_MSG.format(min, character=plural(min, 'character'))
 
-NUM_CHOICES_RANGE_MSG = '<p>Please select between {0} and {1} choices.</p>'
+RANGE_CHOICES_MSG = '<p>Please select between {0} and {1} choices.</p>'
 RANGE_LEN_MSG = '<p>Please enter a response {0} to {1} characters long.</p>'
 
 @Validate.register
 def range_len(question, min, max, error_msg=None):
+    """
+    Validates the range of the response length. For a string response, this is 
+    the length of the string. For a choices response, this is the number of 
+    choices selected.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+
+    min : int
+        Minimum response length.
+
+    max : int
+        Maximum response length.
+    """
     msg = require(question)
     if min and msg is not None:
         return error_msg or msg
@@ -176,119 +300,195 @@ def range_len(question, min, max, error_msg=None):
     if error_msg is not None:
         return error_msg
     if isinstance(question.response, list):
-        return NUM_CHOICES_RANGE_MSG.format(min, max)
+        return RANGE_CHOICES_MSG.format(min, max)
     return RANGE_LEN_MSG.format(min, max)
 
-NUM_CHOICES_EXACT_MSG = '<p>Please select exactly {0} choice{1}.</p>'
-EXACT_LEN_MSG = '<p>Please enter a response exactly {0} character{1} long.</p>'
+# Words validation
+
+EXACT_WORDS_MSG = '<p>Please enter a response exactly {0} {word} long.</p>'
 
 @Validate.register
-def exact_len(question, value, error_msg=None):
+def exact_words(question, nwords, error_msg=None):
+    """
+    Validate the exact number of words in the response.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+    
+    nwords : int
+        Required number of words.
+    """
     msg = require(question)
     if value and msg is not None:
+        # a response of `None` can satisfy `exact_words` if `value==0`
         return error_msg or msg
-    if len(question.response) == value:
-        return
-    if error_msg is not None:
-        return error_msg
-    if isinstance(question.response, list):
-        return NUM_CHOICES_EXACT_MSG.format(value, plural(value))
-    return EXACT_LEN_MSG.format(value, plural(value))
+    assert isinstance(question.response, str)
+    if _num_words(question.response) != nwords:
+        return (
+            error_msg 
+            or EXACT_WORDS_MSG.format(nwords, word=plural(nwords, 'word'))
+        )
 
-"""Number of words"""
-
-MAX_WORDS_MSG = '<p>Please enter a response at most {0} word{1} long.</p>'
+MAX_WORDS_MSG = '<p>Please enter at most {0} {word}.</p>'
 
 @Validate.register
 def max_words(question, max, error_msg=None):
+    """
+    Validates the maximum number of words in the response.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+
+    max : int
+        Maximum number of words.
+    """
     if not question.response:
         return
     assert isinstance(question.response, str)
-    if num_words(question.response) > max:
-        return error_msg or MAX_WORDS_MSG.format(max, plural(max))
+    if _num_words(question.response) > max:
+        return error_msg or MAX_WORDS_MSG.format(max, word=plural(max,'word'))
 
-MIN_WORDS_MSG = '<p>Please enter a response at least {0} word{1} long.</p>'
+MIN_WORDS_MSG = '<p>Please enter at least {0} {word}.</p>'
 
 @Validate.register
 def min_words(question, min, error_msg=None):
+    """
+    Validates the minimum number of words in the repsonse.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+
+    min : int
+        Minimum number of words.
+    """
     msg = require(question)
     if min and msg is not None:
         return error_msg or msg
     assert isinstance(question.response, str)
-    if num_words(question.response) < min:
-        return error_msg or MIN_WORDS_MSG.format(min, plural(min))
+    if _num_words(question.response) < min:
+        return error_msg or MIN_WORDS_MSG.format(min, word=plural(min,'word'))
 
-RANGE_WORDS_MSG = '<p>Please enter a response {0} to {1} words long.</p>'
+RANGE_WORDS_MSG = '<p>Please enter between {0} and {1} words.</p>'
 
 @Validate.register
 def range_words(question, min, max, error_msg=None):
+    """
+    Validates the number of words falls in a given range.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+
+    min : int
+        Minumum number of words.
+
+    max : int
+        Maximum number of words.
+    """
     msg = require(question)
     if min and msg is not None:
         return error_msg or msg 
     assert isinstance(question.response, str)
-    if not (min <= num_words(question.response) <= max):
+    if not (min <= _num_words(question.response) <= max):
         return error_msg or RANGE_WORDS_MSG.format(min, max)
 
-EXACT_WORDS_MSG = '<p>Please enter a response exactly {0} word{1} long.</p>'
-
-@Validate.register
-def exact_words(question, value, error_msg=None):
-    """
-    Note that a response of None can satisfy exact_words if `value`==0.
-    """
-    msg = require(question)
-    if value and msg is not None:
-        return error_msg or msg
-    assert isinstance(question.response, str)
-    if not num_words(question.response) == value:
-        return error_msg or EXACT_WORDS_MSG.format(value, plural(value))
-
-@Validate.register
-def num_words(string):
+def _num_words(string):
     """Count the number of words in the string"""
     return len(re.findall(r'\w+', string))
 
-"""Decimal validation"""
+# Decimal validation
 
-MAX_DECIMALS = '<p>Please enter a number with at most {0} decimal{1}.</p>'
+EXACT_DECIMALS = '<p>Please enter a number with exactly {0} {decimal}.</p>'
+
+@Validate.register
+def exact_decimals(question, ndec, error_msg=None):
+    """
+    Validates the exact number of decimals.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+
+    ndec : int
+        Required number of decimals.
+    """
+    msg, decimals = _get_decimals(question, error_msg)
+    if msg:
+        return msg
+    if decimals != ndec:
+        return EXACT_DECIMALS.format(ndec, decimal=plural(ndec, 'decimal'))
+
+MAX_DECIMALS = '<p>Please enter a number with at most {0} {decimal}.</p>'
 
 @Validate.register
 def max_decimals(question, max, error_msg=None):
+    """
+    Validates the maximum number of decimals.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+
+    max : int
+        Maximum number of decimals.
+    """
     msg, decimals = _get_decimals(question, error_msg)
     if msg:
         return msg
     if decimals > max:
-        return error_msg or MAX_DECIMALS.format(max, plural(max))
+        return (
+            error_msg 
+            or MAX_DECIMALS.format(max, decimal=plural(max, 'decimal'))
+        )
 
-MIN_DECIMALS = '<p>Please enter a number with at least {0} decimal{1}.</p>'
+MIN_DECIMALS = '<p>Please enter a number with at least {0} {decimal}.</p>'
 
 @Validate.register
 def min_decimals(question, min, error_msg=None):
+    """
+    Validates the minumum number of decimals.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+
+    min : int
+        Minumum number of decimals.
+    """
     msg, decimals = _get_decimals(question, error_msg)
     if msg:
         return msg
     if decimals < min:
-        return error_msg or MIN_DECIMALS.format(min, plural(min))
+        return (
+            error_msg 
+            or MIN_DECIMALS.format(min, decimal=plural(min, 'decimal'))
+        )
 
 RANGE_DECIMALS = '<p>Please enter a number with {0} to {1} decimals.</p>'
 
 @Validate.register
 def range_decimals(question, min, max, error_msg=None):
+    """
+    Validates the number of decimals are in a given range.
+
+    Parameters
+    ----------
+    question : hemlock.Question
+    
+    min : int
+        Minimum number of decimals.
+
+    max : int
+        Maximum number of decimals.
+    """
     msg, decimals = _get_decimals(question, error_msg)
     if msg:
         return msg
     if not (min <= decimals <= max):
         return RANGE_DECIMALS.format(min, max)
-
-EXACT_DECIMALS = '<p>Please enter a number with exactly {0} decimal{1}.</p>'
-
-@Validate.register
-def exact_decimals(question, value, error_msg=None):
-    msg, decimals = _get_decimals(question, error_msg)
-    if msg:
-        return msg
-    if not decimals == value:
-        return EXACT_DECIMALS.format(value, plural(value))
 
 def _get_decimals(question, error_msg):
     """Return (error message, number of decimals) tuple
@@ -299,26 +499,44 @@ def _get_decimals(question, error_msg):
     if msg:
         return error_msg or msg, None
     split = question.response.split('.')
-    # Number of decimals is 0 when no decimal point is specified.
+    # number of decimals is 0 when no decimal point is specified.
     decimals = 0 if len(split) == 1 else len(split[-1])
     return None, decimals
 
-"""Regex"""
+# Regex validation
 
 REGEX_MSG = '<p>Please enter a response with the correct pattern.</p>'
 
 @Validate.register
 def match(question, pattern, error_msg=None):
-    """Validate that the response matches the regex pattern."""
+    """
+    Validate that the response matches the regex pattern.
+    
+    Parameters
+    ----------
+    question : hemlock.Question
+
+    pattern : str
+        Regex pattern to match.
+    """
     if not re.compile(pattern).match((question.response or '')):
         return error_msg or REGEX_MSG
 
-"""Choice validation"""
+# Choice validation
 
 @Validate.register
-def correct_choices(question, error_msg=None):
-    """Validate that selected choice(s) is (are) correct"""
-    if not _correct_choices(question):
+def correct_choices(question, *correct, error_msg=None):
+    """
+    Validate that selected choice(s) is correct.
+    
+    Parameters
+    ----------
+    question : hemlock.Question
+
+    \*correct :
+        Correct choices.
+    """
+    if not correct_choices(question, *correct):
         if error_msg is not None:
             return error_msg
         if question.multiple:

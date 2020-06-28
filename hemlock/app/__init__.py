@@ -67,8 +67,9 @@ def create_app(settings=settings):
     {
     \    'clean_data': None, 
     \    'restart_option': True, 
-    \    'restart_text': 'Click << to return to your in progress survey...'
-    \    'screenout_keys': None, 
+    \    'restart_text': 'Click << to return to your in progress survey...',
+    \    'screenout_csv': 'screenout.csv',
+    \    'screenout_keys': [], 
     \    'screenout_text': '...you have already participated...', 
     \    'socket_js_src': 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js', 
     \    'time_expired_text': 'You have exceeded your time limit for this survey', 
@@ -100,8 +101,8 @@ def _create_app(settings):
     settings['password_hash'] = generate_password_hash(password)
     # get screenouts
     screenout_csv = settings.pop('screenout_csv')
-    if screenout_csv:
-        df = pd.read_csv(settings.pop('screenout_csv'))
+    if os.path.exists(screenout_csv):
+        df = pd.read_csv(screenout_csv)
         screenout_keys = settings.pop('screenout_keys')
         df = df[screenout_keys] if screenout_keys else df
         app.screenouts = df.to_dict(orient='list')
