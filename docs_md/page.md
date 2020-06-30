@@ -60,7 +60,7 @@ originating from this page.
 ##hemlock.**Page**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Page</b>(<i>branch=None, template='page-body.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L80">[source]</a>
+    <i>class</i> hemlock.<b>Page</b>(<i>branch=None, template='page-body.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L72">[source]</a>
 </p>
 
 Pages are queued in a branch. A page contains a list of questions which it
@@ -219,7 +219,7 @@ It inherits from `hemlock.HTMLMixin`.
 
 
 <p class="func-header">
-    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L406">[source]</a>
+    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L398">[source]</a>
 </p>
 
 Clear the error message from this page and all of its questions.
@@ -243,7 +243,7 @@ Clear the error message from this page and all of its questions.
 
 
 <p class="func-header">
-    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L418">[source]</a>
+    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L410">[source]</a>
 </p>
 
 Clear the response from all of this page's questions.
@@ -267,7 +267,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>first_page</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L429">[source]</a>
+    <i></i> <b>first_page</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L421">[source]</a>
 </p>
 
 
@@ -291,7 +291,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>is_valid</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L444">[source]</a>
+    <i></i> <b>is_valid</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L436">[source]</a>
 </p>
 
 
@@ -310,3 +310,30 @@ Clear the response from all of this page's questions.
     </tbody>
 </table>
 
+
+
+
+
+<p class="func-header">
+    <i></i> <b>preview</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L447">[source]</a>
+</p>
+
+Preview the page in a browser window.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>success : <i>bool</i></b>
+<p class="attr">
+    Indicates that the window was opened successfully.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+####Notes
+
+This method does not run the compile functions.

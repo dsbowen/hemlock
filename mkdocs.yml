@@ -26,6 +26,13 @@ nav:
       - Participant: participant.md
       - Question mixins: question.md
       - Workers: workers.md
+    - Tools:
+      - Comprehension check: comprehension.md
+      - Language: lang.md
+      - Randomization: random.md
+      - Statics: statics.md
+      - url_for: url_for.md
+      - Webdrivers: webdriver.md
 theme: readthedocs
 extra_css:
   - css/extra.css

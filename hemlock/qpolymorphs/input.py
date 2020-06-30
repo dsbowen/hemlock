@@ -1,17 +1,28 @@
 """Input question"""
 
-from hemlock.qpolymorphs.utils import *
+from ..app import settings
+from ..functions.debug import send_datetime, random_keys
+from .utils import *
+
+from datetime_selenium import get_datetime
 
 from datetime import datetime
 
-# Mapping of datetime input types to formats
-type_to_format = {
-    'date': '%Y-%m-%d',
-    'datetime-local': '%Y-%m-%dT%H:%M',
-    'month': '%Y-%m',
-    'time': '%H:%M',
-    'week': '%Y-W%W'
-}
+html_datetime_types = (
+    'date',
+    'datetime-local',
+    'month',
+    'time',
+    'week',
+)
+
+def debug_func(driver, question):
+    if question.input_type in html_datetime_types:
+        send_datetime(driver, question)
+    else:
+        random_keys(driver, question)
+
+settings['Input'] = {'debug_functions': debug_func}
 
 
 class Input(InputGroup, InputBase, Question):
@@ -35,10 +46,6 @@ class Input(InputGroup, InputBase, Question):
 
     def _submit(self, *args, **kwargs):
         """Convert data to `datetime` object if applicable"""
-        datetime_format = type_to_format.get(self.input_type)
-        if datetime_format is not None:
-            try: # will succeed if response is filled in
-                self.data = datetime.strptime(self.response, datetime_format)
-            except:
-                pass
+        if self.input_type in html_datetime_types:
+            self.data = get_datetime(self.response) or None
         return super()._submit(*args, **kwargs)

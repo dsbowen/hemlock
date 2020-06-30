@@ -39,29 +39,102 @@ from sqlalchemy.orm import validates
 from sqlalchemy_mutable import MutableType
 
 import os
+import webbrowser
 from random import shuffle
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
-BANNER = Img(
-    src='/hemlock/static/img/hemlock_banner.png',
-    alignment='center'
-)
+BANNER = Img(src='/hemlock/static/img/hemlock_banner.png', align='center')
 BANNER.img['style'] = 'max-width:200px;'
 
 def compile_func(page):
+    """
+    Default page compile function; executes its questions' compile methods in
+    index order.
+
+    Parameters
+    ----------
+    page : hemlock.Page
+    """
     [q._compile() for q in page.questions]
 
 def validate_func(page):
+    """
+    Default page validate function; executes its questions' validate methods
+    in index order.
+
+    Parameters
+    ----------
+    page : hemlock.Page
+    """
     [q._validate() for q in page.questions]
     
 def submit_func(page):
+    """
+    Default page submit function; executes its questions' submit methods in
+    index order.
+
+    Parameters
+    ----------
+    page : hemlock.Page
+    """
     [q._submit() for q in page.questions]
 
 def debug_func(driver, page):
-    idx = list(range(len(page.questions)))
-    shuffle(idx)
-    [page.questions[i]._debug(driver) for i in idx]
+    """
+    Default page debug function; execute its questions' debug methods in 
+    *random* order.
+
+    Parameters
+    ----------
+    driver : selenium.webdriver.chrome.webdriver.WebDriver
+
+    page : hemlock.Page
+    """
+    order = list(range(len(page.questions)))
+    shuffle(order)
+    [page.questions[i]._debug(driver) for i in order]
+
+def navigate(driver, page, p_forward=.8, p_back=.1, sleep_time=3):
+    """
+    This method randomly navigates forward or backward, or refreshes the 
+    page. By default it is executed after the default page debug function.
+
+    Parameters
+    ----------
+    driver : selenium.webdriver.chrome.webdriver.WebDriver
+
+    page : hemlock.Page
+
+    p_forward : float, default=.8
+        Probability of clicking the forward button.
+
+    p_back : float, default=.1
+        Probability of clicking the back button.
+
+    sleep_time : float, default=3
+        Number of seconds to sleep if there is no forward or back button on
+        the page.
+
+    Notes
+    -----
+    The probability of refreshing the page is `1-p_forward-p_back`.
+    """
+    forward_exists = back_exists = True
+    if random() < p_forward:
+        try:
+            return driver.find_element_by_id('forward-btn').click()
+        except:
+            forward_exists = False
+    if random() < p_back / (1 - p_forward):
+        try:
+            return driver.find_element_by_id('back-btn').click()
+        except:
+            back_exists = False
+    if not (forward_exists or back_exists):
+        sleep(sleep_time)
+        navigate(driver, page, p_forward, p_back, sleep_time)
+    driver.refresh()
 
 settings['Page'] = {
     'css': open(os.path.join(DIR_PATH, 'page-css.html'), 'r').read(),
@@ -73,7 +146,7 @@ settings['Page'] = {
     'compile_functions': compile_func,
     'validate_functions': validate_func,
     'submit_functions': submit_func,
-    'debug_functions': debug_func,
+    'debug_functioons': [debug_func, navigate],
 }
 
 
@@ -451,6 +524,21 @@ class Page(HTMLMixin, BranchingBase, db.Model):
             questions.
         """
         return not (self.error or any([q.error for q in self.questions]))
+
+    def preview(self):
+        """
+        Preview the page in a browser window.
+
+        Returns
+        -------
+        success : bool
+            Indicates that the window was opened successfully.
+
+        Notes
+        -----
+        This method does not run the compile functions.
+        """
+        return webbrowser.open('data:text/html,'+self._render())
 
     # methods executed during study
     def _compile(self):

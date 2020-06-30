@@ -1,18 +1,20 @@
 """Textarea"""
 
-from hemlock.qpolymorphs.utils import *
+from ..app import settings
+from ..functions.debug import random_keys
+from .utils import *
+
+settings['Textarea'] = {'debug_functions': random_keys}
 
 
 class Textarea(InputGroup, Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'textarea'}
 
-    @Question.init('Textarea')
-    def __init__(self, page=None, **kwargs):
-        super().__init__()
-        self.body = render_template('textarea.html', q=self)
+    def __init__(self, page=None, template='textarea.html', **kwargs):
+        self.body = render_template(template, q=self)
         self.js = render_template('textarea.js', q=self)
-        return {'page': page, **kwargs}
+        super().__init__(page, **kwargs)
 
     @property
     def textarea(self):

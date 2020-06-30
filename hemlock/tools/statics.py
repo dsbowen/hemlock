@@ -1,66 +1,196 @@
-"""Tool for generating statics (embedded images and videos)"""
+"""# Statics
+
+Tool for generating statics (embedded images and videos).
+"""
 
 from sqlalchemy_mutablesoup import SoupBase
 
 from flask import current_app
 
-from datetime import timedelta
-from urllib.parse import parse_qs, urlparse, urlencode
 import re
 import os
+from datetime import timedelta
+from urllib.parse import parse_qs, urlparse, urlencode
 
-NO_BUCKET_ERR_MSG = '''
+DIR = os.path.dirname(os.path.realpath(__file__))
+NO_BUCKET_ERR_MSG = """
 Enable a Google Cloud Bucket to access this feature.
 \n  See `hlk gcloud-bucket`
-'''
+"""
 SRC_ROOT = 'https://storage.googleapis.com'
 
 def src_from_bucket(filename):
-    """Get `src` attribute from Google bucket"""
-    bucket_name = os.environ.get('BUCKET')
-    assert bucket_name is not None, NO_BUCKET_ERR_MSG
-    return '/'.join([SRC_ROOT, bucket_name, filename])
+    """
+    Parameters
+    ----------
+    filename : str
+        Name of the file in the Google bucket.
 
-def url_from_bucket(filename, **kwargs):
-    """Get url attribute from Google bucket
+    Returns
+    -------
+    src : str
+        `src` html attribute which references the specified file in the Google
+        bucket.
 
-    By default, the link expires in 3600 seconds.
+    Notes
+    -----
+    You must have a Google bucket associated with this app to use this 
+    feature.
+    """
+    bucket = os.environ.get('BUCKET')
+    assert bucket is not None, NO_BUCKET_ERR_MSG
+    return '/'.join([SRC_ROOT, bucket, filename])
+
+def url_from_bucket(filename, expiration=3600, **kwargs):
+    """
+    Parameters
+    ----------
+    filename : str
+        Name of the file in the Google bucket.
+
+    expiration : float, default=3600
+        Number of seconds until the url expires.
+
+    \*\*kwargs :
+        Keyword arguments are passed to the [`generate_signed_url` method]
+        (https://cloud.google.com/storage/docs/access-control/signed-urls).
+
+    Returns
+    -------
+    signed_url : str
+        Signed url for the file in the app's bucket.
     """
     assert hasattr(current_app, 'gcp_bucket'), NO_BUCKET_ERR_MSG
-    kwargs['expiration'] = kwargs.get('expriation') or timedelta(3600)
+    kwargs['expiration'] = timedelta(expiration)
     blob = current_app.gcp_bucket.blob(filename)
     return blob.generate_signed_url(**kwargs)
 
 
 class Static():
-    """Static base
+    """
+    Base for static objects (images and videos).
 
-    This base stores its HTML in a `MutableSoup` object called `body`. The source parameters are stored separately in a `src_parms` dictionary. These are added to the src attribute when rendering.
+    Parameters
+    ----------
+    template : str
+        Path to template file. 
+
+    \*\*kwargs :
+        Any attribute of the static object can be set by passing it as a 
+        keyword argument.
+
+    Attributes
+    ----------
+    body : sqlalchemy_mutablesoup.MutableSoup
+        Html of the static object.
+
+    src_params : dict
+        Maps url parameter names to values. These will be attached to the 
+        `src` html attribute when the static is rendered.
+
+    Notes
+    -----
+    The `template` parameter is *not* a Jinja template, as programmers may wish to generate html for statics outside the application context.
     """
     def __init__(self, template, **kwargs):
-        path = os.path.dirname(os.path.realpath(__file__))
-        html = open(os.path.join(path, template)).read()
-        self.body = SoupBase(html, 'html.parser')
-        self.src_parms = {}
+        self.body = SoupBase(open(template).read(), 'html.parser')
+        self.src_params = {}
         [setattr(self, key, val) for key, val in kwargs.items()]
 
     def render(self, tag_selector=None):
+        """
+        Parameters
+        ----------
+        tag_selector : str
+            CSS selector for the html tag containing the `src` attribute.
+
+        Returns
+        -------
+        html : str
+            Rendered html.
+        """
         body = self.body.copy()
         if tag_selector is not None:
             tag = body.select_one(tag_selector)
-            if self.parms:
-                tag['src'] = tag.get('src')+'?'+urlencode(self.parms)
+            if self.src_params:
+                tag['src'] = tag.get('src')+'?'+urlencode(self.src_params)
         return str(body)
 
-    def _set_src(self, tag, url):
-        self.parms = parse_qs(urlparse(url).query)
-        tag['src'] = url.split('?')[0]
+    def _set_src(self, tag, src):
+        """
+        Set the `src` attribute.
+
+        Parameters
+        ----------
+        tag : bs4.Tag
+            Tag containing the `src` attribute.
+
+        src : str
+            New value of the `src` attribute.
+        """
+        # store src params for later; add back when rendering
+        self.src_params = parse_qs(urlparse(src).query)
+        # set the src as just the url root
+        tag['src'] = src.split('?')[0]
 
 
 class Img(Static):
-    """Image"""
-    def __init__(self, **kwargs):
-        super().__init__('img.html', **kwargs)
+    """
+    Static image.
+
+    Parameters
+    ----------
+    template : str, default='directory/img.html'
+        Image template. By default, this is a file stored in the directory of 
+        the current file.
+
+    Attributes
+    ----------
+    align : str
+        Image alignment; `'left'`, `'center'`, or `'right`'.
+
+    caption : str
+        Image caption.
+
+    figure : bs4.Tag
+        `<figure>` tag.
+
+    img : bs4.Tag
+        `<img>` tag.
+
+    src : str
+        `src` attribute of the `<img>` tag.
+    """
+    def __init__(self, template=os.path.join(DIR, 'img.html'), **kwargs):
+        super().__init__(template, **kwargs)
+
+    @property
+    def align(self):
+        for class_ in self.figure['class']:
+            if class_ == 'text-left':
+                return 'left'
+            if class_ == 'text-center':
+                return 'center'
+            if class_ == 'text-right':
+                return 'right'
+
+    @align.setter
+    def align(self, align_):
+        align_classes = ['text-'+i for i in ['left','center','right']]
+        self.figure['class'] = [
+            c for c in self.figure['class'] if c not in align_classes
+        ]
+        if align_:
+            align_ = 'text-' + align_
+            self.figure['class'].append(align_)
+
+    @property
+    def caption(self):
+        return self.body.text('figcaption')
+
+    @caption.setter
+    def caption(self, val):
+        self.body.set_element('figcaption', val)
 
     @property
     def figure(self):
@@ -78,35 +208,13 @@ class Img(Static):
     def src(self, val):
         super()._set_src(self.img, val)
 
-    @property
-    def caption(self):
-        return self.body.text('figcaption')
-
-    @caption.setter
-    def caption(self, val):
-        self.body.set_element('figcaption', val)
-
-    @property
-    def alignment(self):
-        for class_ in self.figure['class']:
-            if class_ == 'text-left':
-                return 'left'
-            if class_ == 'text-center':
-                return 'center'
-            if class_ == 'text-right':
-                return 'right'
-
-    @alignment.setter
-    def alignment(self, align):
-        align_classes = ['text-'+i for i in ['left','center','right']]
-        self.figure['class'] = [
-            c for c in self.figure['class'] if c not in align_classes
-        ]
-        if align:
-            align = 'text-' + align
-            self.figure['class'].append(align)
-
     def render(self):
+        """
+        Returns
+        -------
+        html : str
+            Rendered image html.
+        """
         return super().render('img')
 
 
@@ -118,9 +226,25 @@ YOUTUBE_ATTRS = {
 
 
 class Vid(Static):
-    """Video"""
-    def __init__(self, **kwargs):
-        super().__init__('vid.html', **kwargs)
+    """
+    Static video.
+    
+    Parameters
+    ----------
+    template : str, default='directory/vid.html'
+        Video template. By default, this is a file stored in the directory of 
+        the current file.
+
+    Attributes
+    ----------
+    iframe : bs4.Tag
+        `<iframe>` tag.
+
+    src : str
+        `src` attribute of the `<iframe>` tag.
+    """
+    def __init__(self, template=os.path.join(DIR, 'vid.html'), **kwargs):
+        super().__init__(template, **kwargs)
 
     @property
     def iframe(self):
@@ -135,14 +259,34 @@ class Vid(Static):
         super()._set_src(self.iframe, val)
 
     def from_youtube(src):
-        """Capture the YouTube video id and create an embedded src"""
+        """
+        Capture the YouTube video id and create an embedded src.
+        
+        Parameters
+        ----------
+        src : str
+            Link to the YouTube video.
+
+        Returns
+        -------
+        vid : hemlock.tools.Vid
+            Video object.
+        """
         vid = Vid()
-        parms = parse_qs(urlparse(src).query)
-        id = parms.pop('v')[0] # video id
+        params = parse_qs(urlparse(src).query)
+        # video id
+        id = params.pop('v')[0]
+        # src for the embedded video
         vid.src = 'https://www.youtube.com/embed/' + id
         vid.iframe.attrs.update(YOUTUBE_ATTRS)
-        vid.parms = parms
+        vid.params = params
         return vid
         
     def render(self):
+        """
+        Returns
+        -------
+        html : str
+            Rendered video html.
+        """
         return super().render('iframe')

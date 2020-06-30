@@ -44,18 +44,6 @@ Choice question debugging:
 
 
 
-## Page debugging
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        
-    </tbody>
-</table>
-
-
-
 ##hemlock.functions.debug.**forward**
 
 <p class="func-header">

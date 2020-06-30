@@ -16,6 +16,7 @@ setuptools.setup(
     include_package_data=True,
     install_requires=[
         'bs4>=0.0.1',
+        'datetime-selenium>=0.0.0',
         'eventlet>=0.25.1',
         'flask>=1.1.1',
         'flask-apscheduler>=1.11.0',

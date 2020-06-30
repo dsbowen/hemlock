@@ -1,23 +1,14 @@
 """# Debug functions
 
-Users will likely rely most on the following debug functions.
 
-Page debugging:
-1. `forward`. Navigate forward.
-2. `back`. Navigate backward.
-3. `navigate`. Navigate in a random direction (or refresh the page)
-
-Textarea and Input debugging:
-1. `send_keys`. Send specified keys to the input (or textarea) tag.
-
-Choice question debugging:
-1. `click_choices`. Click on the input choices.
 """
 
 from ..app import settings
 from ..models import Debug
 from ..qpolymorphs import Check
+from .utils import gen_datetime, gen_number
 
+from datetime_selenium import send_datetime as send_datetime_
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
@@ -26,196 +17,140 @@ from random import choice, randint, random, shuffle
 from string import ascii_letters, digits
 from time import sleep
 
-"""## Page debugging"""
+# Page debugging
 @Debug.register
 def forward(driver, page):
+    """
+    Click the forward button.
+
+    Parameters
+    ----------
+    driver : selenium.webdriver.chrome.webdriver.WebDriver
+
+    page : hemlock.Page
+    """
     driver.find_element_by_id('forward-btn').click()
 
 @Debug.register
 def back(driver, page):
+    """
+    Click the back button.
+
+    Parameters
+    ----------
+    driver : selenium.webdriver.chrome.webdriver.WebDriver
+
+    page : hemlock.Page
+    """
     driver.find_element_by_id('back-btn').click()
 
+# Textarea and text input debugging
+
 @Debug.register
-def navigate(driver, page, p_forward=.8, p_back=.1, sleep_time=3):
-    """Navigate randomly
-
-    This method randomly navigates forward or backward, or refreshes the 
-    page.
+def send_keys(driver, question, *keys, p_num=.5):
     """
-    forward_exists = back_exists = True
-    if random() < p_forward:
-        try:
-            return forward(driver, page)
-        except:
-            forward_exists = False
-    if random() < p_back / (1 - p_forward):
-        try:
-            return back(driver, page)
-        except:
-            back_exists = False
-    if not (forward_exists or back_exists):
-        sleep(sleep_time)
-    driver.refresh()
+    Send the specified keys to the `<textarea>` or `<input>`.
 
-def debug_func(driver, page):
-    """Run the question debug functions in random order"""
-    order = list(range(len(page.questions)))
-    shuffle(order)
-    [page.questions[i]._debug(driver) for i in order]
+    Parameters
+    ----------
+    driver : selenium.webdriver.chrome.webdriver.WebDriver
 
-@Settings.register('Page')
-def settings():
-    return {'debug_functions': [debug_func, navigate]}
+    question : hemlock.Question
 
-"""Textarea and text Input debugging"""
-@Debug.register
-def send_keys(driver, question, keys, p_exec=1):
-    """Send keys method
+    \*keys : 
+        Keys to send to the textarea or input. If empty, keys are randomly 
+        selected.
 
-    This debugger sends the specified keys or list or keys to the textarea 
-    or input.
+    p_num : float, default=.5
+        Probability of sending a random number if keys are not specified (as 
+        opposed to a random string).
     """
-    if random() > p_exec:
-        return
     try:
         inpt = question.textarea_from_driver(driver)
     except:
         inpt = question.input_from_driver(driver)
     inpt.clear()
-    if isinstance(keys, list):
+    if keys:
         [inpt.send_keys(key) for key in keys]
+    elif random() < p_num:
+        random_number(driver, question)
     else:
-        inpt.send_keys(keys)
+        random_string(driver, question)
 
 @Debug.register
 def random_str(driver, question, magnitude=2, p_whitespace=.2):
-    """Random string
+    """
+    Send a random string to the textarea.
 
-    This debugger sends a random string to the textarea. `magnitude` is the 
-    maximum magnitude of the length of the string. `p_whitespace` is the 
-    probability of sending a whitespace character.
+    Parameters
+    ----------
+    driver : selenium.webdriver.chrome.webdriver.WebDriver
+
+    question : hemlock.Question
+
+    magnitude : int, default=2
+        Maximum magnitude of the length of the string. e.g. the default
+        magnitude of 2 means that the maximum length is 10^2=100 characters.
+
+    p_whitespace : float, default=.2
+        Frequency with which whitespace characters appear in the string.
     """
     chars = ascii_letters + digits
     chars = list(chars) + [' '] * int(p_whitespace*len(chars))
     length = int(random() * 10**randint(1,magnitude))
-    send_keys(
-        driver, question, ''.join([choice(chars) for i in range(length)])
-    )
+    keys = ''.join([choice(chars) for i in range(length)])
+    send_keys(driver, question, keys)
 
 @Debug.register
-def random_number(driver, question, p_exec=1, *args, **kwargs):
-    if random() > p_exec:
-        return
+def random_number(driver, question, *args, **kwargs):
+    """
+    Send a random number to the textarea or input.
+
+    Parameters
+    ----------
+    driver : selenium.webdriver.chrome.webdriver.WebDriver
+
+    question : hemlock.Question
+
+    magn_lb : int, default=0
+        Lower bound for the magnitude of the number.
+
+    mag_ub : int, default=10
+        Upper bound for the magnitude of the number.
+
+    max_decimals : int, default=5
+        Maximum number of decimals to which the number can be rounded.
+
+    p_int : float, default=.5
+        Probability that the number is an integer.
+
+    p_neg : float, default=.1
+        Probability that the number is negative.
+    """
     send_keys(driver, question, str(gen_number(*args, **kwargs)))
 
-def gen_number(
-        integer=False, magnitude_lb=0, magnitude_ub=10, p_negative=.1, 
-        max_decimals=5
-    ):
-    """Generate a random number
-
-    `magnitude_lb` and `magnitude_ub` specify the lower and upper bound on 
-    the mangitude of the number. 
-    `p_negative` is the probability of generating a random number. 
-    `max_decimals` is the maximum number of decimals to which the number 
-    can be rounded.
+# Date and time input
+@Debug.register
+def send_datetime(driver, question, datetime_=None):
     """
-    num = random() * 10**randint(magnitude_lb, magnitude_ub)
-    if random() < p_negative:
-        num = -num
-    if integer:
-        return int(num)
-    return round(num, randint(0, max_decimals))
+    Send a `datetime.datetime` object to an input. Inputs should be of type
+    'date', 'datetime-local', 'month', 'time', or 'week',
 
-@Debug.register
-def random_keys(driver, question, p_str=.5, p_int=.25):
-    """Send random keys
+    Parameters
+    ----------
+    driver : selenium.webdriver.chrome.webdriver.WebDriver
 
-    This method sends random keys to a textarea or input. 
-    
-    With probability `p_skip`, this method skips the question without sending keys.
-    With probability `p_str`, this method sends a random string.
-    With probability `p_int`, this method sends an integer.
-    Otherwise, it sends a floating point number.
+    question : hemlock.Question
+
+    datetime_ : datetime.datetime or None, default=None
+        The datetime object to send. If `None`, a date and time are chosen
+        randomly.
     """
-    if random() < p_str:
-        return random_str(driver, question)
-    integer = random() < p_int / (1-p_str)
-    random_number(driver, question, integer=integer)
-
-def default_textarea_debug(driver, question, p_skip=.1):
-    """Skip or send random string"""
-    if random() < p_skip:
-        return
-    random_str(driver, question)
-    
-@Settings.register('Textarea')
-def settings():
-    return {'debug_functions': default_textarea_debug}
-
-"""Date and time input"""
-@Debug.register
-def random_date(driver, question, **kwargs):
-    dt = gen_datetime(**kwargs)
-    send_keys(driver, question, dt.strftime('%m%d%Y'))
-
-@Debug.register
-def random_datetime(driver, question, **kwargs):
-    dt = gen_datetime(**kwargs)
-    date = dt.strftime('%m%d%Y')
-    time = dt.strftime('%I%M%p')
-    send_keys(driver, question, [date, Keys.TAB, time])
-
-@Debug.register
-def random_month(driver, question, **kwargs):
-    dt = gen_datetime(**kwargs)
-    month = dt.strftime('%B')
-    send_keys(driver, question, [month, Keys.TAB, str(dt.year)])
-
-@Debug.register
-def random_time(driver, question, **kwargs):
-    dt = gen_datetime(**kwargs)
-    send_keys(driver, question, dt.strftime('%I%M%p'))
-
-@Debug.register
-def random_week(driver, question, **kwargs):
-    dt = gen_datetime(**kwargs)
-    send_keys(driver, question, dt.strftime('%U%Y'))
-
-def gen_datetime(p_future=.5, **kwargs):
-    """Randomly generate datetime
-
-    This method randomly generates a datetime object by subtracting a 
-    timedelta from the current datetime. The timedelta's seconds are 
-    determined by the random number generator specified above.
-    """
-    kwargs['magnitude_lb'] = kwargs.get('magnitude_lb') or 2
-    kwargs['p_negative'] = p_future or kwargs.get('p_negative')
-    seconds = gen_number(**kwargs)
-    return datetime.now() - timedelta(seconds=seconds)
-
-"""Default input debugger"""
-input_debug_fn_map = {
-    'date': random_date,
-    'datetime-local': random_datetime,
-    'month': random_month,
-    'time': random_time,
-    'week': random_week,
-}
-
-def default_input_debug(driver, question, p_skip=.1):
-    if random() < p_skip:
-        return
-    debug_fn = input_debug_fn_map.get(question.input_type) or random_keys
-    debug_fn(driver, question)
-
-@Settings.register('Input')
-def settings():
-    return {
-        'debug_functions': default_input_debug
-    }
+    datetime_ = datetime_ or gen_datetime()
+    send_datetime_(question.input_from_driver(driver), date_time_)
 
 """Range debugger"""
+# HERE
 @Debug.register
 def drag_range(driver, question, xoffset=None):
     """Drag the range slider to xoffset"""

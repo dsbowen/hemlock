@@ -8,6 +8,8 @@ from .question import Question
 
 from sqlalchemy_function import FunctionMixin
 
+from random import random
+
 def _set_parent(model, parent):
     if isinstance(parent, Branch):
         model.branch = parent
@@ -80,6 +82,14 @@ class Validate(Function, db.Model):
     parent : hemlock.Page, hemlock.Question, or None, default=None
         The page or question to which this function belongs.
 
+    Attributes
+    ----------
+    error_msg : str or None
+        If the validate function returns an error message, the `error_msg`
+        attribute is returned instead of the output of the validate function.
+        You can set this by passing in an `error_msg` keyword argument to the
+        constructor.
+
     Relationships
     -------------
     page : hemlock.Page or None
@@ -91,9 +101,24 @@ class Validate(Function, db.Model):
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
 
+    error_msg = db.Column(db.Text)
+
     def __init__(self, parent=None, *args, **kwargs):
         _set_parent(self, parent)
+        self.error_msg = kwargs.pop('error_msg', None)
         super().__init__(*args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        """
+        Returns
+        -------
+        error_msg : str or None
+            Return `None` if there is no error. If there is an error, return
+            `self.error_msg` or the output of `self.func`.
+        """
+        error_msg = super().__call__(*args, **kwargs)
+        if error_msg:
+            return self.error_msg or error_msg
 
 
 class Submit(Function, db.Model):
@@ -134,6 +159,12 @@ class Debug(Function, db.Model):
     parent : hemlock.Page, hemlock.Question, or None, default=None
         The page or question to which this function belongs.
 
+    Attributes
+    ----------
+    p_exec : float, default=1.
+        Probability that the debug function will execute. You can set this by
+        passing in an `p_exec` keyword argument to the constructor.
+
     Relationships
     -------------
     page : hemlock.Page or None
@@ -145,9 +176,19 @@ class Debug(Function, db.Model):
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
 
+    p_exec = db.Column(db.Float)
+
     def __init__(self, parent=None, *args, **kwargs):
         _set_parent(self, parent)
+        self.p_exec = kwargs.pop('p_exec', 1.)
         super().__init__(*args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        """
+        Execute the debug function with probability `self.p_exec`.
+        """
+        if random() < self.p_exec:
+            return super().__call__(*args, **kwargs)
 
 
 class Navigate(Function, db.Model):
