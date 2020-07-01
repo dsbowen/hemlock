@@ -1,0 +1,12 @@
+{% extends 'hemlock/form-group.html' %}
+
+{% block content %}
+<div class="input-group">
+    <div class="input-group-prepend"></div>
+    <textarea id="{{ self_.model_id }}" name="{{ self_.model_id }}" class="form-control"></textarea>
+    <div class="input-group-append"></div>
+</div>
+<small>Characters: <span id="{{ self_.model_id }}-chars"></span></small>
+<br/>
+<small>Words: <span id="{{ self_.model_id }}-words"></span></small>
+{% endblock %}

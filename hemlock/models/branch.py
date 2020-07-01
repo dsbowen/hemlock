@@ -53,6 +53,22 @@ class Branch(BranchingBase, db.Model):
 
     navigate_worker : hemlock.NavigateWorker
         Worker which handles complex navigate functions.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Branch, Page, push_app_context
+
+    push_app_context()
+
+    b = Branch()
+    for i in range(3):
+    \    p = Page(b)
+    \    Label(p, label='<p>Page {}</p>'.format(i))
+    [p.preview('Ubuntu') for p in b.pages]
+    ```
+
+    This will open all of the branch's pages in separate tabs.
     """
     id = db.Column(db.Integer, primary_key=True)
     

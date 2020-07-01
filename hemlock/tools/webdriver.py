@@ -21,9 +21,18 @@ def chromedriver(headless=False):
     Chromedriver must be headless in production. When the application is in 
     production, this method sets `headless` to `True` regardless of the 
     parameter you pass.
+
+    Examples
+    --------
+    ```python
+    from hemlock.tools import chromedriver
+
+    driver = chromedriver()
+    ```
     """
     options = Options()
-    if headless or 'localhost' not in os.environ.get('URL_ROOT'):
+    url_root = os.environ.get('URL_ROOT')
+    if headless or (url_root and 'localhost' not in url_root):
         options._arguments = ['--disable-gpu', '--no-sandbox', '--headless']
     else: 
         options._arguments = ['--disable-gpu', '--no-sandbox']

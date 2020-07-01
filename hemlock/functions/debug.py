@@ -1,19 +1,18 @@
 """# Debug functions
 
-
+Debug functions tell the AI participant what to do during debugging. They generally take a selenium webdriver as their first argument and a page or question as their second argument.
 """
 
 from ..app import settings
 from ..models import Debug
-from ..qpolymorphs import Check
 from .utils import gen_datetime, gen_number
 
-from datetime_selenium import send_datetime as send_datetime_
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium_tools import drag_range as drag_range_, send_datetime as send_datetime_
 
 from datetime import datetime, timedelta
-from random import choice, randint, random, shuffle
+from random import choice, randint, random, randrange, shuffle
 from string import ascii_letters, digits
 from time import sleep
 
@@ -146,37 +145,94 @@ def send_datetime(driver, question, datetime_=None):
         The datetime object to send. If `None`, a date and time are chosen
         randomly.
     """
+    inpt = input_from_driver(driver)
+    inpt.clear()
     datetime_ = datetime_ or gen_datetime()
-    send_datetime_(question.input_from_driver(driver), date_time_)
+    send_datetime_(inpt, date_time_)
 
-"""Range debugger"""
-# HERE
+# Range debugger
+
 @Debug.register
-def drag_range(driver, question, xoffset=None):
-    """Drag the range slider to xoffset"""
-    xoffset = xoffset or randint(-300,300)
-    inpt = question.input_from_driver(driver)
-    ActionChains(driver).drag_and_drop_by_offset(inpt, xoffset, 0).perform()
+def drag_range(driver, range_, target=None, tol=0, max_iter=10):
+    """
+    Drag a range slider to specified target value.
+    
+    Parameters
+    ----------
+    driver : selenium.webdriver.chrome.webdriver.WebDriver
 
-@Settings.register('Range')
-def settings():
-    return {'debug_functions': drag_range}
+    range_ : hemlock.Range
 
-"""Choice question debugger"""
+    target : float or None, default=None
+        Target value to which the slider should be dragged. If `None`, a
+        random target value will be chosen.
+
+    tol : float, default=0
+        Tolerance for error if the slider cannot be dragged to the exact
+        target.
+
+    max_iter : int, default=10
+        Maximum number of iterations for the slider to reach the target.
+    """
+    if target is None:
+        target = randrange(range_.min, range_.max, range_.step)
+    drag_range_(
+        driver, 
+        range_.input_from_driver(driver),
+        target,
+        True, # all sliders are horizontal for now
+        *args, **kwargs
+    )
+
+# Choice question debugger
+
 @Debug.register
-def click_choices(driver, question, *choices, p_exec=1):
-    """Click on input choices"""
-    if random() > p_exec:
-        return
+def click_choices(driver, question, *choices):
+    """
+    Click on choices or options.
+
+    Parameters
+    ----------
+    driver : selenium.webdriver.chrome.webdriver.WebDriver
+
+    question : hemlock.ChoiceQuestion
+    
+    \*choices : hemlock.Choice
+        Choices on which to click. If no choices are specified, the 
+        debugger will click on random choices.
+    """
+    from ..qpolymorphs import Check
+    if not choices:
+        order = list(range(len(question.choices)))
+        shuffle(order)
+        n_clicks = randint(0, len(question.choices))
+        choices = [question.choices[i] for i in order[0:n_clicks]]
     if question.multiple:
         clear_choices(driver, question)
     if isinstance(question, Check):
-        return [c.label_from_driver(driver).click() for c in choices]
-    return [c.input_from_driver(driver).click() for c in choices]
+        # check question
+        [c.label_from_driver(driver).click() for c in choices]
+    else:
+        # select question
+        [c.input_from_driver(driver).click() for c in choices]
 
 @Debug.register
-def clear_choices(driver, question, p_exec=1):
-    if random() > p_exec or not question.choices:
+def clear_choices(driver, question):
+    """
+    Clear selected choices.
+
+    Parameters
+    ----------
+    driver : selenium.webdriver.chrome.webdriver.WebDriver
+
+    question : hemlock.ChoiceQuestion
+
+    Notes
+    -----
+    Intended only for questions in which multiple choices may be selected.
+    """
+    from ..qpolymorphs import Check
+    if not question.choices:
         return
     if not question.multiple:
         print("Warning: Only multiple choice questions cannot be cleared")
@@ -184,28 +240,8 @@ def clear_choices(driver, question, p_exec=1):
     for c in question.choices:
         if c.input_from_driver(driver).get_attribute('checked'):
             if isinstance(question, Check):
+                # check question
                 c.label_from_driver(driver).click()
             else:
+                # select question
                 c.input_from_driver(driver).click()
-                
-
-def default_choice_question_debug(driver, question, p_skip=.1):
-    """Default choice question debugging function
-
-    This method randomly selects choices to click on. The number of choices 
-    to click on is a random number from 0 to len(question.choices).
-    """
-    if random() < p_skip:
-        return
-    choices = question.choices
-    order = list(range(len(choices)))
-    shuffle(order)
-    num_clicks = randint(0, len(choices))
-    to_click = [question.choices[i] for i in order[0:num_clicks]]
-    click_choices(driver, question, *to_click)
-
-@Settings.register('ChoiceQuestion')
-def settings():
-    return {
-        'debug_functions': default_choice_question_debug
-    }

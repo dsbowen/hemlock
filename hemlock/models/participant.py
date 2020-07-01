@@ -1,10 +1,9 @@
 """# Participant"""
 
 from ..app import db, settings
-from ..tools import random_key
+from ..tools import key
 from .bases import Base
-from .private import DataStore, Router
-from .types import DataFrame
+from .private import DataFrame, DataStore, Router
 
 from flask_login import UserMixin
 from sqlalchemy.ext.orderinglist import ordering_list
@@ -165,7 +164,7 @@ class Participant(UserMixin, Base, db.Model):
         return 'InProgress'
     
     def __init__(self, **kwargs):
-        self._key = random_key()
+        self._key = key()
         self.end_time = self.start_time = datetime.utcnow()
         super().__init__(**kwargs)
 
@@ -231,7 +230,7 @@ class Participant(UserMixin, Base, db.Model):
         elements = self.data_elements
         df = DataFrame()
         df.add(data=self.get_meta, rows=-1)
-        [df.add(data=e._pack_data(), rows=e.rows) for e in elements]
+        [df.add(data=e._pack_data(), rows=e.data_rows) for e in elements]
         df.pad()
         return df
     

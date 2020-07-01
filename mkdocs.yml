@@ -13,6 +13,7 @@ nav:
     - Debugging: debug.md
     - Functions:
       - Compile: compile_functions.md
+      - Debug: debug_functions.md
       - Submit: submit_functions.md
       - Validate: validate_functions.md
     - Models:
@@ -26,6 +27,16 @@ nav:
       - Participant: participant.md
       - Question mixins: question.md
       - Workers: workers.md
+    - Question polymorphs:
+      - Check: check.md
+      - Download: download.md
+      - File upload: file.md
+      - Input: input.md
+      - input group: input_group.md
+      - Label: label.md
+      - Range: range.md
+      - Select: select.md
+      - Textarea: textarea.md
     - Tools:
       - Comprehension check: comprehension.md
       - Language: lang.md

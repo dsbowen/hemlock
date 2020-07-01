@@ -225,14 +225,30 @@ Static image.
     </tbody>
 </table>
 
+####Examples
 
+```python
+from hemlock import Page, Label, push_app_context
+from hemlock.tools import Img
+
+push_app_context()
+
+p = Page()
+img = Img(
+    src='https://imgs.xkcd.com/comics/wanna_see_the_code.png',
+    align='center'
+)
+Label(p, label=img.render())
+
+p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+```
 
 ####Methods
 
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L211">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L229">[source]</a>
 </p>
 
 
@@ -256,7 +272,7 @@ Static image.
 ##hemlock.tools.**Vid**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Vid</b>(<i>template=os.path.join(DIR, 'vid.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L228">[source]</a>
+    <i>class</i> hemlock.tools.<b>Vid</b>(<i>template=os.path.join(DIR, 'vid.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L246">[source]</a>
 </p>
 
 Static video.
@@ -286,14 +302,27 @@ Static video.
     </tbody>
 </table>
 
+####Examples
 
+```python
+from hemlock import Page, Label, push_app_context
+from hemlock.tools import Vid
+
+push_app_context()
+
+p = Page()
+vid = Vid.from_youtube('https://www.youtube.com/watch?v=UbQgXeY_zi4')
+Label(p, label=vid.render())
+
+p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+```
 
 ####Methods
 
 
 
 <p class="func-header">
-    <i></i> <b>from_youtube</b>(<i>src</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L261">[source]</a>
+    <i></i> <b>from_youtube</b>(<i>src</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L294">[source]</a>
 </p>
 
 Capture the YouTube video id and create an embedded src.
@@ -324,7 +353,7 @@ Capture the YouTube video id and create an embedded src.
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L285">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L318">[source]</a>
 </p>
 
 

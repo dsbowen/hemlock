@@ -1,6 +1,6 @@
 """Import all native Hemlock functions"""
 
-import hemlock.functions.compile
-import hemlock.functions.debug
-import hemlock.functions.submit
-import hemlock.functions.validate
+from . import compile
+from . import debug
+from . import submit
+from . import validate

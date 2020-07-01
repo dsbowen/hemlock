@@ -65,3 +65,11 @@
 Chromedriver must be headless in production. When the application is in
 production, this method sets `headless` to `True` regardless of the
 parameter you pass.
+
+####Examples
+
+```python
+from hemlock.tools import chromedriver
+
+driver = chromedriver()
+```

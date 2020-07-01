@@ -1,8 +1,8 @@
 <script>
     $(document).ready(function(){
-        updateCount("#{{ q.model_id }}");
-        $("#{{ q.model_id }}").on("input", function(){
-            updateCount("#{{ q.model_id }}");
+        updateCount("#{{ self_.model_id }}");
+        $("#{{ self_.model_id }}").on("input", function(){
+            updateCount("#{{ self_.model_id }}");
         })
     })
 

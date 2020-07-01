@@ -1,31 +1,88 @@
-"""Range question"""
+"""# Range slider"""
 
-from hemlock.qpolymorphs.utils import *
+from ..app import db, settings
+from ..models import InputBase, Question
+
+from flask import render_template
+
+def debug_func(driver, question):
+    """
+    Default debug function for range inputs. See 
+    [`drag_range`](debug_functions.md).
+
+    Parameters
+    ----------
+    driver : selenium.webdriver.chrome.webdriver.WebDriver
+
+    question : hemlock.Range
+    """
+    from ..functions.debug import drag_range
+    return drag_range(driver, question)
+
+settings['Range'] = {
+    'debug_functions': debug_func,
+    'max': 100,
+    'min': 0,
+    'step': 1,
+}
 
 
 class Range(InputBase, Question):
+    """
+    Range sliders can be dragged between minimum and maximum values in step 
+    increments.
+
+    Inherits from [`hemlock.InputBase`](bases.md) and 
+    [`hemlock.Question`](question.md).
+
+    Parameters
+    ----------
+    page : hemlock.Page or None, default=None
+        Page to which this range belongs.
+
+    template : str, default='hemlock/range.html'
+        Template for the range body.
+
+    Attributes
+    ----------
+    max : float, default=100
+        Maximum value of the range slider.
+
+    min : float, default=0
+        Minimum value of the range slider.
+
+    step : float, default=1
+        Increments in which the range slider steps.
+
+    Notes
+    -----
+    Ranges have a default javascript which displays the value of the range 
+    slider to participants. This *cannot* be overridden by passing a `js` 
+    argument to the constructor, although javascript can be modified after the 
+    constructor has finished.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Page, Range, push_app_context
+
+    push_app_context()
+
+    p = Page()
+    Range(p, label='<p>This is a range slider.</p>')
+    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    ```
+    """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'range'}
 
-    @Question.init('Range')
-    def __init__(self, page=None, **kwargs):
-        super().__init__()
-        self.body = render_template('range.html', q=self)
-        self.js = render_template('range.js', q=self)
-        return {'page': page, **kwargs}
-
-    @property
-    def min(self):
-        return self.input.attrs.get('min')
-
-    @min.setter
-    def min(self, val):
-        self.input['min'] = val
-        self.body.changed()
+    def __init__(self, page=None, template='hemlock/range.html', **kwargs):
+        super().__init__(page, template, **kwargs)
+        self.js = render_template('hemlock/range.js', self_=self)
 
     @property
     def max(self):
-        return self.input.attrs.get('max')
+        return float(self.input.attrs.get('max', 100))
 
     @max.setter
     def max(self, val):
@@ -33,8 +90,17 @@ class Range(InputBase, Question):
         self.body.changed()
 
     @property
+    def min(self):
+        return float(self.input.attrs.get('min', 0))
+
+    @min.setter
+    def min(self, val):
+        self.input['min'] = val
+        self.body.changed()
+
+    @property
     def step(self):
-        return self.input.attrs.get('step')
+        return float(self.input.attrs.get('step', 1))
 
     @step.setter
     def step(self, val):

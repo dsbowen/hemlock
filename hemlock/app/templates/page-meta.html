@@ -1,5 +1,0 @@
-<page id="{{ page.model_id }}"/>
-{% if page.part is not none and page.part.meta.get('Test') == '1' %}
-    <input type="hidden" name="part_id" value="{{ page.part.id }}"/>
-    <input type="hidden" name="part_key" value="{{ page.part._key }}"/>
-{% endif %}

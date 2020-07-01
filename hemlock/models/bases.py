@@ -31,8 +31,9 @@ class Base(FunctionRelator, OrderingItem, ModelIdBase):
     name = db.Column(db.String)
 
     def __init__(self, **kwargs):
-        db.session.add(self)
-        db.session.flush([self])
+        if self not in db.session:
+            db.session.add(self)
+            db.session.flush([self])
         settings = current_app.settings.get(self.__class__.__name__)
         settings = settings.copy() if settings else {}
         settings.update(kwargs)
@@ -62,13 +63,13 @@ class Data(Base, MutableModelBase, db.Model):
 
     Attributes
     ----------
-    rows : int, default=1
+    data : sqlalchemy_mutable.MutableType
+        Data this element contributes to the dataframe.
+
+    data_rows : int, default=1
         Number of rows this data element contributes to the dataframe for its 
         participant. Set to `-1` to indicate that this element's data should 
         appear in every row of its participant's data.
-
-    data : sqlalchemy_mutable.MutableType
-        Data this element contributes to the dataframe.
 
     index : int or None, default=None
         Order in which this data element appears in its parent; usually a 
@@ -85,7 +86,7 @@ class Data(Base, MutableModelBase, db.Model):
         'polymorphic_on': data_type
     }
 
-    rows = db.Column(db.Integer, default=1)
+    data_rows = db.Column(db.Integer, default=1)
     data = db.Column(MutableType)
     index = db.Column(db.Integer)
     var = db.Column(db.Text)
@@ -112,8 +113,7 @@ class Data(Base, MutableModelBase, db.Model):
         if self.var is None:
             return {}
         data = {self.var: self.data} if data is None else data
-        if self.rows != -1:
-            data[self.var+'Order'] = self.order
+        data[self.var+'Order'] = self.order
         if self.index is not None:
             data[self.var+'Index'] = self.index
         if hasattr(self, 'choices'):
@@ -149,9 +149,11 @@ class HTMLMixin(Base):
     js = db.Column(MutableSoupType)
 
     def __init__(self, template=None, **kwargs):
+        db.session.add(self)
+        db.session.flush([self])
         if template is not None:
-            self.body = render_template(template)
-        super().__init__(**kwargs)  
+            self.body = render_template(template, self_=self)
+        super().__init__(**kwargs)
 
     def add_external_css(self, **attrs):
         """
@@ -285,7 +287,7 @@ class InputBase():
         Returns
         -------
         input : selenium.webdriver.remote.webelement.WebElement
-            Web element of the input tag associated with this model.
+            Web element of the `<input>` tag associated with this model.
         """
         return driver.find_element_by_css_selector('#'+self.model_id)
 

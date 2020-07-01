@@ -160,6 +160,24 @@ class Img(Static):
 
     src : str
         `src` attribute of the `<img>` tag.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Page, Label, push_app_context
+    from hemlock.tools import Img
+
+    push_app_context()
+        
+    p = Page()
+    img = Img(
+    \    src='https://imgs.xkcd.com/comics/wanna_see_the_code.png', 
+    \    align='center'
+    )
+    Label(p, label=img.render())
+
+    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    ```
     """
     def __init__(self, template=os.path.join(DIR, 'img.html'), **kwargs):
         super().__init__(template, **kwargs)
@@ -242,6 +260,21 @@ class Vid(Static):
 
     src : str
         `src` attribute of the `<iframe>` tag.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Page, Label, push_app_context
+    from hemlock.tools import Vid
+
+    push_app_context()
+        
+    p = Page()
+    vid = Vid.from_youtube('https://www.youtube.com/watch?v=UbQgXeY_zi4')
+    Label(p, label=vid.render())
+
+    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    ```
     """
     def __init__(self, template=os.path.join(DIR, 'vid.html'), **kwargs):
         super().__init__(template, **kwargs)

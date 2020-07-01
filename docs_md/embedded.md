@@ -34,10 +34,12 @@
 ##hemlock.**Embedded**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Embedded</b>(<i>parent=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L10">[source]</a>
+    <i>class</i> hemlock.<b>Embedded</b>(<i>parent=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L9">[source]</a>
 </p>
 
-Embedded data belong to a branch or page. Use embedded data to manually input data to the dataframe; as opposed to recording data from participant responses.
+Embedded data belong to a branch or page. Use embedded data to manually
+input data to the dataframe; as opposed to recording data from participant
+responses.
 
 Inherits from `hemlock.Data`.
 
@@ -119,7 +121,7 @@ Inherits from `hemlock.Embedded`.
 
 
 <p class="func-header">
-    <i></i> <b>start</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L96">[source]</a>
+    <i></i> <b>start</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L100">[source]</a>
 </p>
 
 Start the timer.
@@ -143,7 +145,7 @@ Start the timer.
 
 
 <p class="func-header">
-    <i></i> <b>pause</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L112">[source]</a>
+    <i></i> <b>pause</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L116">[source]</a>
 </p>
 
 Pause the timer.
@@ -167,7 +169,7 @@ Pause the timer.
 
 
 <p class="func-header">
-    <i></i> <b>reset</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L124">[source]</a>
+    <i></i> <b>reset</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L128">[source]</a>
 </p>
 
 Reset all attributes to their default values.

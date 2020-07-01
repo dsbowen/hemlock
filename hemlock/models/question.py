@@ -1,20 +1,18 @@
 """# Question mixins"""
 
-from ..app import settings, db
+from ..app import db
 from .bases import Data, HTMLMixin
 from .choice import Choice, Option
 
-from flask import request
+from flask import render_template, request
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import validates
 from sqlalchemy_mutable import MutableType, MutableModelBase
 
 from copy import copy
 
-settings['Question'] = {'css': '', 'js': ''}
 
-
-class Question(Data, HTMLMixin, MutableModelBase):
+class Question(HTMLMixin, Data, MutableModelBase):
     """
     Base object for questions. Questions are displayed on their page in index order.
 
@@ -116,7 +114,7 @@ class Question(Data, HTMLMixin, MutableModelBase):
     default = db.Column(MutableType)
     response = db.Column(MutableType)
 
-    def __init__(self, page=None, template='form-group.html', **kwargs):
+    def __init__(self, page=None, template=None, **kwargs):
         self.page = page
         super().__init__(template, **kwargs)
 

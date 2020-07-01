@@ -37,6 +37,20 @@ eventlet.monkey_patch(socket=True)
 socketio = SocketIO(async_mode='eventlet')
 manager = Manager(db=db, socketio=socketio)
 
+def push_app_context():
+    """
+    Push an app context for debugging in shell or notebook.
+
+    Returns
+    -------
+    app : flask.app.Flask
+    """
+    app = create_app()
+    app.app_context().push()
+    app.test_request_context().push()
+    db.create_all()
+    return app
+
 def create_app(settings=settings):
     """
     Create a Hemlock application.
@@ -93,23 +107,23 @@ def create_app(settings=settings):
 def _create_app(settings):
     app = Flask(
         __name__, 
-        static_folder=settings.pop('static_folder'), 
-        template_folder=settings.pop('template_folder'),
+        static_folder=settings.get('static_folder'), 
+        template_folder=settings.get('template_folder'),
     )
     # set password hash
-    password = settings.pop('password')
+    password = settings.get('password')
     settings['password_hash'] = generate_password_hash(password)
     # get screenouts
-    screenout_csv = settings.pop('screenout_csv')
+    screenout_csv = settings.get('screenout_csv')
     if os.path.exists(screenout_csv):
         df = pd.read_csv(screenout_csv)
-        screenout_keys = settings.pop('screenout_keys')
+        screenout_keys = settings.get('screenout_keys')
         df = df[screenout_keys] if screenout_keys else df
         app.screenouts = df.to_dict(orient='list')
     else:
         app.screenouts = {}
     # store configuration, settings, and blueprint
-    app.config.update(settings.pop('Config'))
+    app.config.update(settings.get('Config'))
     app.settings = settings
     app.register_blueprint(bp)
     return app

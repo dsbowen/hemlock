@@ -39,6 +39,8 @@ from sqlalchemy.orm import validates
 from sqlalchemy_mutable import MutableType
 
 import os
+import re
+import tempfile
 import webbrowser
 from random import shuffle
 
@@ -46,6 +48,7 @@ DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 BANNER = Img(src='/hemlock/static/img/hemlock_banner.png', align='center')
 BANNER.img['style'] = 'max-width:200px;'
+BANNER.img['alt'] = 'Hemlock banner'
 
 def compile_func(page):
     """
@@ -162,7 +165,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     branch : hemlock.Branch or None, default=None
         The branch to whose page queue this page belongs.
 
-    template : str, default='page-body.html'
+    template : str, default='hemlock/page-body.html'
         Template for the page `body`.
 
     Attributes
@@ -279,6 +282,17 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     navigate_worker : hemlock.NavigateWorker
         Worker which sends the navigate function to a Redis queue.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Page, push_app_context
+
+    push_app_context()
+
+    p = Page()
+    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    ```
     """
     id = db.Column(db.Integer, primary_key=True)
     
@@ -402,7 +416,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     terminal = db.Column(db.Boolean)
     viewed = db.Column(db.Boolean, default=False)
     
-    def __init__(self, branch=None, template='page-body.html', **kwargs):
+    def __init__(self, branch=None, template='hemlock/page-body.html', **kwargs):
         self.branch = branch
         self.timer = Timer()
         super().__init__(template, **kwargs)
@@ -525,9 +539,15 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         """
         return not (self.error or any([q.error for q in self.questions]))
 
-    def preview(self):
+    def preview(self, dist=None):
         """
         Preview the page in a browser window.
+
+        Parameters
+        ----------
+        dist : str or None, default=None
+            Windows Subsystem for Linux (WSL) distribution (e.g. `'Ubuntu'`). 
+            Leave as `None` unless operating in WSL.
 
         Returns
         -------
@@ -538,7 +558,52 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         -----
         This method does not run the compile functions.
         """
-        return webbrowser.open('data:text/html,'+self._render())
+        _, path = tempfile.mkstemp(suffix='.html')
+        soup = self._render(as_str=False)
+        self._convert_rel_paths(soup, 'href', dist)
+        self._convert_rel_paths(soup, 'src', dist)
+        with open(path, 'w') as f:
+            f.write(str(soup))
+        path = 'wsl$/'+ dist + path if dist else os.path.realpath(path)
+        return webbrowser.open('file://'+path)
+
+    def _convert_rel_paths(self, soup, url_attr, dist=None):
+        """
+        Convert relative url paths to local file paths for preview.
+
+        Parameters
+        ----------
+        soup : bs4.BeautifulSoup
+            Soup whose elements with url attributes will be converted.
+
+        url_attr : str
+            Name of the url attribute (e.g. `'src'` or `'href'`).
+
+        dist : str or None, default=None
+            WSL distribution.
+        """
+        def get_local_path(url, static_folder, static_url_path):
+            return dist + static_folder + url[len(static_url_path):]
+
+        dist = '/'+dist if dist else ''
+        app_static_url_path = current_app.static_url_path
+        app_static_folder = current_app.static_folder
+        hlk = current_app.blueprints['hemlock']
+        hlk_static_url_path = hlk.static_url_path
+        hlk_static_folder = hlk.static_folder
+
+        elements = soup.select('[{}]'.format(url_attr))
+        for e in elements:
+            url = e.attrs.get(url_attr)
+            if url is not None:
+                if url.startswith(app_static_url_path):
+                    e.attrs[url_attr] = get_local_path(
+                        url, app_static_folder, app_static_url_path
+                    )
+                elif url.startswith(hlk_static_url_path):
+                    e.attrs[url_attr] = get_local_path(
+                        url, hlk_static_folder, hlk_static_url_path
+                    )
 
     # methods executed during study
     def _compile(self):
@@ -554,30 +619,39 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         if self.cache_compile:
             self.compile_functions.clear()
             self.compile_worker = None
+        if self.timer is not None:
+            self.timer.start()
         return self
     
-    def _render(self):
+    def _render(self, as_str=True):
         """Render page
         
         This method performs the following functions:
-        1. Add page metadata and catch possible submit button errors
-        2. Append question HTML
-        3. Start the timer
+        1. Add participant metadata if in test mode
+        2. Remove submit buttons if applicable
+        3. Append question HTML
+
+        Parameters
+        ----------
+        as_str : bool, default=True
+            Return rendered html as `str` as opposed to `bs4.BeautifulSoup`.
+
+        Returns
+        -------
+        rendered : str or bs4.BeautifulSoup
         """
-        html = render_template('page.html', page=self)
+        html = render_template('hemlock/page.html', page=self)
         soup = BeautifulSoup(html, 'html.parser')
-        self._add_page_metadata(soup)
-        self._catch_btns(soup)
+        self._add_part_metadata(soup)
+        self._handle_btns(soup)
         question_html = soup.select_one('span.question-html')
         [question_html.append(q._render()) for q in self.questions]
-        if self.timer is not None:
-            self.timer.start()
-        return str(soup)
+        return str(soup) if as_str else soup
     
-    def _add_page_metadata(self, soup):
+    def _add_part_metadata(self, soup):
         """Add page metadata to soup
         
-        Page metadata is its participant's `id` and strongly random `key`. 
+        Metadata is the page's participant's `id` and strongly random `key`. 
         For security, these must match for a participant to access a page.
 
         Metadata are only necessary for debugging, where a researcher may 
@@ -587,23 +661,24 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
         To use this functionality, access the URL as {ULR}/?Test=1.
         """
-        meta_html = render_template('page-meta.html', page=self)
-        meta_soup = BeautifulSoup(meta_html, 'html.parser')
-        form = soup.select_one('form')
-        if form is not None:
-            form.insert(0, meta_soup)
+        if self.part is not None and self.part.meta.get('Test') == '1':
+            meta_html = render_template('hemlock/page-meta.html', page=self)
+            meta_soup = BeautifulSoup(meta_html, 'html.parser')
+            form = soup.select_one('form')
+            if form is not None:
+                form.insert(0, meta_soup)
     
-    def _catch_btns(self, soup):
-        """Catch submit button errors
+    def _handle_btns(self, soup):
+        """Handle submit buttons
 
         Back button should not be present on the first page of the survey.
         Forward button should not be present on the terminal page.
         """
-        if self.first_page():
+        if not self.back or self.first_page():
             back_btn = soup.select_one('span.back-btn')
             if back_btn is not None:
                 back_btn.clear()
-        if self.terminal:
+        if not self.forward or self.terminal:
             forward_btn = soup.select_one('span.forward-btn')
             if forward_btn is not None:
                 forward_btn.clear()

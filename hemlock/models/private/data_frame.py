@@ -17,10 +17,10 @@ class Variable(MutableList):
     fill_rows : bool
         Indicates that the variable should be padded with the last entry in this variable. If `False`, the variable will be padded with `None`. This is `True` if the `rows` parameter in the `add` method is negative and `False` otherwise.
     """
-    def __init__(self):
-        # set _python_tyep to None to avoid validation for setattr
+    def __init__(self, fill_rows=False):
+        # set _python_type to None to avoid validation for setattr
         self._python_type = None
-        self.fill_rows = False
+        self.fill_rows = fill_rows
         super().__init__()
         
     def add(self, entry, rows=1):
@@ -165,7 +165,7 @@ class DataFrame(MutableDict):
         self._changed()
         for var in self.keys():
             modified_data = self[var][:start] + self[var][end:]
-            self[var] = Variable(self[var].rows==-1)
+            self[var] = Variable(self[var].fill_rows)
             self[var].add(modified_data)
     
     def pad(self):

@@ -8,8 +8,8 @@ difference between them. Rather, it reflects differences in the underlying
 html.
 """
 
-from hemlock.app import db
-from hemlock.database.bases import HTMLMixin, InputBase
+from ..app import db
+from .bases import HTMLMixin, InputBase
 
 from flask import render_template
 from sqlalchemy_mutable import MutableType
@@ -58,7 +58,8 @@ class Choice(InputBase, HTMLMixin, db.Model):
     Notes
     -----
     Passing `label` into the constructor is equivalent to calling 
-    `self.set_all(label)`.
+    `self.set_all(label)` unless `name` and `value` arguments are also passed
+    to the constructor.
     """
     id = db.Column(db.Integer, primary_key=True)
     choice_type = db.Column(db.String)
@@ -72,10 +73,15 @@ class Choice(InputBase, HTMLMixin, db.Model):
     index = db.Column(db.Integer)
     value = db.Column(MutableType)
     
-    def __init__(self, question=None, template='choice.html', **kwargs):
-        self.body = render_template('choice.html', choice=self)
-        self.set_all(kwargs.pop('label', None))
-        super().__init__(**kwargs)
+    def __init__(
+            self, question=None, template='hemlock/choice.html', **kwargs
+        ):
+        self.question = question
+        super().__init__(template, **kwargs)
+        if 'name' not in kwargs:
+            self.name = self.label
+        if 'value' not in kwargs:
+            self.value = self.label
 
     @property
     def label(self):
@@ -169,13 +175,13 @@ class Option(Choice):
     question : hemlock.Question or None, default=None
         The question to which this option belongs.
 
-    template : str, default='option.html'
+    template : str, default='hemlock/option.html'
         Template for the option `body`.
     """
     id = db.Column(db.Integer, db.ForeignKey('choice.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'option'}
 
-    def __init__(self, question=None, template='option.html', **kwargs):
+    def __init__(self, question=None, template='hemlock/option.html', **kwargs):
         super().__init__(question, template, **kwargs)
 
     @property

@@ -57,10 +57,157 @@ originating from this page.
 
 
 
+##hemlock.**compile_func**
+
+<p class="func-header">
+    <i>def</i> hemlock.<b>compile_func</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L53">[source]</a>
+</p>
+
+Default page compile function; executes its questions' compile methods in
+index order.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>page : <i>hemlock.Page</i></b>
+<p class="attr">
+    
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+##hemlock.**validate_func**
+
+<p class="func-header">
+    <i>def</i> hemlock.<b>validate_func</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L64">[source]</a>
+</p>
+
+Default page validate function; executes its questions' validate methods
+in index order.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>page : <i>hemlock.Page</i></b>
+<p class="attr">
+    
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+##hemlock.**submit_func**
+
+<p class="func-header">
+    <i>def</i> hemlock.<b>submit_func</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L75">[source]</a>
+</p>
+
+Default page submit function; executes its questions' submit methods in
+index order.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>page : <i>hemlock.Page</i></b>
+<p class="attr">
+    
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+##hemlock.**debug_func**
+
+<p class="func-header">
+    <i>def</i> hemlock.<b>debug_func</b>(<i>driver, page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L86">[source]</a>
+</p>
+
+Default page debug function; execute its questions' debug methods in
+*random* order.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
+<p class="attr">
+    
+</p>
+<b>page : <i>hemlock.Page</i></b>
+<p class="attr">
+    
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+##hemlock.**navigate**
+
+<p class="func-header">
+    <i>def</i> hemlock.<b>navigate</b>(<i>driver, page, p_forward=0.8, p_back=0.1, sleep_time=3</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L101">[source]</a>
+</p>
+
+This method randomly navigates forward or backward, or refreshes the
+page. By default it is executed after the default page debug function.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
+<p class="attr">
+    
+</p>
+<b>page : <i>hemlock.Page</i></b>
+<p class="attr">
+    
+</p>
+<b>p_forward : <i>float, default=.8</i></b>
+<p class="attr">
+    Probability of clicking the forward button.
+</p>
+<b>p_back : <i>float, default=.1</i></b>
+<p class="attr">
+    Probability of clicking the back button.
+</p>
+<b>sleep_time : <i>float, default=3</i></b>
+<p class="attr">
+    Number of seconds to sleep if there is no forward or back button on the page.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+####Notes
+
+The probability of refreshing the page is `1-p_forward-p_back`.
+
 ##hemlock.**Page**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Page</b>(<i>branch=None, template='page-body.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L72">[source]</a>
+    <i>class</i> hemlock.<b>Page</b>(<i>branch=None, template='hemlock/page-body.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L156">[source]</a>
 </p>
 
 Pages are queued in a branch. A page contains a list of questions which it
@@ -78,7 +225,7 @@ It inherits from `hemlock.HTMLMixin`.
 <p class="attr">
     The branch to whose page queue this page belongs.
 </p>
-<b>template : <i>str, default='page-body.html'</i></b>
+<b>template : <i>str, default='hemlock/page-body.html'</i></b>
 <p class="attr">
     Template for the page <code>body</code>.
 </p></td>
@@ -212,14 +359,23 @@ It inherits from `hemlock.HTMLMixin`.
     </tbody>
 </table>
 
+####Examples
 
+```python
+from hemlock import Page, push_app_context
+
+push_app_context()
+
+p = Page()
+p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+```
 
 ####Methods
 
 
 
 <p class="func-header">
-    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L398">[source]</a>
+    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L493">[source]</a>
 </p>
 
 Clear the error message from this page and all of its questions.
@@ -243,7 +399,7 @@ Clear the error message from this page and all of its questions.
 
 
 <p class="func-header">
-    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L410">[source]</a>
+    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L505">[source]</a>
 </p>
 
 Clear the response from all of this page's questions.
@@ -267,7 +423,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>first_page</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L421">[source]</a>
+    <i></i> <b>first_page</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L516">[source]</a>
 </p>
 
 
@@ -291,7 +447,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>is_valid</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L436">[source]</a>
+    <i></i> <b>is_valid</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L531">[source]</a>
 </p>
 
 
@@ -315,7 +471,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>preview</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L447">[source]</a>
+    <i></i> <b>preview</b>(<i>self, dist=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L542">[source]</a>
 </p>
 
 Preview the page in a browser window.
@@ -325,6 +481,13 @@ Preview the page in a browser window.
     <col class="field-body" />
     <tbody valign="top">
         <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>dist : <i>str or None, default=None</i></b>
+<p class="attr">
+    Windows Subsystem for Linux (WSL) distribution (e.g. <code>'Ubuntu'</code>). Leave as <code>None</code> unless operating in WSL.
+</p></td>
+</tr>
+<tr class="field">
     <th class="field-name"><b>Returns:</b></td>
     <td class="field-body" width="100%"><b>success : <i>bool</i></b>
 <p class="attr">

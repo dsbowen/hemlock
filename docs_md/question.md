@@ -34,7 +34,7 @@
 ##hemlock.**Question**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Question</b>(<i>page=None, template='form-group.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L17">[source]</a>
+    <i>class</i> hemlock.<b>Question</b>(<i>page=None, template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L15">[source]</a>
 </p>
 
 Base object for questions. Questions are displayed on their page in index order.
@@ -116,7 +116,7 @@ It inherits from `hemlock.Data` and `hemlock.HTMLMixin`.
 
 
 <p class="func-header">
-    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L152">[source]</a>
+    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L150">[source]</a>
 </p>
 
 Clear the error message.
@@ -140,7 +140,7 @@ Clear the error message.
 
 
 <p class="func-header">
-    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L163">[source]</a>
+    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L161">[source]</a>
 </p>
 
 Clear the response.
@@ -195,7 +195,7 @@ A question which contains choices. Inherits from `hemlock.Question`.
 
 
 <p class="func-header">
-    <i></i> <b>validate_choice</b>(<i>'choices') def validate_choice(self, key, val</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L233">[source]</a>
+    <i></i> <b>validate_choice</b>(<i>'choices') def validate_choice(self, key, val</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L231">[source]</a>
 </p>
 
 Convert the assigned value if it is not alread a `Choice` object

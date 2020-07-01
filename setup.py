@@ -16,10 +16,8 @@ setuptools.setup(
     include_package_data=True,
     install_requires=[
         'bs4>=0.0.1',
-        'datetime-selenium>=0.0.0',
         'eventlet>=0.25.1',
         'flask>=1.1.1',
-        'flask-apscheduler>=1.11.0',
         'flask-download-btn>=0.0.18',
         'flask-login>=0.4.1',
         'flask-socketi>=4.2.1',
@@ -32,6 +30,7 @@ setuptools.setup(
         'redis>=3.3.11',
         'rq>=1.2.0',
         'selenium>=3.141.0',
+        'selenium-tools>=0.0.0',
         'sqlalchemy>=1.3.12',
         'sqlalchemy-function>=0.0.9',
         'sqlalchemy-modelid>=0.0.3',

@@ -2,7 +2,7 @@
 
 from ..models import Compile, Page, ChoiceQuestion
 
-from random import shuffle
+from random import shuffle as shuffle_
 
 @Compile.register
 def call_method(obj, method_name, *args, **kwargs):
@@ -73,4 +73,4 @@ def shuffle(obj, *attrs):
             attrs = ['questions']
         elif isinstance(obj, ChoiceQuestion):
             attrs = ['choices']
-    [shuffle(getattr(obj, attr)) for attr in attrs]
+    [shuffle_(getattr(obj, attr)) for attr in attrs]

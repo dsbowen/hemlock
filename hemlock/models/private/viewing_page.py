@@ -63,27 +63,27 @@ class ViewingPage(OrderingItem, db.Model):
         remove banner.
         """
         soup = BeautifulSoup(self.html, 'html.parser')
-        sheets = soup.select('link')
-        [self._convert_to_abs_path(s, 'href') for s in sheets]
-        scripts = soup.select('script')
-        [self._convert_to_abs_path(s, 'src') for s in scripts]
+        self.convert_rel_paths(soup, 'href')
+        self.convert_rel_paths(soup, 'src')
         banner = soup.select_one('span.banner')
         if banner is not None:
             banner.string = ''
         self.html = str(soup)
 
-    def _convert_to_abs_path(self, element, url_attr):
+    def convert_rel_paths(self, soup, url_attr):
         """
         Convert relative to absolute path.
 
         Parameters
         ----------
-        element : bs4.Tag
-            Web element whose URL attribute (usually 'src' or 'href') should be converted.
+        soup : bs4.BeautifulSoup
+            Soup whose elements should be converted.
 
         url_attr : str
             URL attribute to convert.
         """
-        url = element.attrs.get(url_attr)
-        if url is not None and url.startswith('/'):
-            element.attrs[url_attr] = self.url_root + url
+        elements = soup.select('[{}]'.format(url_attr))
+        for e in elements:
+            url = e.attrs.get(url_attr)
+            if url is not None and url.startswith('/'):
+                e.attrs[url_attr] = self.url_root + url

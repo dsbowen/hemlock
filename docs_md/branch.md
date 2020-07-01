@@ -99,14 +99,28 @@ queue of pages which it displays to its participant.
     </tbody>
 </table>
 
+####Examples
 
+```python
+from hemlock import Branch, Page, push_app_context
+
+push_app_context()
+
+b = Branch()
+for i in range(3):
+    p = Page(b)
+    Label(p, label='<p>Page {}</p>'.format(i))
+[p.preview('Ubuntu') for p in b.pages]
+```
+
+This will open all of the branch's pages in separate tabs.
 
 ####Methods
 
 
 
 <p class="func-header">
-    <i></i> <b>view_nav</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L132">[source]</a>
+    <i></i> <b>view_nav</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L148">[source]</a>
 </p>
 
 Print this branch's page queue for debugging purposes.

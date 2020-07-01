@@ -19,7 +19,7 @@ soup.keep_objects('debug', 'run_batch', 'run_participant')
 compile_md(soup, compiler='sklearn', outfile='docs_md/debug.md')
 
 # functions
-function_filenames = ['compile', 'debug', 'submit', 'validate']
+function_filenames = ('compile', 'debug', 'submit', 'validate')
 for filename in function_filenames:
     path = os.path.join('hemlock/functions', filename+'.py')
     soup = PySoup(path=path, parser='sklearn', src_href=src_href)
@@ -27,16 +27,14 @@ for filename in function_filenames:
     compile_md(soup, compiler='sklearn', outfile=outfile)
 
 # models
-def mod_base_soup(soup):
+def mod_base(soup):
     soup.rm_objects('BranchingBase')
 
-def mod_page_soup(soup):
-    soup.keep_objects('Page')
+def mod_question(soup):
+    check = soup.objects[-1]
+    check.rm_methods('validate_choice')
 
-modifications = {
-    'bases': mod_base_soup,
-    'page': mod_page_soup,
-}
+modifications = {'bases': mod_base, 'question': mod_question}
 
 model_filenames = [
     'bases',
@@ -61,6 +59,27 @@ for filename in model_filenames:
         func(soup)
     outfile = os.path.join('docs_md', filename+'.md')
     compile_md(soup, compiler='sklearn', outfile=outfile)
+
+# question polymorphs
+qpolymorph_filenames = [
+    'check',
+    'download',
+    'file',
+    'input',
+    'input_group',
+    'label',
+    'range',
+    'select',
+    'textarea',
+]
+
+for filename in qpolymorph_filenames:
+    path = os.path.join('hemlock/qpolymorphs', filename+'.py')
+    soup = PySoup(path=path, src_href=src_href)
+    soup.import_path = 'hemlock'
+    soup.rm_properties()
+    outfile = os.path.join('docs_md', filename+'.md')
+    compile_md(soup, outfile=outfile)
 
 # tools
 tools_filenames = [

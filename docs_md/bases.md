@@ -80,13 +80,13 @@ Data elements 'pack' their data and return it to their participant, who in turn 
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Attributes:</b></td>
-    <td class="field-body" width="100%"><b>rows : <i>int, default=1</i></b>
-<p class="attr">
-    Number of rows this data element contributes to the dataframe for its participant. Set to <code>-1</code> to indicate that this element's data should appear in every row of its participant's data.
-</p>
-<b>data : <i>sqlalchemy_mutable.MutableType</i></b>
+    <td class="field-body" width="100%"><b>data : <i>sqlalchemy_mutable.MutableType</i></b>
 <p class="attr">
     Data this element contributes to the dataframe.
+</p>
+<b>data_rows : <i>int, default=1</i></b>
+<p class="attr">
+    Number of rows this data element contributes to the dataframe for its participant. Set to <code>-1</code> to indicate that this element's data should appear in every row of its participant's data.
 </p>
 <b>index : <i>int or None, default=None</i></b>
 <p class="attr">
@@ -148,7 +148,7 @@ Mixin for models which contribute html to a page.
 
 
 <p class="func-header">
-    <i></i> <b>add_external_css</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L156">[source]</a>
+    <i></i> <b>add_external_css</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L158">[source]</a>
 </p>
 
 Add external css to `self.css`. The external css is a `<link>` tag
@@ -181,7 +181,7 @@ attribute.
 
 
 <p class="func-header">
-    <i></i> <b>add_external_js</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L179">[source]</a>
+    <i></i> <b>add_external_js</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L181">[source]</a>
 </p>
 
 Add external javascript to `self.js`. The external js is a `<script>`
@@ -214,7 +214,7 @@ attribute.
 
 
 <p class="func-header">
-    <i></i> <b>add_internal_css</b>(<i>self, style</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L216">[source]</a>
+    <i></i> <b>add_internal_css</b>(<i>self, style</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L218">[source]</a>
 </p>
 
 Add internal css to `self.css`. The internal css is a `<style>` tag
@@ -246,7 +246,7 @@ with the specified css selector : style dictionary.
 
 
 <p class="func-header">
-    <i></i> <b>add_internal_js</b>(<i>self, js</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L244">[source]</a>
+    <i></i> <b>add_internal_js</b>(<i>self, js</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L246">[source]</a>
 </p>
 
 Add internal javascript to `self.js`. The interal js is a `<script>`
@@ -302,7 +302,7 @@ Base for models which contain `<input>` tags.
 
 
 <p class="func-header">
-    <i></i> <b>input_from_driver</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L278">[source]</a>
+    <i></i> <b>input_from_driver</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L280">[source]</a>
 </p>
 
 
@@ -322,7 +322,7 @@ Base for models which contain `<input>` tags.
     <th class="field-name"><b>Returns:</b></td>
     <td class="field-body" width="100%"><b>input : <i>selenium.webdriver.remote.webelement.WebElement</i></b>
 <p class="attr">
-    Web element of the input tag associated with this model.
+    Web element of the <code>&lt;input&gt;</code> tag associated with this model.
 </p></td>
 </tr>
     </tbody>
@@ -333,7 +333,7 @@ Base for models which contain `<input>` tags.
 
 
 <p class="func-header">
-    <i></i> <b>label_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L292">[source]</a>
+    <i></i> <b>label_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L294">[source]</a>
 </p>
 
 

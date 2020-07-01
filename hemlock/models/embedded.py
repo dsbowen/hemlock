@@ -1,15 +1,16 @@
 """# Embedded data and timers"""
 
+from ..app import db
 from .bases import Data
-from .branch import Branch
-from .page import Page
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class Embedded(Data):
     """
-    Embedded data belong to a branch or page. Use embedded data to manually input data to the dataframe; as opposed to recording data from participant responses.
+    Embedded data belong to a branch or page. Use embedded data to manually 
+    input data to the dataframe; as opposed to recording data from participant 
+    responses.
 
     Inherits from `hemlock.Data`.
 
@@ -33,6 +34,8 @@ class Embedded(Data):
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
 
     def __init__(self, parent=None, **kwargs):
+        from .branch import Branch
+        from .page import Page
         if isinstance(parent, Branch):
             self.branch = parent
         elif isinstance(parent, Page):
@@ -52,7 +55,8 @@ class Timer(Embedded):
         Read only. Number of seconds for which the timer has been running.
 
     end_time : datetime.datetime or None, default=None
-        Read only. If the timer is running, this is the current time. If the timer is paused, this is the time at which the timer was last paused.
+        Read only. If the timer is running, this is the current time. If the 
+        timer is paused, this is the time at which the timer was last paused.
 
     start_time : datetime.datetime or None, default=None
         The time at which the timer was started.
@@ -140,5 +144,7 @@ class Timer(Embedded):
     def _set_current_time(self):
         if self.state == 'running':
             self._end_time = datetime.utcnow()
+            if self._total_time is None:
+                self._total_time = timedelta(0)
             self._total_time += self._end_time - self.unpause_time
             self._data = self._total_time.total_seconds()

@@ -1,10 +1,8 @@
 """# Randomization tools"""
 
-from ..models import Embedded
-
 from flask_login import current_user
 
-from itertools import combinations, permutations, product
+from itertools import combinations, cycle, permutations, product
 from operator import itemgetter
 from random import choice, shuffle
 from string import ascii_letters, digits
@@ -21,9 +19,23 @@ def key(len_=90):
     key : str
         Randomly generated key of ascii letters and digits of specificed 
         length.
+
+    Examples
+    --------
+    ```python
+    from hemlock import tools
+
+    tools.key()
+    ```
+
+    Out:
+
+    ```
+    gpGmZuRfF7kR2IRH2S4RInUOUjurWn5RUJjtgGleUbP7lglNCWuamzxFL7sDh52gMg6z3dJeIaIUr5XCGxCazFLaMr
+    ```
     """
     chars = ascii_letters + digits
-    return ''.join(choice(chars) for i in range(length))
+    return ''.join(choice(chars) for i in range(len_))
 
 
 class Randomizer():

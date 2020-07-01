@@ -1,32 +1,19 @@
-"""InputGroup
-
-`InputGroup` defines methods for interacting with a Bootstrap input-group.
-
-An input-group has prepended and appended text wrapping the input.
-"""
-
-from hemlock.app import Settings, db
-from hemlock.database import Question, ChoiceQuestion
-from hemlock.database.bases import InputBase
-
-from bs4 import Tag
-from flask import render_template
-
+"""# Input group base"""
 
 class InputGroup():
-    @property
-    def prepend(self):
-        return self.body.text('.input-group-prepend')
+    """
+    A base class for questions with [input groups](https://getbootstrap.com/docs/4.0/components/input-group/).
 
-    @prepend.setter
-    def prepend(self, val):
-        self.body.set_element(
-            '.input-group-prepend', val,
-            target_selector='span.input-group-text', 
-            gen_target=self._gen_input_group_text,
-            args=['prepend']
-        )
+    Attributes
+    ----------
+    append : str
+        Text appended to the input field. Specifically, the text of the 
+        `div.input-group-append` tag.
 
+    prepend : str
+        Text prepended to the input field. Specifically, the text of the 
+        `div.input-group-prepend` tag.
+    """
     @property
     def append(self):
         return self.body.text('.input-group-append')
@@ -37,9 +24,22 @@ class InputGroup():
             '.input-group-append', val,
             target_selector='span.input-group-text',
             gen_target=self._gen_input_group_text,
-            args=['append']
+            args=('append')
         )
-    
+
+    @property
+    def prepend(self):
+        return self.body.text('.input-group-prepend')
+
+    @prepend.setter
+    def prepend(self, val):
+        self.body.set_element(
+            '.input-group-prepend', val,
+            target_selector='span.input-group-text', 
+            gen_target=self._gen_input_group_text,
+            args=('prepend')
+        )
+
     def _gen_input_group_text(self, type_):
         """Generate input group prepend/append <div> Tag
         
