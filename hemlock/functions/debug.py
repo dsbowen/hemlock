@@ -1,6 +1,8 @@
 """# Debug functions
 
-Debug functions tell the AI participant what to do during debugging. They generally take a selenium webdriver as their first argument and a page or question as their second argument.
+Debug functions tell the AI participant what to do during debugging. They 
+generally take a selenium webdriver as their first argument and a page or 
+question as their second argument.
 """
 
 from ..app import settings
@@ -74,7 +76,7 @@ def send_keys(driver, question, *keys, p_num=.5):
     elif random() < p_num:
         random_number(driver, question)
     else:
-        random_string(driver, question)
+        random_str(driver, question)
 
 @Debug.register
 def random_str(driver, question, magnitude=2, p_whitespace=.2):

@@ -26,11 +26,11 @@ def debug_func(driver, question):
 
     question : hemlock.Input
     """
-    from ..functions.debug import send_datetime, random_keys
+    from ..functions.debug import send_datetime, send_keys
     if question.input_type in html_datetime_types:
         send_datetime(driver, question)
     else:
-        random_keys(driver, question)
+        send_keys(driver, question)
 
 settings['Input'] = {
     'input_type': 'text',

@@ -42,7 +42,7 @@ import os
 import re
 import tempfile
 import webbrowser
-from random import shuffle
+from random import shuffle, random
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -149,7 +149,7 @@ settings['Page'] = {
     'compile_functions': compile_func,
     'validate_functions': validate_func,
     'submit_functions': submit_func,
-    'debug_functioons': [debug_func, navigate],
+    'debug_functions': [debug_func, navigate],
 }
 
 
@@ -539,7 +539,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         """
         return not (self.error or any([q.error for q in self.questions]))
 
-    def preview(self, dist=None):
+    def preview(self, dist=None, driver=None):
         """
         Preview the page in a browser window.
 
@@ -549,10 +549,13 @@ class Page(HTMLMixin, BranchingBase, db.Model):
             Windows Subsystem for Linux (WSL) distribution (e.g. `'Ubuntu'`). 
             Leave as `None` unless operating in WSL.
 
+        driver : selenium.webdriver.chrome.webdriver.WebDriver or None, default=None
+            Driver to preview page debugging. If `None`, the page will be
+            opened in a web browser.
+
         Returns
         -------
-        success : bool
-            Indicates that the window was opened successfully.
+        self : hemlock.Page
 
         Notes
         -----
@@ -565,7 +568,11 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         with open(path, 'w') as f:
             f.write(str(soup))
         path = 'wsl$/'+ dist + path if dist else os.path.realpath(path)
-        return webbrowser.open('file://'+path)
+        if driver is None:
+            webbrowser.open('file://'+path)
+        else:
+            driver.get('file://'+path)
+        return self
 
     def _convert_rel_paths(self, soup, url_attr, dist=None):
         """
@@ -713,6 +720,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         return is_valid
     
     def _submit(self):
+        print('submit')
         [q._record_data() for q in self.questions]
         [submit_func(self) for submit_func in self.submit_functions]
 
