@@ -6,8 +6,8 @@ the repsonse is invalid.
 """
 
 from ..models import Validate
-from ..tools.lang import indef_article, plural
-from .utils import convert, correct_choices 
+from ..tools.lang import join, plural
+from .utils import convert, correct_choices as correct_choices_
 
 import re
 from operator import __ge__, __le__
@@ -27,6 +27,25 @@ def is_type(question, resp_type):
 
     resp_type : class
         The required type of response.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='hello world')
+    Validate.is_type(inpt, float)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter a number.
+    ```
     """
     try:
         resp_type(question.response)
@@ -48,12 +67,31 @@ def require(question):
     Parameters
     ----------
     question : hemlock.Question
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response=None)
+    Validate.require(inpt)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please respond to this question.
+    ```
     """
     return None if question.response else REQUIRE_MSG
 
 # Set validation
 
-IS_IN_MSG = '<p>Please enter one of the following: {}.</p>'
+IS_IN_MSG = '<p>Please enter {}.</p>'
 
 @Validate.register
 def is_in(question, valid_set, resp_type=None):
@@ -70,12 +108,31 @@ def is_in(question, valid_set, resp_type=None):
     resp_type : class or None, default=None
         Type of response expected; should match the type of elements in 
         `valid_set`.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='earth')
+    Validate.is_in(inpt, ('wind', 'fire'))
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter wind or fire.
+    ```
     """
     resp, _ = convert(question.response, resp_type)
     if resp not in valid_set:
-        return IS_IN_MSG.format(', '.join([str(i) for i in valid_set]))
+        return IS_IN_MSG.format(join('or', *valid_set))
 
-NOT_IN_MSG = '<p>Please do not enter any of the following: {}.</p>'
+NOT_IN_MSG = '<p>Please do not enter {}.</p>'
 
 @Validate.register
 def is_not_in(question, invalid_set, resp_type=None):
@@ -93,10 +150,29 @@ def is_not_in(question, invalid_set, resp_type=None):
     resp_type : class or None, default=None
         Type of response expected; should match the type of elements in
         `invalid_set`.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='earth')
+    Validate.is_not_in(inpt, ['earth', 'wind', 'fire'])
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please do not enter earth, wind, or fire.
+    ```
     """
     resp, _ = convert(question.response, resp_type)
     if resp in invalid_set:
-        return NOT_IN_MSG.format(', '.join([str(i) for i in invalid_set]))
+        return NOT_IN_MSG.format(join('or', *invalid_set))
 
 # Range validation
 
@@ -116,9 +192,28 @@ def max_val(question, max_, resp_type=None):
 
     resp_type : class or None, default=None
         Expected type of response. If `None`, the type of `max` will be used.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='101')
+    Validate.max_val(inpt, 100)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter a response less than 100.
+    ```
     """
     error_msg = MAX_MSG.format(max_)
-    return _compare_resp(question, max_, resp_type, error_msg, __le__)
+    return _compare_resp(question, max_, __le__, error_msg, resp_type)
 
 MIN_MSG = '<p>Please enter a response greater than {}.</p>'
 
@@ -136,9 +231,28 @@ def min_val(question, min_, resp_type=None):
 
     resp_type : class or None, default=None
         Expected type of response. If `None`, the type of `min` will be used.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='-1')
+    Validate.min_val(inpt, 0)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter a response greater than 0.
+    ```
     """
     error_msg = MIN_MSG.format(min_)
-    return _compare_resp(question, min_, resp_type, error_msg, __ge__)
+    return _compare_resp(question, min_, __ge__, error_msg, resp_type)
 
 def _compare_resp(question, val, comparator, error_msg, resp_type=None):
     """
@@ -188,6 +302,25 @@ def range_val(question, min_, max_, resp_type=None):
     resp_type : class or None, default=None
         Expected type of response. If `None`, the expected response type is 
         the type of `min` and `max`, which must be of the same type.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='101')
+    Validate.range_val(inpt, 0, 100)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter a response between 0 and 100.
+    ```
     """
     if resp_type is None:
         assert type(min_) == type(max_)
@@ -201,7 +334,7 @@ def range_val(question, min_, max_, resp_type=None):
 # Length validation
 
 EXACT_CHOICES_MSG = '<p>Please select exactly {0} {choice}.</p>'
-EXACT_LEN_MSG = '<p>Please enter a response exactly {0} {character} long.</p>'
+EXACT_LEN_MSG = '<p>Please enter exactly {0} {character}.</p>'
 
 @Validate.register
 def exact_len(question, len_):
@@ -216,6 +349,25 @@ def exact_len(question, len_):
 
     len_ : int
         Required length of the response.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='hello world')
+    Validate.exact_len(inpt, 5)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter a response exactly 5 characters long.
+    ```
     """
     msg = require(question)
     if len_ and msg is not None:
@@ -227,7 +379,7 @@ def exact_len(question, len_):
     return EXACT_LEN_MSG.format(len_, character=plural(len_, 'character'))
 
 MAX_CHOICES_MSG = '<p>Please select at most {0} {choice}.</p>'
-MAX_LEN_MSG = '<p>Please enter a response at most {0} {character} long.</p>'
+MAX_LEN_MSG = '<p>Please enter at most {0} {character}.</p>'
 
 @Validate.register
 def max_len(question, max_):
@@ -247,6 +399,25 @@ def max_len(question, max_):
     -----
     A response of `None` is assumed to satisfy the max length validation. Use 
     `Validate.require` to require a response that is not `None`.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='hello world')
+    Validate.max_len(inpt, 5)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter a response at most 5 characters long.
+    ```
     """
     if not question.response:
         return
@@ -256,8 +427,8 @@ def max_len(question, max_):
         return MAX_CHOICES_MSG.format(max_, choice=plural(max_, 'choice'))
     return MAX_LEN_MSG.format(max_, character=plural(max_, 'character'))
 
-MIN_CHOICES_MSG = '<p>Please select at least {0} choice{1}.</p>'
-MIN_LEN_MSG = '<p>Please enter a response at least {0} character{1} long.</p>'
+MIN_CHOICES_MSG = '<p>Please select at least {0} {choice}.</p>'
+MIN_LEN_MSG = '<p>Please enter at least {0} {character}.</p>'
 
 @Validate.register
 def min_len(question, min_):
@@ -272,9 +443,30 @@ def min_len(question, min_):
     
     min_ : int
         Minimum length of the response.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='hello world')
+    Validate.min_len(inpt, 15)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter a response at least 15 characters long.
+    ```
     """
+    if min_ <= 0:
+        return
     msg = require(question)
-    if min_ and msg is not None:
+    if msg is not None:
         return msg
     if min_ <= len(question.response):
         return
@@ -283,7 +475,7 @@ def min_len(question, min_):
     return MIN_LEN_MSG.format(min_, character=plural(min_, 'character'))
 
 RANGE_CHOICES_MSG = '<p>Please select between {0} and {1} choices.</p>'
-RANGE_LEN_MSG = '<p>Please enter a response {0} to {1} characters long.</p>'
+RANGE_LEN_MSG = '<p>Please enter between {0} and {1} characters.</p>'
 
 @Validate.register
 def range_len(question, min_, max_):
@@ -301,9 +493,30 @@ def range_len(question, min_, max_):
 
     max_ : int
         Maximum response length.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='hello world')
+    Validate.range_len(inpt, 5, 10)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter a response 5 to 10 characters long.
+    ```
     """
+    if min_ <= 0:
+        return
     msg = require(question)
-    if min_ and msg is not None:
+    if msg is not None:
         return msg
     if min_ <= len(question.response) <= max_:
         return
@@ -313,7 +526,7 @@ def range_len(question, min_, max_):
 
 # Words validation
 
-EXACT_WORDS_MSG = '<p>Please enter a response exactly {0} {word} long.</p>'
+EXACT_WORDS_MSG = '<p>Please enter exactly {0} {word}.</p>'
 
 @Validate.register
 def exact_words(question, nwords):
@@ -326,9 +539,28 @@ def exact_words(question, nwords):
     
     nwords : int
         Required number of words.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='hello world')
+    Validate.exact_words(inpt, 1)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter exactly 1 word.
+    ```
     """
     msg = require(question)
-    if value and msg is not None:
+    if nwords and msg is not None:
         # a response of `None` can satisfy `exact_words` if `value==0`
         return msg
     assert isinstance(question.response, str)
@@ -348,6 +580,25 @@ def max_words(question, max_):
 
     max_ : int
         Maximum number of words.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='hello world')
+    Validate.max_words(inpt, 1)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter at most 1 word.
+    ```
     """
     if not question.response:
         return
@@ -368,9 +619,30 @@ def min_words(question, min_):
 
     min_ : int
         Minimum number of words.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='hello world')
+    Validate.min_words(inpt, 3)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter at least 3 words.
+    ```
     """
+    if min_ <= 0:
+        return
     msg = require(question)
-    if min_ and msg is not None:
+    if msg is not None:
         return msg
     assert isinstance(question.response, str)
     if _num_words(question.response) < min_:
@@ -392,9 +664,30 @@ def range_words(question, min_, max_):
 
     max_ : int
         Maximum number of words.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='hello world')
+    Validate.range_words(inpt, 3, 5)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter between 3 and 5 words.
+    ```
     """
+    if min_ <= 0:
+        return
     msg = require(question)
-    if min_ and msg is not None:
+    if msg is not None:
         return msg 
     assert isinstance(question.response, str)
     if not (min_ <= _num_words(question.response) <= max_):
@@ -419,6 +712,25 @@ def exact_decimals(question, ndec):
 
     ndec : int
         Required number of decimals.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='1')
+    Validate.exact_decimals(inpt, 2)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter a number with exactly 2 decimals.
+    ```
     """
     msg, decimals = _get_decimals(question)
     if msg:
@@ -439,6 +751,25 @@ def max_decimals(question, max_):
 
     max_ : int
         Maximum number of decimals.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='1.123')
+    Validate.max_decimals(inpt, 2)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter a number with at most 2 decimals.
+    ```
     """
     msg, decimals = _get_decimals(question)
     if msg:
@@ -459,6 +790,25 @@ def min_decimals(question, min_):
 
     min_ : int
         Minumum number of decimals.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='1')
+    Validate.min_decimals(inpt, 2)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter a number with at least 2 decimals.
+    ```
     """
     msg, decimals = _get_decimals(question)
     if msg:
@@ -482,6 +832,25 @@ def range_decimals(question, min_, max_):
 
     max_ : int
         Maximum number of decimals.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='1.123')
+    Validate.range_decimals(inpt, 0, 2)
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter a number with 0 to 2 decimals.
+    ```
     """
     msg, decimals = _get_decimals(question)
     if msg:
@@ -517,6 +886,25 @@ def match(question, pattern):
 
     pattern : str
         Regex pattern to match.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    inpt = Input(response='hello world')
+    Validate.match(inpt, 'goodbye *')
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    Please enter a response with the correct pattern.
+    ```
     """
     if not re.compile(pattern).match((question.response or '')):
         return REGEX_MSG
@@ -534,10 +922,30 @@ def correct_choices(question, *correct):
 
     \*correct :
         Correct choices.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Check, Validate, push_app_context
+
+    push_app_context()
+
+    check = Check(choices=['correct','incorrect','also incorrect'])
+    Validate.correct_choices(check, check.choices[0])
+    check.response = check.choices[1]
+    check._validate()
+    check.error
+    ```
+
+    Out:
+
+    ```
+    Please select the correct choice.
+    ```
     """
-    if not correct_choices(question, *correct):
+    if not correct_choices_(question, *correct):
         if question.multiple:
             return '<p>Please select the correct choice(s).</p>'
-        if len([c for c in question.choices if c.value]) == 1:
+        if len(correct) == 1:
             return '<p>Please select the correct choice.</p>'
         return '<p>Please select one of the correct choices.</p>'

@@ -53,7 +53,8 @@ def correct_choices(q, *correct):
     If the participant can only select one choice, indicate whether the 
     participant selected one of the correct choices.
     """
-    return q.response == correct if q.multiple else q.response in correct
+    resp = q.response.unshell() if isinstance(q.response,list) else q.response
+    return set(resp) == set(correct) if q.multiple else resp in correct
 
 def gen_datetime():
     try:

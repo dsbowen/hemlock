@@ -71,7 +71,7 @@ from hemlock import Page, Download, push_app_context
 push_app_context()
 
 p = Page()
-Download(p, download_files=[('HELLO_WORLD_URL', 'hello_world.txt')])
+Download(p, downloads=[('HELLO_WORLD_URL', 'hello_world.txt')])
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 

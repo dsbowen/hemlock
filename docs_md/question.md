@@ -190,24 +190,3 @@ A question which contains choices. Inherits from `hemlock.Question`.
 
 
 
-####Methods
-
-
-
-<p class="func-header">
-    <i></i> <b>validate_choice</b>(<i>'choices') def validate_choice(self, key, val</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L231">[source]</a>
-</p>
-
-Convert the assigned value if it is not alread a `Choice` object
-
-This allows for the following syntax:
-question.choices = ['Red','Green','Blue']
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        
-    </tbody>
-</table>
-

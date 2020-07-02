@@ -61,12 +61,24 @@ Calls one of the object's methods.
     </tbody>
 </table>
 
+####Examples
 
+```python
+from hemlock import Compile, Page, push_app_context
+
+push_app_context()
+
+p = Page(error='Error message')
+Compile.call_method(p, 'clear_error')
+p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+p._compile()
+p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+```
 
 ##hemlock.functions.compile.**clear_error**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.compile.<b>clear_error</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L25">[source]</a>
+    <i>def</i> hemlock.functions.compile.<b>clear_error</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L39">[source]</a>
 </p>
 
 Calls the object's `clear_error` method.
@@ -85,12 +97,24 @@ Calls the object's `clear_error` method.
     </tbody>
 </table>
 
+####Examples
 
+```python
+from hemlock import Compile, Page, Check, push_app_context
+
+push_app_context()
+
+p = Page(error='Error message')
+Compile.clear_error(p)
+p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+p._compile()
+p.preview()
+```
 
 ##hemlock.functions.compile.**clear_response**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.compile.<b>clear_response</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L38">[source]</a>
+    <i>def</i> hemlock.functions.compile.<b>clear_response</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L65">[source]</a>
 </p>
 
 Calls the object's `clear_response` method.
@@ -109,12 +133,25 @@ Calls the object's `clear_response` method.
     </tbody>
 </table>
 
+####Examples
 
+```python
+from hemlock import Compile, Page, Input, push_app_context
+
+push_app_context()
+
+p = Page()
+Input(p, response='Hello world')
+Compile.clear_response(p)
+p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+p._compile()
+p.preview()
+```
 
 ##hemlock.functions.compile.**shuffle**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.compile.<b>shuffle</b>(<i>obj, *attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L50">[source]</a>
+    <i>def</i> hemlock.functions.compile.<b>shuffle</b>(<i>obj, *attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L92">[source]</a>
 </p>
 
 Shuffle an object's attributes.
@@ -144,3 +181,18 @@ If the object is a `hemlock.Page`, the default shuffled attribute is its
 
 If the object is a `hemlock.ChoiceQuestion`, the default shuffled
 attribute is its `choices`.
+
+####Examples
+
+```python
+from hemlock import Compile, Page, Label, push_app_context
+
+push_app_context()
+
+p = Page()
+[Label(p, label='<p>Label {}</p>'.format(i)) for i in range(4)]
+Compile.shuffle(p)
+p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+p._compile()
+p.preview()
+```

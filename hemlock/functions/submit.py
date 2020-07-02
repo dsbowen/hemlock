@@ -1,7 +1,7 @@
 """# Submit functions"""
 
 from ..models import Submit
-from .utils import convert, correct_choices
+from .utils import convert, correct_choices as correct_choices_
 
 import re
 
@@ -22,8 +22,29 @@ def correct_choices(question, *correct):
     -----
     If the participant can only select one choice, indicate whether the 
     participant selected one of the correct choices.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Check, Submit, push_app_context
+
+    push_app_context()
+
+    check = Check(choices=['correct', 'incorrect', 'also incorrect'])
+    correct_choice = check.choices[0]
+    Submit.correct_choices(check, correct_choice)
+    check.response = correct_choice
+    check._submit()
+    check.data
+    ```
+
+    Out:
+
+    ```
+    1
+    ```
     """
-    question.data = int(correct_choices(question, *correct))
+    question.data = int(correct_choices_(question, *correct))
 
 @Submit.register
 def data_type(question, new_type, *args, **kwargs):
@@ -39,6 +60,25 @@ def data_type(question, new_type, *args, **kwargs):
     
     \*args, \*\*kwargs :
         Arguments and keyword arguments to pass to the `new_type` constructor.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Submit, push_app_context
+
+    push_app_context()
+
+    inpt = Input(data='1')
+    Submit.data_type(inpt, int)
+    inpt._submit()
+    inpt.data, isinstance(inpt.data, int)
+    ```
+
+    Out:
+
+    ```
+    (1, True)
+    ```
     """
     question.data, success = convert(question.data, new_type, *args, **kwargs)
     if not success:
@@ -56,6 +96,25 @@ def match(question, pattern):
 
     pattern : str
         Regex pattern to match.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Submit, push_app_context
+
+    push_app_context()
+
+    inpt = Input(data='hello world')
+    Submit.match(inpt, 'hello world')
+    inpt._submit()
+    inpt.data
+    ```
+
+    Out:
+
+    ```
+    1
+    ```
     """
     try:
         question.data = int(re.match(
