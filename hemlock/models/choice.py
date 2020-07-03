@@ -25,9 +25,6 @@ class Choice(InputBase, HTMLMixin, db.Model):
 
     Parameters
     ----------
-    question : hemlock.Question
-        The question to which this choice belongs.
-
     template : str, default='choice.html'
         Template for the choice `body`.
 
@@ -73,10 +70,7 @@ class Choice(InputBase, HTMLMixin, db.Model):
     index = db.Column(db.Integer)
     value = db.Column(MutableType)
     
-    def __init__(
-            self, question=None, template='hemlock/choice.html', **kwargs
-        ):
-        self.question = question
+    def __init__(self, template='hemlock/choice.html', **kwargs):
         super().__init__(template, **kwargs)
         if 'name' not in kwargs:
             self.name = self.label
@@ -172,17 +166,14 @@ class Option(Choice):
 
     Parameters
     ----------
-    question : hemlock.Question or None, default=None
-        The question to which this option belongs.
-
     template : str, default='hemlock/option.html'
         Template for the option `body`.
     """
     id = db.Column(db.Integer, db.ForeignKey('choice.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'option'}
 
-    def __init__(self, question=None, template='hemlock/option.html', **kwargs):
-        super().__init__(question, template, **kwargs)
+    def __init__(self, template='hemlock/option.html', **kwargs):
+        super().__init__(template, **kwargs)
 
     @property
     def label(self):

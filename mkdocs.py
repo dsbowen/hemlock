@@ -42,7 +42,6 @@ model_filenames = [
     'choice',
     'embedded',
     'functions',
-    'navbar',
     'page',
     'participant',
     'question',
@@ -85,6 +84,7 @@ for filename in qpolymorph_filenames:
 tools_filenames = [
     'comprehension',
     'lang',
+    'navbar',
     'random',
     'statics',
     'url_for',

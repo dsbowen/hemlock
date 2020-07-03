@@ -59,7 +59,7 @@ Google bucket.
 ##hemlock.**File**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>File</b>(<i>page=None, template='hemlock/file.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/file.py#L44">[source]</a>
+    <i>class</i> hemlock.<b>File</b>(<i>label='', template='hemlock/file.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/file.py#L44">[source]</a>
 </p>
 
 Allows participants to upload files.
@@ -73,9 +73,9 @@ Inherits from [`hemlock.InputGroup`](input_group.md),
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None, default=None</i></b>
+    <td class="field-body" width="100%"><b>label : <i>str or bs4.BeautifulSoup, default=''</i></b>
 <p class="attr">
-    Page to which this file belongs.
+    Upload file label.
 </p>
 <b>template : <i>str, default='hemlock/file.html'</i></b>
 <p class="attr">
@@ -99,12 +99,12 @@ Inherits from [`hemlock.InputGroup`](input_group.md),
 ####Examples
 
 ```python
-from hemlock import Page, File, push_app_context
+from hemlock import File, Page, push_app_context
 
 push_app_context()
 
-p = Page()
-File(p, label='<p>Upload .png file.</p>', allowed_extensions=['.png'])
+p = Page([File('<p>Upload a .png file.</p>', allowed_extensions=['.png'])])
+p.preview('Ubuntu')
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 

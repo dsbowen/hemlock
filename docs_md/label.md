@@ -34,7 +34,7 @@
 ##hemlock.**Label**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Label</b>(<i>page=None, template='hemlock/form-group.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/label.py#L6">[source]</a>
+    <i>class</i> hemlock.<b>Label</b>(<i>label='', template='hemlock/form-group.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/label.py#L6">[source]</a>
 </p>
 
 This question contains a label and does not receive input from the
@@ -46,9 +46,9 @@ participant.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None, default=None</i></b>
+    <td class="field-body" width="100%"><b>label : <i>str or bs4.BeautifulSoup, default=''</i></b>
 <p class="attr">
-    Page to which this label belongs.
+    Question label.
 </p>
 <b>template : <i>str, default='hemlock/form-group.html'</i></b>
 <p class="attr">
@@ -61,12 +61,11 @@ participant.
 ####Examples
 
 ```python
-from hemlock import Page, Label, push_app_context
+from hemlock import Label, Page, push_app_context
 
 push_app_context()
 
-p = Page()
-Label(p, label='<p>Lorem ipsum.</p>')
+p = Page([Label('<p>Hello World</p>')])
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 

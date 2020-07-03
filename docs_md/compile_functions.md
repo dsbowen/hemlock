@@ -68,17 +68,16 @@ from hemlock import Compile, Page, push_app_context
 
 push_app_context()
 
-p = Page(error='Error message')
-Compile.call_method(p, 'clear_error')
+p = Compile.call_method(Page(error='Error message'), 'clear_error')
 p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
 p._compile()
-p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+p.preview()
 ```
 
 ##hemlock.functions.compile.**clear_error**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.compile.<b>clear_error</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L39">[source]</a>
+    <i>def</i> hemlock.functions.compile.<b>clear_error</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L38">[source]</a>
 </p>
 
 Calls the object's `clear_error` method.
@@ -104,8 +103,7 @@ from hemlock import Compile, Page, Check, push_app_context
 
 push_app_context()
 
-p = Page(error='Error message')
-Compile.clear_error(p)
+p = Compile.clear_error(Page(error='Error message'))
 p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
 p._compile()
 p.preview()
@@ -114,7 +112,7 @@ p.preview()
 ##hemlock.functions.compile.**clear_response**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.compile.<b>clear_response</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L65">[source]</a>
+    <i>def</i> hemlock.functions.compile.<b>clear_response</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L63">[source]</a>
 </p>
 
 Calls the object's `clear_response` method.
@@ -136,13 +134,11 @@ Calls the object's `clear_response` method.
 ####Examples
 
 ```python
-from hemlock import Compile, Page, Input, push_app_context
+from hemlock import Compile, Input, Page, push_app_context
 
 push_app_context()
 
-p = Page()
-Input(p, response='Hello world')
-Compile.clear_response(p)
+p = Compile.clear_response(Page([Input(response='Hello World')]))
 p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
 p._compile()
 p.preview()
@@ -151,7 +147,7 @@ p.preview()
 ##hemlock.functions.compile.**shuffle**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.compile.<b>shuffle</b>(<i>obj, *attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L92">[source]</a>
+    <i>def</i> hemlock.functions.compile.<b>shuffle</b>(<i>obj, *attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L88">[source]</a>
 </p>
 
 Shuffle an object's attributes.
@@ -185,13 +181,13 @@ attribute is its `choices`.
 ####Examples
 
 ```python
-from hemlock import Compile, Page, Label, push_app_context
+from hemlock import Compile, Label, Page, push_app_context
 
 push_app_context()
 
-p = Page()
-[Label(p, label='<p>Label {}</p>'.format(i)) for i in range(4)]
-Compile.shuffle(p)
+p = Compile.shuffle(Page([
+    Label('<p>Label {}</p>'.format(i)) for i in range(4)
+]))
 p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
 p._compile()
 p.preview()

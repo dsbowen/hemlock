@@ -34,7 +34,7 @@
 ##hemlock.**Embedded**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Embedded</b>(<i>parent=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L9">[source]</a>
+    <i>class</i> hemlock.<b>Embedded</b>(<i>var=None, data=None, rows=1, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L9">[source]</a>
 </p>
 
 Embedded data belong to a branch or page. Use embedded data to manually
@@ -49,9 +49,17 @@ Inherits from `hemlock.Data`.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>parent : <i>hemlock.Branch, hemlock.Page, or None, default=None</i></b>
+    <td class="field-body" width="100%"><b>var : <i>str or None, default=None</i></b>
 <p class="attr">
-    The parent of this embedded data element.
+    Variable name associated with this data element. If <code>None</code> the data will not be recorded.
+</p>
+<b>data : <i>sqlalchemy_mutable.MutableType</i></b>
+<p class="attr">
+    Data this element contributes to the dataframe.
+</p>
+<b>rows : <i>int, default=1</i></b>
+<p class="attr">
+    Number of rows this data element contributes to the dataframe for its participant. If negative, this data element will 'fill in' any emtpy rows at the end of the dataframe with its most recent value.
 </p></td>
 </tr>
 <tr class="field">
@@ -74,7 +82,9 @@ Inherits from `hemlock.Data`.
 
 ##hemlock.**Timer**
 
-
+<p class="func-header">
+    <i>class</i> hemlock.<b>Timer</b>(<i>def __init__(self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L52">[source]</a>
+</p>
 
 Tracks how much time a participant spends in various parts of the survey.
 
@@ -105,23 +115,46 @@ Inherits from `hemlock.Embedded`.
 <b>total_time : <i>datetime.timedelta or None, default=None</i></b>
 <p class="attr">
     Read only. Total time the timer has been running.
-</p>
-<b>unpause_time : <i>datetime.datetime or None, default=None</i></b>
-<p class="attr">
-    The time at which the timer was last unpaused.
 </p></td>
 </tr>
     </tbody>
 </table>
 
+####Examples
 
+```python
+from hemlock import Timer, push_app_context
+
+import time
+
+push_app_context()
+
+timer = Timer()
+print(timer.state)
+timer.start()
+print(timer.state)
+time.sleep(1)
+print(timer.data)
+timer.pause()
+time.sleep(1)
+print(timer.data)
+```
+
+Out:
+
+```
+not started
+running
+1.001034
+1.001381
+```
 
 ####Methods
 
 
 
 <p class="func-header">
-    <i></i> <b>start</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L100">[source]</a>
+    <i></i> <b>start</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L134">[source]</a>
 </p>
 
 Start the timer.
@@ -145,7 +178,7 @@ Start the timer.
 
 
 <p class="func-header">
-    <i></i> <b>pause</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L116">[source]</a>
+    <i></i> <b>pause</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L150">[source]</a>
 </p>
 
 Pause the timer.
@@ -169,7 +202,7 @@ Pause the timer.
 
 
 <p class="func-header">
-    <i></i> <b>reset</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L128">[source]</a>
+    <i></i> <b>reset</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L162">[source]</a>
 </p>
 
 Reset all attributes to their default values.

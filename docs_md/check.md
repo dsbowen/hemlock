@@ -52,7 +52,7 @@ Default check debug funtion. See [click choices](debug_functions.md).
 ##hemlock.**Check**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Check</b>(<i>page=None, template='hemlock/check.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/check.py#L21">[source]</a>
+    <i>class</i> hemlock.<b>Check</b>(<i>label='', choices=[], template='hemlock/check.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/check.py#L21">[source]</a>
 </p>
 
 Check questions use radio inputs if only one choice can be selected, or
@@ -69,9 +69,13 @@ horizontally, set `inline` to True.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None, default=None</i></b>
+    <td class="field-body" width="100%"><b>label : <i>str or bs4.BeautifulSoup, default=''</i></b>
 <p class="attr">
-    Page to which this question belongs.
+    Check question label.
+</p>
+<b>choices : <i>list of hemlock.Choice or str, default=[]</i></b>
+<p class="attr">
+    Choices which participants can check. String inputs are automatically converted to <code>hemlock.Choice</code> objects.
 </p>
 <b>template : <i>str, default='hemlock/check.html'</i></b>
 <p class="attr">
@@ -103,13 +107,11 @@ horizontally, set `inline` to True.
 ####Examples
 
 ```python
-from hemlock import Page, Check, push_app_context
+from hemlock import Check, Page, push_app_context
 
 push_app_context()
 
-p = Page()
-c = Check(p, label='<p>This is a checkbox question.</p>')
-c.choices = ['Yes', 'No', 'Maybe']
+p = Page([Check('<p>Check one.</p>', ['Yes','No','Maybe'])])
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 

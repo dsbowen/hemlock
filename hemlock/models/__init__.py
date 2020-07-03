@@ -5,7 +5,6 @@ from .branch import Branch
 from .choice import Choice, Option
 from .embedded import Embedded, Timer
 from .functions import Compile, Debug, Submit, Validate
-from .navbar import Navbar, Navitem, Dropdownitem
 from .page import Page
 from .participant import Participant
 from .question import Question, ChoiceQuestion

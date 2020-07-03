@@ -52,7 +52,7 @@ Default select debug function. See [click choices](debug_functions.md).
 ##hemlock.**Select**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Select</b>(<i>page=None, template='hemlock/select.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/select.py#L23">[source]</a>
+    <i>class</i> hemlock.<b>Select</b>(<i>label='', choices=[], template='hemlock/select.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/select.py#L23">[source]</a>
 </p>
 
 Select questions allow participants to select one or more options from a
@@ -67,9 +67,13 @@ Inherits from [`hemlock.InputGroup`](input_group.md) and
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None, default=None</i></b>
+    <td class="field-body" width="100%"><b>label : <i>str or bs4.BeautifulSoup, default=''</i></b>
 <p class="attr">
-    Page to which this question belongs.
+    Select question label.
+</p>
+<b>choices : <i>list of str or hemlock.Option, default=[]</i></b>
+<p class="attr">
+    Options which participants can select. String inputs are automatically converted to <code>hemlock.Option</code> objects.
 </p>
 <b>template : <i>str, default='hemlock/select.html'</i></b>
 <p class="attr">
@@ -105,9 +109,7 @@ from hemlock import Page, Select, Option, push_app_context
 
 push_app_context()
 
-p = Page()
-s = Select(p, label='<p>This is a select question.</p>')
-s.choices = ['World', 'Moon', 'Star']
+p = Page([Select('<p>Select one.</p>', ['World','Moon','Star'])])
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 

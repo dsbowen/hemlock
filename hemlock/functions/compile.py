@@ -27,8 +27,7 @@ def call_method(obj, method_name, *args, **kwargs):
 
     push_app_context()
 
-    p = Page(error='Error message')
-    Compile.call_method(p, 'clear_error')
+    p = Compile.call_method(Page(error='Error message'), 'clear_error')
     p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
     p._compile()
     p.preview()
@@ -53,8 +52,7 @@ def clear_error(obj):
 
     push_app_context()
 
-    p = Page(error='Error message')
-    Compile.clear_error(p)
+    p = Compile.clear_error(Page(error='Error message'))
     p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
     p._compile()
     p.preview()
@@ -75,13 +73,11 @@ def clear_response(obj):
     Examples
     --------
     ```python
-    from hemlock import Compile, Page, Input, push_app_context
+    from hemlock import Compile, Input, Page, push_app_context
 
     push_app_context()
 
-    p = Page()
-    Input(p, response='Hello world')
-    Compile.clear_response(p)
+    p = Compile.clear_response(Page([Input(response='Hello World')]))
     p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
     p._compile()
     p.preview()
@@ -113,13 +109,13 @@ def shuffle(obj, *attrs):
     Examples
     --------
     ```python
-    from hemlock import Compile, Page, Label, push_app_context
+    from hemlock import Compile, Label, Page, push_app_context
 
     push_app_context()
 
-    p = Page()
-    [Label(p, label='<p>Label {}</p>'.format(i)) for i in range(4)]
-    Compile.shuffle(p)
+    p = Compile.shuffle(Page([
+    \    Label('<p>Label {}</p>'.format(i)) for i in range(4)
+    ]))
     p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
     p._compile()
     p.preview()

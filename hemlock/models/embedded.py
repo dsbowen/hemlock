@@ -16,8 +16,17 @@ class Embedded(Data):
 
     Parameters
     ----------
-    parent : hemlock.Branch, hemlock.Page, or None, default=None
-        The parent of this embedded data element.
+    var : str or None, default=None
+        Variable name associated with this data element. If `None` the data 
+        will not be recorded.
+
+    data : sqlalchemy_mutable.MutableType
+        Data this element contributes to the dataframe.
+
+    rows : int, default=1
+        Number of rows this data element contributes to the dataframe for its 
+        participant. If negative, this data element will 'fill in' any emtpy
+        rows at the end of the dataframe with its most recent value.
 
     Attributes
     ----------
@@ -33,13 +42,10 @@ class Embedded(Data):
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
 
-    def __init__(self, parent=None, **kwargs):
-        from .branch import Branch
-        from .page import Page
-        if isinstance(parent, Branch):
-            self.branch = parent
-        elif isinstance(parent, Page):
-            self.page = parent
+    def __init__(self, var=None, data=None, rows=1, **kwargs):
+        self.var = var
+        self.data = data
+        self.rows = rows
         super().__init__(**kwargs)
 
 
@@ -67,8 +73,34 @@ class Timer(Embedded):
     total_time : datetime.timedelta or None, default=None
         Read only. Total time the timer has been running.
 
-    unpause_time : datetime.datetime or None, default=None
-        The time at which the timer was last unpaused.
+    Examples
+    --------
+    ```python
+    from hemlock import Timer, push_app_context
+
+    import time
+
+    push_app_context()
+
+    timer = Timer()
+    print(timer.state)
+    timer.start()
+    print(timer.state)
+    time.sleep(1)
+    print(timer.data)
+    timer.pause()
+    time.sleep(1)
+    print(timer.data)
+    ```
+
+    Out:
+
+    ```
+    not started
+    running
+    1.001034
+    1.001381
+    ```
     """
     id = db.Column(db.Integer, db.ForeignKey('embedded.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'timer'}
@@ -80,7 +112,9 @@ class Timer(Embedded):
     start_time = db.Column(db.DateTime)
     state = db.Column(db.String(16), default='not started')
     _total_time = db.Column(db.Interval)
-    unpause_time = db.Column(db.DateTime)
+
+    def __init__(self):
+        self.reset()
 
     @property
     def data(self):
@@ -110,7 +144,7 @@ class Timer(Embedded):
             now = datetime.utcnow()
             if self.start_time is None:
                 self.start_time = now
-            self.unpause_time = now
+            self._end_time = now
         return self
     
     def pause(self):
@@ -138,13 +172,13 @@ class Timer(Embedded):
         self.state = 'not started'
         self.start_time = None
         self._total_time = None
-        self.unpause_time = None
         return self
     
     def _set_current_time(self):
         if self.state == 'running':
-            self._end_time = datetime.utcnow()
+            now = datetime.utcnow()
             if self._total_time is None:
                 self._total_time = timedelta(0)
-            self._total_time += self._end_time - self.unpause_time
+            self._total_time += now - self._end_time
+            self._end_time = now
             self._data = self._total_time.total_seconds()

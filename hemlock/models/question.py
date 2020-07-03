@@ -20,8 +20,8 @@ class Question(HTMLMixin, Data, MutableModelBase):
 
     Parameters
     ----------
-    page : hemlock.Page or None, default=None
-        The page to which this question belongs.
+    label : str or bs4.BeautifulSoup, default=''
+        Question label.
 
     template : str, default='form-group.html'
         Template for the question `body`.
@@ -114,8 +114,8 @@ class Question(HTMLMixin, Data, MutableModelBase):
     default = db.Column(MutableType)
     response = db.Column(MutableType)
 
-    def __init__(self, page=None, template=None, **kwargs):
-        self.page = page
+    def __init__(self, label='', template=None, **kwargs):
+        kwargs['label'] = label
         super().__init__(template, **kwargs)
 
     # BeautifulSoup shortcuts
@@ -172,12 +172,14 @@ class Question(HTMLMixin, Data, MutableModelBase):
     # methods executed during study
     def _compile(self):
         [compile_func(self) for compile_func in self.compile_functions]
+        return self
 
     def _render(self, body=None):
         return body or self.body.copy()
 
     def _record_response(self):
         self.response = request.form.get(self.model_id)
+        return self
         
     def _validate(self):
         """Validate Participant response
@@ -196,17 +198,31 @@ class Question(HTMLMixin, Data, MutableModelBase):
 
     def _record_data(self):
         self.data = self.response
+        return self
     
     def _submit(self):
         [submit_func(self) for submit_func in self.submit_functions]
+        return self
 
     def _debug(self, driver):
         [debug_func(driver, self) for debug_func in self.debug_functions]
+        return self
 
 
 class ChoiceQuestion(Question):
     """
     A question which contains choices. Inherits from `hemlock.Question`.
+
+    Parameters
+    ----------
+    label : str or bs4.BeautifulSoup, default=''
+        Question label.
+
+    choices : list of hemlock.Choice
+        Choices which belong to this question.
+
+    template : str
+        Template for the question body.
 
     Attributes
     ----------
@@ -242,6 +258,10 @@ class ChoiceQuestion(Question):
             return Option(label=val)
         return Choice(label=val)
 
+    def __init__(self, label='', choices=[], template=None, **kwargs):
+        self.choices = choices
+        super().__init__(label, template, **kwargs)
+
     def _render(self, body=None):
         """Add choice HTML to `body`"""
         body = body or self.body.copy()
@@ -260,6 +280,7 @@ class ChoiceQuestion(Question):
         else:
             response_ids = request.form.getlist(self.model_id)
             self.response = [Choice.query.get(id) for id in response_ids]
+        return self
 
     def _record_data(self):
         """Record data
@@ -277,6 +298,7 @@ class ChoiceQuestion(Question):
                 c.value: int(c in self.response)
                 for c in self.choices if c.value is not None
             }
+        return self
     
     def _pack_data(self):
         """Pack data for storage in the `DataStore`

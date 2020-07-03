@@ -64,7 +64,7 @@ object if the input takes dates or times.
 ##hemlock.**Input**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Input</b>(<i>page=None, template='hemlock/input.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/input.py#L41">[source]</a>
+    <i>class</i> hemlock.<b>Input</b>(<i>label='', template='hemlock/input.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/input.py#L41">[source]</a>
 </p>
 
 Inputs take text input by default, or other types of html inputs.
@@ -77,9 +77,9 @@ Inherits from [`hemlock.InputGroup`](input_group.md), [`hemlock.InputBase`](base
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None, default=None</i></b>
+    <td class="field-body" width="100%"><b>label : <i>str or bs4.BeautifulSoup, default=''</i></b>
 <p class="attr">
-    Page to which this input belongs.
+    Input label.
 </p>
 <b>template : <i>str, default='hemlock/input.html'</i></b>
 <p class="attr">
@@ -99,12 +99,11 @@ Inherits from [`hemlock.InputGroup`](input_group.md), [`hemlock.InputBase`](base
 ####Examples
 
 ```python
-from hemlock import Page, Input, push_app_context
+from hemlock import Input, Page, push_app_context
 
 push_app_context()
 
-p = Page()
-Input(p, label='<p>This is an input.</p>')
+p = Page([Input('<p>Input text here.</p>')])
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 

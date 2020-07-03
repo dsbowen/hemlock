@@ -122,7 +122,7 @@ Base for static objects (images and videos).
     <th class="field-name"><b>Parameters:</b></td>
     <td class="field-body" width="100%"><b>template : <i>str</i></b>
 <p class="attr">
-    Path to template file.
+    Path to template file. This is <em>not</em> a Jinja template, as you may wish to generate html for statics outside the application context.
 </p>
 <b>**kwargs : <i></i></b>
 <p class="attr">
@@ -143,16 +143,14 @@ Base for static objects (images and videos).
     </tbody>
 </table>
 
-####Notes
 
-The `template` parameter is *not* a Jinja template, as programmers may wish to generate html for statics outside the application context.
 
 ####Methods
 
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self, tag_selector=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L100">[source]</a>
+    <i></i> <b>render</b>(<i>self, tag_selector=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L97">[source]</a>
 </p>
 
 
@@ -183,7 +181,7 @@ The `template` parameter is *not* a Jinja template, as programmers may wish to g
 ##hemlock.tools.**Img**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Img</b>(<i>template=os.path.join(DIR, 'img.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L137">[source]</a>
+    <i>class</i> hemlock.tools.<b>Img</b>(<i>template=os.path.join(DIR, 'img.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L134">[source]</a>
 </p>
 
 Static image.
@@ -248,7 +246,7 @@ p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L229">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L226">[source]</a>
 </p>
 
 
@@ -272,7 +270,7 @@ p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ##hemlock.tools.**Vid**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Vid</b>(<i>template=os.path.join(DIR, 'vid.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L246">[source]</a>
+    <i>class</i> hemlock.tools.<b>Vid</b>(<i>template=os.path.join(DIR, 'vid.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L243">[source]</a>
 </p>
 
 Static video.
@@ -322,7 +320,7 @@ p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 
 
 <p class="func-header">
-    <i></i> <b>from_youtube</b>(<i>src</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L294">[source]</a>
+    <i></i> <b>from_youtube</b>(<i>src</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L291">[source]</a>
 </p>
 
 Capture the YouTube video id and create an embedded src.
@@ -353,7 +351,7 @@ Capture the YouTube video id and create an embedded src.
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L318">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L315">[source]</a>
 </p>
 
 

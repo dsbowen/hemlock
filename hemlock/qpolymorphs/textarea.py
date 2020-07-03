@@ -35,8 +35,8 @@ class Textarea(InputGroup, Question):
 
     Parameters
     ----------
-    page : hemlock.Page or None, default=None
-        Page to which this input belongs.
+    label : str or bs4.BeautifulSoup, default=''
+        Textarea label.
 
     template : str, default='hemlock/textarea.html'
         Template for the textarea body.
@@ -63,8 +63,7 @@ class Textarea(InputGroup, Question):
 
     push_app_context()
 
-    p = Page()
-    Textarea(p, label='<p>This is a textarea.</p>')
+    p = Page([Textarea('<p>This is a textarea.</p>')])
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """

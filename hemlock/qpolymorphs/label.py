@@ -10,8 +10,8 @@ class Label(Question):
 
     Parameters
     ----------
-    page : hemlock.Page or None, default=None
-        Page to which this label belongs.
+    label : str or bs4.BeautifulSoup, default=''
+        Question label.
 
     template : str, default='hemlock/form-group.html'
         Path to the Jinja template for the label body.
@@ -19,12 +19,11 @@ class Label(Question):
     Examples
     --------
     ```python
-    from hemlock import Page, Label, push_app_context
+    from hemlock import Label, Page, push_app_context
 
     push_app_context()
 
-    p = Page()
-    Label(p, label='<p>Lorem ipsum.</p>')
+    p = Page([Label('<p>Hello World</p>')])
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """
@@ -32,6 +31,6 @@ class Label(Question):
     __mapper_args__ = {'polymorphic_identity': 'label'}
 
     def __init__(
-            self, page=None, template='hemlock/form-group.html', **kwargs
+            self, label='', template='hemlock/form-group.html', **kwargs
         ):
-        super().__init__(page, template, **kwargs)
+        super().__init__(label, template, **kwargs)

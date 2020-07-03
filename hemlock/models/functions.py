@@ -51,6 +51,7 @@ class FunctionRegistrar(FunctionMixin, Base):
                 model.question = parent
             else:
                 raise ValueError(PARENT_ERR_MSG.format(parent))
+            return parent
                 
         setattr(cls, func.__name__, add_function)
         return func
@@ -69,6 +70,24 @@ class Compile(FunctionRegistrar, db.Model):
 
     question : hemlock.Question or None
         Set from the `parent` parameter.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Compile, Input, Label, Page, push_app_context
+
+    push_app_context()
+
+    @Compile.register
+    def greet(greet_q, name_q):
+    \    greet_q.label = '<p>Hello {}!</p>'.format(name_q.response)
+
+    name_q = Input("<p>What's your name?</p>")
+    p = Page([Compile.greet(Label(), name_q)])
+    name_q.response = 'World'
+    p._compile()
+    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    ```
     """
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
@@ -79,11 +98,6 @@ class Debug(FunctionRegistrar, db.Model):
     Run to help debug the survey.
 
     Inherits from `hemlock.FunctionRegistrar`.
-
-    Parameters
-    ----------
-    parent : hemlock.Page, hemlock.Question, or None, default=None
-        The page or question to which this function belongs.
 
     Attributes
     ----------
@@ -98,6 +112,27 @@ class Debug(FunctionRegistrar, db.Model):
 
     question : hemlock.Question or None
         Set from the `parent` parameter.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Debug, Input, Page, push_app_context
+    from hemlock.tools import chromedriver
+
+    push_app_context()
+
+    driver = chromedriver()
+
+    @Debug.register
+    def greet(driver, greet_q):
+        inpt = greet_q.input_from_driver(driver)
+        inpt.clear()
+        inpt.send_keys('Hello World!')
+
+    p = Page([Debug.greet(Input('<p>Enter a greeting.</p>'))])
+    p.preview(driver=driver) # p.preview('Ubuntu', driver) if working in Ubuntu/WSL
+    p._debug(driver)
+    ```
     """
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
@@ -119,11 +154,6 @@ class Debug(FunctionRegistrar, db.Model):
 class Navigate(FunctionRegistrar, db.Model):
     """
     Creates a new branch to which the participant will navigate.
-
-    Parameters
-    ----------
-    parent : hemlock.Branch, hemlock.Page, or None, default=None
-        The branch or page to which this function belongs.
 
     Relationships
     -------------
@@ -167,11 +197,6 @@ class Submit(FunctionRegistrar, db.Model):
 
     Inherits from `hemlock.FunctionRegistrar`.
 
-    Parameters
-    ----------
-    parent : hemlock.Page, hemlock.Question, or None, default=None
-        The page or question to which this function belongs.
-
     Relationships
     -------------
     page : hemlock.Page or None
@@ -179,6 +204,30 @@ class Submit(FunctionRegistrar, db.Model):
 
     question : hemlock.Question or None
         Set from the `parent` parameter.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Submit, push_app_context
+
+    push_app_context()
+
+    @Submit.register
+    def get_initials(name_q):
+        names = name_q.response.split()
+        name_q.data = '.'.join([name[0] for name in names])
+
+    inpt = Submit.get_initials(Input("<p>What's your name?</p>"))
+    inpt.response = 'Andrew Yang 2020'
+    inpt._submit()
+    inpt.data
+    ```
+
+    Out:
+
+    ```
+    A.Y.2
+    ```
     """
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
@@ -189,11 +238,6 @@ class Validate(FunctionRegistrar, db.Model):
     Validates a participant's response.
 
     Inherits from `hemlock.FunctionRegistrar`.
-
-    Parameters
-    ----------
-    parent : hemlock.Page, hemlock.Question, or None, default=None
-        The page or question to which this function belongs.
 
     Attributes
     ----------
@@ -210,6 +254,30 @@ class Validate(FunctionRegistrar, db.Model):
 
     question : hemlock.Question or None
         Set from the `parent` parameter.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Validate, push_app_context
+
+    push_app_context()
+
+    @Validate.register
+    def my_validate_func(inpt):
+    \    if inpt.response != 'hello world':
+    \        return '<p>You entered "{}", not "hello world"</p>'.format(inpt.response)
+        
+    inpt = Validate.my_validate_func(Input('<p>Enter "hello world"</p>'))
+    inpt.response = 'goodbye moon'
+    inpt._validate()
+    inpt.error
+    ```
+
+    Out:
+
+    ```
+    You entered "goodbye moon", not "hello world"
+    ```
     """
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))

@@ -37,8 +37,8 @@ class Range(InputBase, Question):
 
     Parameters
     ----------
-    page : hemlock.Page or None, default=None
-        Page to which this range belongs.
+    label : str or bs4.BeautifulSoup, default=''
+        Range label.
 
     template : str, default='hemlock/range.html'
         Template for the range body.
@@ -64,20 +64,19 @@ class Range(InputBase, Question):
     Examples
     --------
     ```python
-    from hemlock import Page, Range, push_app_context
+    from hemlock import Range, Page, push_app_context
 
     push_app_context()
 
-    p = Page()
-    Range(p, label='<p>This is a range slider.</p>')
+    p = Page([Range('<p>This is a range slider.</p>')])
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'range'}
 
-    def __init__(self, page=None, template='hemlock/range.html', **kwargs):
-        super().__init__(page, template, **kwargs)
+    def __init__(self, label='', template='hemlock/range.html', **kwargs):
+        super().__init__(label, template, **kwargs)
         self.js = render_template('hemlock/range.js', self_=self)
 
     @property

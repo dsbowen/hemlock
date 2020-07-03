@@ -77,9 +77,9 @@ Inherits from [`hemlock.InputGroup`](input_group.md) and
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None, default=None</i></b>
+    <td class="field-body" width="100%"><b>label : <i>str or bs4.BeautifulSoup, default=''</i></b>
 <p class="attr">
-    Page to which this input belongs.
+    Textarea label.
 </p>
 <b>template : <i>str, default='hemlock/textarea.html'</i></b>
 <p class="attr">
@@ -114,8 +114,7 @@ from hemlock import Page, Textarea, push_app_context
 
 push_app_context()
 
-p = Page()
-Textarea(p, label='<p>This is a textarea.</p>')
+p = Page([Textarea('<p>This is a textarea.</p>')])
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 
@@ -124,7 +123,7 @@ p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 
 
 <p class="func-header">
-    <i></i> <b>textarea_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L91">[source]</a>
+    <i></i> <b>textarea_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L90">[source]</a>
 </p>
 
 Get textarea from the webdriver for debugging.

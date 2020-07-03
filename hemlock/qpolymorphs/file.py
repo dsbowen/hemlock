@@ -50,8 +50,8 @@ class File(InputGroup, InputBase, Question):
 
     Parameters
     ----------
-    page : hemlock.Page or None, default=None
-        Page to which this file belongs.
+    label : str or bs4.BeautifulSoup, default=''
+        Upload file label.
 
     template : str, default='hemlock/file.html'
         Template for the file upload body.
@@ -67,12 +67,12 @@ class File(InputGroup, InputBase, Question):
     Examples
     --------
     ```python
-    from hemlock import Page, File, push_app_context
+    from hemlock import File, Page, push_app_context
 
     push_app_context()
 
-    p = Page()
-    File(p, label='<p>Upload .png file.</p>', allowed_extensions=['.png'])
+    p = Page([File('<p>Upload a .png file.</p>', allowed_extensions=['.png'])])
+    p.preview('Ubuntu')
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """
@@ -82,8 +82,8 @@ class File(InputGroup, InputBase, Question):
     allowed_extensions = db.Column(MutableListType)
     filename = db.Column(db.String)
 
-    def __init__(self, page=None, template='hemlock/file.html', **kwargs):
-        super().__init__(page, template, **kwargs)
+    def __init__(self, label='', template='hemlock/file.html', **kwargs):
+        super().__init__(label, template, **kwargs)
         self.js = render_template('hemlock/file.js', self_=self)
 
     def generate_signed_url(self, expiration=timedelta(hours=.5), **kwargs):

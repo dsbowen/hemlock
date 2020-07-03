@@ -34,7 +34,7 @@
 ##hemlock.**Question**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Question</b>(<i>page=None, template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L15">[source]</a>
+    <i>class</i> hemlock.<b>Question</b>(<i>label='', template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L15">[source]</a>
 </p>
 
 Base object for questions. Questions are displayed on their page in index order.
@@ -47,9 +47,9 @@ It inherits from `hemlock.Data` and `hemlock.HTMLMixin`.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None, default=None</i></b>
+    <td class="field-body" width="100%"><b>label : <i>str or bs4.BeautifulSoup, default=''</i></b>
 <p class="attr">
-    The page to which this question belongs.
+    Question label.
 </p>
 <b>template : <i>str, default='form-group.html'</i></b>
 <p class="attr">
@@ -163,7 +163,9 @@ Clear the response.
 
 ##hemlock.**ChoiceQuestion**
 
-
+<p class="func-header">
+    <i>class</i> hemlock.<b>ChoiceQuestion</b>(<i>label='', choices=[], template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L207">[source]</a>
+</p>
 
 A question which contains choices. Inherits from `hemlock.Question`.
 
@@ -172,6 +174,21 @@ A question which contains choices. Inherits from `hemlock.Question`.
     <col class="field-body" />
     <tbody valign="top">
         <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>label : <i>str or bs4.BeautifulSoup, default=''</i></b>
+<p class="attr">
+    Question label.
+</p>
+<b>choices : <i>list of hemlock.Choice</i></b>
+<p class="attr">
+    Choices which belong to this question.
+</p>
+<b>template : <i>str</i></b>
+<p class="attr">
+    Template for the question body.
+</p></td>
+</tr>
+<tr class="field">
     <th class="field-name"><b>Attributes:</b></td>
     <td class="field-body" width="100%"><b>multiple : <i>bool, default=False</i></b>
 <p class="attr">

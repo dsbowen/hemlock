@@ -30,7 +30,10 @@ def correct_choices(question, *correct):
 
     push_app_context()
 
-    check = Check(choices=['correct', 'incorrect', 'also incorrect'])
+    check = Check(
+    \    '<p>Select one</p>', 
+    \    ['correct', 'incorrect', 'also incorrect']
+    )
     correct_choice = check.choices[0]
     Submit.correct_choices(check, correct_choice)
     check.response = correct_choice
@@ -68,8 +71,7 @@ def data_type(question, new_type, *args, **kwargs):
 
     push_app_context()
 
-    inpt = Input(data='1')
-    Submit.data_type(inpt, int)
+    inpt = Submit.data_type(Input(data='1'), int)
     inpt._submit()
     inpt.data, isinstance(inpt.data, int)
     ```
@@ -104,8 +106,7 @@ def match(question, pattern):
 
     push_app_context()
 
-    inpt = Input(data='hello world')
-    Submit.match(inpt, 'hello world')
+    inpt = Submit.match(Input(data='hello world'), 'hello world')
     inpt._submit()
     inpt.data
     ```

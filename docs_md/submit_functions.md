@@ -70,7 +70,10 @@ from hemlock import Check, Submit, push_app_context
 
 push_app_context()
 
-check = Check(choices=['correct', 'incorrect', 'also incorrect'])
+check = Check(
+    '<p>Select one</p>',
+    ['correct', 'incorrect', 'also incorrect']
+)
 correct_choice = check.choices[0]
 Submit.correct_choices(check, correct_choice)
 check.response = correct_choice
@@ -87,7 +90,7 @@ Out:
 ##hemlock.functions.submit.**data_type**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>data_type</b>(<i>question, new_type, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L49">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>data_type</b>(<i>question, new_type, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L52">[source]</a>
 </p>
 
 Convert the quesiton's data to a new type. If the question's data cannot
@@ -122,8 +125,7 @@ from hemlock import Input, Submit, push_app_context
 
 push_app_context()
 
-inpt = Input(data='1')
-Submit.data_type(inpt, int)
+inpt = Submit.data_type(Input(data='1'), int)
 inpt._submit()
 inpt.data, isinstance(inpt.data, int)
 ```
@@ -137,7 +139,7 @@ Out:
 ##hemlock.functions.submit.**match**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>match</b>(<i>question, pattern</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L87">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>match</b>(<i>question, pattern</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L89">[source]</a>
 </p>
 
 Convert the question's data to a 0-1 indicator that the data matches the
@@ -168,8 +170,7 @@ from hemlock import Input, Submit, push_app_context
 
 push_app_context()
 
-inpt = Input(data='hello world')
-Submit.match(inpt, 'hello world')
+inpt = Submit.match(Input(data='hello world'), 'hello world')
 inpt._submit()
 inpt.data
 ```

@@ -73,7 +73,8 @@ class Static():
     Parameters
     ----------
     template : str
-        Path to template file. 
+        Path to template file. This is *not* a Jinja template, as you may 
+        wish to generate html for statics outside the application context.
 
     \*\*kwargs :
         Any attribute of the static object can be set by passing it as a 
@@ -87,10 +88,6 @@ class Static():
     src_params : dict
         Maps url parameter names to values. These will be attached to the 
         `src` html attribute when the static is rendered.
-
-    Notes
-    -----
-    The `template` parameter is *not* a Jinja template, as programmers may wish to generate html for statics outside the application context.
     """
     def __init__(self, template, **kwargs):
         self.body = SoupBase(open(template).read(), 'html.parser')

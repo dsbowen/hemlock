@@ -11,6 +11,11 @@ class Branch(BranchingBase, db.Model):
     Branches are stacked in a participant's branch stack. It contains a 
     queue of pages which it displays to its participant.
 
+    Parameters
+    ----------
+    pages : list of hemlock.Page, default=[]
+        Pages which belong to this branch.
+
     Attributes
     ----------
     index : int or None, default=None
@@ -57,15 +62,16 @@ class Branch(BranchingBase, db.Model):
     Examples
     --------
     ```python
-    from hemlock import Branch, Page, push_app_context
+    from hemlock import Branch, Label, Page, push_app_context
 
     push_app_context()
 
-    b = Branch()
-    for i in range(3):
-    \    p = Page(b)
-    \    Label(p, label='<p>Page {}</p>'.format(i))
-    [p.preview('Ubuntu') for p in b.pages]
+    b = Branch([
+    \    Page([Label('<p>Hello World</p>')]),
+    \    Page([Label('<p>Hello Moon</p>')]),
+    \    Page([Label('<p>Hello Star</p>')])
+    ])
+    b.preview() # b.preview('Ubuntu') if working in Ubuntu/WSL
     ```
 
     This will open all of the branch's pages in separate tabs.
@@ -145,6 +151,10 @@ class Branch(BranchingBase, db.Model):
 
     index = db.Column(db.Integer)
 
+    def __init__(self, pages=[], **kwargs):
+        self.pages = pages
+        super().__init__(**kwargs)
+
     def view_nav(self):
         """
         Print this branch's page queue for debugging purposes.
@@ -163,6 +173,27 @@ class Branch(BranchingBase, db.Model):
         print(' '*indent, None, head_branch)
         if self.next_branch in self.part.branch_stack:
             self.next_branch.view_nav()
+        return self
+
+    def preview(self, dist=None, driver=None):
+        """
+        Preview the page queue in the a browser window.
+
+        Parameters
+        ----------
+        dist : str or None, default=None
+            Windows Subsystem for Linux (WSL) distribution (e.g. `'Ubuntu'`). 
+            Leave as `None` unless operating in WSL.
+
+        driver : selenium.webdriver.chrome.webdriver.WebDriver or None, default=None
+            Driver to preview page debugging. If `None`, the page will be
+            opened in a web browser.
+
+        Returns
+        -------
+        self : hemlock.Branch
+        """
+        [p.preview(dist, driver) for p in self.pages]
         return self
         
     def _forward(self):

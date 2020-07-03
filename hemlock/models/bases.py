@@ -66,10 +66,10 @@ class Data(Base, MutableModelBase, db.Model):
     data : sqlalchemy_mutable.MutableType
         Data this element contributes to the dataframe.
 
-    data_rows : int, default=1
+    rows : int, default=1
         Number of rows this data element contributes to the dataframe for its 
-        participant. Set to `-1` to indicate that this element's data should 
-        appear in every row of its participant's data.
+        participant. If negative, this data element will 'fill in' any emtpy
+        rows at the end of the dataframe with its most recent value.
 
     index : int or None, default=None
         Order in which this data element appears in its parent; usually a 
@@ -86,7 +86,7 @@ class Data(Base, MutableModelBase, db.Model):
         'polymorphic_on': data_type
     }
 
-    data_rows = db.Column(db.Integer, default=1)
+    rows = db.Column(db.Integer, default=1)
     data = db.Column(MutableType)
     index = db.Column(db.Integer)
     var = db.Column(db.Text)

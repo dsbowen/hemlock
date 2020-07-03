@@ -35,8 +35,7 @@ def is_type(question, resp_type):
 
     push_app_context()
 
-    inpt = Input(response='hello world')
-    Validate.is_type(inpt, float)
+    inpt = Validate.is_type(Input(response='hello world'), float)
     inpt._validate()
     inpt.error
     ```
@@ -75,8 +74,7 @@ def require(question):
 
     push_app_context()
 
-    inpt = Input(response=None)
-    Validate.require(inpt)
+    inpt = Validate.require(Input(response=None))
     inpt._validate()
     inpt.error
     ```
@@ -116,8 +114,7 @@ def is_in(question, valid_set, resp_type=None):
 
     push_app_context()
 
-    inpt = Input(response='earth')
-    Validate.is_in(inpt, ('wind', 'fire'))
+    inpt = Validate.is_in(Input(response='earth'), ('wind', 'fire'))
     inpt._validate()
     inpt.error
     ```
@@ -158,8 +155,9 @@ def is_not_in(question, invalid_set, resp_type=None):
 
     push_app_context()
 
-    inpt = Input(response='earth')
-    Validate.is_not_in(inpt, ['earth', 'wind', 'fire'])
+    inpt = Validate.is_not_in(
+    \    Input(response='earth'), ('earth','wind','fire')
+    )
     inpt._validate()
     inpt.error
     ```
@@ -200,8 +198,7 @@ def max_val(question, max_, resp_type=None):
 
     push_app_context()
 
-    inpt = Input(response='101')
-    Validate.max_val(inpt, 100)
+    inpt = Validate.max_val(Input(response='101'), 100)
     inpt._validate()
     inpt.error
     ```
@@ -239,8 +236,7 @@ def min_val(question, min_, resp_type=None):
 
     push_app_context()
 
-    inpt = Input(response='-1')
-    Validate.min_val(inpt, 0)
+    inpt = Validate.min_val(Input(response='-1'), 0)
     inpt._validate()
     inpt.error
     ```
@@ -310,8 +306,7 @@ def range_val(question, min_, max_, resp_type=None):
 
     push_app_context()
 
-    inpt = Input(response='101')
-    Validate.range_val(inpt, 0, 100)
+    inpt = Validate.range_val(Input(response='101'), 0, 100)
     inpt._validate()
     inpt.error
     ```
@@ -357,8 +352,7 @@ def exact_len(question, len_):
 
     push_app_context()
 
-    inpt = Input(response='hello world')
-    Validate.exact_len(inpt, 5)
+    inpt = Validate.exact_len(Input(response='hello world'), 5)
     inpt._validate()
     inpt.error
     ```
@@ -407,8 +401,7 @@ def max_len(question, max_):
 
     push_app_context()
 
-    inpt = Input(response='hello world')
-    Validate.max_len(inpt, 5)
+    inpt = Validate.max_val(Input(response='hello world'), 5)
     inpt._validate()
     inpt.error
     ```
@@ -451,8 +444,7 @@ def min_len(question, min_):
 
     push_app_context()
 
-    inpt = Input(response='hello world')
-    Validate.min_len(inpt, 15)
+    inpt = Validate.min_len(Input(response='hello world'), 15)
     inpt._validate()
     inpt.error
     ```
@@ -501,8 +493,7 @@ def range_len(question, min_, max_):
 
     push_app_context()
 
-    inpt = Input(response='hello world')
-    Validate.range_len(inpt, 5, 10)
+    inpt = Validate.range_len(Input(response='hello world'), 5, 10)
     inpt._validate()
     inpt.error
     ```
@@ -547,8 +538,7 @@ def exact_words(question, nwords):
 
     push_app_context()
 
-    inpt = Input(response='hello world')
-    Validate.exact_words(inpt, 1)
+    inpt = Validate.exact_words(Input(response='hello world'), 1)
     inpt._validate()
     inpt.error
     ```
@@ -588,8 +578,7 @@ def max_words(question, max_):
 
     push_app_context()
 
-    inpt = Input(response='hello world')
-    Validate.max_words(inpt, 1)
+    inpt = Validate.max_words(Input(response='hello world'), 1)
     inpt._validate()
     inpt.error
     ```
@@ -627,8 +616,7 @@ def min_words(question, min_):
 
     push_app_context()
 
-    inpt = Input(response='hello world')
-    Validate.min_words(inpt, 3)
+    inpt = Validate.min_words(Input(response='hello world'), 3)
     inpt._validate()
     inpt.error
     ```
@@ -672,8 +660,7 @@ def range_words(question, min_, max_):
 
     push_app_context()
 
-    inpt = Input(response='hello world')
-    Validate.range_words(inpt, 3, 5)
+    inpt = Validate.range_words(Input(response='hello world'), 3, 5)
     inpt._validate()
     inpt.error
     ```
@@ -720,8 +707,7 @@ def exact_decimals(question, ndec):
 
     push_app_context()
 
-    inpt = Input(response='1')
-    Validate.exact_decimals(inpt, 2)
+    inpt = Validate.exact_decimals(Input(response='1'), 2)
     inpt._validate()
     inpt.error
     ```
@@ -759,8 +745,7 @@ def max_decimals(question, max_):
 
     push_app_context()
 
-    inpt = Input(response='1.123')
-    Validate.max_decimals(inpt, 2)
+    inpt = Validate.max_decimals(Input(response='1.123'), 2)
     inpt._validate()
     inpt.error
     ```
@@ -798,8 +783,7 @@ def min_decimals(question, min_):
 
     push_app_context()
 
-    inpt = Input(response='1')
-    Validate.min_decimals(inpt, 2)
+    inpt = Validate.min_decimals(Input(response='1'), 2)
     inpt._validate()
     inpt.error
     ```
@@ -840,8 +824,7 @@ def range_decimals(question, min_, max_):
 
     push_app_context()
 
-    inpt = Input(response='1.123')
-    Validate.range_decimals(inpt, 0, 2)
+    inpt = Validate.range_decimals(Input(response='1.123'), 0, 2)
     inpt._validate()
     inpt.error
     ```
@@ -894,8 +877,7 @@ def match(question, pattern):
 
     push_app_context()
 
-    inpt = Input(response='hello world')
-    Validate.match(inpt, 'goodbye *')
+    inpt = Validate.match(Input(response='hello world'), 'goodbye *')
     inpt._validate()
     inpt.error
     ```

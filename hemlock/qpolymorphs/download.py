@@ -22,6 +22,14 @@ class Download(Question, DownloadBtnMixin):
     [`flask_download_btn.DownloadBtnMixin`](https://dsbowen.github.io/flask-download-btn/download_btn_mixin/) and 
     [`hemlock.Question`](question.md).
 
+    Parameters
+    ----------
+    label : str or bs4.BeautifulSoup, default=''
+        Download button label.
+
+    template : str, default='hemlock/download.html'
+        Download button body template.
+
     Relationships
     -------------
     create_file_functions : list of hemlock.CreateFile
@@ -37,12 +45,12 @@ class Download(Question, DownloadBtnMixin):
     Examples
     --------
     ```python
-    from hemlock import Page, Download, push_app_context
+    from hemlock import Download, Page, push_app_context
 
     push_app_context()
 
-    p = Page()
-    Download(p, downloads=[('HELLO_WORLD_URL', 'hello_world.txt')])
+    p = Page([Download('<p>Click here to download a file.</p>')])
+    p.preview('Ubuntu')
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
 
@@ -72,14 +80,14 @@ class Download(Question, DownloadBtnMixin):
     def body(self, val):
         self.btn = val
 
-    def __init__(self, page=None, template='hemlock/download.html', **kwargs):
-        self.page = page
+    def __init__(self, label='', template='hemlock/download.html', **kwargs):
         db.session.add(self)
         db.session.flush([self])
         if template is not None:
             self.body = render_template(template, self_=self)
         settings = current_app.settings.get('Download')
         settings = settings.copy() if settings else {}
+        kwargs['label'] = label
         settings.update(kwargs)
         [setattr(self, key, val) for key, val in settings.items()]
 

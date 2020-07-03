@@ -63,7 +63,7 @@ Default debug function for range inputs. See
 ##hemlock.**Range**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Range</b>(<i>page=None, template='hemlock/range.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L30">[source]</a>
+    <i>class</i> hemlock.<b>Range</b>(<i>label='', template='hemlock/range.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L30">[source]</a>
 </p>
 
 Range sliders can be dragged between minimum and maximum values in step
@@ -78,9 +78,9 @@ Inherits from [`hemlock.InputBase`](bases.md) and
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None, default=None</i></b>
+    <td class="field-body" width="100%"><b>label : <i>str or bs4.BeautifulSoup, default=''</i></b>
 <p class="attr">
-    Page to which this range belongs.
+    Range label.
 </p>
 <b>template : <i>str, default='hemlock/range.html'</i></b>
 <p class="attr">
@@ -115,12 +115,11 @@ constructor has finished.
 ####Examples
 
 ```python
-from hemlock import Page, Range, push_app_context
+from hemlock import Range, Page, push_app_context
 
 push_app_context()
 
-p = Page()
-Range(p, label='<p>This is a range slider.</p>')
+p = Page([Range('<p>This is a range slider.</p>')])
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 

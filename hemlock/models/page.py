@@ -37,6 +37,7 @@ from flask import Markup, current_app, render_template, request
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import validates
 from sqlalchemy_mutable import MutableType
+from sqlalchemy_mutablesoup import MutableSoupType
 
 import os
 import re
@@ -162,8 +163,8 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     Parameters
     ----------
-    branch : hemlock.Branch or None, default=None
-        The branch to whose page queue this page belongs.
+    questions : list of hemlock.Question, default=[]
+        Questions to be displayed on this page.
 
     template : str, default='hemlock/page-body.html'
         Template for the page `body`.
@@ -205,6 +206,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     index : int or None, default=None
         Order in which this page appears in its branch's page queue.
 
+    navbar : sqlalchemy_mutablesoup.MutableSoupType
+        Navigation bar.
+
     terminal : bool, default=False
         Indicates that the survey terminates on this page.
 
@@ -231,9 +235,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     forward_to : hemlock.Page or None
         Page to which this page navigates when going forward. If `None`, this 
         page navigates to the next page.
-
-    navbar : hemlock.Navbar or None, default=None
-        Navigation bar.
 
     embedded : list of hemlock.Embedded, default=[]
         List of embedded data elements.
@@ -290,7 +291,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     push_app_context()
 
-    p = Page()
+    p = Page([Label('<p>Hello World</p>')])
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """
@@ -324,8 +325,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         foreign_keys=_forward_to_id,
         remote_side=[id]
     )
-    
-    _navbar_id = db.Column(db.Integer, db.ForeignKey('navbar.id'))
     
     embedded = db.relationship(
         'Embedded',
@@ -413,11 +412,14 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     direction_to = db.Column(db.String(8))
     g = db.Column(MutableType)
     index = db.Column(db.Integer)
+    navbar = db.Column(MutableSoupType)
     terminal = db.Column(db.Boolean)
     viewed = db.Column(db.Boolean, default=False)
-    
-    def __init__(self, branch=None, template='hemlock/page-body.html', **kwargs):
-        self.branch = branch
+
+    def __init__(
+            self, questions=[], template='hemlock/page-body.html', **kwargs
+        ):
+        self.questions = questions
         self.timer = Timer()
         super().__init__(template, **kwargs)
 
@@ -701,6 +703,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
             self.timer.pause()
         self.direction_from = request.form.get('direction')
         [q._record_response() for q in self.questions]
+        return self
     
     def _validate(self):
         """Validate response
@@ -723,9 +726,11 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         print('submit')
         [q._record_data() for q in self.questions]
         [submit_func(self) for submit_func in self.submit_functions]
+        return self
 
     def _debug(self, driver):
         [debug_func(driver, self) for debug_func in self.debug_functions]
+        return self
     
     def _view_nav(self, indent):
         """Print self and next branch for debugging purposes"""

@@ -46,8 +46,8 @@ class Input(InputGroup, InputBase, Question):
 
     Parameters
     ----------
-    page : hemlock.Page or None, default=None
-        Page to which this input belongs.
+    label : str or bs4.BeautifulSoup, default=''
+        Input label.
 
     template : str, default='hemlock/input.html'
         Template for the input body.
@@ -60,20 +60,19 @@ class Input(InputGroup, InputBase, Question):
     Examples
     --------
     ```python
-    from hemlock import Page, Input, push_app_context
+    from hemlock import Input, Page, push_app_context
 
     push_app_context()
 
-    p = Page()
-    Input(p, label='<p>This is an input.</p>')
+    p = Page([Input('<p>Input text here.</p>')])
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'input'}
 
-    def __init__(self, page=None, template='hemlock/input.html', **kwargs):
-        super().__init__(page, template, **kwargs)
+    def __init__(self, label='', template='hemlock/input.html', **kwargs):
+        super().__init__(label, template, **kwargs)
 
     @property
     def input_type(self):

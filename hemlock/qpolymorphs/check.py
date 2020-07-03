@@ -30,8 +30,12 @@ class Check(ChoiceQuestion):
 
     Parameters
     ----------
-    page : hemlock.Page or None, default=None
-        Page to which this question belongs.
+    label : str or bs4.BeautifulSoup, default=''
+        Check question label.
+
+    choices : list of hemlock.Choice or str, default=[]
+        Choices which participants can check. String inputs are automatically
+        converted to `hemlock.Choice` objects.
 
     template : str, default='hemlock/check.html'
         Template for the check body.
@@ -54,13 +58,11 @@ class Check(ChoiceQuestion):
     Examples
     --------
     ```python
-    from hemlock import Page, Check, push_app_context
+    from hemlock import Check, Page, push_app_context
 
     push_app_context()
 
-    p = Page()
-    c = Check(p, label='<p>This is a checkbox question.</p>')
-    c.choices = ['Yes', 'No', 'Maybe']
+    p = Page([Check('<p>Check one.</p>', ['Yes','No','Maybe'])])
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """
@@ -69,8 +71,11 @@ class Check(ChoiceQuestion):
 
     inline = db.Column(db.Boolean, default=False)
 
-    def __init__(self, page=None, template='hemlock/check.html', **kwargs):
-        super().__init__(page, template, **kwargs)
+    def __init__(
+            self, label='', choices=[], template='hemlock/check.html', 
+            **kwargs
+        ):
+        super().__init__(label, choices, template, **kwargs)
 
     @property
     def align(self):

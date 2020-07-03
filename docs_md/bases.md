@@ -84,9 +84,9 @@ Data elements 'pack' their data and return it to their participant, who in turn 
 <p class="attr">
     Data this element contributes to the dataframe.
 </p>
-<b>data_rows : <i>int, default=1</i></b>
+<b>rows : <i>int, default=1</i></b>
 <p class="attr">
-    Number of rows this data element contributes to the dataframe for its participant. Set to <code>-1</code> to indicate that this element's data should appear in every row of its participant's data.
+    Number of rows this data element contributes to the dataframe for its participant. If negative, this data element will 'fill in' any emtpy rows at the end of the dataframe with its most recent value.
 </p>
 <b>index : <i>int or None, default=None</i></b>
 <p class="attr">

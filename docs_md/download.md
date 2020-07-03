@@ -36,7 +36,7 @@ See <https://dsbowen.github.io/flask-download-btn/> for more details.
 ##hemlock.**Download**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Download</b>(<i>page=None, template='hemlock/download.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/download.py#L16">[source]</a>
+    <i>class</i> hemlock.<b>Download</b>(<i>label='', template='hemlock/download.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/download.py#L16">[source]</a>
 </p>
 
 Allows participants to download files.
@@ -50,6 +50,17 @@ Inherits from
     <col class="field-body" />
     <tbody valign="top">
         <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>label : <i>str or bs4.BeautifulSoup, default=''</i></b>
+<p class="attr">
+    Download button label.
+</p>
+<b>template : <i>str, default='hemlock/download.html'</i></b>
+<p class="attr">
+    Download button body template.
+</p></td>
+</tr>
+<tr class="field">
     <th class="field-name"><b>Relationships:</b></td>
     <td class="field-body" width="100%"><b>create_file_functions : <i>list of hemlock.CreateFile</i></b>
 <p class="attr">
@@ -66,12 +77,12 @@ Inherits from
 ####Examples
 
 ```python
-from hemlock import Page, Download, push_app_context
+from hemlock import Download, Page, push_app_context
 
 push_app_context()
 
-p = Page()
-Download(p, downloads=[('HELLO_WORLD_URL', 'hello_world.txt')])
+p = Page([Download('<p>Click here to download a file.</p>')])
+p.preview('Ubuntu')
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 
