@@ -5,7 +5,7 @@ from ..tools import key
 from .bases import Base
 from .private import DataFrame, DataStore, Router
 
-from flask_login import UserMixin
+from flask_login import UserMixin, login_user
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import MutableDictType
 
@@ -193,26 +193,59 @@ class Participant(UserMixin, Base, db.Model):
         if not self.current_branch.pages:
             self._router.navigator.forward_recurse()
         return self
-    
-    def get_meta(self):
+
+    def back(self, back_to=None):
         """
-        This is where it gets meta.
+        Navigate back for debugging purposes.
+
+        Parameters
+        ----------
+        back_to : hemlock.Page or None, default=None
+            Navigate back to this page; if `None`, navigate back one page.
 
         Returns
         -------
-        meta : dict
-            Participant's metadata, including the ID, end time, start time, 
-            and current status.
+        self : hemlock.Participant
         """
-        meta = self.meta.copy()
-        meta.update({
-            'ID': self.id,
-            'EndTime': self.end_time,
-            'StartTime': self.start_time,
-            'Status': self.status
-        })
-        return meta
-    
+        self._router.navigator.back(back_to)
+        return self
+
+    def forward(self, forward_to=None):
+        """
+        Navigate forward for debugging purposes.
+
+        Parameters
+        ----------
+        forward_to : hemlock.Page or None, default=None
+            Navigate forward to this page; if `None`, navigate forward one 
+            page.
+
+        Returns
+        -------
+        self : hemlock.Participant
+        """
+        self._router.navigator.forward(forward_to)
+        return self
+
+    def gen_test_participant(gen_root):
+        """
+        Generate a test participant for debugging purposes.
+
+        Parameters
+        ----------
+        gen_root : callable
+            Function to generate the root branch of the participant's tree.
+            This should return a `hemlock.Branch`.
+
+        Returns
+        -------
+        part : hemlock.Participant
+        """
+        part = Participant(meta={})
+        part._init_tree(gen_root)
+        login_user(part)
+        return part
+
     def get_data(self):
         """
         Returns
@@ -271,3 +304,34 @@ class Participant(UserMixin, Base, db.Model):
             var_count[var] = 0
         element.order = var_count[var]
         var_count[var] += 1
+    
+    def get_meta(self):
+        """
+        This is where it gets meta.
+
+        Returns
+        -------
+        meta : dict
+            Participant's metadata, including the ID, end time, start time, 
+            and current status.
+        """
+        meta = self.meta.copy()
+        meta.update({
+            'ID': self.id,
+            'EndTime': self.end_time,
+            'StartTime': self.start_time,
+            'Status': self.status
+        })
+        return meta
+
+    def view_nav(self):
+        """
+        View participant's branch stack.
+
+        Returns
+        -------
+        self : hemlock.Participant
+        """
+        self.branch_stack[0].view_nav()
+        print('\n C = current page \n T = terminal page\n')
+        return self

@@ -96,7 +96,7 @@ class Router(RouterMixin, db.Model):
 
     def __init__(self, gen_root):
         self.view_function = gen_root.__name__
-        self.navigator = Navigator()
+        self.navigator = Navigator(gen_root)
         super().__init__(self.compile)
 
     def __call__(self):
@@ -278,7 +278,7 @@ class Navigator(RouterMixin, db.Model):
 
     """Forward navigation"""
     @set_route
-    def forward(self, forward_to):
+    def forward(self, forward_to=None):
         """Advance forward to specified Page"""
         self.in_progress = True
         if forward_to is None:
@@ -300,7 +300,7 @@ class Navigator(RouterMixin, db.Model):
     def insert_branch(self, origin):
         """Grow and insert new branch into the branch stack"""
         return self.run_worker(
-            origin.navigate_function, 
+            origin._navigate, 
             origin.navigate_worker, 
             self._insert_branch, 
             origin
@@ -316,7 +316,7 @@ class Navigator(RouterMixin, db.Model):
     @set_route
     def forward_recurse(self):
         """Recursive forward function
-        
+    navigator
         Advance forward until the next Page is found (i.e. is not None).
         """
         if self.page is not None:

@@ -32,7 +32,7 @@ nav:
       - Download: download.md
       - File upload: file.md
       - Input: input.md
-      - input group: input_group.md
+      - Input group: input_group.md
       - Label: label.md
       - Range: range.md
       - Select: select.md

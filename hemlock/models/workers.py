@@ -143,9 +143,9 @@ class NavigateWorker(WorkerMixin, Base, db.Model):
     @property
     def func(self):
         if self.branch:
-            return self.branch.navigate_function
+            return self.branch._navigate
         if self.page:
-            return self.page.navigate_function
+            return self.page._navigate
 
     def __init__(self, parent=None, *args, **kwargs):
         if isinstance(parent, Branch):

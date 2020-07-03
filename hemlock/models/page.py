@@ -614,6 +614,34 @@ class Page(HTMLMixin, BranchingBase, db.Model):
                         url, hlk_static_folder, hlk_static_url_path
                     )
 
+    def view_nav(self, indent=0):
+        """
+        Print the navigation starting at this page for debugging purposes.
+        
+        Parameters
+        ----------
+        indent : int, default=0
+            Starting indentation.
+
+        Returns
+        -------
+        self : hemlock.Page
+        """
+        # Note to self: the commented lines were very useful for me when 
+        # debugging the navigation system; less so for users
+
+        # HEAD_PART = '<== head page of participant'
+        # HEAD_BRANCH = '<== head page of branch'
+        HEAD_PART = 'C'
+        head_part = HEAD_PART if self == self.part.current_page else ''
+        # head_branch = HEAD_BRANCH if self == self.branch.current_page else ''
+        # print(' '*indent, self, head_branch, head_part)
+        terminal = 'T' if self.terminal else ''
+        print(' '*indent, self, head_part, terminal)
+        if self.next_branch in self.part.branch_stack:
+            self.next_branch.view_nav()
+        return self
+
     # methods executed during study
     def _compile(self):
         """
@@ -723,7 +751,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         return is_valid
     
     def _submit(self):
-        print('submit')
         [q._record_data() for q in self.questions]
         [submit_func(self) for submit_func in self.submit_functions]
         return self
@@ -731,13 +758,3 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     def _debug(self, driver):
         [debug_func(driver, self) for debug_func in self.debug_functions]
         return self
-    
-    def _view_nav(self, indent):
-        """Print self and next branch for debugging purposes"""
-        HEAD_PART = '<== head page of participant'
-        HEAD_BRANCH = '<== head page of branch'
-        head_part = HEAD_PART if self == self.part.current_page else ''
-        head_branch = HEAD_BRANCH if self == self.branch.current_page else ''
-        print(' '*indent, self, head_branch, head_part)
-        if self.next_branch in self.part.branch_stack:
-            self.next_branch.view_nav()

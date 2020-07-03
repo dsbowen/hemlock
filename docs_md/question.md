@@ -164,7 +164,7 @@ Clear the response.
 ##hemlock.**ChoiceQuestion**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>ChoiceQuestion</b>(<i>label='', choices=[], template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L207">[source]</a>
+    <i>class</i> hemlock.<b>ChoiceQuestion</b>(<i>label='', choices=[], template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L212">[source]</a>
 </p>
 
 A question which contains choices. Inherits from `hemlock.Question`.

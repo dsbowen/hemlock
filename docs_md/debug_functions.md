@@ -83,12 +83,13 @@ p = Page()
 p.debug_functions.pop()
 Debug.forward(p)
 p.preview(driver=driver)._debug(driver)
+# p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
 ```
 
 ##hemlock.functions.debug.**back**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>back</b>(<i>driver, page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L61">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>back</b>(<i>driver, page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L62">[source]</a>
 </p>
 
 Click the back button.
@@ -127,12 +128,13 @@ p = Page(back=True)
 p.debug_functions.pop()
 Debug.back(p)
 p.preview(driver=driver)._debug(driver)
+# p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
 ```
 
 ##hemlock.functions.debug.**send_keys**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>send_keys</b>(<i>driver, question, *keys, p_num=0.5</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L94">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>send_keys</b>(<i>driver, question, *keys, p_num=0.5</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L96">[source]</a>
 </p>
 
 Send the specified keys to the `<textarea>` or `<input>`.
@@ -175,12 +177,13 @@ driver = chromedriver()
 
 p = Page([Debug.send_keys(Input(), 'hello world')])
 p.preview(driver=driver)._debug(driver)
+# p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
 ```
 
 ##hemlock.functions.debug.**random_str**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>random_str</b>(<i>driver, question, magnitude=2, p_whitespace=0.2</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L139">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>random_str</b>(<i>driver, question, magnitude=2, p_whitespace=0.2</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L142">[source]</a>
 </p>
 
 Send a random string to the textarea.
@@ -223,12 +226,13 @@ driver = chromedriver()
 
 p = Page([Debug.random_str(Input())])
 p.preview(driver=driver)._debug(driver)
+# p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
 ```
 
 ##hemlock.functions.debug.**random_number**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>random_number</b>(<i>driver, question, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L177">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>random_number</b>(<i>driver, question, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L181">[source]</a>
 </p>
 
 Send a random number to the textarea or input.
@@ -283,12 +287,13 @@ driver = chromedriver()
 
 p = Page([Debug.random_number(Input())])
 p.preview(driver=driver)._debug(driver)
+# p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
 ```
 
 ##hemlock.functions.debug.**send_datetime**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>send_datetime</b>(<i>driver, question, datetime_=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L220">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>send_datetime</b>(<i>driver, question, datetime_=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L225">[source]</a>
 </p>
 
 Send a `datetime.datetime` object to an input. Inputs should be of type
@@ -332,12 +337,13 @@ p = Page([
     Debug.send_datetime(Input(input_type='date'), datetime.utcnow())
 ])
 p.preview(driver=driver)._debug(driver)
+# p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
 ```
 
 ##hemlock.functions.debug.**drag_range**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>drag_range</b>(<i>driver, range_, target=None, tol=0, max_iter=10</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L261">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>drag_range</b>(<i>driver, range_, target=None, tol=0, max_iter=10</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L267">[source]</a>
 </p>
 
 Drag a range slider to specified target value.
@@ -384,12 +390,13 @@ driver = chromedriver()
 
 p = Page([Debug.drag_range(Range(), 80)])
 p.preview(driver=driver)._debug(driver)
+# p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
 ```
 
 ##hemlock.functions.debug.**click_choices**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>click_choices</b>(<i>driver, question, *choices</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L310">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>click_choices</b>(<i>driver, question, *choices</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L317">[source]</a>
 </p>
 
 Click on choices or options.
@@ -429,12 +436,13 @@ driver = chromedriver()
 check = Check('<p>Check label</p>', ['Yes','No'])
 p = Page([Debug.click_choices(check, check.choices[0])])
 p.preview(driver=driver)._debug(driver)
+# p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
 ```
 
 ##hemlock.functions.debug.**clear_choices**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>clear_choices</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L355">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>clear_choices</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L363">[source]</a>
 </p>
 
 Clear selected choices.
@@ -475,4 +483,5 @@ check = Check('<p>Check label</p>', ['Yes','No'], multiple=True)
 check.default = list(check.choices)
 p = Page([Debug.clear_choices(check)])
 p.preview(driver=driver)._debug(driver)
+# p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
 ```

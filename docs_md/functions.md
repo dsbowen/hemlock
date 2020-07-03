@@ -175,9 +175,9 @@ driver = chromedriver()
 
 @Debug.register
 def greet(driver, greet_q):
-inpt = greet_q.input_from_driver(driver)
-inpt.clear()
-inpt.send_keys('Hello World!')
+    inpt = greet_q.input_from_driver(driver)
+    inpt.clear()
+    inpt.send_keys('Hello World!')
 
 p = Page([Debug.greet(Input('<p>Enter a greeting.</p>'))])
 p.preview(driver=driver) # p.preview('Ubuntu', driver) if working in Ubuntu/WSL
@@ -228,14 +228,58 @@ Creates a new branch to which the participant will navigate.
     </tbody>
 </table>
 
+####Examples
 
+```python
+from hemlock import Branch, Navigate, Page, Participant, push_app_context
+
+def start():
+    return Navigate.end(Branch([Page()]))
+
+@Navigate.register
+def end(start_branch):
+    return Branch([Page(terminal=True)])
+
+app = push_app_context()
+
+part = Participant.gen_test_participant(start)
+part.view_nav()
+```
+
+Out:
+
+```
+<Branch 1>
+<Page 1> C
+
+C = current page
+T = terminal page
+```
+
+In:
+
+```python
+part.forward().view_nav()
+```
+
+Out:
+
+```
+<Branch 1>
+<Page 1>
+    <Branch 2>
+    <Page 2> C T
+
+C = current page
+T = terminal page
+```
 
 ####Methods
 
 
 
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L169">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L215">[source]</a>
 </p>
 
 Create a new branch and 'link' it to the tree. Linking in the new
@@ -287,8 +331,8 @@ push_app_context()
 
 @Submit.register
 def get_initials(name_q):
-names = name_q.response.split()
-name_q.data = '.'.join([name[0] for name in names])
+    names = name_q.response.split()
+    name_q.data = '.'.join([name[0] for name in names])
 
 inpt = Submit.get_initials(Input("<p>What's your name?</p>"))
 inpt.response = 'Andrew Yang 2020'
@@ -307,7 +351,7 @@ A.Y.2
 ##hemlock.**Validate**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Validate</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L236">[source]</a>
+    <i>class</i> hemlock.<b>Validate</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L282">[source]</a>
 </p>
 
 Validates a participant's response.
@@ -368,7 +412,7 @@ You entered "goodbye moon", not "hello world"
 
 
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L291">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L337">[source]</a>
 </p>
 
 

@@ -45,10 +45,13 @@ def push_app_context():
     -------
     app : flask.app.Flask
     """
+    from ..models.private import DataStore
     app = create_app()
     app.app_context().push()
     app.test_request_context().push()
     db.create_all()
+    if not DataStore.query.first():
+        DataStore()
     return app
 
 def create_app(settings=settings):

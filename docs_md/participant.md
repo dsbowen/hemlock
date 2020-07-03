@@ -112,20 +112,27 @@ handles navigation for that participant.
 
 
 <p class="func-header">
-    <i></i> <b>get_meta</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L197">[source]</a>
+    <i></i> <b>back</b>(<i>self, back_to=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L197">[source]</a>
 </p>
 
-This is where it gets meta.
+Navigate back for debugging purposes.
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
     <col class="field-body" />
     <tbody valign="top">
         <tr class="field">
-    <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>meta : <i>dict</i></b>
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>back_to : <i>hemlock.Page or None, default=None</i></b>
 <p class="attr">
-    Participant's metadata, including the ID, end time, start time, and current status.
+    Navigate back to this page; if <code>None</code>, navigate back one page.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>self : <i>hemlock.Participant</i></b>
+<p class="attr">
+    
 </p></td>
 </tr>
     </tbody>
@@ -136,7 +143,69 @@ This is where it gets meta.
 
 
 <p class="func-header">
-    <i></i> <b>get_data</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L216">[source]</a>
+    <i></i> <b>forward</b>(<i>self, forward_to=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L213">[source]</a>
+</p>
+
+Navigate forward for debugging purposes.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>forward_to : <i>hemlock.Page or None, default=None</i></b>
+<p class="attr">
+    Navigate forward to this page; if <code>None</code>, navigate forward one page.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>self : <i>hemlock.Participant</i></b>
+<p class="attr">
+    
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+
+
+<p class="func-header">
+    <i></i> <b>gen_test_participant</b>(<i>gen_root</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L230">[source]</a>
+</p>
+
+Generate a test participant for debugging purposes.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>gen_root : <i>callable</i></b>
+<p class="attr">
+    Function to generate the root branch of the participant's tree. This should return a <code>hemlock.Branch</code>.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>part : <i>hemlock.Participant</i></b>
+<p class="attr">
+    
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+
+
+<p class="func-header">
+    <i></i> <b>get_data</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L249">[source]</a>
 </p>
 
 
@@ -160,3 +229,50 @@ This is where it gets meta.
 Data elements are added to the dataframe in the order in which they
 were created (i.e. by id). This is not necessarily the order in which
 they appeared to the Participant.
+
+
+
+<p class="func-header">
+    <i></i> <b>get_meta</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L308">[source]</a>
+</p>
+
+This is where it gets meta.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>meta : <i>dict</i></b>
+<p class="attr">
+    Participant's metadata, including the ID, end time, start time, and current status.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+
+
+<p class="func-header">
+    <i></i> <b>view_nav</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L327">[source]</a>
+</p>
+
+View participant's branch stack.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>self : <i>hemlock.Participant</i></b>
+<p class="attr">
+    
+</p></td>
+</tr>
+    </tbody>
+</table>
+

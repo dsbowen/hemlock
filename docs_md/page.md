@@ -504,3 +504,33 @@ Preview the page in a browser window.
 ####Notes
 
 This method does not run the compile functions.
+
+
+
+<p class="func-header">
+    <i></i> <b>view_nav</b>(<i>self, indent=0</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L617">[source]</a>
+</p>
+
+Print the navigation starting at this page for debugging purposes.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>indent : <i>int, default=0</i></b>
+<p class="attr">
+    Starting indentation.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>self : <i>hemlock.Page</i></b>
+<p class="attr">
+    
+</p></td>
+</tr>
+    </tbody>
+</table>
+

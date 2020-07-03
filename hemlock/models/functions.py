@@ -125,9 +125,9 @@ class Debug(FunctionRegistrar, db.Model):
 
     @Debug.register
     def greet(driver, greet_q):
-        inpt = greet_q.input_from_driver(driver)
-        inpt.clear()
-        inpt.send_keys('Hello World!')
+    \    inpt = greet_q.input_from_driver(driver)
+    \    inpt.clear()
+    \    inpt.send_keys('Hello World!')
 
     p = Page([Debug.greet(Input('<p>Enter a greeting.</p>'))])
     p.preview(driver=driver) # p.preview('Ubuntu', driver) if working in Ubuntu/WSL
@@ -162,6 +162,52 @@ class Navigate(FunctionRegistrar, db.Model):
 
     page : hemlock.Page
         Set from the `parent` parameter.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Branch, Navigate, Page, Participant, push_app_context
+
+    def start():
+    \    return Navigate.end(Branch([Page()]))
+        
+    @Navigate.register
+    def end(start_branch):
+    \    return Branch([Page(terminal=True)])
+        
+    app = push_app_context()
+
+    part = Participant.gen_test_participant(start)
+    part.view_nav()
+    ```
+
+    Out:
+
+    ```
+    <Branch 1>
+    <Page 1> C 
+
+    C = current page 
+    T = terminal page
+    ```
+
+    In:
+
+    ```python
+    part.forward().view_nav()
+    ```
+
+    Out:
+
+    ```
+    <Branch 1>
+    <Page 1>  
+    \    <Branch 2>
+    \    <Page 2> C T
+
+    C = current page 
+    T = terminal page
+    ```
     """
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
@@ -214,8 +260,8 @@ class Submit(FunctionRegistrar, db.Model):
 
     @Submit.register
     def get_initials(name_q):
-        names = name_q.response.split()
-        name_q.data = '.'.join([name[0] for name in names])
+    \    names = name_q.response.split()
+    \    name_q.data = '.'.join([name[0] for name in names])
 
     inpt = Submit.get_initials(Input("<p>What's your name?</p>"))
     inpt.response = 'Andrew Yang 2020'

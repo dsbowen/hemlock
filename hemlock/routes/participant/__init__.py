@@ -1,14 +1,13 @@
 """Routes for participants"""
 
-from ...app.factory import bp, db, login_manager, socketio
-from ...database import Participant, Page
+from ...app import bp, db, login_manager, socketio
+from ...models import Participant, Page
 from ...qpolymorphs import Label
 from ...models.private import DataStore
 
 from datetime import datetime, timedelta
 from flask import current_app, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
-from functools import wraps
 
 """Initial views and functions"""
 @login_manager.user_loader
@@ -170,5 +169,5 @@ def restart():
             initialize_participant(get_metadata())
         return redirect(url_for('hemlock.'+bp.default_route))
         
-    p = Page([Label(current_app.restart_text], back=True)
+    p = Page([Label(current_app.restart_text)], back=True)
     return p._compile()._render()

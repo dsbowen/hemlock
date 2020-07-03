@@ -1,12 +1,14 @@
-"""App setup"""
+"""# Application setup"""
 
-import .participant
-import .researcher
-from ..factory import bp, db
+from ..app import bp, db
 from ..models.private import DataStore
+from . import participant
+# from . import researcher
 
 from flask import current_app, session, request
 from flask_login import current_user, login_required
+
+from functools import wraps
 
 def route(path, default=False):
     """Decorator for registering a view function

@@ -163,14 +163,18 @@ class Branch(BranchingBase, db.Model):
         -------
         self
         """
-        HEAD_PART = '<== head branch of participant'
-        HEAD_BRANCH = '<== head page of branch'
+        # Note to self: the commented lines were very useful for me when 
+        # debugging the navigation system; less so for users
+
+        # HEAD_PART = '<== head branch of participant'
+        # HEAD_BRANCH = '<== head page of branch'
         indent = 4*(0 if self.index is None else self.index)
-        head_part = HEAD_PART if self == self.part.current_branch else ''
-        print(' '*indent, self, head_part)
+        # head_part = HEAD_PART if self == self.part.current_branch else ''
+        # print(' '*indent, self, head_part)
+        print(' '*indent, self)
         [p.view_nav(indent) for p in self.pages]
-        head_branch = HEAD_BRANCH if None == self.current_page else ''
-        print(' '*indent, None, head_branch)
+        # head_branch = HEAD_BRANCH if None == self.current_page else ''
+        # print(' '*indent, None, head_branch)
         if self.next_branch in self.part.branch_stack:
             self.next_branch.view_nav()
         return self

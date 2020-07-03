@@ -24,8 +24,8 @@ class DataStore(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     _current_status = db.Column(MutableDictType, default=DEFAULT_STATUS)
-    data = db.Column(DataFrameType)
-    meta = db.Column(DataFrameType)
+    data = db.Column(DataFrameType, default={})
+    meta = db.Column(DataFrameType, default={})
     parts_stored = db.relationship('Participant')
     
     @property
@@ -46,9 +46,9 @@ class DataStore(db.Model):
         
         Store Participant data on completion and time out.
         """
-        if part.previous_status is not None:
-            count = self._current_status[part.previous_status]
-            self._current_status[part.previous_status] = max(count-1, 0)
+        if part._previous_status is not None:
+            count = self._current_status[part._previous_status]
+            self._current_status[part._previous_status] = max(count-1, 0)
         self._current_status[part.status] += 1
         current_status = json.dumps(self.current_status)
         socketio.emit('json', current_status, namespace='/participants-nsp')

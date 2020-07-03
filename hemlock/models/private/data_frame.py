@@ -71,12 +71,12 @@ class DataFrame(MutableDict):
             return cls(value)
         return super().coerce(key, value)
 
-    def __init__(self):
+    def __init__(self, value={}):
         # set _python_type to None to avoid validation in setattr
         self._python_type = None
         self.filename = None
         # initialize to empty dictionary
-        super().__init__({})
+        super().__init__(value)
 
     def max_row(self, variables=None):
         """

@@ -154,7 +154,7 @@ Print this branch's page queue for debugging purposes.
 
 
 <p class="func-header">
-    <i></i> <b>preview</b>(<i>self, dist=None, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L178">[source]</a>
+    <i></i> <b>preview</b>(<i>self, dist=None, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L182">[source]</a>
 </p>
 
 Preview the page queue in the a browser window.

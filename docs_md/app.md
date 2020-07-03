@@ -70,7 +70,7 @@ Push an app context for debugging in shell or notebook.
 ##hemlock.app.**create_app**
 
 <p class="func-header">
-    <i>def</i> hemlock.app.<b>create_app</b>(<i>settings=settings</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L54">[source]</a>
+    <i>def</i> hemlock.app.<b>create_app</b>(<i>settings=settings</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L57">[source]</a>
 </p>
 
 Create a Hemlock application.

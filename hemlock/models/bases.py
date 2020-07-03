@@ -31,7 +31,7 @@ class Base(FunctionRelator, OrderingItem, ModelIdBase):
     name = db.Column(db.String)
 
     def __init__(self, **kwargs):
-        if self not in db.session:
+        if self.id is None:
             db.session.add(self)
             db.session.flush([self])
         settings = current_app.settings.get(self.__class__.__name__)
@@ -53,6 +53,10 @@ class BranchingBase(Base):
             self.navigate_function is not None 
             and self.next_branch not in self.part.branch_stack
         )
+
+    def _navigate(self):
+        self.navigate_function(self)
+        return self
 
 
 class Data(Base, MutableModelBase, db.Model):
