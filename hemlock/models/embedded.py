@@ -23,29 +23,60 @@ class Embedded(Data):
     data : sqlalchemy_mutable.MutableType
         Data this element contributes to the dataframe.
 
-    rows : int, default=1
+    data_rows : int, default=1
         Number of rows this data element contributes to the dataframe for its 
         participant. If negative, this data element will 'fill in' any emtpy
         rows at the end of the dataframe with its most recent value.
 
-    Attributes
-    ----------
+    Relationships
+    -------------
     branch : hemlock.Branch or None
         The branch to which the embedded data element belongs.
 
     page : hemlock.Page or None
         The page to which this embedded data element belongs.
+
+    participant : hemlock.Participant or None
+        The participant to whom this data element belongs.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Branch, Embedded, Page, Participant, push_app_context
+
+    def start():
+    \    return Branch(Page())
+
+    push_app_context()
+
+    part = Participant.gen_test_participant(start)
+    part.embedded = [Embedded('Name', 'Socrates', data_rows=-1)]
+    part.get_data()
+    ```
+
+    Out:
+
+    ```
+    {'ID': [3],
+    'EndTime': [datetime.datetime(2020, 7, 4, 17, 57, 23, 854272)],
+    'StartTime': [datetime.datetime(2020, 7, 4, 17, 57, 23, 854272)],
+    'Status': ['InProgress'],
+    'Name': ['Socrates'],
+    'NameOrder': [0],
+    'NameIndex': [0]}
+    ```
     """
     id = db.Column(db.Integer, db.ForeignKey('data.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'embedded'}
 
+    _part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
     _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
 
-    def __init__(self, var=None, data=None, rows=1, **kwargs):
+    def __init__(self, var=None, data=None, data_rows=1, **kwargs):
         self.var = var
         self.data = data
-        self.rows = rows
+        self.data_rows = data_rows
         super().__init__(**kwargs)
 
 

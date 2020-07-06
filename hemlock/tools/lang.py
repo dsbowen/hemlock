@@ -16,9 +16,9 @@ def indef_article(word):
     Examples
     --------
     ```python
-    from hemlock import tools
+    from hemlock.tools import indef_article
 
-    [tools.indef_article(fruit) for fruit in ('apple','banana')]
+    [indef_article(fruit) for fruit in ('apple','banana')]
     ```
 
     Out:
@@ -47,10 +47,10 @@ def join(joiner, *items):
     Examples
     --------
     ```python
-    from hemlock import tools
+    from hemlock.tools import join
 
-    print(tools.join('and', 'world', 'sun'))
-    print(tools.join('or', 'world', 'sun', 'moon'))
+    print(join('and', 'world', 'sun'))
+    print(join('or', 'world', 'sun', 'moon'))
     ```
 
     Out:
@@ -92,9 +92,9 @@ def plural(n, singular, plural=None):
     Examples
     --------
     ```python
-    from hemlock import tools
+    from hemlock.tools import plural
 
-    ['{} {}'.format(n, tools.plural(n, 'cat')) for n in range(0,3)]
+    ['{} {}'.format(n, plural(n, 'cat')) for n in range(0,3)]
     ```
 
     Out:
@@ -133,7 +133,7 @@ def pronouns(person, singular, gender=None, pfx=''):
     Examples
     --------
     ```python
-    from hemlock import tools
+    from hemlock.tools import pronouns
 
     string = '''
     {A_subject} said hello to {B_object} as {B_subject} was walking 
@@ -141,8 +141,8 @@ def pronouns(person, singular, gender=None, pfx=''):
     thought to {A_reflex}.
     '''
     string.format(
-    \    **tools.pronouns(3, True, 'male', pfx='A_'),
-    \    **tools.pronouns(3, True, 'female', pfx='B_')
+    \    **pronouns(3, True, 'male', pfx='A_'),
+    \    **pronouns(3, True, 'female', pfx='B_')
     )
     ```
 
@@ -158,8 +158,8 @@ def pronouns(person, singular, gender=None, pfx=''):
 
     ```python
     string.format(
-    \    **tools.pronouns(3, True, 'female', pfx='A_'),
-    \    **tools.pronouns(3, True, 'male', pfx='B_')
+    \    **pronouns(3, True, 'female', pfx='A_'),
+    \    **pronouns(3, True, 'male', pfx='B_')
     )
     ```
 

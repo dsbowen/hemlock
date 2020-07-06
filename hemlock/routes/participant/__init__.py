@@ -39,7 +39,7 @@ def index():
     if in_progress:
         # DON'T UNDERSTAND THIS LOGIC
         # if duplicate or not current_app.restart_option:
-        if not current_app.restart_option:
+        if not current_app.settings['restart_option']:
             return redirect(url_for('hemlock.'+bp.default_route))
         return redirect(url_for('hemlock.restart', **meta))
     if duplicate:
@@ -70,7 +70,7 @@ def initialize_participant(meta):
     """
     if current_user.is_authenticated:
         logout_user()
-    part = Participant(meta)
+    part = Participant(meta=meta)
     db.session.commit()
     login_user(part)
     
@@ -101,12 +101,10 @@ def is_screenout(meta):
     match_found : bool
         Indicates that the visitor metadata matched screenouts data.
     """
-    if current_app.screenouts is None:
-        return False
     return match_found(
         visitor=meta,
         tracked=current_app.screenouts,
-        keys=current_app.screenout_keys
+        keys=current_app.settings['screenout_keys']
     )
 
 def is_duplicate(meta):
@@ -117,10 +115,12 @@ def is_duplicate(meta):
         Indicates that the visitor metadata was found in the current survey
         metadata.
     """
+    if not current_app.settings['duplicate_keys']:
+        return False
     return match_found(
         visitor=meta,
         tracked=DataStore.query.first().meta,
-        keys=current_app.duplicate_keys,
+        keys=current_app.settings['duplicate_keys'],
     )
 
 def match_found(visitor, tracked, keys):
@@ -142,6 +142,7 @@ def match_found(visitor, tracked, keys):
         Indicates that visitor metadata matches tracked metadata on at least
         one key.
     """
+    keys = keys or tracked.keys()
     for key in keys:
         visitor_val = visitor.get(key)
         tracked_vals = tracked.get(key)
@@ -154,7 +155,7 @@ def match_found(visitor, tracked, keys):
 
 @bp.route('/screenout')
 def screenout():
-    p = Page([Label(current_app.screenout_text)], forward=False)
+    p = Page(Label(current_app.settings['screenout_text']), forward=False)
     return p._compile()._render()
     
 @bp.route('/restart', methods=['GET','POST'])
@@ -169,5 +170,5 @@ def restart():
             initialize_participant(get_metadata())
         return redirect(url_for('hemlock.'+bp.default_route))
         
-    p = Page([Label(current_app.restart_text)], back=True)
+    p = Page(Label(current_app.settings['restart_text']), back=True)
     return p._compile()._render()

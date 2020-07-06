@@ -166,13 +166,11 @@ class Img(Static):
 
     push_app_context()
         
-    p = Page()
     img = Img(
     \    src='https://imgs.xkcd.com/comics/wanna_see_the_code.png', 
     \    align='center'
-    )
-    Label(p, label=img.render())
-
+    ).render()
+    p = Page(Label(img))
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """
@@ -266,10 +264,8 @@ class Vid(Static):
 
     push_app_context()
         
-    p = Page()
     vid = Vid.from_youtube('https://www.youtube.com/watch?v=UbQgXeY_zi4')
-    Label(p, label=vid.render())
-
+    p = Page(Label(vid.render()))
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """

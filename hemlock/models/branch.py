@@ -13,7 +13,7 @@ class Branch(BranchingBase, db.Model):
 
     Parameters
     ----------
-    pages : list of hemlock.Page, default=[]
+    \*pages : hemlock.Page
         Pages which belong to this branch.
 
     Attributes
@@ -66,11 +66,11 @@ class Branch(BranchingBase, db.Model):
 
     push_app_context()
 
-    b = Branch([
-    \    Page([Label('<p>Hello World</p>')]),
-    \    Page([Label('<p>Hello Moon</p>')]),
-    \    Page([Label('<p>Hello Star</p>')])
-    ])
+    b = Branch(
+    \    Page(Label('<p>Hello World</p>')),
+    \    Page(Label('<p>Hello Moon</p>')),
+    \    Page(Label('<p>Hello Star</p>'))
+    )
     b.preview() # b.preview('Ubuntu') if working in Ubuntu/WSL
     ```
 
@@ -151,8 +151,8 @@ class Branch(BranchingBase, db.Model):
 
     index = db.Column(db.Integer)
 
-    def __init__(self, pages=[], **kwargs):
-        self.pages = pages
+    def __init__(self, *pages, **kwargs):
+        self.pages = list(pages)
         super().__init__(**kwargs)
 
     def view_nav(self):

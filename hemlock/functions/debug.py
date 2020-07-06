@@ -122,7 +122,7 @@ def send_keys(driver, question, *keys, p_num=.5):
 
     driver = chromedriver()
 
-    p = Page([Debug.send_keys(Input(), 'hello world')])
+    p = Page(Debug.send_keys(Input(), 'hello world'))
     p.preview(driver=driver)._debug(driver) 
     # p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
     ```
@@ -167,7 +167,7 @@ def random_str(driver, question, magnitude=2, p_whitespace=.2):
 
     driver = chromedriver()
 
-    p = Page([Debug.random_str(Input())])
+    p = Page(Debug.random_str(Input()))
     p.preview(driver=driver)._debug(driver) 
     # p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
     ```
@@ -214,7 +214,7 @@ def random_number(driver, question, *args, **kwargs):
 
     driver = chromedriver()
 
-    p = Page([Debug.random_number(Input())])
+    p = Page(Debug.random_number(Input()))
     p.preview(driver=driver)._debug(driver) 
     # p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
     ```
@@ -250,9 +250,7 @@ def send_datetime(driver, question, datetime_=None):
 
     driver = chromedriver()
 
-    p = Page([
-    \    Debug.send_datetime(Input(input_type='date'), datetime.utcnow())
-    ])
+    p = Page(Debug.send_datetime(Input(input_type='date'), datetime.utcnow()))
     p.preview(driver=driver)._debug(driver) 
     # p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
     ```
@@ -296,7 +294,7 @@ def drag_range(driver, range_, target=None, tol=0, max_iter=10):
 
     driver = chromedriver()
 
-    p = Page([Debug.drag_range(Range(), 80)])
+    p = Page(Debug.drag_range(Range(), 80))
     p.preview(driver=driver)._debug(driver) 
     # p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
     ```
@@ -340,7 +338,7 @@ def click_choices(driver, question, *choices):
     driver = chromedriver()
 
     check = Check('<p>Check label</p>', ['Yes','No'])
-    p = Page([Debug.click_choices(check, check.choices[0])])
+    p = Page(Debug.click_choices(check, check.choices[0]))
     p.preview(driver=driver)._debug(driver) 
     # p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
     ```
@@ -387,7 +385,7 @@ def clear_choices(driver, question):
 
     check = Check('<p>Check label</p>', ['Yes','No'], multiple=True)
     check.default = list(check.choices)
-    p = Page([Debug.clear_choices(check)])
+    p = Page(Debug.clear_choices(check))
     p.preview(driver=driver)._debug(driver) 
     # p.preview('Ubuntu', driver=driver)._debug(driver) if running in Ubuntu/WSL
     ```

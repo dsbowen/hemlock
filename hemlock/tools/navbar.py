@@ -81,7 +81,7 @@ class NavBase():
         self.a['href'] = val
 
     def __init__(self, template, **kwargs):
-        self.id = key(10)
+        self.id = 'navbar-'+key(10)
         self.body = SoupBase(
             open(template).read().format(self_=self), 'html.parser'
         )
@@ -159,7 +159,13 @@ class Navitem(NavBase):
         rendered : bs4.BeautifulSoup
             Copy of `self.body`.
         """
-        return copy(self.body)
+        body = copy(self.body)
+        if self.is_active():
+            li = body.select_one('li')
+            if li.attrs.get('class') is None:
+                li['class'] = []
+            li['class'].append('active')
+        return body
 
 
 class Navitemdd(NavBase):
@@ -191,11 +197,6 @@ class Navitemdd(NavBase):
             A copy of `self.body` with rendered dropdown items.
         """
         body = copy(self.body)
-        if self.is_active():
-            li = body.select_one('li')
-            if li.attrs.get('class') is None:
-                li['class'] = []
-            li['class'].append('active')
         div = body.select_one('div.dropdown-menu')
         [div.append(item.render()) for item in self.dropdownitems]
         return body

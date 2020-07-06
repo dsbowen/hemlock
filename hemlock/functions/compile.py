@@ -77,7 +77,7 @@ def clear_response(obj):
 
     push_app_context()
 
-    p = Compile.clear_response(Page([Input(response='Hello World')]))
+    p = Compile.clear_response(Page(Input(response='Hello World')))
     p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
     p._compile()
     p.preview()
@@ -113,9 +113,9 @@ def shuffle(obj, *attrs):
 
     push_app_context()
 
-    p = Compile.shuffle(Page([
+    p = Compile.shuffle(Page(
     \    Label('<p>Label {}</p>'.format(i)) for i in range(4)
-    ]))
+    ))
     p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
     p._compile()
     p.preview()

@@ -68,20 +68,38 @@ class Participant(UserMixin, Base, db.Model):
     Relationships
     -------------
     branch_stack : list of hemlock.Branch
-        A stack of branches.
+        The participant's stack of branches.
 
     current_branch : hemlock.Branch
-        Participant's current `Branch` (head of `self.branch_stack`).
+        Participant's current branch (head of `self.branch_stack`).
 
     current_page : hemlock.Page
-        Participant's current `Page` (head of `self.current_branch`).
+        Participant's current page (head of `self.current_branch`).
 
     pages : list of hemlock.Page
-        List of all `Page`s belonging to the participant.
+        Pages belonging to the participant.
+
+    embedded : list of hemlock.Embedded
+        Embedded data elements belonging to the participant.
 
     data_elements : list of hemlock.DataElement
         List of all `DataElement`s belonging to the participant, ordered by 
         `id`.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Branch, Label, Page, Participant, push_app_context
+
+    def start():
+    \    return Branch(Page(Label('<p>Hello World</p>')))
+
+    app = push_app_context()
+
+    part = Participant.gen_test_participant(start)
+    part.current_page.preview()
+    # part.current_page.preview('Ubuntu') if running in Ubuntu/WSL
+    ```
     """
     id = db.Column(db.Integer, primary_key=True)
     _key = db.Column(db.String(90))
@@ -114,10 +132,18 @@ class Participant(UserMixin, Base, db.Model):
     @property
     def pages(self):
         return [p for b in self.branch_stack for p in b.pages]
+
+    embedded = db.relationship(
+        'Embedded',
+        backref='part',
+        order_by='Embedded.index',
+        collection_class=ordering_list('index'),
+    )
         
     @property
     def data_elements(self):
-        elements = [e for b in self.branch_stack for e in b.data_elements]
+        elements = [e for e in self.embedded]
+        elements += [e for b in self.branch_stack for e in b.data_elements]
         elements.sort(key=lambda e: e.id)
         return elements
     
@@ -262,7 +288,7 @@ class Participant(UserMixin, Base, db.Model):
         self._set_order()
         elements = self.data_elements
         df = DataFrame()
-        df.add(data=self.get_meta, rows=-1)
+        df.add(data=self.get_meta(), rows=-1)
         [df.add(data=e._pack_data(), rows=e.data_rows) for e in elements]
         df.pad()
         return df
@@ -274,10 +300,13 @@ class Participant(UserMixin, Base, db.Model):
         Participant relative to other elements of the same variable. These 
         functions walk through the survey and set the element order.
         
-        Note that a Branch's embedded data elements are set before its 
-        Pages' elements. A Page's Timer is set before its Questions.
+        The participant's embedded data are set first, followed by its
+        branches' data. A branch's embedded data are set first, followed by
+        its page's data. A page's embedded data are set first, followed by its
+        timer, followed by its quesitons.
         """
         var_count = {}
+        [self._set_order_element(e, var_count) for e in self.embedded]
         if self.branch_stack:
             self._set_order_branch(self.branch_stack[0], var_count)
     

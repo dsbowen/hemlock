@@ -36,7 +36,6 @@ setuptools.setup(
         'sqlalchemy-modelid>=0.0.3',
         'sqlalchemy-mutable>=0.0.8',
         'sqlalchemy-mutablesoup>=0.0.8',
-        'sqlalchemy-nav>=0.0.5',
         'sqlalchemy-orderingitem>=0.0.5',
     ],
     classifiers=[

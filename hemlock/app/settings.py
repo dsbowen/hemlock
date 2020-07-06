@@ -9,6 +9,10 @@ clean_data : callable or None, default=None
     profile. This callable takes and returns `pandas.DataFrame`. If `None`, no
     additional cleaning is performend.
 
+duplicate_keys : list, default=[]
+    List of keys (column names) on which to block duplicate participants. If
+    empty, the app will not screen out duplicates.
+
 password : str, default=''
     Password for accessing the researcher dashboard.
 
@@ -59,11 +63,11 @@ SECRET_KEY : str
 
 SQLALCHEMY_DATABASE_URI : str
     Looks for `DATABASE_URL` environment variable. Otherwise, we use a SQLite 
-    database `data.db`.
+    database `data.db` in the current working directory.
 
 SQLALCHEMY_TRACK_MODIFICATIONS: bool, default=False
 
-REDIS_URL : str
+REDIS_URL : str, default='redis://'
     Looks for a `REDIS_URL` environment variable.
 
 DownloadBtnManager
@@ -108,6 +112,7 @@ TIME_EXPIRED_TXT = 'You have exceeded your time limit for this survey'
 
 settings = {
     'clean_data': None,
+    'duplicate_keys': [],
     'password': '',
     'restart_option': True,
     'restart_text': RESTART_TXT,
@@ -127,7 +132,7 @@ settings = {
             or 'sqlite:///'+os.path.join(os.getcwd(), 'data.db')
         ),
         'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-        'REDIS_URL': os.environ.get('REDIS_URL'),
+        'REDIS_URL': os.environ.get('REDIS_URL') or 'redis://',
     },
     'DownloadBtnManager': {},
     'Manager': {

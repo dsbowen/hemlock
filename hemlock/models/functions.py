@@ -59,7 +59,8 @@ class FunctionRegistrar(FunctionMixin, Base):
 
 class Compile(FunctionRegistrar, db.Model):
     """
-    Helps compile a page or question html before it is rendered and displayed to a participant.
+    Helps compile a page or question html before it is rendered and displayed 
+    to a participant.
 
     Inherits from `hemlock.FunctionRegistrar`.
 
@@ -83,7 +84,7 @@ class Compile(FunctionRegistrar, db.Model):
     \    greet_q.label = '<p>Hello {}!</p>'.format(name_q.response)
 
     name_q = Input("<p>What's your name?</p>")
-    p = Page([Compile.greet(Label(), name_q)])
+    p = Page(Compile.greet(Label(), name_q))
     name_q.response = 'World'
     p._compile()
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
@@ -129,7 +130,7 @@ class Debug(FunctionRegistrar, db.Model):
     \    inpt.clear()
     \    inpt.send_keys('Hello World!')
 
-    p = Page([Debug.greet(Input('<p>Enter a greeting.</p>'))])
+    p = Page(Debug.greet(Input('<p>Enter a greeting.</p>')))
     p.preview(driver=driver) # p.preview('Ubuntu', driver) if working in Ubuntu/WSL
     p._debug(driver)
     ```
@@ -149,134 +150,6 @@ class Debug(FunctionRegistrar, db.Model):
         """
         if random() < self.p_exec:
             return super().__call__(*args, **kwargs)
-
-
-class Navigate(FunctionRegistrar, db.Model):
-    """
-    Creates a new branch to which the participant will navigate.
-
-    Relationships
-    -------------
-    branch : hemlock.Branch
-        Set from the `parent` parameter.
-
-    page : hemlock.Page
-        Set from the `parent` parameter.
-
-    Examples
-    --------
-    ```python
-    from hemlock import Branch, Navigate, Page, Participant, push_app_context
-
-    def start():
-    \    return Navigate.end(Branch([Page()]))
-        
-    @Navigate.register
-    def end(start_branch):
-    \    return Branch([Page(terminal=True)])
-        
-    app = push_app_context()
-
-    part = Participant.gen_test_participant(start)
-    part.view_nav()
-    ```
-
-    Out:
-
-    ```
-    <Branch 1>
-    <Page 1> C 
-
-    C = current page 
-    T = terminal page
-    ```
-
-    In:
-
-    ```python
-    part.forward().view_nav()
-    ```
-
-    Out:
-
-    ```
-    <Branch 1>
-    <Page 1>  
-    \    <Branch 2>
-    \    <Page 2> C T
-
-    C = current page 
-    T = terminal page
-    ```
-    """
-    _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
-    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-
-    def __call__(self, *args, **kwargs):
-        """
-        Create a new branch and 'link' it to the tree. Linking in the new 
-        branch involves setting the `next_branch` and `origin_branch` or 
-        `origin_page` relationships.
-        """
-        next_branch = super().__call__(*args, **kwargs)
-        assert isinstance(next_branch, Branch)
-        parent = self.branch or self.page
-        if parent is not None:
-            self._set_relationships(parent, next_branch)
-        next_branch.current_page = next_branch.start_page
-        return next_branch
-
-    def _set_relationships(self, parent, next_branch):
-        """Set relationships between next_branch and its origin"""
-        parent.next_branch = next_branch
-        if isinstance(parent, Branch):
-            next_branch.origin_page = None
-            next_branch.origin_branch = parent
-        else:
-            next_branch.origin_branch = None
-            next_branch.origin_page = parent
-
-
-class Submit(FunctionRegistrar, db.Model):
-    """
-    Runs after a participant has successfully submitted a page.
-
-    Inherits from `hemlock.FunctionRegistrar`.
-
-    Relationships
-    -------------
-    page : hemlock.Page or None
-        Set from the `parent` parameter.
-
-    question : hemlock.Question or None
-        Set from the `parent` parameter.
-
-    Examples
-    --------
-    ```python
-    from hemlock import Input, Submit, push_app_context
-
-    push_app_context()
-
-    @Submit.register
-    def get_initials(name_q):
-    \    names = name_q.response.split()
-    \    name_q.data = '.'.join([name[0] for name in names])
-
-    inpt = Submit.get_initials(Input("<p>What's your name?</p>"))
-    inpt.response = 'Andrew Yang 2020'
-    inpt._submit()
-    inpt.data
-    ```
-
-    Out:
-
-    ```
-    A.Y.2
-    ```
-    """
-    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
 
 
 class Validate(FunctionRegistrar, db.Model):
@@ -345,3 +218,131 @@ class Validate(FunctionRegistrar, db.Model):
         error_msg = super().__call__(*args, **kwargs)
         if error_msg:
             return self.error_msg or error_msg
+
+            
+class Submit(FunctionRegistrar, db.Model):
+    """
+    Runs after a participant has successfully submitted a page.
+
+    Inherits from `hemlock.FunctionRegistrar`.
+
+    Relationships
+    -------------
+    page : hemlock.Page or None
+        Set from the `parent` parameter.
+
+    question : hemlock.Question or None
+        Set from the `parent` parameter.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Submit, push_app_context
+
+    push_app_context()
+
+    @Submit.register
+    def get_initials(name_q):
+    \    names = name_q.response.split()
+    \    name_q.data = '.'.join([name[0] for name in names]) + '.'
+
+    inpt = Submit.get_initials(Input("<p>What's your name?</p>"))
+    inpt.response = 'Andrew Yang'
+    inpt._submit()
+    inpt.data
+    ```
+
+    Out:
+
+    ```
+    A.Y.
+    ```
+    """
+    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+    _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+
+
+class Navigate(FunctionRegistrar, db.Model):
+    """
+    Creates a new branch to which the participant will navigate.
+
+    Relationships
+    -------------
+    branch : hemlock.Branch
+        Set from the `parent` parameter.
+
+    page : hemlock.Page
+        Set from the `parent` parameter.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Branch, Navigate, Page, Participant, push_app_context
+
+    def start():
+    \    return Navigate.end(Branch(Page()))
+        
+    @Navigate.register
+    def end(start_branch):
+    \    return Branch(Page(terminal=True))
+        
+    app = push_app_context()
+
+    part = Participant.gen_test_participant(start)
+    part.view_nav()
+    ```
+
+    Out:
+
+    ```
+    <Branch 1>
+    <Page 1> C 
+
+    C = current page 
+    T = terminal page
+    ```
+
+    In:
+
+    ```python
+    part.forward().view_nav()
+    ```
+
+    Out:
+
+    ```
+    <Branch 1>
+    <Page 1>  
+    \    <Branch 2>
+    \    <Page 2> C T
+
+    C = current page 
+    T = terminal page
+    ```
+    """
+    _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
+    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
+
+    def __call__(self, *args, **kwargs):
+        """
+        Create a new branch and 'link' it to the tree. Linking in the new 
+        branch involves setting the `next_branch` and `origin_branch` or 
+        `origin_page` relationships.
+        """
+        next_branch = super().__call__(*args, **kwargs)
+        assert isinstance(next_branch, Branch)
+        parent = self.branch or self.page
+        if parent is not None:
+            self._set_relationships(parent, next_branch)
+        next_branch.current_page = next_branch.start_page
+        return next_branch
+
+    def _set_relationships(self, parent, next_branch):
+        """Set relationships between next_branch and its origin"""
+        parent.next_branch = next_branch
+        if isinstance(parent, Branch):
+            next_branch.origin_page = None
+            next_branch.origin_branch = parent
+        else:
+            next_branch.origin_branch = None
+            next_branch.origin_page = parent

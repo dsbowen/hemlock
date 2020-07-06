@@ -1,5 +1,7 @@
 """# Randomization tools"""
 
+from ..models import Embedded
+
 from flask_login import current_user
 
 from itertools import combinations, cycle, permutations, product
@@ -25,13 +27,13 @@ def key(len_=90):
     ```python
     from hemlock import tools
 
-    tools.key()
+    tools.key(10)
     ```
 
     Out:
 
     ```
-    gpGmZuRfF7kR2IRH2S4RInUOUjurWn5RUJjtgGleUbP7lglNCWuamzxFL7sDh52gMg6z3dJeIaIUr5XCGxCazFLaMr
+    gpGmZuRfF7
     ```
     """
     chars = ascii_letters + digits
@@ -62,6 +64,8 @@ class Randomizer():
     Examples
     --------
     ```python
+    from hemlock.tools import Randomizer
+
     elements = ('world','moon','star')
     randomizer = Randomizer(elements, r=2, combination=False)
     randomizer.next()
@@ -112,6 +116,8 @@ class Assigner(Randomizer):
     Examples
     --------
     ```python
+    from hemlock.tools import Assigner
+
     conditions = {'Treatment': (0,1), 'Level': ('low','med','high')}
     assigner = Assigner(conditions)
     assigner.next()
@@ -141,7 +147,9 @@ class Assigner(Randomizer):
         assignment = super().next()
         assignment = {key: val for key, val in zip(self.keys, assignment)}
         try:
-            current_user.meta.update(assignment)
+            current_user.embedded += [
+                Embedded(key, val, -1) for key, val in assignment.items()
+            ]
         except:
             print('Unable to update participant metadata.')
         return assignment

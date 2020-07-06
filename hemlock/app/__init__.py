@@ -44,6 +44,20 @@ def push_app_context():
     Returns
     -------
     app : flask.app.Flask
+
+    Examples
+    --------
+    ```python
+    from hemlock import push_app_context
+
+    push_app_context()
+    ```
+
+    Out:
+
+    ```
+    <Flask 'hemlock.app'>
+    ```
     """
     from ..models.private import DataStore
     app = create_app()
@@ -69,36 +83,15 @@ def create_app(settings=settings):
 
     Examples
     --------
+    In this example, we add a back button to every page in our survey.
+
     ```python
-    from hemlock.app import create_app, settings
+    from hemlock import Page, create_app, settings
 
-    # MODIFY SETTINGS AS NEEDED
+    settings['Page'].update({'back': True})
 
-    app = create_app(settings)
-    app.settings
-    ```
-
-    Out:
-
-    ```
-    {
-    \    'clean_data': None, 
-    \    'restart_option': True, 
-    \    'restart_text': 'Click << to return to your in progress survey...',
-    \    'screenout_csv': 'screenout.csv',
-    \    'screenout_keys': [], 
-    \    'screenout_text': '...you have already participated...', 
-    \    'socket_js_src': 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js', 
-    \    'time_expired_text': 'You have exceeded your time limit for this survey', 
-    \    'time_limit': None, 
-    \    'validate': True, 
-    \    'DownloadBtnManager': {}, 
-    \    'Manager': {
-    \        'loading_img_blueprint': 'hemlock', 
-    \        'loading_img_filename': 'img/worker_loading.gif'
-    \    }, 
-    \    'password_hash': '...'
-    }
+    app = create_app()
+    Page().preview() # Page().preview('Ubuntu') if running in Ubuntu/WSL
     ```
     """
     app = _create_app(settings)

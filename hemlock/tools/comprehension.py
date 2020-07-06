@@ -1,17 +1,23 @@
 """# Comprehension check"""
 
 ERROR_MSG = """
-<p>Your response was incorrect.</p>
-<p>Please reread the instructions before continuing.</p>
+Your response was incorrect.<br/>
+Please reread the instructions before continuing.
 """
 
 def comprehension_check(branch, instructions=[], checks=[], attempts=None):
     """
     Add a comprehension check to a branch.
 
-    A comprehension check consists of 'instruction' pages followed by 'check' pages. The data of all questions in a check page must evaluate to `True` to pass the check. When a participant fails a check, he is brought back to the first instructions page. 
+    A comprehension check consists of 'instruction' pages followed by 'check' 
+    pages. The data of all questions in a check page must evaluate to `True` 
+    to pass the check. When a participant fails a check, he is brought back to 
+    the first instructions page. 
     
-    Participants only have to pass each check once. For example, suppose there are two checks, 0 and 1. A participant passes check 0 but fails check 1. He is brought back to the first page of the instructions. After rereading the instructions, he is brought directly to check 1, skipping check 0.
+    Participants only have to pass each check once. For example, suppose there 
+    are two checks, 0 and 1. A participant passes check 0 but fails check 1. 
+    He is brought back to the first page of the instructions. After rereading 
+    the instructions, he is brought directly to check 1, skipping check 0.
 
     Parameters
     ----------
@@ -25,7 +31,10 @@ def comprehension_check(branch, instructions=[], checks=[], attempts=None):
         Check page(s).
 
     attempts : int or None, default=None
-        Number of attempts allotted. Participants are allowed to proceed with the survey after exceeding the maximum number of attempts. If `None`, participants must pass the comprehension check before continuing the survey.
+        Number of attempts allotted. Participants are allowed to proceed with 
+        the survey after exceeding the maximum number of attempts. If `None`, 
+        participants must pass the comprehension check before continuing the 
+        survey.
 
     Returns
     -------
@@ -34,7 +43,52 @@ def comprehension_check(branch, instructions=[], checks=[], attempts=None):
 
     Notes
     -----
-    This function adds a `hemlock.Submit` function to each check page. This must be the last submit function of each check page.    
+    This function adds a `hemlock.Submit` function to each check page. This 
+    must be the last submit function of each check page. 
+
+    Examples
+    --------
+    We have two files in our root directory. In `survey.py`:
+
+    ```python
+    from hemlock import Branch, Page, Label, Input, Submit, route
+    from hemlock.tools import comprehension_check
+
+    INSTRUCTIONS = '<p>Here are some instructions.</p>'
+    CHECK = '<p>Enter "hello world" or you... shall not... PASS!</p>'
+
+    @route('/survey')
+    def start():
+    \    branch = comprehension_check(
+    \        Branch(),
+    \        instructions=Page(Label(INSTRUCTIONS)),
+    \        checks=Page(Submit.match(Input(CHECK), 'hello world'))
+    \    )
+    \    branch.pages.append(Page(Label('<p>You passed the test!</p>')))
+    \    return branch
+    ```
+
+    In `app.py`:
+
+    ```python
+    mport survey
+
+    from hemlock import create_app
+
+    app = create_app()
+
+    if __name__ == '__main__':
+    \    from hemlock.app import socketio
+    \    socketio.run(app, debug=True)
+    ```
+
+    Run the app with:
+
+    ```
+    $ python app.py # or python3 app.py
+    ```
+
+    Open your browser to <http://localhost:5000/>.
     """
     assert instructions and checks, (
         '`instructions` and `checks` must be non-empty lists of hemlock.Pages'
@@ -43,17 +97,16 @@ def comprehension_check(branch, instructions=[], checks=[], attempts=None):
     from hemlock.models import Submit
     if not isinstance(instructions, list):
         instructions = [instructions]
-    if not isinstance(check, list):
+    if not isinstance(checks, list):
         checks = [checks]
     branch.pages += instructions + checks
     for check in checks:
         check.back_to = instructions[0]
-        Submit(
-            page = check,
-            func = _verify_data,
-            last_instr_page = instructions[-1],
-            curr_attempt = 1,
-            attempts = attempts
+        check.submit_functions = Submit(
+            func=_verify_data,
+            last_instr_page=instructions[-1],
+            curr_attempt=1,
+            attempts=attempts
         )
     return branch
 

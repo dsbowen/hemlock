@@ -64,7 +64,7 @@ class Input(InputGroup, InputBase, Question):
 
     push_app_context()
 
-    p = Page([Input('<p>Input text here.</p>')])
+    p = Page(Input('<p>Input text here.</p>'))
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """

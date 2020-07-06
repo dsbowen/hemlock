@@ -157,7 +157,7 @@ class Router(RouterMixin, db.Model):
     
     @set_route
     def validate(self):
-        if not current_app.validate:
+        if not current_app.settings['validate']:
             # validation may be off for testing purposes
             return self.submit()
         return self.run_worker(

@@ -84,4 +84,4 @@ class DataStore(db.Model):
         df : pandas.DataFrame
             Dataframe representation of the participant data.
         """
-        return pd.DataFrame(getattr(self, df) or {})
+        return pd.DataFrame(getattr(self, dataframe) or {})

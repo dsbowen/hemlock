@@ -63,7 +63,7 @@ class Textarea(InputGroup, Question):
 
     push_app_context()
 
-    p = Page([Textarea('<p>This is a textarea.</p>')])
+    p = Page(Textarea('<p>This is a textarea.</p>'))
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """

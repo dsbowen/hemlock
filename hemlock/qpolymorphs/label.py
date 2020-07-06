@@ -23,7 +23,7 @@ class Label(Question):
 
     push_app_context()
 
-    p = Page([Label('<p>Hello World</p>')])
+    p = Page(Label('<p>Hello World</p>'))
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """

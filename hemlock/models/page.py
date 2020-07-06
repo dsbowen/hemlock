@@ -163,7 +163,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     Parameters
     ----------
-    questions : list of hemlock.Question, default=[]
+    \*questions : list of hemlock.Question, default=[]
         Questions to be displayed on this page.
 
     template : str, default='hemlock/page-body.html'
@@ -291,7 +291,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     push_app_context()
 
-    p = Page([Label('<p>Hello World</p>')])
+    p = Page(Label('<p>Hello World</p>'))
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """
@@ -349,8 +349,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     @property
     def data_elements(self):
         timer = [self.timer] if self.timer else []
-        return timer + self.embedded + self.questions
-    
+        return self.embedded + timer + self.questions
     
     compile_functions = db.relationship(
         'Compile',
@@ -417,9 +416,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     viewed = db.Column(db.Boolean, default=False)
 
     def __init__(
-            self, questions=[], template='hemlock/page-body.html', **kwargs
+            self, *questions, template='hemlock/page-body.html', **kwargs
         ):
-        self.questions = questions
+        self.questions = list(questions)
         self.timer = Timer()
         super().__init__(template, **kwargs)
 
@@ -747,7 +746,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
                 self.error = error
                 break
         is_valid = self.is_valid()
-        self.direction_form = 'forward' if is_valid else 'invalid'
+        self.direction_from = 'forward' if is_valid else 'invalid'
         return is_valid
     
     def _submit(self):

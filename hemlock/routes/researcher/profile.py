@@ -1,13 +1,21 @@
 """Data Profile"""
 
-from hemlock.routes.researcher.utils import *
-from hemlock.routes.researcher.login import researcher_login_required
+from ...app import bp
+from ...models import Page, Worker
+from ...models.private import DataStore
+from .login import researcher_login_required
+from .utils import navbar, render, researcher_page
 
 import pandas as pd
 import pandas_profiling
+from flask import current_app
 
-from copy import copy
-from datetime import timedelta
+EMPTY_DATAFRAME = "No data are available to create the profle."
+
+PROFILE_CREATION_ERR = '''
+An error occurred while creating the data profile.<br/>
+This may be because too few participants have completed the survey, or because you have not enabled background jobs.
+'''
 
 @bp.route('/profile')
 @researcher_login_required
@@ -20,10 +28,9 @@ def profile():
 
 @researcher_page('profile')
 def profile_page():
-    profile_p = Page(back=False, forward=False)
-    Compile(profile_p, create_profile)
-    CompileWorker(profile_p)
-    return profile_p
+    return Worker.compile(Page(
+        compile_functions=create_profile, back=False, forward=False, g={}
+    ))
 
 def render_profile(profile_p):
     """Render the data profile
@@ -52,7 +59,7 @@ def render_profile(profile_p):
 def create_profile(profile_p):
     """Create the data profile"""
     df = pd.DataFrame(DataStore.query.first().data)
-    if hasattr(current_app, 'clean_data') and current_app.clean_data:
+    if current_app.settings.get('clean_data'):
         df = current_app.clean_data(df)
     try:
         profile_p.g = {'profile_report': df.profile_report()}

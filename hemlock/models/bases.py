@@ -70,7 +70,7 @@ class Data(Base, MutableModelBase, db.Model):
     data : sqlalchemy_mutable.MutableType
         Data this element contributes to the dataframe.
 
-    rows : int, default=1
+    data_rows : int, default=1
         Number of rows this data element contributes to the dataframe for its 
         participant. If negative, this data element will 'fill in' any emtpy
         rows at the end of the dataframe with its most recent value.
@@ -90,8 +90,8 @@ class Data(Base, MutableModelBase, db.Model):
         'polymorphic_on': data_type
     }
 
-    rows = db.Column(db.Integer, default=1)
     data = db.Column(MutableType)
+    data_rows = db.Column(db.Integer, default=1)
     index = db.Column(db.Integer)
     var = db.Column(db.Text)
 
@@ -201,7 +201,7 @@ class HTMLMixin(Base):
             col=self.js,
             template='<script {}></script>',
             attrs={},
-            input_attrs=input_attrs
+            input_attrs=attrs
         )
         return self
 

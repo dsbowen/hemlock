@@ -62,7 +62,7 @@ class Check(ChoiceQuestion):
 
     push_app_context()
 
-    p = Page([Check('<p>Check one.</p>', ['Yes','No','Maybe'])])
+    p = Page(Check('<p>Check one.</p>', ['Yes','No','Maybe']))
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
     """

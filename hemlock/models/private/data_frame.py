@@ -15,7 +15,10 @@ class Variable(MutableList):
     Attributes
     ----------
     fill_rows : bool
-        Indicates that the variable should be padded with the last entry in this variable. If `False`, the variable will be padded with `None`. This is `True` if the `rows` parameter in the `add` method is negative and `False` otherwise.
+        Indicates that the variable should be padded with the last entry in 
+        this variable. If `False`, the variable will be padded with `None`. 
+        This is `True` if the `rows` parameter in the `add` method is negative 
+        and `False` otherwise.
     """
     def __init__(self, fill_rows=False):
         # set _python_type to None to avoid validation for setattr
@@ -183,7 +186,7 @@ class DataFrame(MutableDict):
         writer = csv.writer(csv_str)
         writer.writerow(self.keys())
         writer.writerows(zip(*self.values()))
-        return (self.filename, csv_str)
+        return self.filename, csv_str
 
 
 class DataFrameType(PickleType):

@@ -1,19 +1,24 @@
 """Login"""
 
-from hemlock.routes.researcher.utils import *
+from ...app import bp, db
+from ...models import Page
+from ...qpolymorphs import Input
+from .utils import LOGIN_REQUIRED, render, researcher_page, session_store
+
+from flask import current_app, redirect, request, session, url_for
+from werkzeug.security import check_password_hash
 
 from functools import wraps
-from werkzeug.security import check_password_hash
+
+PASSWORD_INCORRECT = 'Incorrect password.'
+PASSWORD_PROMPT = '<p>Please enter your password.</p>'
 
 @bp.route('/login', methods=['GET','POST'])
 def login():
     """Login view function"""
-    if request.method == 'GET':
-        session.clear()
     login_p = login_page()
     if request.method == 'POST':
-        login_p._record_response()
-        password = login_p.questions[0].response or ''
+        password = login_p._record_response().questions[0].response or ''
         session_store('password', password)
         if login_p._validate():
             return login_successful()
@@ -22,11 +27,13 @@ def login():
 @researcher_page('login')
 def login_page():
     """Create login page"""
-    login_p = Page(back=False)
-    Validate(login_p, check_password)
-    Input(login_p, label=PASSWORD_PROMPT)
-    login_p.forward = 'Login'
+    login_p = Page(
+        Input(PASSWORD_PROMPT, input_type='password'), 
+        back=False, 
+        forward='Login'
+    )
     login_p.body.select_one('#forward-btn')['class'] += ' w-100'
+    login_p.validate_functions = check_password
     return login_p
 
 def check_password(login_page):
@@ -36,18 +43,20 @@ def check_password(login_page):
 
 def password_correct():
     """Indicate that the session password is correct"""
+    if not current_app.settings['password']:
+        return True
     if 'password' not in session:
         return False
-    return check_password_hash(current_app.password_hash, session['password'])
+    return check_password_hash(
+        current_app.settings['password_hash'], session['password']
+    )
 
 def login_successful():
     """Process successful login
 
     Clear login page and redirect to requested page.
     """
-    login_p = login_page()
-    login_p.clear_error()
-    login_p.clear_response()
+    login_page().clear_error().clear_response()
     db.session.commit()
     requested = request.args.get('requested') or 'status'
     return redirect(url_for('hemlock.{}'.format(requested)))

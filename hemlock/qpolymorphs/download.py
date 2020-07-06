@@ -49,10 +49,10 @@ class Download(Question, DownloadBtnMixin):
 
     push_app_context()
 
-    p = Page([Download(
+    p = Page(Download(
     \    '<p>Click here to download a file.</p>',
     \    downloads=[('HELLO_WORLD_URL', 'hello_world.txt')]
-    )])
+    ))
     p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
     ```
 
@@ -87,6 +87,9 @@ class Download(Question, DownloadBtnMixin):
         db.session.flush([self])
         if template is not None:
             self.body = render_template(template, self_=self)
+        manager = current_app.extensions['download_btn_manager']
+        self.progress = render_template(manager.progress_template, btn=self)
+        self.downloads = []
         settings = current_app.settings.get('Download')
         settings = settings.copy() if settings else {}
         kwargs['label'] = label
