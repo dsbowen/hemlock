@@ -53,8 +53,8 @@ def get_data(dataframe='data'):
 
     Returns
     -------
-    data : pandas.DataFrame
-        Data frame of all recorded survey data. May not necessarily include
+    data : dict
+        Maps variable names to list of entries. May not include data from
         participants who are in progress.
 
     Examples
@@ -75,12 +75,14 @@ def get_data(dataframe='data'):
     Out:
 
     ```
-    ID                    EndTime                  StartTime     Status
-    0   1 2020-07-04 19:37:32.877461 2020-07-04 19:37:32.877461  Completed
+    {'ID': [1],
+    'EndTime': [datetime.datetime(2020, 7, 6, 17, 11, 0, 245032)],
+    'StartTime': [datetime.datetime(2020, 7, 6, 17, 11, 0, 245032)],
+    'Status': ['Completed']}
     ```
     """
     from ..models.private import DataStore
-    return DataStore.query.first().to_pandas(dataframe)
+    return dict(getattr(DataStore.query.first(), dataframe))
 
 def url_for(*args, **kwargs):
     """

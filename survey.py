@@ -2,11 +2,14 @@
 
 # import questions
 
-from hemlock import Branch, Page, Label, Input, Validate, route
+from hemlock import Branch, File, Page, Label, route
+import os
+
+print(os.environ.get('NO_DEBUG_FUNCTIONS'))
 
 @route('/survey')
 def start():
     return Branch(
-        Page(Validate.require(Input('<p>Required</p>'))),
-        Page(Label('<p>The End!</p>'), terminal=True)
+        Page(Label('<p>Hello moon</p>')),
+        Page(Label('<p>The End</p>'), terminal=True)
     )

@@ -1,3 +1,4 @@
+NO_DEBUG_FUNCTIONS: 1
 POSTGRES_PLAN: standard-0
 REDIS_PLAN: premium-1
 WEB_PROCTYPE: standard-1x

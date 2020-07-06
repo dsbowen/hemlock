@@ -8,6 +8,7 @@ from .question import Question
 
 from sqlalchemy_function import FunctionMixin
 
+import os
 from random import random
 
 PARENT_ERR_MSG = """
@@ -150,6 +151,31 @@ class Debug(FunctionRegistrar, db.Model):
         """
         if random() < self.p_exec:
             return super().__call__(*args, **kwargs)
+
+    @classmethod
+    def register(cls, func):
+        """
+        Similar to the Function Registrar's register function, but does not
+        add functions if the `NO_DEBUG_FUNCTIONS` environment variable is set.
+
+        Parameters
+        ----------
+        func : callable
+            The function to register.
+        """
+        def add_function(parent, *args, **kwargs):
+            if not os.environ.get('NO_DEBUG_FUNCTIONS'):
+                model = cls(func, *args, **kwargs)
+                if isinstance(parent, Page):
+                    model.page = parent
+                elif isinstance(parent, Question):
+                    model.question = parent
+                else:
+                    raise ValueError(PARENT_ERR_MSG.format(parent))
+            return parent
+                
+        setattr(cls, func.__name__, add_function)
+        return func
 
 
 class Validate(FunctionRegistrar, db.Model):

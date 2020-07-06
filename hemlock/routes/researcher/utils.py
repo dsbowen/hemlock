@@ -18,13 +18,13 @@ navbar = Navbar(
     [
         Navitem('Participant status', href='/status'),
         Navitem('Download', href='/download'),
-        Navitem('Data profile', href='/profile'),
+        # Navitem('Data profile', href='/profile'),
         Navitem('Logout', href='/logout'),
     ], 
     href='https://dsbowen.github.io/hemlock'
 )
 navbar.a['target'] = '_blank'
-navbar.navitems[-2].a['target'] = '_blank'
+# navbar.navitems[-2].a['target'] = '_blank'
 
 def researcher_page(key):
     """Decorator for retrieving or creating a researcher page

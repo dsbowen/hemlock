@@ -17,7 +17,6 @@ NO_BUCKET_ERR_MSG = """
 Enable a Google Cloud Bucket to access this feature.
 \n  See `hlk gcloud-bucket`
 """
-SRC_ROOT = 'https://storage.googleapis.com'
 
 def src_from_bucket(filename):
     """
@@ -32,23 +31,44 @@ def src_from_bucket(filename):
         `src` html attribute which references the specified file in the Google
         bucket.
 
-    Notes
-    -----
-    You must have a Google bucket associated with this app to use this 
-    feature.
+    Examples
+    --------
+    Set up a 
+    [Google bucket](https://cloud.google.com/storage/docs/creating-buckets)
+    with the appropriate 
+    [CORS permissions](https://cloud.google.com/storage/docs/cross-origin).
+
+    Set an environment variable `BUCKET` to the name of the bucket.
+
+    Upload a file to the bucket, e.g. <https://xkcd.com/2138/> and name it 
+    `wanna_see_the_code.png`.
+
+    ```python
+    from hemlock import Branch, Page, Label, push_app_context
+    from hemlock.tools import Img, src_from_bucket
+
+    push_app_context()
+
+    img = Img(
+    \    src=src_from_bucket('wanna_see_the_code.png'),
+    \    align='center'
+    ).render()
+    p = Page(Label(img))
+    p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+    ```
     """
     bucket = os.environ.get('BUCKET')
     assert bucket is not None, NO_BUCKET_ERR_MSG
-    return '/'.join([SRC_ROOT, bucket, filename])
+    return '/'.join(['https://storage.cloud.google.com', bucket, filename])
 
-def url_from_bucket(filename, expiration=3600, **kwargs):
+def url_from_bucket(filename, expiration=1800, **kwargs):
     """
     Parameters
     ----------
     filename : str
         Name of the file in the Google bucket.
 
-    expiration : float, default=3600
+    expiration : float, default=1800
         Number of seconds until the url expires.
 
     \*\*kwargs :
@@ -59,6 +79,53 @@ def url_from_bucket(filename, expiration=3600, **kwargs):
     -------
     signed_url : str
         Signed url for the file in the app's bucket.
+
+    Examples
+    --------
+    Set up a 
+    [Google bucket](https://cloud.google.com/storage/docs/creating-buckets)
+    with the appropriate 
+    [CORS permissions](https://cloud.google.com/storage/docs/cross-origin).
+
+    Set an environment variable `BUCKET` to the name of the bucket, and 
+    `GOOGLE_APPLICATION_CREDENTIALS` to the name of your 
+    [Google application credentials JSON file](https://cloud.google.com/docs/authentication/getting-started).
+
+    In `survey.py`:
+
+    ```python
+    from hemlock import Branch, Page, Download, route
+    from hemlock.tools import url_from_bucket
+
+    @route('/survey')
+    def start():
+    \    filename = 'wanna_see_the_code.png'
+    \    url = url_from_bucket(filename)
+    \    return Branch(Page(Download(downloads=[(url, filename)])))
+    ```
+    
+    In `app.py`:
+
+    ```python
+    import survey
+
+    from hemlock import create_app
+
+    app = create_app()
+
+    if __name__ == '__main__':
+    \    from hemlock.app import socketio
+    \    socketio.run(app, debug=True)
+    ```
+
+    Run the app locally with:
+
+    ```
+    $ python app.py # or python3 app.py
+    ```
+
+    And open your browser to <http://localhost:5000/>. Click on the 
+    download button to download the file from your Google bucket.
     """
     assert hasattr(current_app, 'gcp_bucket'), NO_BUCKET_ERR_MSG
     kwargs['expiration'] = timedelta(expiration)

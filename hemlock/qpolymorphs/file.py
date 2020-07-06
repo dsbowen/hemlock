@@ -66,15 +66,53 @@ class File(InputGroup, InputBase, Question):
 
     Examples
     --------
+    Set up a 
+    [Google bucket](https://cloud.google.com/storage/docs/creating-buckets)
+    with the appropriate 
+    [CORS permissions](https://cloud.google.com/storage/docs/cross-origin).
+
+    Set an environment variable `BUCKET` to the name of the bucket, and 
+    `GOOGLE_APPLICATION_CREDENTIALS` to the name of your 
+    [Google application credentials JSON file](https://cloud.google.com/docs/authentication/getting-started).
+
+    In `survey.py`:
+
     ```python
-    from hemlock import File, Page, push_app_context
+    from hemlock import Branch, File, Page, Label, route
 
-    push_app_context()
-
-    p = Page(File('<p>Upload a .png file.</p>', allowed_extensions=['.png']))
-    p.preview('Ubuntu')
-    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    @route('/survey')
+    def start():
+    \    return Branch(
+    \        Page(File(
+    \            '<p>Upload a .png</p>', 
+    \            filename='upload',
+    \            allowed_extensions=['.png']
+    \        )),
+    \        Page(Label('<p>The End</p>'), terminal=True)
+    \    )
     ```
+    
+    In `app.py`:
+
+    ```python
+    import survey
+
+    from hemlock import create_app
+
+    app = create_app()
+
+    if __name__ == '__main__':
+    \    from hemlock.app import socketio
+    \    socketio.run(app, debug=True)
+    ```
+
+    Run the app locally with:
+
+    ```
+    $ python app.py # or python3 app.py
+    ```
+
+    And open your browser to <http://localhost:5000/>. Upload a .png and click to the next page. You'll find your uploaded file in your Google bucket in `participant-1/upload.png`.
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'file'}
@@ -143,16 +181,18 @@ class File(InputGroup, InputBase, Question):
 
     def _record_response(self):
         """Record response as name of uploaded file"""
-        if request.files.get(self.model_id) is None:
+        file_ = request.files.get(self.model_id)
+        if file_ is None:
             # no file uploaded
             self.response = None
             return
-        self.response = secure_filename(self.upload.filename)
+        self.response = secure_filename(file_.filename)
 
     def _validate(self):
         """Verify that the uploaded file's mimetype is allowed"""
-        if self.upload and self.allowed_extensions:
-            if self.upload.mimetype not in self.get_allowed_types():
+        if self.response and self.allowed_extensions:
+            file_ = request.files.get(self.model_id)
+            if file_.mimetype not in self.get_allowed_types():
                 self.error = INVALID_MIMETYPE_MSG.format(
                     join('or', *self.allowed_extensions)
                 )

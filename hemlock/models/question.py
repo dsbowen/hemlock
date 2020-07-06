@@ -9,6 +9,7 @@ from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import validates
 from sqlalchemy_mutable import MutableType, MutableModelBase
 
+import os
 from copy import copy
 
 
@@ -103,12 +104,21 @@ class Question(HTMLMixin, Data, MutableModelBase):
         collection_class=ordering_list('index')
     )
 
-    debug_functions = db.relationship(
+    _debug_functions = db.relationship(
         'Debug',
         backref='question',
         order_by='Debug.index',
         collection_class=ordering_list('index')
     )
+
+    @property
+    def debug_functions(self):
+        return self._debug_functions
+
+    @debug_functions.setter
+    def debug_functions(self, val):
+        if not os.environ.get('NO_DEBUG_FUNCTIONS'):
+            self._debug_functions = val
 
     # Column attributes
     default = db.Column(MutableType)

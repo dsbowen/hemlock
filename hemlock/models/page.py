@@ -273,16 +273,16 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     submit_worker : hemlock.SubmitWorker or None, default=None
         Worker which sends the submit functions to a Redis queue.
 
-    debug_functions : list of hemlock.Debug
-        List of debug functions; run during debugging. The default debug 
-        function runs its questions' debug functions in *random* order.
-
     navigate_function : hemlock.Navigate or None, default=None
         Navigate function which returns a new branch originating from this 
         page.
 
     navigate_worker : hemlock.NavigateWorker
         Worker which sends the navigate function to a Redis queue.
+
+    debug_functions : list of hemlock.Debug
+        List of debug functions; run during debugging. The default debug 
+        function runs its questions' debug functions in *random* order.
 
     Examples
     --------
@@ -387,13 +387,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         uselist=False
     )
 
-    debug_functions = db.relationship(
-        'Debug',
-        backref='page',
-        order_by='Debug.index',
-        collection_class=ordering_list('index')
-    )
-
     navigate_function = db.relationship(
         'Navigate', 
         backref='page', 
@@ -404,6 +397,22 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         backref='page', 
         uselist=False
     )
+
+    _debug_functions = db.relationship(
+        'Debug',
+        backref='page',
+        order_by='Debug.index',
+        collection_class=ordering_list('index')
+    )
+
+    @property
+    def debug_functions(self):
+        return self._debug_functions
+
+    @debug_functions.setter
+    def debug_functions(self, val):
+        if not os.environ.get('NO_DEBUG_FUNCTIONS'):
+            self._debug_functions = val
     
     # Column attributes
     cache_compile = db.Column(db.Boolean)
