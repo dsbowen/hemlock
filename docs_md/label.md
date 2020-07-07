@@ -65,7 +65,7 @@ from hemlock import Label, Page, push_app_context
 
 push_app_context()
 
-p = Page([Label('<p>Hello World</p>')])
+p = Page(Label('<p>Hello World</p>'))
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 

@@ -1,4 +1,8 @@
-"""# Question mixins"""
+"""# Questions
+
+`hemlock.Question` and `hemlock.ChoiceQuestion` are 'question skeletons';
+most useful when fleshed out. See section on question polymorphs.
+"""
 
 from ..app import db
 from .bases import Data, HTMLMixin
@@ -15,9 +19,11 @@ from copy import copy
 
 class Question(HTMLMixin, Data, MutableModelBase):
     """
-    Base object for questions. Questions are displayed on their page in index order.
+    Base object for questions. Questions are displayed on their page in index 
+    order.
 
-    It inherits from `hemlock.Data` and `hemlock.HTMLMixin`.
+    It inherits from 
+    [`hemlock.models.Data` and `hemlock.models.HTMLMixin`](bases.md).
 
     Parameters
     ----------
@@ -43,14 +49,14 @@ class Question(HTMLMixin, Data, MutableModelBase):
 
     Relationships
     -------------
-    part : hemlock.Participant
+    part : hemlock.Participant or None
         The participant to which this question belongs. Derived from 
         `self.page`.
 
-    branch : hemlock.Branch
+    branch : hemlock.Branch or None
         The branch to which this question belongs. Derived from `self.page`.
 
-    page : hemlock.Page
+    page : hemlock.Page or None
         The page to which this question belongs.
 
     compile_functions : list of hemlock.Compile, default=[]
@@ -228,10 +234,10 @@ class ChoiceQuestion(Question):
     label : str or bs4.BeautifulSoup, default=''
         Question label.
 
-    choices : list of hemlock.Choice
+    choices : list of hemlock.Choice, default=[]
         Choices which belong to this question.
 
-    template : str
+    template : str or None, default=None
         Template for the question body.
 
     Attributes

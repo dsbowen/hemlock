@@ -34,11 +34,13 @@
 ##hemlock.**Branch**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Branch</b>(<i>pages=[], **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L9">[source]</a>
+    <i>class</i> hemlock.<b>Branch</b>(<i>*pages, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L9">[source]</a>
 </p>
 
-Branches are stacked in a participant's branch stack. It contains a
+Branches are stacked in a participant's branch stack. A branch contains a
 queue of pages which it displays to its participant.
+
+Inherits from [`hemlock.models.Base`](bases.md).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -46,7 +48,7 @@ queue of pages which it displays to its participant.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>pages : <i>list of hemlock.Page, default=[]</i></b>
+    <td class="field-body" width="100%"><b>*pages : <i>hemlock.Page</i></b>
 <p class="attr">
     Pages which belong to this branch.
 </p></td>
@@ -115,11 +117,11 @@ from hemlock import Branch, Label, Page, push_app_context
 
 push_app_context()
 
-b = Branch([
-    Page([Label('<p>Hello World</p>')]),
-    Page([Label('<p>Hello Moon</p>')]),
-    Page([Label('<p>Hello Star</p>')])
-])
+b = Branch(
+    Page(Label('<p>Hello World</p>')),
+    Page(Label('<p>Hello Moon</p>')),
+    Page(Label('<p>Hello Star</p>'))
+)
 b.preview() # b.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 
@@ -130,7 +132,7 @@ This will open all of the branch's pages in separate tabs.
 
 
 <p class="func-header">
-    <i></i> <b>view_nav</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L158">[source]</a>
+    <i></i> <b>view_nav</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L160">[source]</a>
 </p>
 
 Print this branch's page queue for debugging purposes.
@@ -141,7 +143,7 @@ Print this branch's page queue for debugging purposes.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>self : <i></i></b>
+    <td class="field-body" width="100%"><b>self : <i>hemlock.Branch</i></b>
 <p class="attr">
     
 </p></td>
@@ -154,7 +156,7 @@ Print this branch's page queue for debugging purposes.
 
 
 <p class="func-header">
-    <i></i> <b>preview</b>(<i>self, dist=None, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L182">[source]</a>
+    <i></i> <b>preview</b>(<i>self, dist=None, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L184">[source]</a>
 </p>
 
 Preview the page queue in the a browser window.

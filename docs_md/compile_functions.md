@@ -138,7 +138,7 @@ from hemlock import Compile, Input, Page, push_app_context
 
 push_app_context()
 
-p = Compile.clear_response(Page([Input(response='Hello World')]))
+p = Compile.clear_response(Page(Input(response='Hello World')))
 p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
 p._compile()
 p.preview()
@@ -185,9 +185,9 @@ from hemlock import Compile, Label, Page, push_app_context
 
 push_app_context()
 
-p = Compile.shuffle(Page([
+p = Compile.shuffle(Page(
     Label('<p>Label {}</p>'.format(i)) for i in range(4)
-]))
+))
 p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
 p._compile()
 p.preview()

@@ -5,7 +5,7 @@ Your response was incorrect.<br/>
 Please reread the instructions before continuing.
 """
 
-def comprehension_check(branch, instructions=[], checks=[], attempts=None):
+def comprehension_check(branch, instructions, checks, attempts=None):
     """
     Add a comprehension check to a branch.
 
@@ -15,9 +15,9 @@ def comprehension_check(branch, instructions=[], checks=[], attempts=None):
     the first instructions page. 
     
     Participants only have to pass each check once. For example, suppose there 
-    are two checks, 0 and 1. A participant passes check 0 but fails check 1. 
+    are two checks, A and B. A participant passes check A but fails check B. 
     He is brought back to the first page of the instructions. After rereading 
-    the instructions, he is brought directly to check 1, skipping check 0.
+    the instructions, he is brought directly to check B, skipping check A.
 
     Parameters
     ----------
@@ -71,7 +71,7 @@ def comprehension_check(branch, instructions=[], checks=[], attempts=None):
     In `app.py`:
 
     ```python
-    mport survey
+    import survey
 
     from hemlock import create_app
 

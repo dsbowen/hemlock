@@ -360,7 +360,7 @@ def exact_len(question, len_):
     Out:
 
     ```
-    Please enter a response exactly 5 characters long.
+    Please enter exactly 5 characters.
     ```
     """
     msg = require(question)
@@ -409,7 +409,7 @@ def max_len(question, max_):
     Out:
 
     ```
-    Please enter a response at most 5 characters long.
+    Please enter at most 5 characters.
     ```
     """
     if not question.response:
@@ -452,7 +452,7 @@ def min_len(question, min_):
     Out:
 
     ```
-    Please enter a response at least 15 characters long.
+    Please enter at least 15 characters.
     ```
     """
     if min_ <= 0:
@@ -501,7 +501,7 @@ def range_len(question, min_, max_):
     Out:
 
     ```
-    Please enter a response 5 to 10 characters long.
+    Please enter 5 to 10 characters.
     ```
     """
     if min_ <= 0:

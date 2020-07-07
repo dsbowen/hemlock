@@ -39,21 +39,28 @@ push_app_context()
 
 url_root = 'https://dsbowen.github.io/'
 
-navbar = Navbar('Hemlock', [
-    Navitem('Application', href=url_root+'app'),
-    Navitemdd('Tools', [
-        Dropdownitem('Language', href=url_root+'lang'),
-        Dropdownitem('Navbar', href=url_root+'navbar')
-    ])
-], href=url_root+'hemlock').render()
+navbar = Navbar(
+    'Hemlock',
+    [
+        Navitem('Application', href=url_root+'app'),
+        Navitemdd(
+            'Tools',
+            [
+                Dropdownitem('Language', href=url_root+'lang'),
+                Dropdownitem('Navbar', href=url_root+'navbar')
+           ]
+        )
+    ],
+    href=url_root+'hemlock'
+)
 
-Page(navbar=navbar).preview('Ubuntu')
+Page(navbar=navbar.render()).preview('Ubuntu')
 ```
 
 ##hemlock.tools.**NavBase**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>NavBase</b>(<i>template, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L35">[source]</a>
+    <i>class</i> hemlock.tools.<b>NavBase</b>(<i>template, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L42">[source]</a>
 </p>
 
 All navigation models inherit from this base.
@@ -102,7 +109,7 @@ All navigation models inherit from this base.
 
 
 <p class="func-header">
-    <i></i> <b>is_active</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L90">[source]</a>
+    <i></i> <b>is_active</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L97">[source]</a>
 </p>
 
 
@@ -126,7 +133,7 @@ All navigation models inherit from this base.
 ##hemlock.tools.**Navbar**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Navbar</b>(<i>label='', navitems=[], template=os.path.join(DIR, 'navbar.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L103">[source]</a>
+    <i>class</i> hemlock.tools.<b>Navbar</b>(<i>label='', navitems=[], template=os.path.join(DIR, 'navbar.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L110">[source]</a>
 </p>
 
 
@@ -160,7 +167,7 @@ All navigation models inherit from this base.
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L124">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L131">[source]</a>
 </p>
 
 
@@ -184,7 +191,7 @@ All navigation models inherit from this base.
 ##hemlock.tools.**Navitem**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Navitem</b>(<i>label='', template=os.path.join(DIR, 'navitem.html'), ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L137">[source]</a>
+    <i>class</i> hemlock.tools.<b>Navitem</b>(<i>label='', template=os.path.join(DIR, 'navitem.html'), ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L144">[source]</a>
 </p>
 
 Navigation item *without* dropdown items.
@@ -214,7 +221,7 @@ Navigation item *without* dropdown items.
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L155">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L162">[source]</a>
 </p>
 
 
@@ -238,7 +245,7 @@ Navigation item *without* dropdown items.
 ##hemlock.tools.**Navitemdd**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Navitemdd</b>(<i>label='', dropdownitems=[], template=os.path.join(DIR, 'navitemdd.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L165">[source]</a>
+    <i>class</i> hemlock.tools.<b>Navitemdd</b>(<i>label='', dropdownitems=[], template=os.path.join(DIR, 'navitemdd.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L178">[source]</a>
 </p>
 
 Navigation item *with* dropdown items.
@@ -272,7 +279,7 @@ Navigation item *with* dropdown items.
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L186">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L199">[source]</a>
 </p>
 
 
@@ -296,7 +303,7 @@ Navigation item *with* dropdown items.
 ##hemlock.tools.**Dropdownitem**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Dropdownitem</b>(<i>label='', template=os.path.join(DIR, 'dropdownitem.html' ), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L204">[source]</a>
+    <i>class</i> hemlock.tools.<b>Dropdownitem</b>(<i>label='', template=os.path.join(DIR, 'dropdownitem.html' ), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L212">[source]</a>
 </p>
 
 
@@ -326,7 +333,7 @@ Navigation item *with* dropdown items.
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L220">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L228">[source]</a>
 </p>
 
 

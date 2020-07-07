@@ -1,6 +1,7 @@
 """# Application setup"""
 
 from ..app import bp, db
+from ..models import Participant
 from ..models.private import DataStore
 from . import participant
 from . import researcher

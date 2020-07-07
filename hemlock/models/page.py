@@ -2,7 +2,7 @@
 
 The survey 'flow' is:
 
-1. **Compile.** Execute a page's `Compile` functions. By default, a page's 
+1. **Compile.** Execute a page's compile functions. By default, a page's 
 first compile function runs its questions' compile methods in index order.
 
 2. **Render.** Render the page for the participant and wait for them to 
@@ -13,17 +13,17 @@ the page. This sets the `response` attribute of the questions.
 
 4. **Validate.** When the participant attempts to submit the page, validate 
 the responses. As with the compile method, the validate method executes a 
-page's `Validate` functions in index order. By default, a page's first 
+page's validate functions in index order. By default, a page's first 
 validate function runs its questions' validate methods in index order.
 
 5. **Record data.** Record the data associated with the participant's
 responses to every question on the page. This sets the `data` attribute of the
 questions.
 
-6. **Submit.** Execute the page's `Submit` functions. By default, a page's 
+6. **Submit.** Execute the page's submit functions. By default, a page's 
 first submit function runs its questions' submit methods in index order.
 
-7. **Navigate.** If the page has a `Navigate` function, create a new branch 
+7. **Navigate.** If the page has a navigate function, create a new branch 
 originating from this page.
 """
 
@@ -159,7 +159,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     Pages are queued in a branch. A page contains a list of questions which it
     displays to the participant in index order.
     
-    It inherits from `hemlock.HTMLMixin`.
+    It inherits from [`hemlock.model.HTMLMixin`](bases.md).
 
     Parameters
     ----------
@@ -168,6 +168,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     template : str, default='hemlock/page-body.html'
         Template for the page `body`.
+
+    timer_var : str or None, default=None
+        Variable name of `self.Timer`.
 
     Attributes
     ----------
@@ -181,8 +184,8 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     cache_compile : bool, default=False
         Indicates that this page should cache the result of its compile 
-        functions. Specifically, it removes all compile functions from the 
-        page self `self._compile` is called.
+        functions. Specifically, it removes all compile functions and the 
+        compile worker from the page self `self._compile` is called.
 
     direction_from : str or None, default=None
         Direction in which the participant navigated from this page. Possible 
@@ -193,7 +196,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         values are `'back'`, `'invalid'`, and `'forward'`.
 
     error : str or None, default=None
-        Text of the page error message
+        Text of the page error message.
 
     forward : str or None, default='>>'
         Text of the forward button. If `None`, no forward button will appear 
@@ -239,7 +242,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     embedded : list of hemlock.Embedded, default=[]
         List of embedded data elements.
 
-    timer : hemlock.Timer
+    timer : hemlock.Timer or None, default=hemlock.Timer
         Tracks timing data for this page.
 
     questions : list of hemlock.Question, default=[]
@@ -425,10 +428,11 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     viewed = db.Column(db.Boolean, default=False)
 
     def __init__(
-            self, *questions, template='hemlock/page-body.html', **kwargs
+            self, *questions, template='hemlock/page-body.html', 
+            timer_var=None, **kwargs
         ):
         self.questions = list(questions)
-        self.timer = Timer()
+        self.timer = Timer(var=timer_var)
         super().__init__(template, **kwargs)
 
     # BeautifulSoup shortcuts

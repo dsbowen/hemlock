@@ -35,10 +35,11 @@
 
 
 
-Mixin for Function models which provides a method for function registration.
+Mixin for Function models which provides a method for function
+registration.
 
-Inherits from `sqlalchemy_function.FunctionMixin`. See
-<https://dsbowen.github.io/sqlalchemy-function/>.
+Inherits from
+[`sqlalchemy_function.FunctionMixin`](<https://dsbowen.github.io/sqlalchemy-function/>).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -61,7 +62,7 @@ Inherits from `sqlalchemy_function.FunctionMixin`. See
 
 
 <p class="func-header">
-    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L34">[source]</a>
+    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L36">[source]</a>
 </p>
 
 This decorator registers a function.
@@ -86,7 +87,8 @@ This decorator registers a function.
 
 
 
-Helps compile a page or question html before it is rendered and displayed to a participant.
+Helps compile a page or question html before it is rendered and displayed
+to a participant.
 
 Inherits from `hemlock.FunctionRegistrar`.
 
@@ -98,11 +100,11 @@ Inherits from `hemlock.FunctionRegistrar`.
     <th class="field-name"><b>Relationships:</b></td>
     <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None</i></b>
 <p class="attr">
-    Set from the <code>parent</code> parameter.
+    Page to which this model belongs.
 </p>
 <b>question : <i>hemlock.Question or None</i></b>
 <p class="attr">
-    Set from the <code>parent</code> parameter.
+    Question to which this model belongs.
 </p></td>
 </tr>
     </tbody>
@@ -120,7 +122,7 @@ def greet(greet_q, name_q):
     greet_q.label = '<p>Hello {}!</p>'.format(name_q.response)
 
 name_q = Input("<p>What's your name?</p>")
-p = Page([Compile.greet(Label(), name_q)])
+p = Page(Compile.greet(Label(), name_q))
 name_q.response = 'World'
 p._compile()
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
@@ -131,7 +133,7 @@ p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ##hemlock.**Debug**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Debug</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L96">[source]</a>
+    <i>class</i> hemlock.<b>Debug</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L99">[source]</a>
 </p>
 
 Run to help debug the survey.
@@ -153,11 +155,11 @@ Inherits from `hemlock.FunctionRegistrar`.
     <th class="field-name"><b>Relationships:</b></td>
     <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None</i></b>
 <p class="attr">
-    Set from the <code>parent</code> parameter.
+    Page to which this model belongs.
 </p>
 <b>question : <i>hemlock.Question or None</i></b>
 <p class="attr">
-    Set from the <code>parent</code> parameter.
+    Question to which this model belongs.
 </p></td>
 </tr>
     </tbody>
@@ -179,7 +181,7 @@ def greet(driver, greet_q):
     inpt.clear()
     inpt.send_keys('Hello World!')
 
-p = Page([Debug.greet(Input('<p>Enter a greeting.</p>'))])
+p = Page(Debug.greet(Input('<p>Enter a greeting.</p>')))
 p.preview(driver=driver) # p.preview('Ubuntu', driver) if working in Ubuntu/WSL
 p._debug(driver)
 ```
@@ -189,7 +191,7 @@ p._debug(driver)
 
 
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L146">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L149">[source]</a>
 </p>
 
 Execute the debug function with probability `self.p_exec`.
@@ -201,6 +203,168 @@ Execute the debug function with probability `self.p_exec`.
         
     </tbody>
 </table>
+
+
+
+
+
+<p class="func-header">
+    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L156">[source]</a>
+</p>
+
+Similar to the Function Registrar's register function, but does not
+add functions if the `NO_DEBUG_FUNCTIONS` environment variable is set.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>func : <i>callable</i></b>
+<p class="attr">
+    The function to register.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+##hemlock.**Validate**
+
+<p class="func-header">
+    <i>class</i> hemlock.<b>Validate</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L182">[source]</a>
+</p>
+
+Validates a participant's response.
+
+Inherits from `hemlock.FunctionRegistrar`.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Attributes:</b></td>
+    <td class="field-body" width="100%"><b>error_msg : <i>str or None</i></b>
+<p class="attr">
+    If the validate function returns an error message, the <code>error_msg</code> attribute is returned instead of the output of the validate function. You can set this by passing in an <code>error_msg</code> keyword argument to the constructor.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Relationships:</b></td>
+    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None</i></b>
+<p class="attr">
+    Page to which this model belongs.
+</p>
+<b>question : <i>hemlock.Question or None</i></b>
+<p class="attr">
+    Question to which this model belongs.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+####Examples
+
+```python
+from hemlock import Input, Validate, push_app_context
+
+push_app_context()
+
+@Validate.register
+def my_validate_func(inpt):
+    if inpt.response != 'hello world':
+        return '<p>You entered "{}", not "hello world"</p>'.format(inpt.response)
+
+inpt = Validate.my_validate_func(Input('<p>Enter "hello world"</p>'))
+inpt.response = 'goodbye moon'
+inpt._validate()
+inpt.error
+```
+
+Out:
+
+```
+You entered "goodbye moon", not "hello world"
+```
+
+####Methods
+
+
+
+<p class="func-header">
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L237">[source]</a>
+</p>
+
+
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>error_msg : <i>str or None</i></b>
+<p class="attr">
+    Return <code>None</code> if there is no error. If there is an error, return <code>self.error_msg</code> or the output of <code>self.func</code>.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+##hemlock.**Submit**
+
+
+
+Runs after a participant has successfully submitted a page.
+
+Inherits from `hemlock.FunctionRegistrar`.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Relationships:</b></td>
+    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None</i></b>
+<p class="attr">
+    Page to which this model belongs.
+</p>
+<b>question : <i>hemlock.Question or None</i></b>
+<p class="attr">
+    Question to which this model belongs.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+####Examples
+
+```python
+from hemlock import Input, Submit, push_app_context
+
+push_app_context()
+
+@Submit.register
+def get_initials(name_q):
+    names = name_q.response.split()
+    name_q.data = '.'.join([name[0] for name in names]) + '.'
+
+inpt = Submit.get_initials(Input("<p>What's your name?</p>"))
+inpt.response = 'Andrew Yang'
+inpt._submit()
+inpt.data
+```
+
+Out:
+
+```
+A.Y.
+```
 
 
 
@@ -216,13 +380,13 @@ Creates a new branch to which the participant will navigate.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Relationships:</b></td>
-    <td class="field-body" width="100%"><b>branch : <i>hemlock.Branch</i></b>
+    <td class="field-body" width="100%"><b>branch : <i>hemlock.Branch or None</i></b>
 <p class="attr">
-    Set from the <code>parent</code> parameter.
+    Branch to which this model belongs.
 </p>
-<b>page : <i>hemlock.Page</i></b>
+<b>page : <i>hemlock.Page or None</i></b>
 <p class="attr">
-    Set from the <code>parent</code> parameter.
+    Page to which this model belongs.
 </p></td>
 </tr>
     </tbody>
@@ -234,11 +398,11 @@ Creates a new branch to which the participant will navigate.
 from hemlock import Branch, Navigate, Page, Participant, push_app_context
 
 def start():
-    return Navigate.end(Branch([Page()]))
+    return Navigate.end(Branch(Page()))
 
 @Navigate.register
 def end(start_branch):
-    return Branch([Page(terminal=True)])
+    return Branch(Page(terminal=True))
 
 app = push_app_context()
 
@@ -279,7 +443,7 @@ T = terminal page
 
 
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L215">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L353">[source]</a>
 </p>
 
 Create a new branch and 'link' it to the tree. Linking in the new
@@ -291,143 +455,6 @@ branch involves setting the `next_branch` and `origin_branch` or
     <col class="field-body" />
     <tbody valign="top">
         
-    </tbody>
-</table>
-
-
-
-##hemlock.**Submit**
-
-
-
-Runs after a participant has successfully submitted a page.
-
-Inherits from `hemlock.FunctionRegistrar`.
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Relationships:</b></td>
-    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None</i></b>
-<p class="attr">
-    Set from the <code>parent</code> parameter.
-</p>
-<b>question : <i>hemlock.Question or None</i></b>
-<p class="attr">
-    Set from the <code>parent</code> parameter.
-</p></td>
-</tr>
-    </tbody>
-</table>
-
-####Examples
-
-```python
-from hemlock import Input, Submit, push_app_context
-
-push_app_context()
-
-@Submit.register
-def get_initials(name_q):
-    names = name_q.response.split()
-    name_q.data = '.'.join([name[0] for name in names])
-
-inpt = Submit.get_initials(Input("<p>What's your name?</p>"))
-inpt.response = 'Andrew Yang 2020'
-inpt._submit()
-inpt.data
-```
-
-Out:
-
-```
-A.Y.2
-```
-
-
-
-##hemlock.**Validate**
-
-<p class="func-header">
-    <i>class</i> hemlock.<b>Validate</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L282">[source]</a>
-</p>
-
-Validates a participant's response.
-
-Inherits from `hemlock.FunctionRegistrar`.
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Attributes:</b></td>
-    <td class="field-body" width="100%"><b>error_msg : <i>str or None</i></b>
-<p class="attr">
-    If the validate function returns an error message, the <code>error_msg</code> attribute is returned instead of the output of the validate function. You can set this by passing in an <code>error_msg</code> keyword argument to the constructor.
-</p></td>
-</tr>
-<tr class="field">
-    <th class="field-name"><b>Relationships:</b></td>
-    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None</i></b>
-<p class="attr">
-    Set from the <code>parent</code> parameter.
-</p>
-<b>question : <i>hemlock.Question or None</i></b>
-<p class="attr">
-    Set from the <code>parent</code> parameter.
-</p></td>
-</tr>
-    </tbody>
-</table>
-
-####Examples
-
-```python
-from hemlock import Input, Validate, push_app_context
-
-push_app_context()
-
-@Validate.register
-def my_validate_func(inpt):
-    if inpt.response != 'hello world':
-        return '<p>You entered "{}", not "hello world"</p>'.format(inpt.response)
-
-inpt = Validate.my_validate_func(Input('<p>Enter "hello world"</p>'))
-inpt.response = 'goodbye moon'
-inpt._validate()
-inpt.error
-```
-
-Out:
-
-```
-You entered "goodbye moon", not "hello world"
-```
-
-####Methods
-
-
-
-<p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L337">[source]</a>
-</p>
-
-
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>error_msg : <i>str or None</i></b>
-<p class="attr">
-    Return <code>None</code> if there is no error. If there is an error, return <code>self.error_msg</code> or the output of <code>self.func</code>.
-</p></td>
-</tr>
     </tbody>
 </table>
 

@@ -25,10 +25,6 @@ The debugger sends 'AI participants' through the survey. The AI
 participants attempt to break the survey by clicking random objects and
 entering random responses.
 
-AI participants run in batches of specified sizes. For local debugging, I
-recommend a batch size of 1. For production debugging, you can safely go up
-to 3.
-
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
     <col class="field-body" />
@@ -37,12 +33,88 @@ to 3.
     </tbody>
 </table>
 
+####Notes
 
+If your app is running on a different local host port than 5000, set the url
+root as an environment variable before opening the python shell in your second
+terminal:
+
+```
+$ export ULR_ROOT=http://localhost:xxxx
+```
+
+If your application import is not `app.app`, set the import as an enviornment
+variable before opening the python shell in your second terminal:
+
+```
+$ export APP_IMPORT=path.to.app
+```
+
+AI participants run in batches of specified sizes. For local debugging, I
+recommend a batch size of 1. For production debugging, you can safely go up
+to 3.
+
+####Examples
+
+This example debugs an app locally.
+
+In `survey.py`:
+
+```python
+from hemlock import Branch, Page, Label, route
+
+@route('/survey')
+def start():
+    x = 1/0
+    return Branch(Page(Label('<p>Hello World</p>'), terminal=True))
+```
+
+In `app.py`:
+
+```python
+import survey
+
+from hemlock import create_app
+
+app = create_app()
+
+if __name__ == '__main__':
+    from hemlock.app import socketio
+    socketio.run(app)
+```
+
+Open a terminal and run the app with:
+
+```
+$ python app.py $ or python3 app.py
+```
+
+Open a second terminal and open the python shell with:
+
+```
+$ python # or python3
+```
+
+Run the debugger in the second terminal:
+
+```
+>>> from hemlock.debug import AIParticipant, debug
+>>> debug()
+```
+
+The debugger will open a chromedriver and attempt to complete the survey. The
+first terminal window will display this error:
+
+```
+File "/home/<username>/hemlock/survey.py", line 9, in start
+    x = 1/0
+ZeroDivisionError: division by zero
+```
 
 ##hemlock.debug.**debug**
 
 <p class="func-header">
-    <i>def</i> hemlock.debug.<b>debug</b>(<i>num_batches=1, batch_size=1</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/debug/__init__.py#L27">[source]</a>
+    <i>def</i> hemlock.debug.<b>debug</b>(<i>num_batches=1, batch_size=1</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/debug/__init__.py#L101">[source]</a>
 </p>
 
 Run the debugger.
@@ -80,7 +152,7 @@ passed as strings.
 ##hemlock.debug.**run_batch**
 
 <p class="func-header">
-    <i>def</i> hemlock.debug.<b>run_batch</b>(<i>batch_size=1</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/debug/__init__.py#L53">[source]</a>
+    <i>def</i> hemlock.debug.<b>run_batch</b>(<i>batch_size=1</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/debug/__init__.py#L127">[source]</a>
 </p>
 
 Run a batch of AI participants.
@@ -111,7 +183,7 @@ Run a batch of AI participants.
 ##hemlock.debug.**run_participant**
 
 <p class="func-header">
-    <i>def</i> hemlock.debug.<b>run_participant</b>(<i></i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/debug/__init__.py#L78">[source]</a>
+    <i>def</i> hemlock.debug.<b>run_participant</b>(<i></i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/debug/__init__.py#L152">[source]</a>
 </p>
 
 Run a single AI participant through the survey. Assert that the

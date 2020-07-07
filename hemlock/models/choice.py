@@ -1,11 +1,10 @@
 """# Choices and Options
 
-The difference between `Choice` and `Option` is the former are for `Check` 
-questions, while latter are for `Select` questions.
+The difference between `hemlock.Choice` and `hemlock.Option` is the former are 
+for `hemlock.Check` questions, while latter are for `hemlock.Select` questions.
 
-The use of `Choice` and `Option` models is not due to any deep functional 
-difference between them. Rather, it reflects differences in the underlying 
-html.
+The use of choice and option models is not due to any deep functional 
+difference between them, but reflects the underlying html.
 """
 
 from ..app import db
@@ -17,11 +16,10 @@ from sqlalchemy_mutable import MutableType
 
 class Choice(InputBase, HTMLMixin, db.Model):
     """
-    Choices are displayed as part of their question in index order. This 
-    class also serves as a polymorphic base for other choice objects, such as 
-    options.
+    Choices are displayed as part of their question in index order.
 
-    It inherits from `hemlock.InputBase` and `hemlock.HTMLMixin`.
+    It inherits from 
+    [`hemlock.models.InputBase` and `hemlock.models.HTMLMixin`](bases.md).
 
     Parameters
     ----------
@@ -47,8 +45,8 @@ class Choice(InputBase, HTMLMixin, db.Model):
         only one choice can be selected, this is the value of the question's 
         data if this choice is selected. For a question where multiple 
         choices may be selected, data are one-hot encoded; the value is the 
-        suffix of the column associated with the indicator variable that this 
-        choice was selected.
+        suffix of the column name associated with the indicator variable that 
+        this choice was selected.
 
     Relationships
     -------------
@@ -115,7 +113,7 @@ class Choice(InputBase, HTMLMixin, db.Model):
         Notes
         -----
         The question's default choice(s) is the question's `response`, if not 
-        `None` or the question's `default`.
+        `None`, or the question's `default`.
         """
         if self.question is None:
             return False
@@ -163,7 +161,7 @@ class Choice(InputBase, HTMLMixin, db.Model):
 
 class Option(Choice):
     """
-    Options are a choice polymorph specific to `Select` questions.
+    Options are a choice polymorph for `hemlock.Select` questions.
 
     Inherits from `hemlock.Choice`.
 

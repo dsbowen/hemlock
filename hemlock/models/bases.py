@@ -16,7 +16,10 @@ class Base(FunctionRelator, OrderingItem, ModelIdBase):
     """
     Base for all Hemlock models.
 
-    Interits from [`sqlalchemy_function.FunctionRelator`](https://dsbowen.github.io/sqlalchemy-function/), [`sqlalchemy_orderingitem.Orderingitem`](https://dsbowen.githubio/sqlalchemy-orderingitem/) and [`sqlalchemy_modelid.ModelIdBase`](https://dsbowen.github.io/sqlalchemy-modelid/).
+    Interits from 
+    [`sqlalchemy_function.FunctionRelator`](https://dsbowen.github.io/sqlalchemy-function/), 
+    [`sqlalchemy_orderingitem.Orderingitem`](https://dsbowen.github.io/sqlalchemy-orderingitem/) and 
+    [`sqlalchemy_modelid.ModelIdBase`](https://dsbowen.github.io/sqlalchemy-modelid/).
 
     Parameters
     ----------
@@ -67,7 +70,7 @@ class Data(Base, MutableModelBase, db.Model):
 
     Attributes
     ----------
-    data : sqlalchemy_mutable.MutableType
+    data : sqlalchemy_mutable.MutableType, default=None
         Data this element contributes to the dataframe.
 
     data_rows : int, default=1
@@ -77,10 +80,10 @@ class Data(Base, MutableModelBase, db.Model):
 
     index : int or None, default=None
         Order in which this data element appears in its parent; usually a 
-        branch or page.
+        `hemlock.Branch`, `hemlock.Page`, or `hemlock.Question`.
 
     var : str or None, default=None
-        Variable name associated with this data element. If `None` the data 
+        Variable name associated with this data element. If `None`, the data 
         will not be recorded.
     """
     id = db.Column(db.Integer, primary_key=True)
@@ -142,10 +145,10 @@ class HTMLMixin(Base):
     body : sqlalchemy_mutablesoup.MutableSoupType
         The main html of the object.
 
-    css : sqlalchemy_mutablesoup.MutableSoupType
+    css : sqlalchemy_mutablesoup.MutableSoupType, default=None
         CSS the object contributes to the page.
 
-    js : sqlalchemy_mutablesoup.MutableSoupType
+    js : sqlalchemy_mutablesoup.MutableSoupType, default=None
         Javascript the object contributes to the page.
     """
     body = db.Column(MutableSoupType)

@@ -5,45 +5,46 @@ repo_url: https://github.com/dsbowen/hemlock
 edit_uri: edit/master/docs_md
 nav:
   - Home: index.md
-  - Setup:
-    - Recommended software: software.md
-    - Windows: win_setup.md
-  - API:
-    - Application: app.md
-    - Debugging: debug.md
-    - Functions:
-      - Compile: compile_functions.md
-      - Debug: debug_functions.md
-      - Submit: submit_functions.md
-      - Validate: validate_functions.md
-    - Models:
-      - Bases: bases.md
-      - Branch: branch.md
-      - Choice: choice.md
-      - Embedded data and timers: embedded.md
-      - Functions: functions.md
-      - Navbar: navbar.md
-      - Page: page.md
-      - Participant: participant.md
-      - Question mixins: question.md
-      - Workers: workers.md
-    - Question polymorphs:
-      - Check: check.md
-      - Download: download.md
-      - File upload: file.md
-      - Input: input.md
-      - Input group: input_group.md
-      - Label: label.md
-      - Range: range.md
-      - Select: select.md
-      - Textarea: textarea.md
-    - Tools:
-      - Comprehension check: comprehension.md
-      - Language: lang.md
-      - Randomization: random.md
-      - Statics: statics.md
-      - url_for: url_for.md
-      - Webdrivers: webdriver.md
+  - Tutorial:
+    - Setup: setup.md
+    - Your first project: first_project.md
+    - Running hemlock locally: run_local.md
+    - Demographics: demographics.md
+    - Validation: validation.md
+  - Application: app.md
+  - Debugging: debug.md
+  - Functions:
+    - Compile: compile_functions.md
+    - Debug: debug_functions.md
+    - Submit: submit_functions.md
+    - Validate: validate_functions.md
+  - Models:
+    - Bases: bases.md
+    - Branch: branch.md
+    - Choice: choice.md
+    - Embedded data and timers: embedded.md
+    - Function models: functions.md
+    - Page: page.md
+    - Participant: participant.md
+    - Question mixins: question.md
+    - Workers: workers.md
+  - Question polymorphs:
+    - Check: check.md
+    - Download: download.md
+    - File upload: file.md
+    - Input: input.md
+    - Input group: input_group.md
+    - Label: label.md
+    - Range: range.md
+    - Select: select.md
+    - Textarea: textarea.md
+  - Tools:
+    - Comprehension check: comprehension.md
+    - Language: lang.md
+    - Navbar: navbar.md
+    - Randomization: random.md
+    - Statics: statics.md
+    - Utilities: utils.md
 theme: readthedocs
 extra_css:
   - css/extra.css

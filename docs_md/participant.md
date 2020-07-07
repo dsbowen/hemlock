@@ -40,6 +40,8 @@
 The Participant class stores data for an individual survey participant and
 handles navigation for that participant.
 
+Inherits from [`hemlock.models.Base`](bases.md).
+
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
     <col class="field-body" />
@@ -66,7 +68,7 @@ handles navigation for that participant.
 <p class="attr">
     Time at which the participant started he survey.
 </p>
-<b>status : <i>str</i></b>
+<b>status : <i>str, default='InProgress'</i></b>
 <p class="attr">
     Participant's current status; <code>'InProgress'</code>, <code>'TimedOut'</code>, or <code>'Completed'</code>. Read only; derived from <code>self.completed</code> and <code>self.time_expired</code>.
 </p>
@@ -83,36 +85,53 @@ handles navigation for that participant.
     <th class="field-name"><b>Relationships:</b></td>
     <td class="field-body" width="100%"><b>branch_stack : <i>list of hemlock.Branch</i></b>
 <p class="attr">
-    A stack of branches.
+    The participant's stack of branches.
 </p>
 <b>current_branch : <i>hemlock.Branch</i></b>
 <p class="attr">
-    Participant's current <code>Branch</code> (head of <code>self.branch_stack</code>).
+    Participant's current branch (head of <code>self.branch_stack</code>).
 </p>
 <b>current_page : <i>hemlock.Page</i></b>
 <p class="attr">
-    Participant's current <code>Page</code> (head of <code>self.current_branch</code>).
+    Participant's current page (head of <code>self.current_branch</code>).
 </p>
 <b>pages : <i>list of hemlock.Page</i></b>
 <p class="attr">
-    List of all <code>Page</code>s belonging to the participant.
+    Pages belonging to the participant.
+</p>
+<b>embedded : <i>list of hemlock.Embedded</i></b>
+<p class="attr">
+    Embedded data elements belonging to the participant.
 </p>
 <b>data_elements : <i>list of hemlock.DataElement</i></b>
 <p class="attr">
-    List of all <code>DataElement</code>s belonging to the participant, ordered by <code>id</code>.
+    List of all data elements belonging to the participant, ordered by <code>id</code>.
 </p></td>
 </tr>
     </tbody>
 </table>
 
+####Examples
 
+```python
+from hemlock import Branch, Label, Page, Participant, push_app_context
+
+def start():
+    return Branch(Page(Label('<p>Hello World</p>')))
+
+app = push_app_context()
+
+part = Participant.gen_test_participant(start)
+part.current_page.preview()
+# part.current_page.preview('Ubuntu') if running in Ubuntu/WSL
+```
 
 ####Methods
 
 
 
 <p class="func-header">
-    <i></i> <b>back</b>(<i>self, back_to=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L197">[source]</a>
+    <i></i> <b>back</b>(<i>self, back_to=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L225">[source]</a>
 </p>
 
 Navigate back for debugging purposes.
@@ -143,7 +162,7 @@ Navigate back for debugging purposes.
 
 
 <p class="func-header">
-    <i></i> <b>forward</b>(<i>self, forward_to=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L213">[source]</a>
+    <i></i> <b>forward</b>(<i>self, forward_to=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L241">[source]</a>
 </p>
 
 Navigate forward for debugging purposes.
@@ -174,7 +193,7 @@ Navigate forward for debugging purposes.
 
 
 <p class="func-header">
-    <i></i> <b>gen_test_participant</b>(<i>gen_root</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L230">[source]</a>
+    <i></i> <b>gen_test_participant</b>(<i>gen_root</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L258">[source]</a>
 </p>
 
 Generate a test participant for debugging purposes.
@@ -205,7 +224,7 @@ Generate a test participant for debugging purposes.
 
 
 <p class="func-header">
-    <i></i> <b>get_data</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L249">[source]</a>
+    <i></i> <b>get_data</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L277">[source]</a>
 </p>
 
 
@@ -218,7 +237,7 @@ Generate a test participant for debugging purposes.
     <th class="field-name"><b>Returns:</b></td>
     <td class="field-body" width="100%"><b>df : <i>hemlock.models.private.DataFrame</i></b>
 <p class="attr">
-    Data associated with the current Participant.
+    Data associated with the participant.
 </p></td>
 </tr>
     </tbody>
@@ -230,10 +249,14 @@ Data elements are added to the dataframe in the order in which they
 were created (i.e. by id). This is not necessarily the order in which
 they appeared to the Participant.
 
+####Examples
+
+
+
 
 
 <p class="func-header">
-    <i></i> <b>get_meta</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L308">[source]</a>
+    <i></i> <b>get_meta</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L342">[source]</a>
 </p>
 
 This is where it gets meta.
@@ -257,7 +280,7 @@ This is where it gets meta.
 
 
 <p class="func-header">
-    <i></i> <b>view_nav</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L327">[source]</a>
+    <i></i> <b>view_nav</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L361">[source]</a>
 </p>
 
 View participant's branch stack.

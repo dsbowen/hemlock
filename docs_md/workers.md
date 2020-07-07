@@ -21,11 +21,17 @@
     }
 </style># Worker models
 
-A worker may be attached to a branch or page. Each type of worker is responsible for one of its branch's of page's methods, which is expected to a be a long-running function.
+A worker may be attached to a branch or page. Each type of worker is
+responsible for one of its branch's of page's methods, which is expected to
+a be a long-running function.
 
-When called, the worker sends the method for which it is responsible to a Redis queue. While the Redis queue is processing the method, participants are shown a loading page. When the worker has finished its job, it returns the loaded page to the participant.
+When called, the worker sends the method for which it is responsible to a
+Redis queue. While the Redis queue is processing the method, participants
+are shown a loading page. When the worker has finished its job, it returns
+the loaded page to the participant.
 
-All workers inherit from `flask_worker.WorkerMixin`. See <https://dsbowen.github.io.flask-worker/>.
+All workers inherit from
+[`flask_worker.WorkerMixin`](https://dsbowen.github.io.flask-worker/)..
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -37,11 +43,196 @@ All workers inherit from `flask_worker.WorkerMixin`. See <https://dsbowen.github
 
 
 
-##hemlock.**CompileWorker**
+##hemlock.**Worker**
+
+
+
+Convenience methods for adding workers to branches and pages.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        
+    </tbody>
+</table>
+
+####Examples
+
+We have two files in our root directory. In `survey.py`:
+
+```python
+from hemlock import Branch, Page, Label, Navigate, Worker, route
+
+@route('/survey')
+def start():
+    return Worker.navigate(Navigate.end(Branch(
+        Page(Label('<p>Hello World</p>'))
+    )))
+
+@Navigate.register
+def end(origin):
+    return Branch(Page(Label('<p>Goodbye World</p>'), terminal=True))
+```
+
+In `app.py`:
+
+```python
+import survey
+
+from hemlock import create_app
+
+app = create_app()
+
+if __name__ == '__main__':
+    from hemlock.app import socketio
+    socketio.run(app, debug=True)
+```
+
+We'll open two terminal windows. In the first, run:
+
+```
+$ rq worker hemlock-task-queue
+```
+
+In the second, run:
+
+```
+$ python app.py # or python3 app.py
+```
+
+Open your browser to <http://localhost:5000>. Click the forward button and
+notice that the Redis queue handles the navigate function.
+
+####Methods
+
+
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>CompileWorker</b>(<i>page=None, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/workers.py#L19">[source]</a>
+    <i></i> <b>compile</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/workers.py#L76">[source]</a>
 </p>
+
+
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>page : <i>hemlock.Page</i></b>
+<p class="attr">
+    Page to which the worker is added.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>page : <i></i></b>
+<p class="attr">
+    
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+
+
+<p class="func-header">
+    <i></i> <b>validate</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/workers.py#L90">[source]</a>
+</p>
+
+
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>page : <i>hemlock.Page</i></b>
+<p class="attr">
+    Page to which the worker is added.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>page : <i></i></b>
+<p class="attr">
+    
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+
+
+<p class="func-header">
+    <i></i> <b>submit</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/workers.py#L104">[source]</a>
+</p>
+
+
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>page : <i>hemlock.Page</i></b>
+<p class="attr">
+    Page to which the worker is added.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>page : <i></i></b>
+<p class="attr">
+    
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+
+
+<p class="func-header">
+    <i></i> <b>navigate</b>(<i>parent</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/workers.py#L118">[source]</a>
+</p>
+
+
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>parent : <i>hemlock.Branch or hemlock.Page</i></b>
+<p class="attr">
+    Branch or page to which the worker is added.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>parent : <i></i></b>
+<p class="attr">
+    
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+##hemlock.**CompileWorker**
+
+
 
 Handles a page's compile method.
 
@@ -50,13 +241,6 @@ Handles a page's compile method.
     <col class="field-body" />
     <tbody valign="top">
         <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None, default=None</i></b>
-<p class="attr">
-    The page to which the worker belongs.
-</p></td>
-</tr>
-<tr class="field">
     <th class="field-name"><b>Attributes:</b></td>
     <td class="field-body" width="100%"><b>func : <i>callable or None</i></b>
 <p class="attr">
@@ -79,9 +263,7 @@ Handles a page's compile method.
 
 ##hemlock.**ValidateWorker**
 
-<p class="func-header">
-    <i>class</i> hemlock.<b>ValidateWorker</b>(<i>page=None, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/workers.py#L50">[source]</a>
-</p>
+
 
 Handles a page's validate method.
 
@@ -90,13 +272,6 @@ Handles a page's validate method.
     <col class="field-body" />
     <tbody valign="top">
         <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None, default=None</i></b>
-<p class="attr">
-    The page to which the worker belongs.
-</p></td>
-</tr>
-<tr class="field">
     <th class="field-name"><b>Attributes:</b></td>
     <td class="field-body" width="100%"><b>func : <i>callable or None</i></b>
 <p class="attr">
@@ -119,9 +294,7 @@ Handles a page's validate method.
 
 ##hemlock.**SubmitWorker**
 
-<p class="func-header">
-    <i>class</i> hemlock.<b>SubmitWorker</b>(<i>page=None, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/workers.py#L81">[source]</a>
-</p>
+
 
 Handles a page's submit method.
 
@@ -130,13 +303,6 @@ Handles a page's submit method.
     <col class="field-body" />
     <tbody valign="top">
         <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None, default=None</i></b>
-<p class="attr">
-    The page to which the worker belongs.
-</p></td>
-</tr>
-<tr class="field">
     <th class="field-name"><b>Attributes:</b></td>
     <td class="field-body" width="100%"><b>func : <i>callable or None</i></b>
 <p class="attr">
@@ -160,7 +326,7 @@ Handles a page's submit method.
 ##hemlock.**NavigateWorker**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>NavigateWorker</b>(<i>parent=None, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/workers.py#L112">[source]</a>
+    <i>class</i> hemlock.<b>NavigateWorker</b>(<i>parent=None, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/workers.py#L214">[source]</a>
 </p>
 
 Handles a branch's or page's navigate method.
@@ -170,13 +336,6 @@ Handles a branch's or page's navigate method.
     <col class="field-body" />
     <tbody valign="top">
         <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>parent : <i>hemlock.Branch, hemlock.Page, or None, default=None</i></b>
-<p class="attr">
-    The branch or page to which this worker belongs.
-</p></td>
-</tr>
-<tr class="field">
     <th class="field-name"><b>Attributes:</b></td>
     <td class="field-body" width="100%"><b>func : <i>callable or None</i></b>
 <p class="attr">

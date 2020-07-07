@@ -10,8 +10,7 @@ are shown a loading page. When the worker has finished its job, it returns
 the loaded page to the participant.
 
 All workers inherit from 
-[`flask_worker.WorkerMixin`](https://dsbowen.github.io.flask-worker/). 
-<>.
+[`flask_worker.WorkerMixin`](https://dsbowen.github.io.flask-worker/)..
 """
 
 from ..app import db

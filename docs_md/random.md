@@ -34,7 +34,7 @@
 ##hemlock.tools.**key**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>key</b>(<i>len_=90</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L10">[source]</a>
+    <i>def</i> hemlock.tools.<b>key</b>(<i>len_=90</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L12">[source]</a>
 </p>
 
 
@@ -65,19 +65,19 @@
 ```python
 from hemlock import tools
 
-tools.key()
+tools.key(10)
 ```
 
 Out:
 
 ```
-gpGmZuRfF7kR2IRH2S4RInUOUjurWn5RUJjtgGleUbP7lglNCWuamzxFL7sDh52gMg6z3dJeIaIUr5XCGxCazFLaMr
+gpGmZuRfF7
 ```
 
 ##hemlock.tools.**Randomizer**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Randomizer</b>(<i>elements, r=1, combination=True</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L41">[source]</a>
+    <i>class</i> hemlock.tools.<b>Randomizer</b>(<i>elements, r=1, combination=True</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L43">[source]</a>
 </p>
 
 Evenly randomizes over a set of elements.
@@ -114,6 +114,8 @@ Evenly randomizes over a set of elements.
 ####Examples
 
 ```python
+from hemlock.tools import Randomizer
+
 elements = ('world','moon','star')
 randomizer = Randomizer(elements, r=2, combination=False)
 randomizer.next()
@@ -130,7 +132,7 @@ Out:
 
 
 <p class="func-header">
-    <i></i> <b>next</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L84">[source]</a>
+    <i></i> <b>next</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L88">[source]</a>
 </p>
 
 
@@ -154,11 +156,11 @@ Out:
 ##hemlock.tools.**Assigner**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Assigner</b>(<i>conditions</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L94">[source]</a>
+    <i>class</i> hemlock.tools.<b>Assigner</b>(<i>conditions</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L98">[source]</a>
 </p>
 
 Evenly assigns participants to conditions. Inherits from
-`hemlock.random.Randomizer`.
+`hemlock.tools.Randomizer`.
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -188,6 +190,8 @@ Evenly assigns participants to conditions. Inherits from
 ####Examples
 
 ```python
+from hemlock.tools import Assigner
+
 conditions = {'Treatment': (0,1), 'Level': ('low','med','high')}
 assigner = Assigner(conditions)
 assigner.next()
@@ -204,7 +208,7 @@ Out:
 
 
 <p class="func-header">
-    <i></i> <b>next</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L131">[source]</a>
+    <i></i> <b>next</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L137">[source]</a>
 </p>
 
 Assigns the participant to a condition. The condition assigment

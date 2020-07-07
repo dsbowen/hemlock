@@ -42,7 +42,9 @@ class Input(InputGroup, InputBase, Question):
     """
     Inputs take text input by default, or other types of html inputs.
 
-    Inherits from [`hemlock.InputGroup`](input_group.md), [`hemlock.InputBase`](bases.md) and [`hemlock.Question`](question.md).
+    Inherits from [`hemlock.qpolymorphs.InputGroup`](input_group.md), 
+    [`hemlock.models.InputBase`](bases.md) and 
+    [`hemlock.Question`](question.md).
 
     Parameters
     ----------

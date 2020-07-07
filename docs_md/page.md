@@ -23,7 +23,7 @@
 
 The survey 'flow' is:
 
-1. **Compile.** Execute a page's `Compile` functions. By default, a page's
+1. **Compile.** Execute a page's compile functions. By default, a page's
 first compile function runs its questions' compile methods in index order.
 
 2. **Render.** Render the page for the participant and wait for them to
@@ -34,17 +34,17 @@ the page. This sets the `response` attribute of the questions.
 
 4. **Validate.** When the participant attempts to submit the page, validate
 the responses. As with the compile method, the validate method executes a
-page's `Validate` functions in index order. By default, a page's first
+page's validate functions in index order. By default, a page's first
 validate function runs its questions' validate methods in index order.
 
 5. **Record data.** Record the data associated with the participant's
 responses to every question on the page. This sets the `data` attribute of the
 questions.
 
-6. **Submit.** Execute the page's `Submit` functions. By default, a page's
+6. **Submit.** Execute the page's submit functions. By default, a page's
 first submit function runs its questions' submit methods in index order.
 
-7. **Navigate.** If the page has a `Navigate` function, create a new branch
+7. **Navigate.** If the page has a navigate function, create a new branch
 originating from this page.
 
 <table class="docutils field-list field-table" frame="void" rules="none">
@@ -207,13 +207,13 @@ The probability of refreshing the page is `1-p_forward-p_back`.
 ##hemlock.**Page**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Page</b>(<i>questions=[], template='hemlock/page-body.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L157">[source]</a>
+    <i>class</i> hemlock.<b>Page</b>(<i>*questions, template='hemlock/page-body.html', timer_var =None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L157">[source]</a>
 </p>
 
 Pages are queued in a branch. A page contains a list of questions which it
 displays to the participant in index order.
 
-It inherits from `hemlock.HTMLMixin`.
+It inherits from [`hemlock.model.HTMLMixin`](bases.md).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -221,13 +221,17 @@ It inherits from `hemlock.HTMLMixin`.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>questions : <i>list of hemlock.Question, default=[]</i></b>
+    <td class="field-body" width="100%"><b>*questions : <i>list of hemlock.Question, default=[]</i></b>
 <p class="attr">
     Questions to be displayed on this page.
 </p>
 <b>template : <i>str, default='hemlock/page-body.html'</i></b>
 <p class="attr">
     Template for the page <code>body</code>.
+</p>
+<b>timer_var : <i>str or None, default=None</i></b>
+<p class="attr">
+    Variable name of the page timer.
 </p></td>
 </tr>
 <tr class="field">
@@ -242,7 +246,7 @@ It inherits from `hemlock.HTMLMixin`.
 </p>
 <b>cache_compile : <i>bool, default=False</i></b>
 <p class="attr">
-    Indicates that this page should cache the result of its compile functions. Specifically, it removes all compile functions from the page self <code>self._compile</code> is called.
+    Indicates that this page should cache the result of its compile functions. Specifically, it removes all compile functions and the compile worker from the page self <code>self._compile</code> is called.
 </p>
 <b>direction_from : <i>str or None, default=None</i></b>
 <p class="attr">
@@ -254,7 +258,7 @@ It inherits from `hemlock.HTMLMixin`.
 </p>
 <b>error : <i>str or None, default=None</i></b>
 <p class="attr">
-    Text of the page error message
+    Text of the page error message.
 </p>
 <b>forward : <i>str or None, default='&gt;&gt;'</i></b>
 <p class="attr">
@@ -307,7 +311,7 @@ It inherits from `hemlock.HTMLMixin`.
 <p class="attr">
     List of embedded data elements.
 </p>
-<b>timer : <i>hemlock.Timer</i></b>
+<b>timer : <i>hemlock.Timer or None, default=hemlock.Timer</i></b>
 <p class="attr">
     Tracks timing data for this page.
 </p>
@@ -343,10 +347,6 @@ It inherits from `hemlock.HTMLMixin`.
 <p class="attr">
     Worker which sends the submit functions to a Redis queue.
 </p>
-<b>debug_functions : <i>list of hemlock.Debug</i></b>
-<p class="attr">
-    List of debug functions; run during debugging. The default debug function runs its questions' debug functions in <em>random</em> order.
-</p>
 <b>navigate_function : <i>hemlock.Navigate or None, default=None</i></b>
 <p class="attr">
     Navigate function which returns a new branch originating from this page.
@@ -354,6 +354,10 @@ It inherits from `hemlock.HTMLMixin`.
 <b>navigate_worker : <i>hemlock.NavigateWorker</i></b>
 <p class="attr">
     Worker which sends the navigate function to a Redis queue.
+</p>
+<b>debug_functions : <i>list of hemlock.Debug</i></b>
+<p class="attr">
+    List of debug functions; run during debugging. The default debug function runs its questions' debug functions in <em>random</em> order.
 </p></td>
 </tr>
     </tbody>
@@ -366,7 +370,7 @@ from hemlock import Page, push_app_context
 
 push_app_context()
 
-p = Page([Label('<p>Hello World</p>')])
+p = Page(Label('<p>Hello World</p>'))
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 
@@ -375,7 +379,7 @@ p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 
 
 <p class="func-header">
-    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L495">[source]</a>
+    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L507">[source]</a>
 </p>
 
 Clear the error message from this page and all of its questions.
@@ -399,7 +403,7 @@ Clear the error message from this page and all of its questions.
 
 
 <p class="func-header">
-    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L507">[source]</a>
+    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L519">[source]</a>
 </p>
 
 Clear the response from all of this page's questions.
@@ -423,7 +427,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>first_page</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L518">[source]</a>
+    <i></i> <b>first_page</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L530">[source]</a>
 </p>
 
 
@@ -447,7 +451,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>is_valid</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L533">[source]</a>
+    <i></i> <b>is_valid</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L545">[source]</a>
 </p>
 
 
@@ -471,7 +475,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>preview</b>(<i>self, dist=None, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L544">[source]</a>
+    <i></i> <b>preview</b>(<i>self, dist=None, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L556">[source]</a>
 </p>
 
 Preview the page in a browser window.
@@ -508,7 +512,7 @@ This method does not run the compile functions.
 
 
 <p class="func-header">
-    <i></i> <b>view_nav</b>(<i>self, indent=0</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L617">[source]</a>
+    <i></i> <b>view_nav</b>(<i>self, indent=0</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L629">[source]</a>
 </p>
 
 Print the navigation starting at this page for debugging purposes.

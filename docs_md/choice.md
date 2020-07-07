@@ -21,12 +21,11 @@
     }
 </style># Choices and Options
 
-The difference between `Choice` and `Option` is the former are for `Check`
-questions, while latter are for `Select` questions.
+The difference between `hemlock.Choice` and `hemlock.Option` is the former are
+for `hemlock.Check` questions, while latter are for `hemlock.Select` questions.
 
-The use of `Choice` and `Option` models is not due to any deep functional
-difference between them. Rather, it reflects differences in the underlying
-html.
+The use of choice and option models is not due to any deep functional
+difference between them, but reflects the underlying html.
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -41,14 +40,13 @@ html.
 ##hemlock.**Choice**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Choice</b>(<i>template='hemlock/choice.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/choice.py#L18">[source]</a>
+    <i>class</i> hemlock.<b>Choice</b>(<i>label='', template='hemlock/choice.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/choice.py#L17">[source]</a>
 </p>
 
-Choices are displayed as part of their question in index order. This
-class also serves as a polymorphic base for other choice objects, such as
-options.
+Choices are displayed as part of their question in index order.
 
-It inherits from `hemlock.InputBase` and `hemlock.HTMLMixin`.
+It inherits from
+[`hemlock.models.InputBase` and `hemlock.models.HTMLMixin`](bases.md).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -56,7 +54,11 @@ It inherits from `hemlock.InputBase` and `hemlock.HTMLMixin`.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>template : <i>str, default='choice.html'</i></b>
+    <td class="field-body" width="100%"><b>label : <i>str, default=''</i></b>
+<p class="attr">
+    Choice label.
+</p>
+<b>template : <i>str, default='choice.html'</i></b>
 <p class="attr">
     Template for the choice <code>body</code>.
 </p></td>
@@ -77,7 +79,7 @@ It inherits from `hemlock.InputBase` and `hemlock.HTMLMixin`.
 </p>
 <b>value : <i>sqlalchemy_mutable.MutableType or None, default=None</i></b>
 <p class="attr">
-    Value of the data associated with the choice. For a question where only one choice can be selected, this is the value of the question's data if this choice is selected. For a question where multiple choices may be selected, data are one-hot encoded; the value is the suffix of the column associated with the indicator variable that this choice was selected.
+    Value of the data associated with the choice. For a question where only one choice can be selected, this is the value of the question's data if this choice is selected. For a question where multiple choices may be selected, data are one-hot encoded; the value is the suffix of the column name associated with the indicator variable that this choice was selected.
 </p></td>
 </tr>
 <tr class="field">
@@ -101,7 +103,7 @@ to the constructor.
 
 
 <p class="func-header">
-    <i></i> <b>set_all</b>(<i>self, val</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/choice.py#L88">[source]</a>
+    <i></i> <b>set_all</b>(<i>self, val</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/choice.py#L89">[source]</a>
 </p>
 
 Set the choice's label, name, and value.
@@ -132,7 +134,7 @@ Set the choice's label, name, and value.
 
 
 <p class="func-header">
-    <i></i> <b>is_default</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/choice.py#L104">[source]</a>
+    <i></i> <b>is_default</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/choice.py#L105">[source]</a>
 </p>
 
 
@@ -154,15 +156,15 @@ Set the choice's label, name, and value.
 ####Notes
 
 The question's default choice(s) is the question's `response`, if not
-`None` or the question's `default`.
+`None`, or the question's `default`.
 
 ##hemlock.**Option**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Option</b>(<i>template='hemlock/option.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/choice.py#L161">[source]</a>
+    <i>class</i> hemlock.<b>Option</b>(<i>label='', template='hemlock/option.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/choice.py#L162">[source]</a>
 </p>
 
-Options are a choice polymorph specific to `Select` questions.
+Options are a choice polymorph for `hemlock.Select` questions.
 
 Inherits from `hemlock.Choice`.
 
@@ -172,7 +174,11 @@ Inherits from `hemlock.Choice`.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>template : <i>str, default='hemlock/option.html'</i></b>
+    <td class="field-body" width="100%"><b>label : <i>str, default=''</i></b>
+<p class="attr">
+    Option label.
+</p>
+<b>template : <i>str, default='hemlock/option.html'</i></b>
 <p class="attr">
     Template for the option <code>body</code>.
 </p></td>

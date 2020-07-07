@@ -409,7 +409,7 @@ inpt.error
 Out:
 
 ```
-Please enter a response exactly 5 characters long.
+Please enter exactly 5 characters.
 ```
 
 ##hemlock.functions.validate.**max_len**
@@ -460,7 +460,7 @@ inpt.error
 Out:
 
 ```
-Please enter a response at most 5 characters long.
+Please enter at most 5 characters.
 ```
 
 ##hemlock.functions.validate.**min_len**
@@ -506,7 +506,7 @@ inpt.error
 Out:
 
 ```
-Please enter a response at least 15 characters long.
+Please enter at least 15 characters.
 ```
 
 ##hemlock.functions.validate.**range_len**
@@ -556,7 +556,7 @@ inpt.error
 Out:
 
 ```
-Please enter a response 5 to 10 characters long.
+Please enter 5 to 10 characters.
 ```
 
 ##hemlock.functions.validate.**exact_words**

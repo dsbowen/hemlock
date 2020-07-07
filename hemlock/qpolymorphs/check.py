@@ -5,7 +5,8 @@ from ..models import ChoiceQuestion
 
 def click_choices(driver, question):
     """
-    Default check debug funtion. See [click choices](debug_functions.md).
+    Default debug function. See 
+    [`hemlock.functions.debug.click_choices`](debug_functions.md).
     """
     from ..functions.debug import click_choices as click_choices_
     click_choices_(driver, question)

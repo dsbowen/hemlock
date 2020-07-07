@@ -45,8 +45,9 @@ class File(InputGroup, InputBase, Question):
     """
     Allows participants to upload files.
 
-    Inherits from [`hemlock.InputGroup`](input_group.md), 
-    [`hemlock.InputBase`](bases.md), and [`hemlock.Question`](question.md).
+    Inherits from [`hemlock.qpolymorphs.InputGroup`](input_group.md), 
+    [`hemlock.models.InputBase`](bases.md), and 
+    [`hemlock.Question`](question.md).
 
     Parameters
     ----------
@@ -74,6 +75,10 @@ class File(InputGroup, InputBase, Question):
     Set an environment variable `BUCKET` to the name of the bucket, and 
     `GOOGLE_APPLICATION_CREDENTIALS` to the name of your 
     [Google application credentials JSON file](https://cloud.google.com/docs/authentication/getting-started).
+
+    ```
+    export BUCKET=<my-bucket> GOOGLE_APPLICATION_CREDENTIALS=<my-credentials.json>
+    ```
 
     In `survey.py`:
 

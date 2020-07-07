@@ -81,8 +81,10 @@ from hemlock import Download, Page, push_app_context
 
 push_app_context()
 
-p = Page([Download('<p>Click here to download a file.</p>')])
-p.preview('Ubuntu')
+p = Page(Download(
+    '<p>Click here to download a file.</p>',
+    downloads=[('HELLO_WORLD_URL', 'hello_world.txt')]
+))
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 
@@ -98,7 +100,7 @@ download button will not download your file from a preview.
 Function models for creating files and executing other operations after
 form handling and before download.
 
-Inherits from [`hemlock.FunctionRegistrar`](functions.md).
+Inherits from [`hemlock.models.FunctionRegistrar`](functions.md).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -118,7 +120,7 @@ Inherits from [`hemlock.FunctionRegistrar`](functions.md).
 
 Function models for form handling.
 
-Inherits from [`hemlock.FunctionRegistrar`](functions.md).
+Inherits from [`hemlock.models.FunctionRegistrar`](functions.md).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />

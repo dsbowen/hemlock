@@ -63,9 +63,9 @@
 ####Examples
 
 ```python
-from hemlock import tools
+from hemlock.tools import indef_article
 
-[tools.indef_article(fruit) for fruit in ('apple','banana')]
+[indef_article(fruit) for fruit in ('apple','banana')]
 ```
 
 Out:
@@ -110,10 +110,10 @@ Out:
 ####Examples
 
 ```python
-from hemlock import tools
+from hemlock.tools import join
 
-print(tools.join('and', 'world', 'sun'))
-print(tools.join('or', 'world', 'sun', 'moon'))
+print(join('and', 'world', 'sun'))
+print(join('or', 'world', 'sun', 'moon'))
 ```
 
 Out:
@@ -163,9 +163,9 @@ world, sun, or moon
 ####Examples
 
 ```python
-from hemlock import tools
+from hemlock.tools import plural
 
-['{} {}'.format(n, tools.plural(n, 'cat')) for n in range(0,3)]
+['{} {}'.format(n, plural(n, 'cat')) for n in range(0,3)]
 ```
 
 Out:
@@ -218,7 +218,7 @@ Out:
 ####Examples
 
 ```python
-from hemlock import tools
+from hemlock.tools import pronouns
 
 string = '''
 {A_subject} said hello to {B_object} as {B_subject} was walking
@@ -226,8 +226,8 @@ string = '''
 thought to {A_reflex}.
 '''
 string.format(
-    **tools.pronouns(3, True, 'male', pfx='A_'),
-    **tools.pronouns(3, True, 'female', pfx='B_')
+    **pronouns(3, True, 'male', pfx='A_'),
+    **pronouns(3, True, 'female', pfx='B_')
 )
 ```
 
@@ -243,8 +243,8 @@ In:
 
 ```python
 string.format(
-    **tools.pronouns(3, True, 'female', pfx='A_'),
-    **tools.pronouns(3, True, 'male', pfx='B_')
+    **pronouns(3, True, 'female', pfx='A_'),
+    **pronouns(3, True, 'male', pfx='B_')
 )
 ```
 

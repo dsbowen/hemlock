@@ -34,6 +34,8 @@ class Participant(UserMixin, Base, db.Model):
     The Participant class stores data for an individual survey participant and
     handles navigation for that participant.
 
+    Inherits from [`hemlock.models.Base`](bases.md).
+
     Attributes
     ----------
     completed : bool, default=False
@@ -51,7 +53,7 @@ class Participant(UserMixin, Base, db.Model):
     start_time : datetime.datetime
         Time at which the participant started he survey.
 
-    status : str
+    status : str, default='InProgress'
         Participant's current status; `'InProgress'`, `'TimedOut'`, or 
         `'Completed'`. Read only; derived from `self.completed` and 
         `self.time_expired`.
@@ -83,7 +85,7 @@ class Participant(UserMixin, Base, db.Model):
         Embedded data elements belonging to the participant.
 
     data_elements : list of hemlock.DataElement
-        List of all `DataElement`s belonging to the participant, ordered by 
+        List of all data elements belonging to the participant, ordered by 
         `id`.
 
     Examples
@@ -277,7 +279,10 @@ class Participant(UserMixin, Base, db.Model):
         Returns
         -------
         df : hemlock.models.private.DataFrame
-            Data associated with the current Participant.
+            Data associated with the participant.
+
+        Examples
+        --------
 
         Notes
         -----

@@ -126,7 +126,7 @@ class CreateFile(FunctionRegistrar, db.Model):
     Function models for creating files and executing other operations after 
     form handling and before download.
 
-    Inherits from [`hemlock.FunctionRegistrar`](functions.md).
+    Inherits from [`hemlock.models.FunctionRegistrar`](functions.md).
     """
     id = db.Column(db.Integer, primary_key=True)
     bnt_id = db.Column(db.Integer, db.ForeignKey('download.id'))
@@ -136,7 +136,7 @@ class HandleForm(FunctionRegistrar, db.Model):
     """
     Function models for form handling.
 
-    Inherits from [`hemlock.FunctionRegistrar`](functions.md).
+    Inherits from [`hemlock.models.FunctionRegistrar`](functions.md).
     """
     id = db.Column(db.Integer, primary_key=True)
     bnt_id = db.Column(db.Integer, db.ForeignKey('download.id'))

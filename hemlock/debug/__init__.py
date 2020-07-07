@@ -4,6 +4,80 @@ The debugger sends 'AI participants' through the survey. The AI
 participants attempt to break the survey by clicking random objects and 
 entering random responses.
 
+Examples
+--------
+This example debugs an app locally.
+
+In `survey.py`:
+
+```python
+from hemlock import Branch, Page, Label, route
+
+@route('/survey')
+def start():
+\    x = 1/0
+\    return Branch(Page(Label('<p>Hello World</p>'), terminal=True))
+```
+
+In `app.py`:
+
+```python
+import survey
+
+from hemlock import create_app
+
+app = create_app()
+
+if __name__ == '__main__':
+\    from hemlock.app import socketio
+\    socketio.run(app)
+```
+
+Open a terminal and run the app with:
+
+```
+$ python app.py $ or python3 app.py
+```
+
+Open a second terminal and open the python shell with:
+
+```
+$ python # or python3
+```
+
+Run the debugger in the second terminal:
+
+```
+>>> from hemlock.debug import AIParticipant, debug
+>>> debug()
+```
+
+The debugger will open a chromedriver and attempt to complete the survey. The
+first terminal window will display this error:
+
+```
+File "/home/<username>/hemlock/survey.py", line 9, in start
+\    x = 1/0
+ZeroDivisionError: division by zero
+```
+
+Notes
+-----
+If your app is running on a different local host port than 5000, set the url 
+root as an environment variable before opening the python shell in your second
+terminal:
+
+```
+$ export ULR_ROOT=http://localhost:xxxx
+```
+
+If your application import is not `app.app`, set the import as an enviornment
+variable before opening the python shell in your second terminal:
+
+```
+$ export APP_IMPORT=path.to.app
+```
+
 AI participants run in batches of specified sizes. For local debugging, I 
 recommend a batch size of 1. For production debugging, you can safely go up 
 to 3.

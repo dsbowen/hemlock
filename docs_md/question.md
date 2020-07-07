@@ -19,7 +19,10 @@
     table.field-table {
         border-radius: 0.1em
     }
-</style># Question mixins
+</style># Questions
+
+`hemlock.Question` and `hemlock.ChoiceQuestion` are 'question skeletons';
+most useful when fleshed out. See section on question polymorphs.
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -34,12 +37,14 @@
 ##hemlock.**Question**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Question</b>(<i>label='', template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L15">[source]</a>
+    <i>class</i> hemlock.<b>Question</b>(<i>label='', template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L20">[source]</a>
 </p>
 
-Base object for questions. Questions are displayed on their page in index order.
+Base object for questions. Questions are displayed on their page in index
+order.
 
-It inherits from `hemlock.Data` and `hemlock.HTMLMixin`.
+It inherits from
+[`hemlock.models.Data` and `hemlock.models.HTMLMixin`](bases.md).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -77,15 +82,15 @@ It inherits from `hemlock.Data` and `hemlock.HTMLMixin`.
 </tr>
 <tr class="field">
     <th class="field-name"><b>Relationships:</b></td>
-    <td class="field-body" width="100%"><b>part : <i>hemlock.Participant</i></b>
+    <td class="field-body" width="100%"><b>part : <i>hemlock.Participant or None</i></b>
 <p class="attr">
     The participant to which this question belongs. Derived from <code>self.page</code>.
 </p>
-<b>branch : <i>hemlock.Branch</i></b>
+<b>branch : <i>hemlock.Branch or None</i></b>
 <p class="attr">
     The branch to which this question belongs. Derived from <code>self.page</code>.
 </p>
-<b>page : <i>hemlock.Page</i></b>
+<b>page : <i>hemlock.Page or None</i></b>
 <p class="attr">
     The page to which this question belongs.
 </p>
@@ -116,7 +121,7 @@ It inherits from `hemlock.Data` and `hemlock.HTMLMixin`.
 
 
 <p class="func-header">
-    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L150">[source]</a>
+    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L166">[source]</a>
 </p>
 
 Clear the error message.
@@ -140,7 +145,7 @@ Clear the error message.
 
 
 <p class="func-header">
-    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L161">[source]</a>
+    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L177">[source]</a>
 </p>
 
 Clear the response.
@@ -164,7 +169,7 @@ Clear the response.
 ##hemlock.**ChoiceQuestion**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>ChoiceQuestion</b>(<i>label='', choices=[], template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L212">[source]</a>
+    <i>class</i> hemlock.<b>ChoiceQuestion</b>(<i>label='', choices=[], template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L228">[source]</a>
 </p>
 
 A question which contains choices. Inherits from `hemlock.Question`.
@@ -179,11 +184,11 @@ A question which contains choices. Inherits from `hemlock.Question`.
 <p class="attr">
     Question label.
 </p>
-<b>choices : <i>list of hemlock.Choice</i></b>
+<b>choices : <i>list of hemlock.Choice, default=[]</i></b>
 <p class="attr">
     Choices which belong to this question.
 </p>
-<b>template : <i>str</i></b>
+<b>template : <i>str or None, default=None</i></b>
 <p class="attr">
     Template for the question body.
 </p></td>

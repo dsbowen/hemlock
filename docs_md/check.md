@@ -37,7 +37,8 @@
     <i>def</i> hemlock.<b>click_choices</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/check.py#L6">[source]</a>
 </p>
 
-Default check debug funtion. See [click choices](debug_functions.md).
+Default debug function. See
+[`hemlock.functions.debug.click_choices`](debug_functions.md).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -52,7 +53,7 @@ Default check debug funtion. See [click choices](debug_functions.md).
 ##hemlock.**Check**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Check</b>(<i>label='', choices=[], template='hemlock/check.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/check.py#L21">[source]</a>
+    <i>class</i> hemlock.<b>Check</b>(<i>label='', choices=[], template='hemlock/check.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/check.py#L22">[source]</a>
 </p>
 
 Check questions use radio inputs if only one choice can be selected, or
@@ -111,7 +112,7 @@ from hemlock import Check, Page, push_app_context
 
 push_app_context()
 
-p = Page([Check('<p>Check one.</p>', ['Yes','No','Maybe'])])
+p = Page(Check('<p>Check one.</p>', ['Yes','No','Maybe']))
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 

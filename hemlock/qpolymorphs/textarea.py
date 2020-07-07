@@ -9,7 +9,7 @@ from flask import render_template
 def debug_func(driver, question):
     """
     Default debug function for textarea questions. See
-    [`random_keys`](debug_functions.md).
+    [`hemlock.functions.debug.random_keys`](debug_functions.md).
 
     Parameters
     ----------
@@ -30,7 +30,7 @@ class Textarea(InputGroup, Question):
     """
     Textareas provide large text boxes for free responses.
 
-    Inherits from [`hemlock.InputGroup`](input_group.md) and 
+    Inherits from [`hemlock.qpolymorphs.InputGroup`](input_group.md) and 
     [`hemlock.Question`](question.md).
 
     Parameters

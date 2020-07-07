@@ -38,7 +38,7 @@
 </p>
 
 Default debug function for textarea questions. See
-[`random_keys`](debug_functions.md).
+[`hemlock.functions.debug.random_keys`](debug_functions.md).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -68,7 +68,7 @@ Default debug function for textarea questions. See
 
 Textareas provide large text boxes for free responses.
 
-Inherits from [`hemlock.InputGroup`](input_group.md) and
+Inherits from [`hemlock.qpolymorphs.InputGroup`](input_group.md) and
 [`hemlock.Question`](question.md).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
@@ -114,7 +114,7 @@ from hemlock import Page, Textarea, push_app_context
 
 push_app_context()
 
-p = Page([Textarea('<p>This is a textarea.</p>')])
+p = Page(Textarea('<p>This is a textarea.</p>'))
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 

@@ -10,15 +10,22 @@ push_app_context()
 
 url_root = 'https://dsbowen.github.io/'
 
-navbar = Navbar('Hemlock', [
-\    Navitem('Application', href=url_root+'app'),
-\    Navitemdd('Tools', [
-\        Dropdownitem('Language', href=url_root+'lang'),
-\        Dropdownitem('Navbar', href=url_root+'navbar')
-\    ])
-], href=url_root+'hemlock').render()
+navbar = Navbar(
+\    'Hemlock', 
+\    [
+\        Navitem('Application', href=url_root+'app'),
+\        Navitemdd(
+\            'Tools', 
+\            [
+\                Dropdownitem('Language', href=url_root+'lang'),
+\                Dropdownitem('Navbar', href=url_root+'navbar')
+\           ]
+\        )
+\    ], 
+\    href=url_root+'hemlock'
+)
 
-Page(navbar=navbar).preview('Ubuntu')
+Page(navbar=navbar.render()).preview('Ubuntu')
 ```
 """
 

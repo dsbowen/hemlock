@@ -64,8 +64,9 @@ Google bucket.
 
 Allows participants to upload files.
 
-Inherits from [`hemlock.InputGroup`](input_group.md),
-[`hemlock.InputBase`](bases.md), and [`hemlock.Question`](question.md).
+Inherits from [`hemlock.qpolymorphs.InputGroup`](input_group.md),
+[`hemlock.models.InputBase`](bases.md), and
+[`hemlock.Question`](question.md).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -98,22 +99,64 @@ Inherits from [`hemlock.InputGroup`](input_group.md),
 
 ####Examples
 
-```python
-from hemlock import File, Page, push_app_context
+Set up a
+[Google bucket](https://cloud.google.com/storage/docs/creating-buckets)
+with the appropriate
+[CORS permissions](https://cloud.google.com/storage/docs/cross-origin).
 
-push_app_context()
+Set an environment variable `BUCKET` to the name of the bucket, and
+`GOOGLE_APPLICATION_CREDENTIALS` to the name of your
+[Google application credentials JSON file](https://cloud.google.com/docs/authentication/getting-started).
 
-p = Page([File('<p>Upload a .png file.</p>', allowed_extensions=['.png'])])
-p.preview('Ubuntu')
-p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
+export BUCKET=<my-bucket> GOOGLE_APPLICATION_CREDENTIALS=<my-credentials.json>
+```
+
+In `survey.py`:
+
+```python
+from hemlock import Branch, File, Page, Label, route
+
+@route('/survey')
+def start():
+    return Branch(
+        Page(File(
+            '<p>Upload a .png</p>',
+            filename='upload',
+            allowed_extensions=['.png']
+        )),
+        Page(Label('<p>The End</p>'), terminal=True)
+    )
+```
+
+In `app.py`:
+
+```python
+import survey
+
+from hemlock import create_app
+
+app = create_app()
+
+if __name__ == '__main__':
+    from hemlock.app import socketio
+    socketio.run(app, debug=True)
+```
+
+Run the app locally with:
+
+```
+$ python app.py # or python3 app.py
+```
+
+And open your browser to <http://localhost:5000/>. Upload a .png and click to the next page. You'll find your uploaded file in your Google bucket in `participant-1/upload.png`.
 
 ####Methods
 
 
 
 <p class="func-header">
-    <i></i> <b>generate_signed_url</b>(<i>self, expiration=timedelta(hours=0.5), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/file.py#L89">[source]</a>
+    <i></i> <b>generate_signed_url</b>(<i>self, expiration=timedelta(hours=0.5), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/file.py#L132">[source]</a>
 </p>
 
 Generate a signed URL for the uploaded file.
@@ -143,7 +186,7 @@ Read more about [signed URLs](https://cloud.google.com/storage/docs/access-contr
 
 
 <p class="func-header">
-    <i></i> <b>get_allowed_types</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/file.py#L112">[source]</a>
+    <i></i> <b>get_allowed_types</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/file.py#L155">[source]</a>
 </p>
 
 
@@ -167,7 +210,7 @@ Read more about [signed URLs](https://cloud.google.com/storage/docs/access-contr
 
 
 <p class="func-header">
-    <i></i> <b>get_path</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/file.py#L122">[source]</a>
+    <i></i> <b>get_path</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/file.py#L165">[source]</a>
 </p>
 
 

@@ -69,7 +69,9 @@ object if the input takes dates or times.
 
 Inputs take text input by default, or other types of html inputs.
 
-Inherits from [`hemlock.InputGroup`](input_group.md), [`hemlock.InputBase`](bases.md) and [`hemlock.Question`](question.md).
+Inherits from [`hemlock.qpolymorphs.InputGroup`](input_group.md),
+[`hemlock.models.InputBase`](bases.md) and
+[`hemlock.Question`](question.md).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -103,7 +105,7 @@ from hemlock import Input, Page, push_app_context
 
 push_app_context()
 
-p = Page([Input('<p>Input text here.</p>')])
+p = Page(Input('<p>Input text here.</p>'))
 p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ```
 

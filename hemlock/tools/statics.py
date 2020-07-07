@@ -40,6 +40,10 @@ def src_from_bucket(filename):
 
     Set an environment variable `BUCKET` to the name of the bucket.
 
+    ```
+    $ export BUCKET=<my-bucket>
+    ```
+
     Upload a file to the bucket, e.g. <https://xkcd.com/2138/> and name it 
     `wanna_see_the_code.png`.
 
@@ -90,6 +94,10 @@ def url_from_bucket(filename, expiration=1800, **kwargs):
     Set an environment variable `BUCKET` to the name of the bucket, and 
     `GOOGLE_APPLICATION_CREDENTIALS` to the name of your 
     [Google application credentials JSON file](https://cloud.google.com/docs/authentication/getting-started).
+
+    ```
+    $ export BUCKET=<my-bucket> GOOGLE_APPLICATION_CREDENTIALS=<my-credentials.json>
+    ```
 
     In `survey.py`:
 

@@ -12,12 +12,12 @@ class Embedded(Data):
     input data to the dataframe; as opposed to recording data from participant 
     responses.
 
-    Inherits from `hemlock.Data`.
+    Polymorphic with [`hemlock.models.Data`](bases.md).
 
     Parameters
     ----------
     var : str or None, default=None
-        Variable name associated with this data element. If `None` the data 
+        Variable name associated with this data element. If `None`, the data 
         will not be recorded.
 
     data : sqlalchemy_mutable.MutableType
@@ -30,14 +30,14 @@ class Embedded(Data):
 
     Relationships
     -------------
+    participant : hemlock.Participant or None
+        The participant to whom this data element belongs.
+
     branch : hemlock.Branch or None
         The branch to which the embedded data element belongs.
 
     page : hemlock.Page or None
         The page to which this embedded data element belongs.
-
-    participant : hemlock.Participant or None
-        The participant to whom this data element belongs.
 
     Examples
     --------
@@ -57,7 +57,7 @@ class Embedded(Data):
     Out:
 
     ```
-    {'ID': [3],
+    {'ID': [1],
     'EndTime': [datetime.datetime(2020, 7, 4, 17, 57, 23, 854272)],
     'StartTime': [datetime.datetime(2020, 7, 4, 17, 57, 23, 854272)],
     'Status': ['InProgress'],
@@ -88,20 +88,20 @@ class Timer(Embedded):
 
     Attributes
     ----------
-    data : float or None, default=None.
+    data : float or None
         Read only. Number of seconds for which the timer has been running.
 
-    end_time : datetime.datetime or None, default=None
+    end_time : datetime.datetime or None
         Read only. If the timer is running, this is the current time. If the 
         timer is paused, this is the time at which the timer was last paused.
 
-    start_time : datetime.datetime or None, default=None
+    start_time : datetime.datetime or None
         The time at which the timer was started.
 
-    state : str, default='not started'
+    state : str
         `'not started'`, `'running`', or `'paused'`.
 
-    total_time : datetime.timedelta or None, default=None
+    total_time : datetime.timedelta or None
         Read only. Total time the timer has been running.
 
     Examples
@@ -144,9 +144,6 @@ class Timer(Embedded):
     state = db.Column(db.String(16), default='not started')
     _total_time = db.Column(db.Interval)
 
-    def __init__(self):
-        self.reset()
-
     @property
     def data(self):
         self._set_current_time()
@@ -161,6 +158,14 @@ class Timer(Embedded):
     def total_time(self):
         self._set_current_time()
         return self._total_time
+
+    def __init__(self, var=None, data_rows=1, **kwargs):
+        if self.id is None:
+            db.session.add(self)
+            db.session.flush([self])
+        self.var = var
+        self.data_rows = data_rows
+        [setattr(self, key, val) for key, val in kwargs]
 
     def start(self):
         """

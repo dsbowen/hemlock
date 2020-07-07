@@ -65,12 +65,24 @@ Push an app context for debugging in shell or notebook.
     </tbody>
 </table>
 
+####Examples
 
+```python
+from hemlock import push_app_context
+
+push_app_context()
+```
+
+Out:
+
+```
+<Flask 'hemlock.app'>
+```
 
 ##hemlock.app.**create_app**
 
 <p class="func-header">
-    <i>def</i> hemlock.app.<b>create_app</b>(<i>settings=settings</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L57">[source]</a>
+    <i>def</i> hemlock.app.<b>create_app</b>(<i>settings=settings</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L71">[source]</a>
 </p>
 
 Create a Hemlock application.
@@ -98,36 +110,15 @@ Create a Hemlock application.
 
 ####Examples
 
+In this example, we add a back button to every page in our survey.
+
 ```python
-from hemlock.app import create_app, settings
+from hemlock import Page, create_app, settings
 
-# MODIFY SETTINGS AS NEEDED
+settings['Page'].update({'back': True})
 
-app = create_app(settings)
-app.settings
-```
-
-Out:
-
-```
-{
-    'clean_data': None,
-    'restart_option': True,
-    'restart_text': 'Click << to return to your in progress survey...',
-    'screenout_csv': 'screenout.csv',
-    'screenout_keys': [],
-    'screenout_text': '...you have already participated...',
-    'socket_js_src': 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js',
-    'time_expired_text': 'You have exceeded your time limit for this survey',
-    'time_limit': None,
-    'validate': True,
-    'DownloadBtnManager': {},
-    'Manager': {
-        'loading_img_blueprint': 'hemlock',
-        'loading_img_filename': 'img/worker_loading.gif'
-    },
-    'password_hash': '...'
-}
+app = create_app()
+Page().preview() # Page().preview('Ubuntu') if running in Ubuntu/WSL
 ```
 
 ## Default application settings
@@ -143,6 +134,10 @@ Below are the default settings for Hemlock applications and extensions.
     <td class="field-body" width="100%"><b>clean_data : <i>callable or None, default=None</i></b>
 <p class="attr">
     Callable which cleans your data before downloading or creating a data profile. This callable takes and returns <code>pandas.DataFrame</code>. If <code>None</code>, no additional cleaning is performend.
+</p>
+<b>duplicate_keys : <i>list, default=[]</i></b>
+<p class="attr">
+    List of keys (column names) on which to block duplicate participants. If empty, the app will not screen out duplicates.
 </p>
 <b>password : <i>str, default=''</i></b>
 <p class="attr">
@@ -201,13 +196,13 @@ Below are the default settings for Hemlock applications and extensions.
 </p>
 <b>SQLALCHEMY_DATABASE_URI : <i>str</i></b>
 <p class="attr">
-    Looks for <code>DATABASE_URL</code> environment variable. Otherwise, we use a SQLite database <code>data.db</code>.
+    Looks for <code>DATABASE_URL</code> environment variable. Otherwise, we use a SQLite database <code>data.db</code> in the current working directory.
 </p>
 <b>SQLALCHEMY_TRACK_MODIFICATIONS : <i>bool, default=False</i></b>
 <p class="attr">
     
 </p>
-<b>REDIS_URL : <i>str</i></b>
+<b>REDIS_URL : <i></i></b>
 <p class="attr">
     Looks for a <code>REDIS_URL</code> environment variable.
 </p></td>

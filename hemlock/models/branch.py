@@ -8,8 +8,10 @@ from sqlalchemy.ext.orderinglist import ordering_list
 
 class Branch(BranchingBase, db.Model):
     """
-    Branches are stacked in a participant's branch stack. It contains a 
+    Branches are stacked in a participant's branch stack. A branch contains a 
     queue of pages which it displays to its participant.
+
+    Inherits from [`hemlock.models.Base`](bases.md).
 
     Parameters
     ----------
@@ -161,7 +163,7 @@ class Branch(BranchingBase, db.Model):
         
         Returns
         -------
-        self
+        self : hemlock.Branch
         """
         # Note to self: the commented lines were very useful for me when 
         # debugging the navigation system; less so for users

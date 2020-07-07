@@ -39,7 +39,10 @@
 
 Base for all Hemlock models.
 
-Interits from [`sqlalchemy_function.FunctionRelator`](https://dsbowen.github.io/sqlalchemy-function/), [`sqlalchemy_orderingitem.Orderingitem`](https://dsbowen.githubio/sqlalchemy-orderingitem/) and [`sqlalchemy_modelid.ModelIdBase`](https://dsbowen.github.io/sqlalchemy-modelid/).
+Interits from
+[`sqlalchemy_function.FunctionRelator`](https://dsbowen.github.io/sqlalchemy-function/),
+[`sqlalchemy_orderingitem.Orderingitem`](https://dsbowen.github.io/sqlalchemy-orderingitem/) and
+[`sqlalchemy_modelid.ModelIdBase`](https://dsbowen.github.io/sqlalchemy-modelid/).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -80,21 +83,21 @@ Data elements 'pack' their data and return it to their participant, who in turn 
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Attributes:</b></td>
-    <td class="field-body" width="100%"><b>data : <i>sqlalchemy_mutable.MutableType</i></b>
+    <td class="field-body" width="100%"><b>data : <i>sqlalchemy_mutable.MutableType, default=None</i></b>
 <p class="attr">
     Data this element contributes to the dataframe.
 </p>
-<b>rows : <i>int, default=1</i></b>
+<b>data_rows : <i>int, default=1</i></b>
 <p class="attr">
     Number of rows this data element contributes to the dataframe for its participant. If negative, this data element will 'fill in' any emtpy rows at the end of the dataframe with its most recent value.
 </p>
 <b>index : <i>int or None, default=None</i></b>
 <p class="attr">
-    Order in which this data element appears in its parent; usually a branch or page.
+    Order in which this data element appears in its parent; usually a <code>hemlock.Branch</code>, <code>hemlock.Page</code>, or <code>hemlock.Question</code>.
 </p>
 <b>var : <i>str or None, default=None</i></b>
 <p class="attr">
-    Variable name associated with this data element. If <code>None</code> the data will not be recorded.
+    Variable name associated with this data element. If <code>None</code>, the data will not be recorded.
 </p></td>
 </tr>
     </tbody>
@@ -107,7 +110,7 @@ Data elements 'pack' their data and return it to their participant, who in turn 
 ##hemlock.**HTMLMixin**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>HTMLMixin</b>(<i>template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L131">[source]</a>
+    <i>class</i> hemlock.<b>HTMLMixin</b>(<i>template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L134">[source]</a>
 </p>
 
 Mixin for models which contribute html to a page.
@@ -129,11 +132,11 @@ Mixin for models which contribute html to a page.
 <p class="attr">
     The main html of the object.
 </p>
-<b>css : <i>sqlalchemy_mutablesoup.MutableSoupType</i></b>
+<b>css : <i>sqlalchemy_mutablesoup.MutableSoupType, default=None</i></b>
 <p class="attr">
     CSS the object contributes to the page.
 </p>
-<b>js : <i>sqlalchemy_mutablesoup.MutableSoupType</i></b>
+<b>js : <i>sqlalchemy_mutablesoup.MutableSoupType, default=None</i></b>
 <p class="attr">
     Javascript the object contributes to the page.
 </p></td>
@@ -148,7 +151,7 @@ Mixin for models which contribute html to a page.
 
 
 <p class="func-header">
-    <i></i> <b>add_external_css</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L162">[source]</a>
+    <i></i> <b>add_external_css</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L165">[source]</a>
 </p>
 
 Add external css to `self.css`. The external css is a `<link>` tag
@@ -181,7 +184,7 @@ attribute.
 
 
 <p class="func-header">
-    <i></i> <b>add_external_js</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L185">[source]</a>
+    <i></i> <b>add_external_js</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L188">[source]</a>
 </p>
 
 Add external javascript to `self.js`. The external js is a `<script>`
@@ -214,7 +217,7 @@ attribute.
 
 
 <p class="func-header">
-    <i></i> <b>add_internal_css</b>(<i>self, style</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L222">[source]</a>
+    <i></i> <b>add_internal_css</b>(<i>self, style</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L225">[source]</a>
 </p>
 
 Add internal css to `self.css`. The internal css is a `<style>` tag
@@ -246,7 +249,7 @@ with the specified css selector : style dictionary.
 
 
 <p class="func-header">
-    <i></i> <b>add_internal_js</b>(<i>self, js</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L250">[source]</a>
+    <i></i> <b>add_internal_js</b>(<i>self, js</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L253">[source]</a>
 </p>
 
 Add internal javascript to `self.js`. The interal js is a `<script>`
@@ -302,7 +305,7 @@ Base for models which contain `<input>` tags.
 
 
 <p class="func-header">
-    <i></i> <b>input_from_driver</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L284">[source]</a>
+    <i></i> <b>input_from_driver</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L287">[source]</a>
 </p>
 
 
@@ -333,7 +336,7 @@ Base for models which contain `<input>` tags.
 
 
 <p class="func-header">
-    <i></i> <b>label_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L298">[source]</a>
+    <i></i> <b>label_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L301">[source]</a>
 </p>
 
 

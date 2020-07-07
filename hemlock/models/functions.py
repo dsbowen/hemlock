@@ -18,10 +18,11 @@ First argument must be the parent; a Branch, Page, or Question, not {}
 
 class FunctionRegistrar(FunctionMixin, Base):
     """
-    Mixin for Function models which provides a method for function registration. 
+    Mixin for Function models which provides a method for function 
+    registration.
     
-    Inherits from `sqlalchemy_function.FunctionMixin`. See 
-    <https://dsbowen.github.io/sqlalchemy-function/>.
+    Inherits from 
+    [`sqlalchemy_function.FunctionMixin`](<https://dsbowen.github.io/sqlalchemy-function/>).
 
     Attributes
     ----------
@@ -68,10 +69,10 @@ class Compile(FunctionRegistrar, db.Model):
     Relationships
     -------------
     page : hemlock.Page or None
-        Set from the `parent` parameter.
+        Page to which this model belongs.
 
     question : hemlock.Question or None
-        Set from the `parent` parameter.
+        Question to which this model belongs.
 
     Examples
     --------
@@ -110,10 +111,10 @@ class Debug(FunctionRegistrar, db.Model):
     Relationships
     -------------
     page : hemlock.Page or None
-        Set from the `parent` parameter.
+        Page to which this model belongs.
 
     question : hemlock.Question or None
-        Set from the `parent` parameter.
+        Question to which this model belongs.
 
     Examples
     --------
@@ -195,10 +196,10 @@ class Validate(FunctionRegistrar, db.Model):
     Relationships
     -------------
     page : hemlock.Page or None
-        Set from the `parent` parameter.
+        Page to which this model belongs.
 
     question : hemlock.Question or None
-        Set from the `parent` parameter.
+        Question to which this model belongs.
 
     Examples
     --------
@@ -255,10 +256,10 @@ class Submit(FunctionRegistrar, db.Model):
     Relationships
     -------------
     page : hemlock.Page or None
-        Set from the `parent` parameter.
+        Page to which this model belongs.
 
     question : hemlock.Question or None
-        Set from the `parent` parameter.
+        Question to which this model belongs.
 
     Examples
     --------
@@ -294,11 +295,11 @@ class Navigate(FunctionRegistrar, db.Model):
 
     Relationships
     -------------
-    branch : hemlock.Branch
-        Set from the `parent` parameter.
+    branch : hemlock.Branch or None
+        Branch to which this model belongs.
 
-    page : hemlock.Page
-        Set from the `parent` parameter.
+    page : hemlock.Page or None
+        Page to which this model belongs.
 
     Examples
     --------

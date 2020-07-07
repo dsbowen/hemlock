@@ -98,7 +98,7 @@ class Randomizer():
 class Assigner(Randomizer):
     """
     Evenly assigns participants to conditions. Inherits from 
-    `hemlock.random.Randomizer`.
+    `hemlock.tools.Randomizer`.
 
     Parameters
     ----------
