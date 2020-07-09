@@ -34,13 +34,13 @@ def convert(obj, type_, *args, **kwargs):
     except:
         return obj, False
 
-def correct_choices(q, *correct):
+def correct_choices(q, correct):
     """
     Parameters
     ----------
     q : hemlock.ChoiceQuestion
 
-    \*correct : hemlock.Choice
+    correct : list of hemlock.Choice
         Correct choices.
 
     Returns

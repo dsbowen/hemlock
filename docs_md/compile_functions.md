@@ -69,9 +69,9 @@ from hemlock import Compile, Page, push_app_context
 push_app_context()
 
 p = Compile.call_method(Page(error='Error message'), 'clear_error')
-p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+path0 = p.preview()
 p._compile()
-p.preview()
+path1 = p.preview()
 ```
 
 ##hemlock.functions.compile.**clear_error**
@@ -104,9 +104,9 @@ from hemlock import Compile, Page, Check, push_app_context
 push_app_context()
 
 p = Compile.clear_error(Page(error='Error message'))
-p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+path0 = p.preview()
 p._compile()
-p.preview()
+path1 = p.preview()
 ```
 
 ##hemlock.functions.compile.**clear_response**
@@ -139,9 +139,9 @@ from hemlock import Compile, Input, Page, push_app_context
 push_app_context()
 
 p = Compile.clear_response(Page(Input(response='Hello World')))
-p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+path0 = p.preview()
 p._compile()
-p.preview()
+path1 = p.preview()
 ```
 
 ##hemlock.functions.compile.**shuffle**
@@ -188,7 +188,7 @@ push_app_context()
 p = Compile.shuffle(Page(
     Label('<p>Label {}</p>'.format(i)) for i in range(4)
 ))
-p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+path0 = p.preview()
 p._compile()
-p.preview()
+path1 = p.preview()
 ```

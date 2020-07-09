@@ -119,7 +119,7 @@ class Router(RouterMixin, db.Model):
             page.error = current_app.time_expired_text
             db.session.commit()
             return page._render()
-        if request.method == 'POST' and self.func == self.render:
+        if request.method == 'POST' and self.func == self.compile:
             # participant has just submitted the page
             self.func = self.record_response
         return super().__call__()
@@ -131,7 +131,6 @@ class Router(RouterMixin, db.Model):
             self.page._compile, self.page.compile_worker, self.render
         )
     
-    @set_route
     def render(self):
         part, page = self.part, self.page
         if page.terminal and not part.completed:
@@ -169,7 +168,7 @@ class Router(RouterMixin, db.Model):
     @set_route
     def submit(self):
         page = self.page
-        if not page.is_valid():
+        if not page.is_valid() and current_app.settings['validate']:
             # will redirect to the same page with error messages
             return self.redirect()
         return self.run_worker(

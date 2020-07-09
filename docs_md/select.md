@@ -109,7 +109,6 @@ from hemlock import Page, Select, Option, push_app_context
 
 push_app_context()
 
-p = Page(Select('<p>Select one.</p>', ['World','Moon','Star']))
-p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+Page(Select('<p>Select one.</p>', ['World','Moon','Star'])).preview()
 ```
 

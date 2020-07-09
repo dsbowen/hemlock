@@ -124,8 +124,7 @@ def greet(greet_q, name_q):
 name_q = Input("<p>What's your name?</p>")
 p = Page(Compile.greet(Label(), name_q))
 name_q.response = 'World'
-p._compile()
-p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+p._compile().preview()
 ```
 
 
@@ -133,7 +132,7 @@ p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ##hemlock.**Debug**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Debug</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L99">[source]</a>
+    <i>class</i> hemlock.<b>Debug</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L98">[source]</a>
 </p>
 
 Run to help debug the survey.
@@ -182,8 +181,7 @@ def greet(driver, greet_q):
     inpt.send_keys('Hello World!')
 
 p = Page(Debug.greet(Input('<p>Enter a greeting.</p>')))
-p.preview(driver=driver) # p.preview('Ubuntu', driver) if working in Ubuntu/WSL
-p._debug(driver)
+p.preview(driver)._debug(driver)
 ```
 
 ####Methods
@@ -191,7 +189,7 @@ p._debug(driver)
 
 
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L149">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L147">[source]</a>
 </p>
 
 Execute the debug function with probability `self.p_exec`.
@@ -209,7 +207,7 @@ Execute the debug function with probability `self.p_exec`.
 
 
 <p class="func-header">
-    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L156">[source]</a>
+    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L154">[source]</a>
 </p>
 
 Similar to the Function Registrar's register function, but does not
@@ -234,7 +232,7 @@ add functions if the `NO_DEBUG_FUNCTIONS` environment variable is set.
 ##hemlock.**Validate**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Validate</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L182">[source]</a>
+    <i>class</i> hemlock.<b>Validate</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L180">[source]</a>
 </p>
 
 Validates a participant's response.
@@ -295,7 +293,7 @@ You entered "goodbye moon", not "hello world"
 
 
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L237">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L235">[source]</a>
 </p>
 
 
@@ -443,7 +441,7 @@ T = terminal page
 
 
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L353">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L351">[source]</a>
 </p>
 
 Create a new branch and 'link' it to the tree. Linking in the new

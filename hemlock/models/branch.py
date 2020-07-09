@@ -68,7 +68,7 @@ class Branch(BranchingBase, db.Model):
 
     push_app_context()
 
-    Branch(
+    paths = Branch(
     \    Page(Label('<p>Hello World</p>')),
     \    Page(Label('<p>Hello Moon</p>')),
     \    Page(Label('<p>Hello Star</p>'))
@@ -156,6 +156,23 @@ class Branch(BranchingBase, db.Model):
         self.pages = list(pages)
         super().__init__(**kwargs)
 
+    def preview(self, driver=None):
+        """
+        Preview the page queue in the a browser window.
+
+        Parameters
+        ----------
+        driver : selenium.webdriver.chrome.webdriver.WebDriver or None, default=None
+            Driver to preview page debugging. If `None`, the page will be
+            opened in a web browser.
+
+        Returns
+        -------
+        paths : list of str
+            Paths to temporary files for previewing pages.
+        """
+        return [p.preview(driver) for p in self.pages]
+
     def view_nav(self):
         """
         Print this branch's page queue for debugging purposes.
@@ -178,23 +195,6 @@ class Branch(BranchingBase, db.Model):
         # print(' '*indent, None, head_branch)
         if self.next_branch in self.part.branch_stack:
             self.next_branch.view_nav()
-        return self
-
-    def preview(self, driver=None):
-        """
-        Preview the page queue in the a browser window.
-
-        Parameters
-        ----------
-        driver : selenium.webdriver.chrome.webdriver.WebDriver or None, default=None
-            Driver to preview page debugging. If `None`, the page will be
-            opened in a web browser.
-
-        Returns
-        -------
-        self : hemlock.Branch
-        """
-        [p.preview(driver) for p in self.pages]
         return self
         
     def _forward(self):

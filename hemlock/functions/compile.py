@@ -28,9 +28,9 @@ def call_method(obj, method_name, *args, **kwargs):
     push_app_context()
 
     p = Compile.call_method(Page(error='Error message'), 'clear_error')
-    p.preview()
+    path0 = p.preview()
     p._compile()
-    p.preview()
+    path1 = p.preview()
     ```
     """
     getattr(obj, method_name)(*args, **kwargs)
@@ -53,7 +53,9 @@ def clear_error(obj):
     push_app_context()
 
     p = Compile.clear_error(Page(error='Error message'))
-    p.preview()._compile().preview()
+    path0 = p.preview()
+    p._compile()
+    path1 = p.preview()
     ```
     """
     obj.clear_error()
@@ -76,7 +78,9 @@ def clear_response(obj):
     push_app_context()
 
     p = Compile.clear_response(Page(Input(response='Hello World')))
-    p.preview()._compile().preview()
+    path0 = p.preview()
+    p._compile()
+    path1 = p.preview()
     ```
     """
     obj.clear_response()
@@ -112,7 +116,9 @@ def shuffle(obj, *attrs):
     p = Compile.shuffle(Page(
     \    Label('<p>Label {}</p>'.format(i)) for i in range(4)
     ))
-    p.preview()._compile().preview()
+    path0 = p.preview()
+    p._compile()
+    path1 = p.preview()
     ```
     """
     if not attrs:

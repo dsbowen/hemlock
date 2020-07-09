@@ -294,7 +294,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     push_app_context()
 
-    Page(Label('<p>Hello World</p>')).preview()
+    path = Page(Label('<p>Hello World</p>')).preview()
     ```
     """
     id = db.Column(db.Integer, primary_key=True)
@@ -564,7 +564,8 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
         Returns
         -------
-        self : hemlock.Page
+        path : str
+            Path to temporary page preview file.
 
         Notes
         -----

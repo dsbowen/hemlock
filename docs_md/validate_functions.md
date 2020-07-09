@@ -35,10 +35,10 @@ the repsonse is invalid.
 
 
 
-##hemlock.functions.validate.**is_type**
+##hemlock.functions.validate.**response_type**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>is_type</b>(<i>question, resp_type</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L19">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>response_type</b>(<i>question, resp_type</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L19">[source]</a>
 </p>
 
 Validate that the response can be converted to a given type.
@@ -68,7 +68,7 @@ from hemlock import Input, Validate, push_app_context
 
 push_app_context()
 
-inpt = Validate.is_type(Input(response='hello world'), float)
+inpt = Validate.response_type(Input(response='hello world'), float)
 inpt._validate()
 inpt.error
 ```
@@ -966,7 +966,7 @@ Please enter a response with the correct pattern.
 ##hemlock.functions.validate.**correct_choices**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>correct_choices</b>(<i>question, *correct</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L896">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>correct_choices</b>(<i>question, correct</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L896">[source]</a>
 </p>
 
 Validate that selected choice(s) is correct.
@@ -981,7 +981,7 @@ Validate that selected choice(s) is correct.
 <p class="attr">
     
 </p>
-<b>*correct : <i></i></b>
+<b>correct : <i>list of hemlock.Choice</i></b>
 <p class="attr">
     Correct choices.
 </p></td>
@@ -997,7 +997,7 @@ from hemlock import Check, Validate, push_app_context
 push_app_context()
 
 check = Check(choices=['correct','incorrect','also incorrect'])
-Validate.correct_choices(check, check.choices[0])
+Validate.correct_choices(check, [check.choices[0]])
 check.response = check.choices[1]
 check._validate()
 check.error

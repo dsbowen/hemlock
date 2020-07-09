@@ -114,8 +114,7 @@ from hemlock import Page, Textarea, push_app_context
 
 push_app_context()
 
-p = Page(Textarea('<p>This is a textarea.</p>'))
-p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+Page(Textarea('<p>This is a textarea.</p>')).preview()
 ```
 
 ####Methods
@@ -123,7 +122,7 @@ p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 
 
 <p class="func-header">
-    <i></i> <b>textarea_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L90">[source]</a>
+    <i></i> <b>textarea_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L98">[source]</a>
 </p>
 
 Get textarea from the webdriver for debugging.

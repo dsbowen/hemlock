@@ -34,7 +34,7 @@
 ##hemlock.functions.submit.**correct_choices**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>correct_choices</b>(<i>question, *correct</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L8">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>correct_choices</b>(<i>question, correct</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L8">[source]</a>
 </p>
 
 Convert the question's data to a 0-1 indicator that the participant
@@ -50,7 +50,7 @@ selected the correct choice(s).
 <p class="attr">
     
 </p>
-<b>*correct : <i>hemlock.Choice</i></b>
+<b>correct : <i>list of hemlock.Choice</i></b>
 <p class="attr">
     Correct choices.
 </p></td>
@@ -75,7 +75,7 @@ check = Check(
     ['correct', 'incorrect', 'also incorrect']
 )
 correct_choice = check.choices[0]
-Submit.correct_choices(check, correct_choice)
+Submit.correct_choices(check, [correct_choice])
 check.response = correct_choice
 check._submit()
 check.data

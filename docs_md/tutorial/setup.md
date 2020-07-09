@@ -74,10 +74,10 @@ hlk, version x.x.x
 To set chrome as your default browser from WSL, run:
 
 ```bash
-$ hlk setup --chrome
+$ hlk setup win --chrome
 ```
 
-Close and re-open WSL, then verify your `BROWSER` variable:
+Close and re-open your terminal, then verify your `BROWSER` variable:
 
 ```bash
 $ echo $BROWSER
@@ -88,12 +88,12 @@ $ echo $BROWSER
 
 [Git](https://git-scm.com/downloads) and [github](https://github.com/) are version control tools for sharing, downloading, and collaborating on software, including hemock projects.
 
-#### Windows users
+#### If using WSL
 
 If you're operating on Ubuntu/WSL, run:
 
 ```
-$ hlk setup --git
+$ hlk setup win --git
 ```
 
 ### Jupyter

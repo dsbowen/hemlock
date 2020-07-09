@@ -88,14 +88,13 @@ img = Img(
     src=src_from_bucket('wanna_see_the_code.png'),
     align='center'
 ).render()
-p = Page(Label(img))
-p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+Page(Label(img)).preview()
 ```
 
 ##hemlock.tools.**url_from_bucket**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>url_from_bucket</b>(<i>filename, expiration=1800, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L68">[source]</a>
+    <i>def</i> hemlock.tools.<b>url_from_bucket</b>(<i>filename, expiration=1800, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L67">[source]</a>
 </p>
 
 
@@ -183,7 +182,7 @@ download button to download the file from your Google bucket.
 ##hemlock.tools.**Static**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Static</b>(<i>template, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L144">[source]</a>
+    <i>class</i> hemlock.tools.<b>Static</b>(<i>template, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L143">[source]</a>
 </p>
 
 Base for static objects (images and videos).
@@ -224,7 +223,7 @@ Base for static objects (images and videos).
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self, tag_selector=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L172">[source]</a>
+    <i></i> <b>render</b>(<i>self, tag_selector=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L171">[source]</a>
 </p>
 
 
@@ -255,7 +254,7 @@ Base for static objects (images and videos).
 ##hemlock.tools.**Img**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Img</b>(<i>template=os.path.join(DIR, 'img.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L209">[source]</a>
+    <i>class</i> hemlock.tools.<b>Img</b>(<i>template=os.path.join(DIR, 'img.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L208">[source]</a>
 </p>
 
 Static image.
@@ -309,8 +308,7 @@ img = Img(
     src='https://imgs.xkcd.com/comics/wanna_see_the_code.png',
     align='center'
 ).render()
-p = Page(Label(img))
-p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+Page(Label(img)).preview()
 ```
 
 ####Methods
@@ -318,7 +316,7 @@ p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L299">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L297">[source]</a>
 </p>
 
 
@@ -342,7 +340,7 @@ p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 ##hemlock.tools.**Vid**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Vid</b>(<i>template=os.path.join(DIR, 'vid.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L316">[source]</a>
+    <i>class</i> hemlock.tools.<b>Vid</b>(<i>template=os.path.join(DIR, 'vid.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L314">[source]</a>
 </p>
 
 Static video.
@@ -381,8 +379,7 @@ from hemlock.tools import Vid
 push_app_context()
 
 vid = Vid.from_youtube('https://www.youtube.com/watch?v=UbQgXeY_zi4')
-p = Page(Label(vid.render()))
-p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+Page(Label(vid.render())).preview()
 ```
 
 ####Methods
@@ -390,7 +387,7 @@ p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 
 
 <p class="func-header">
-    <i></i> <b>from_youtube</b>(<i>src</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L362">[source]</a>
+    <i></i> <b>from_youtube</b>(<i>src</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L359">[source]</a>
 </p>
 
 Capture the YouTube video id and create an embedded src.
@@ -421,7 +418,7 @@ Capture the YouTube video id and create an embedded src.
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L386">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L383">[source]</a>
 </p>
 
 

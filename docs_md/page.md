@@ -231,7 +231,7 @@ It inherits from [`hemlock.model.HTMLMixin`](bases.md).
 </p>
 <b>timer_var : <i>str or None, default=None</i></b>
 <p class="attr">
-    Variable name of the page timer.
+    Variable name of <code>self.Timer</code>.
 </p></td>
 </tr>
 <tr class="field">
@@ -370,8 +370,7 @@ from hemlock import Page, push_app_context
 
 push_app_context()
 
-p = Page(Label('<p>Hello World</p>'))
-p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+path = Page(Label('<p>Hello World</p>')).preview()
 ```
 
 ####Methods
@@ -379,7 +378,7 @@ p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
 
 
 <p class="func-header">
-    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L507">[source]</a>
+    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L506">[source]</a>
 </p>
 
 Clear the error message from this page and all of its questions.
@@ -403,7 +402,7 @@ Clear the error message from this page and all of its questions.
 
 
 <p class="func-header">
-    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L519">[source]</a>
+    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L518">[source]</a>
 </p>
 
 Clear the response from all of this page's questions.
@@ -427,7 +426,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>first_page</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L530">[source]</a>
+    <i></i> <b>first_page</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L529">[source]</a>
 </p>
 
 
@@ -451,7 +450,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>is_valid</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L545">[source]</a>
+    <i></i> <b>is_valid</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L544">[source]</a>
 </p>
 
 
@@ -475,7 +474,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>preview</b>(<i>self, dist=None, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L556">[source]</a>
+    <i></i> <b>preview</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L555">[source]</a>
 </p>
 
 Preview the page in a browser window.
@@ -486,20 +485,16 @@ Preview the page in a browser window.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>dist : <i>str or None, default=None</i></b>
-<p class="attr">
-    Windows Subsystem for Linux (WSL) distribution (e.g. <code>'Ubuntu'</code>). Leave as <code>None</code> unless operating in WSL.
-</p>
-<b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver or None, default=None</i></b>
+    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver or None, default=None</i></b>
 <p class="attr">
     Driver to preview page debugging. If <code>None</code>, the page will be opened in a web browser.
 </p></td>
 </tr>
 <tr class="field">
     <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>self : <i>hemlock.Page</i></b>
+    <td class="field-body" width="100%"><b>path : <i>str</i></b>
 <p class="attr">
-    
+    Path to temporary page preview file.
 </p></td>
 </tr>
     </tbody>
@@ -507,12 +502,19 @@ Preview the page in a browser window.
 
 ####Notes
 
+If running in WSL, first specify the distribution as an environment
+variable. For example, if running in Ubuntu:
+
+```bash
+$ export WSL_DISTRIBUTION=Ubuntu
+```
+
 This method does not run the compile functions.
 
 
 
 <p class="func-header">
-    <i></i> <b>view_nav</b>(<i>self, indent=0</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L629">[source]</a>
+    <i></i> <b>view_nav</b>(<i>self, indent=0</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L635">[source]</a>
 </p>
 
 Print the navigation starting at this page for debugging purposes.

@@ -4,6 +4,14 @@ In the previous part of the tutorial, you learned how to store and download data
 
 By the end of this part of the tutorial, you'll be able to validate participant responses.
 
+## Why validation?
+
+I often run studies where I elicit numerical estimates. Early on, I noticed that a small but annoying faction of participants, rather than entering actual numbers (e.g. 50), answered the question in full sentences:
+
+> I believe the answer is fifty.
+
+We often want to make sure participants are entering the sort of answers we want, whether it's typing the same password twice, answering a comprehension check by clicking on the correct choice, or entering a number instead of a word.
+
 ## Basic syntax
 
 Open your jupyter notebook and run the following:

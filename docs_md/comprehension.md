@@ -45,7 +45,7 @@ to pass the check. When a participant fails a check, he is brought back to
 the first instructions page.
 
 Participants only have to pass each check once. For example, suppose there
-are two checks, A and B. A participant passes check A but fails check B.
+are two checks, A and B. The participant passes check A but fails check B.
 He is brought back to the first page of the instructions. After rereading
 the instructions, he is brought directly to check B, skipping check A.
 

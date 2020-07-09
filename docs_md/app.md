@@ -118,7 +118,8 @@ from hemlock import Page, create_app, settings
 settings['Page'].update({'back': True})
 
 app = create_app()
-Page().preview() # Page().preview('Ubuntu') if running in Ubuntu/WSL
+app.app_context().push()
+Page().preview()
 ```
 
 ## Default application settings

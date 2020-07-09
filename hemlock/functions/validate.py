@@ -14,10 +14,10 @@ from operator import __ge__, __le__
 
 # Require and type validation
 
-IS_TYPE_MSG = '<p>Please enter {}.</p>'
+RESP_TYPE_MSG = '<p>Please enter {}.</p>'
 
 @Validate.register
-def is_type(question, resp_type):
+def response_type(question, resp_type):
     """
     Validate that the response can be converted to a given type.
     
@@ -35,7 +35,7 @@ def is_type(question, resp_type):
 
     push_app_context()
 
-    inpt = Validate.is_type(Input(response='hello world'), float)
+    inpt = Validate.response_type(Input(response='hello world'), float)
     inpt._validate()
     inpt.error
     ```
@@ -51,10 +51,10 @@ def is_type(question, resp_type):
         return
     except:
         if resp_type == int:
-            return IS_TYPE_MSG.format('an integer')
+            return RESP_TYPE_MSG.format('an integer')
         if resp_type == float:
-            return IS_TYPE_MSG.format('a number')
-        return IS_TYPE_MSG.format('the correct type of response')
+            return RESP_TYPE_MSG.format('a number')
+        return RESP_TYPE_MSG.format('the correct type of response')
 
 REQUIRE_MSG = '<p>Please respond to this question.<p>'
 
@@ -272,7 +272,7 @@ def _compare_resp(question, val, comparator, error_msg, resp_type=None):
         Expected type of response. If `None`, the type of `val` will be used.
     """
     resp_type = resp_type or type(val)
-    type_error_msg = is_type(question, resp_type)
+    type_error_msg = response_type(question, resp_type)
     if type_error_msg is not None:
         return type_error_msg
     if not comparator(resp_type(question.response), val):
@@ -320,7 +320,7 @@ def range_val(question, min_, max_, resp_type=None):
     if resp_type is None:
         assert type(min_) == type(max_)
         resp_type = type(min_)
-    type_error_msg = is_type(question, resp_type)
+    type_error_msg = response_type(question, resp_type)
     if type_error_msg is not None:
         return type_error_msg
     if not (min_ <= resp_type(question.response) <= max_):
@@ -846,7 +846,7 @@ def _get_decimals(question):
 
     This validation will fail if the response cannot be converted to `float`.
     """
-    msg = is_type(question, float)
+    msg = response_type(question, float)
     if msg:
         return msg, None
     split = question.response.split('.')
@@ -894,7 +894,7 @@ def match(question, pattern):
 # Choice validation
 
 @Validate.register
-def correct_choices(question, *correct):
+def correct_choices(question, correct):
     """
     Validate that selected choice(s) is correct.
     
@@ -902,7 +902,7 @@ def correct_choices(question, *correct):
     ----------
     question : hemlock.Question
 
-    \*correct :
+    correct : list of hemlock.Choice
         Correct choices.
 
     Examples
@@ -913,7 +913,7 @@ def correct_choices(question, *correct):
     push_app_context()
 
     check = Check(choices=['correct','incorrect','also incorrect'])
-    Validate.correct_choices(check, check.choices[0])
+    Validate.correct_choices(check, [check.choices[0]])
     check.response = check.choices[1]
     check._validate()
     check.error
@@ -925,7 +925,7 @@ def correct_choices(question, *correct):
     Please select the correct choice.
     ```
     """
-    if not correct_choices_(question, *correct):
+    if not correct_choices_(question, correct):
         if question.multiple:
             return '<p>Please select the correct choice(s).</p>'
         if len(correct) == 1:

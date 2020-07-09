@@ -117,12 +117,11 @@ from hemlock import Branch, Label, Page, push_app_context
 
 push_app_context()
 
-b = Branch(
+paths = Branch(
     Page(Label('<p>Hello World</p>')),
     Page(Label('<p>Hello Moon</p>')),
     Page(Label('<p>Hello Star</p>'))
-)
-b.preview() # b.preview('Ubuntu') if working in Ubuntu/WSL
+).preview()
 ```
 
 This will open all of the branch's pages in separate tabs.
@@ -132,31 +131,7 @@ This will open all of the branch's pages in separate tabs.
 
 
 <p class="func-header">
-    <i></i> <b>view_nav</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L160">[source]</a>
-</p>
-
-Print this branch's page queue for debugging purposes.
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>self : <i>hemlock.Branch</i></b>
-<p class="attr">
-    
-</p></td>
-</tr>
-    </tbody>
-</table>
-
-
-
-
-
-<p class="func-header">
-    <i></i> <b>preview</b>(<i>self, dist=None, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L184">[source]</a>
+    <i></i> <b>preview</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L159">[source]</a>
 </p>
 
 Preview the page queue in the a browser window.
@@ -167,16 +142,36 @@ Preview the page queue in the a browser window.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>dist : <i>str or None, default=None</i></b>
-<p class="attr">
-    Windows Subsystem for Linux (WSL) distribution (e.g. <code>'Ubuntu'</code>). Leave as <code>None</code> unless operating in WSL.
-</p>
-<b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver or None, default=None</i></b>
+    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver or None, default=None</i></b>
 <p class="attr">
     Driver to preview page debugging. If <code>None</code>, the page will be opened in a web browser.
 </p></td>
 </tr>
 <tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>paths : <i>list of str</i></b>
+<p class="attr">
+    Paths to temporary files for previewing pages.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
+
+
+<p class="func-header">
+    <i></i> <b>view_nav</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L176">[source]</a>
+</p>
+
+Print this branch's page queue for debugging purposes.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
     <th class="field-name"><b>Returns:</b></td>
     <td class="field-body" width="100%"><b>self : <i>hemlock.Branch</i></b>
 <p class="attr">

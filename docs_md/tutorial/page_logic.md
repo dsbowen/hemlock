@@ -12,4 +12,22 @@ It's not important to fully understand this now, as long as you have a rough sen
 6. **Submit.** The page executes its submit functions. By default, a page's first submit function runs its questions' submit methods. A question's submit method, in turn, executes its submit functions.
 7. **Navigate.** If the page has a navigate function, execute the function and bring the participant to the start of the new branch the function returns. If the page has no navigate function, and the participant has reached the end a a branch, the branch executes its navigate function and brings the participant to the start of the new branch returned by the function.
 
+You can visualize compile functions (validate and submit functions are similar) as follows:
+
+```
+Page 1 compile method
+    Page 1 compile function 1
+        Question 1 compile method
+            Question 1 compile function 1
+            Question 1 compile function 2
+            ...
+        Question 2 compile method
+            Question 2 compile function 1
+            Question 2 compile function 2
+            ...
+        ...
+    Page 1 compile function 2
+    ...
+```
+
 In the next part of the tutorial, we'll give our participants instructions on how to play the ultimatum game and verify their understanding with a comprehension check.

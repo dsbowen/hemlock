@@ -116,8 +116,12 @@ class Assigner(Randomizer):
     Examples
     --------
     ```python
+    from hemlock import Participant, push_app_context
     from hemlock.tools import Assigner
 
+    push_app_context()
+
+    part = Participant.gen_test_participant()
     conditions = {'Treatment': (0,1), 'Level': ('low','med','high')}
     assigner = Assigner(conditions)
     assigner.next()
@@ -127,6 +131,18 @@ class Assigner(Randomizer):
 
     ```
     {'Treatment': 1, 'Level': 'low'}
+    ```
+
+    In:
+
+    ```python
+    [(e.var, e.data) for e in part.embedded]
+    ```
+
+    Out:
+
+    ```
+    [('Treatment', 0), ('Level', 'low')]
     ```
     """
 

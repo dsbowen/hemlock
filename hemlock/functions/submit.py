@@ -6,7 +6,7 @@ from .utils import convert, correct_choices as correct_choices_
 import re
 
 @Submit.register
-def correct_choices(question, *correct):
+def correct_choices(question, correct):
     """
     Convert the question's data to a 0-1 indicator that the participant 
     selected the correct choice(s).
@@ -15,7 +15,7 @@ def correct_choices(question, *correct):
     ----------
     question : hemlock.ChoiceQuestion
 
-    \*correct : hemlock.Choice
+    correct : list of hemlock.Choice
         Correct choices.
 
     Notes
@@ -35,7 +35,7 @@ def correct_choices(question, *correct):
     \    ['correct', 'incorrect', 'also incorrect']
     )
     correct_choice = check.choices[0]
-    Submit.correct_choices(check, correct_choice)
+    Submit.correct_choices(check, [correct_choice])
     check.response = correct_choice
     check._submit()
     check.data
@@ -47,7 +47,7 @@ def correct_choices(question, *correct):
     1
     ```
     """
-    question.data = int(correct_choices_(question, *correct))
+    question.data = int(correct_choices_(question, correct))
 
 @Submit.register
 def data_type(question, new_type, *args, **kwargs):

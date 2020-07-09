@@ -123,7 +123,6 @@ app = push_app_context()
 
 part = Participant.gen_test_participant(start)
 part.current_page.preview()
-# part.current_page.preview('Ubuntu') if running in Ubuntu/WSL
 ```
 
 ####Methods
@@ -131,7 +130,7 @@ part.current_page.preview()
 
 
 <p class="func-header">
-    <i></i> <b>back</b>(<i>self, back_to=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L225">[source]</a>
+    <i></i> <b>back</b>(<i>self, back_to=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L224">[source]</a>
 </p>
 
 Navigate back for debugging purposes.
@@ -162,7 +161,7 @@ Navigate back for debugging purposes.
 
 
 <p class="func-header">
-    <i></i> <b>forward</b>(<i>self, forward_to=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L241">[source]</a>
+    <i></i> <b>forward</b>(<i>self, forward_to=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L240">[source]</a>
 </p>
 
 Navigate forward for debugging purposes.
@@ -193,7 +192,7 @@ Navigate forward for debugging purposes.
 
 
 <p class="func-header">
-    <i></i> <b>gen_test_participant</b>(<i>gen_root</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L258">[source]</a>
+    <i></i> <b>gen_test_participant</b>(<i>gen_root=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/participant.py#L257">[source]</a>
 </p>
 
 Generate a test participant for debugging purposes.
@@ -204,7 +203,7 @@ Generate a test participant for debugging purposes.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>gen_root : <i>callable</i></b>
+    <td class="field-body" width="100%"><b>gen_root : <i>callable or None, default=None</i></b>
 <p class="attr">
     Function to generate the root branch of the participant's tree. This should return a <code>hemlock.Branch</code>.
 </p></td>

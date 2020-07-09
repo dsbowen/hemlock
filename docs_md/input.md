@@ -105,7 +105,6 @@ from hemlock import Input, Page, push_app_context
 
 push_app_context()
 
-p = Page(Input('<p>Input text here.</p>'))
-p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+Page(Input('<p>Input text here.</p>')).preview()
 ```
 

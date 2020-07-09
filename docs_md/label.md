@@ -34,7 +34,7 @@
 ##hemlock.**Label**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Label</b>(<i>label='', template='hemlock/form-group.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/label.py#L6">[source]</a>
+    <i>class</i> hemlock.<b>Label</b>(<i>label='', template='hemlock/form-group.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/label.py#L8">[source]</a>
 </p>
 
 This question contains a label and does not receive input from the
@@ -65,7 +65,6 @@ from hemlock import Label, Page, push_app_context
 
 push_app_context()
 
-p = Page(Label('<p>Hello World</p>'))
-p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+Page(Label('<p>Hello World</p>')).preview()
 ```
 

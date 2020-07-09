@@ -190,8 +190,12 @@ Evenly assigns participants to conditions. Inherits from
 ####Examples
 
 ```python
+from hemlock import Participant, push_app_context
 from hemlock.tools import Assigner
 
+push_app_context()
+
+part = Participant.gen_test_participant()
 conditions = {'Treatment': (0,1), 'Level': ('low','med','high')}
 assigner = Assigner(conditions)
 assigner.next()
@@ -203,12 +207,24 @@ Out:
 {'Treatment': 1, 'Level': 'low'}
 ```
 
+In:
+
+```python
+[(e.var, e.data) for e in part.embedded]
+```
+
+Out:
+
+```
+[('Treatment', 0), ('Level', 'low')]
+```
+
 ####Methods
 
 
 
 <p class="func-header">
-    <i></i> <b>next</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L137">[source]</a>
+    <i></i> <b>next</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L153">[source]</a>
 </p>
 
 Assigns the participant to a condition. The condition assigment

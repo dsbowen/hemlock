@@ -17,6 +17,12 @@ nav:
     - Navigate: tutorial/navigate.md
     - Page logic: tutorial/page_logic.md
     - Comprehension check: tutorial/comp_check.md
+    - Random assignment: tutorial/random_ass.md
+    - Proposer branch: tutorial/proposer_branch.md
+    - Responder branch: tutorial/responder_branch.md
+    - Debugging: tutorial/debug.md
+    - Deployment: tutorial/deploy.md
+    - Bells and whistles: tutorial/extra.md
   - Application: 
     - Basics: app.md
     - Debugging: debug.md
