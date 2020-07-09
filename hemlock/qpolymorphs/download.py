@@ -49,11 +49,10 @@ class Download(Question, DownloadBtnMixin):
 
     push_app_context()
 
-    p = Page(Download(
+    Page(Download(
     \    '<p>Click here to download a file.</p>',
     \    downloads=[('HELLO_WORLD_URL', 'hello_world.txt')]
-    ))
-    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    )).preview()
     ```
 
     Replace `'HELLO_WORLD_URL'` with your file download URL. Note that the 

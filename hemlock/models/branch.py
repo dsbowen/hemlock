@@ -68,12 +68,11 @@ class Branch(BranchingBase, db.Model):
 
     push_app_context()
 
-    b = Branch(
+    Branch(
     \    Page(Label('<p>Hello World</p>')),
     \    Page(Label('<p>Hello Moon</p>')),
     \    Page(Label('<p>Hello Star</p>'))
-    )
-    b.preview() # b.preview('Ubuntu') if working in Ubuntu/WSL
+    ).preview()
     ```
 
     This will open all of the branch's pages in separate tabs.
@@ -181,16 +180,12 @@ class Branch(BranchingBase, db.Model):
             self.next_branch.view_nav()
         return self
 
-    def preview(self, dist=None, driver=None):
+    def preview(self, driver=None):
         """
         Preview the page queue in the a browser window.
 
         Parameters
         ----------
-        dist : str or None, default=None
-            Windows Subsystem for Linux (WSL) distribution (e.g. `'Ubuntu'`). 
-            Leave as `None` unless operating in WSL.
-
         driver : selenium.webdriver.chrome.webdriver.WebDriver or None, default=None
             Driver to preview page debugging. If `None`, the page will be
             opened in a web browser.
@@ -199,7 +194,7 @@ class Branch(BranchingBase, db.Model):
         -------
         self : hemlock.Branch
         """
-        [p.preview(dist, driver) for p in self.pages]
+        [p.preview(driver) for p in self.pages]
         return self
         
     def _forward(self):

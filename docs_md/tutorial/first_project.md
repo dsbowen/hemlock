@@ -64,12 +64,36 @@ Now, create your first hemlock page. In a new code cell below the first one, ent
 from hemlock import Page, Label
 
 p = Page(Label('<p>Hello, World!</p>'))
-p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+path = p.preview()
 ```
 
-This opens a preview of your page in your browser.
+This opens a preview of your page in your browser. Once you're done previewing your page, remove it with:
 
-**Note.** We'll be previewing pages throughout the tutorial. If you're working in Ubuntu/WSL, always replace `my_page.preview()` with `my_page.preview('Ubuntu')`.
+```python
+os.remove(path)
+```
+
+### Modifications if using WSL
+
+If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable. 
+
+If using the hemlock template, open your local environment file:
+
+```bash
+$ code env/local-env.yml
+```
+
+And add the following line:
+
+```yaml
+WSL_DISTRIBUTION: Ubuntu # or other WSL distribution
+```
+
+If not using the hemlock template, export the environment variable:
+
+```bash
+$ export WSL_DISTRIBUTION=Ubuntu # or other WSL distribution
+```
 
 ### Modifications if not using the template
 

@@ -61,8 +61,7 @@ class Select(InputGroup, ChoiceQuestion):
 
     push_app_context()
 
-    p = Page(Select('<p>Select one.</p>', ['World','Moon','Star']))
-    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    Page(Select('<p>Select one.</p>', ['World','Moon','Star'])).preview()
     ```
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)

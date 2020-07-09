@@ -57,8 +57,7 @@ def src_from_bucket(filename):
     \    src=src_from_bucket('wanna_see_the_code.png'),
     \    align='center'
     ).render()
-    p = Page(Label(img))
-    p.preview() # p.preview('Ubuntu') if running in Ubuntu/WSL
+    Page(Label(img)).preview()
     ```
     """
     bucket = os.environ.get('BUCKET')
@@ -245,8 +244,7 @@ class Img(Static):
     \    src='https://imgs.xkcd.com/comics/wanna_see_the_code.png', 
     \    align='center'
     ).render()
-    p = Page(Label(img))
-    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    Page(Label(img)).preview()
     ```
     """
     def __init__(self, template=os.path.join(DIR, 'img.html'), **kwargs):
@@ -340,8 +338,7 @@ class Vid(Static):
     push_app_context()
         
     vid = Vid.from_youtube('https://www.youtube.com/watch?v=UbQgXeY_zi4')
-    p = Page(Label(vid.render()))
-    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    Page(Label(vid.render())).preview()
     ```
     """
     def __init__(self, template=os.path.join(DIR, 'vid.html'), **kwargs):

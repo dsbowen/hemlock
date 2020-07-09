@@ -102,12 +102,12 @@ def comprehension_check(branch, instructions, checks, attempts=None):
     branch.pages += instructions + checks
     for check in checks:
         check.back_to = instructions[0]
-        check.submit_functions = Submit(
-            func=_verify_data,
-            last_instr_page=instructions[-1],
+        check.submit_functions.append(Submit(
+            _verify_data,
+            instructions[-1],
             curr_attempt=1,
             attempts=attempts
-        )
+        ))
     return branch
 
 def _verify_data(check, last_instr_page, curr_attempt, attempts):
@@ -132,6 +132,7 @@ def _verify_data(check, last_instr_page, curr_attempt, attempts):
         if check != check.branch.pages[-1]:
             # this check does not have to be repeated
             last_instr_page.forward_to = check.branch.pages[check.index+1]
+            pass
         return
     check.back_to.error = ERROR_MSG
     check.direction_from = 'back'

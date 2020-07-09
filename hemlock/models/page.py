@@ -294,8 +294,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     push_app_context()
 
-    p = Page(Label('<p>Hello World</p>'))
-    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    Page(Label('<p>Hello World</p>')).preview()
     ```
     """
     id = db.Column(db.Integer, primary_key=True)
@@ -553,16 +552,12 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         """
         return not (self.error or any([q.error for q in self.questions]))
 
-    def preview(self, dist=None, driver=None):
+    def preview(self, driver=None):
         """
         Preview the page in a browser window.
 
         Parameters
         ----------
-        dist : str or None, default=None
-            Windows Subsystem for Linux (WSL) distribution (e.g. `'Ubuntu'`). 
-            Leave as `None` unless operating in WSL.
-
         driver : selenium.webdriver.chrome.webdriver.WebDriver or None, default=None
             Driver to preview page debugging. If `None`, the page will be
             opened in a web browser.
@@ -573,20 +568,30 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
         Notes
         -----
+        If running in WSL, first specify the distribution as an environment
+        variable. For example, if running in Ubuntu:
+
+        ```bash
+        $ export WSL_DISTRIBUTION=Ubuntu
+        ```
+
         This method does not run the compile functions.
         """
+        dist = os.environ.get('WSL_DISTRIBUTION')
         _, path = tempfile.mkstemp(suffix='.html')
         soup = self._render(as_str=False)
         self._convert_rel_paths(soup, 'href', dist)
         self._convert_rel_paths(soup, 'src', dist)
         with open(path, 'w') as f:
             f.write(str(soup))
-        path = 'wsl$/'+ dist + path if dist else os.path.realpath(path)
+        preview_path = 'file://'+(
+            'wsl$/'+ dist + path if dist else os.path.realpath(path)
+        )
         if driver is None:
-            webbrowser.open('file://'+path)
+            webbrowser.open(preview_path)
         else:
-            driver.get('file://'+path)
-        return self
+            driver.get(preview_path)
+        return path
 
     def _convert_rel_paths(self, soup, url_attr, dist=None):
         """
@@ -644,12 +649,12 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
         # HEAD_PART = '<== head page of participant'
         # HEAD_BRANCH = '<== head page of branch'
-        HEAD_PART = 'C'
+        HEAD_PART = 'C '
         head_part = HEAD_PART if self == self.part.current_page else ''
         # head_branch = HEAD_BRANCH if self == self.branch.current_page else ''
         # print(' '*indent, self, head_branch, head_part)
         terminal = 'T' if self.terminal else ''
-        print(' '*indent, self, head_part, terminal)
+        print(' '*indent, self, head_part+terminal)
         if self.next_branch in self.part.branch_stack:
             self.next_branch.view_nav()
         return self

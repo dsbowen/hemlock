@@ -1,5 +1,7 @@
 """# Input group base"""
 
+from bs4 import Tag
+
 class InputGroup():
     """
     A base class for questions with [input groups](https://getbootstrap.com/docs/4.0/components/input-group/).
@@ -24,7 +26,7 @@ class InputGroup():
             '.input-group-append', val,
             target_selector='span.input-group-text',
             gen_target=self._gen_input_group_text,
-            args=('append')
+            args=['append']
         )
 
     @property
@@ -37,7 +39,7 @@ class InputGroup():
             '.input-group-prepend', val,
             target_selector='span.input-group-text', 
             gen_target=self._gen_input_group_text,
-            args=('prepend')
+            args=['prepend']
         )
 
     def _gen_input_group_text(self, type_):

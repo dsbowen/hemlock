@@ -88,8 +88,7 @@ class Compile(FunctionRegistrar, db.Model):
     name_q = Input("<p>What's your name?</p>")
     p = Page(Compile.greet(Label(), name_q))
     name_q.response = 'World'
-    p._compile()
-    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    p._compile().preview()
     ```
     """
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
@@ -133,8 +132,7 @@ class Debug(FunctionRegistrar, db.Model):
     \    inpt.send_keys('Hello World!')
 
     p = Page(Debug.greet(Input('<p>Enter a greeting.</p>')))
-    p.preview(driver=driver) # p.preview('Ubuntu', driver) if working in Ubuntu/WSL
-    p._debug(driver)
+    p.preview(driver)._debug(driver)
     ```
     """
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))

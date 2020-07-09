@@ -6,6 +6,9 @@ from bs4 import BeautifulSoup
 from flask import request
 from sqlalchemy_orderingitem import OrderingItem
 
+import os
+import tempfile
+
 
 class ViewingPage(OrderingItem, db.Model):
     """
@@ -14,9 +17,6 @@ class ViewingPage(OrderingItem, db.Model):
 
     Parameters
     ----------
-    part : hemlock.Participant
-        Participant to which this viewing page belongs.
-
     html : str
         HTML of the page.
 
@@ -51,26 +51,39 @@ class ViewingPage(OrderingItem, db.Model):
     index = db.Column(db.Integer)
     url_root = db.Column(db.String)
     
-    def __init__(self, part, html, first_presentation=True):
-        self.part = part
+    def __init__(self, html, first_presentation=True):
         self.html = html
         self.first_presentation = first_presentation
         self.url_root = request.url_root
 
-    def process(self):
+    def mkstmp(self):
+        """
+        Returns
+        -------
+        path : str
+            Path to temporary html file.
+        """
+        dist = os.environ.get('WSL_DISTRIBUTION')
+        _, path = tempfile.mkstemp(suffix='.html')
+        self.convert_rel_paths()
+        with open(path, 'w') as f:
+            f.write(self.html)
+        return path
+
+    def convert_rel_paths(self):
         """
         Convert stylesheets and scripts from relative to absolute paths and 
         remove banner.
         """
         soup = BeautifulSoup(self.html, 'html.parser')
-        self.convert_rel_paths(soup, 'href')
-        self.convert_rel_paths(soup, 'src')
+        self.convert_url_attr(soup, 'href')
+        self.convert_url_attr(soup, 'src')
         banner = soup.select_one('span.banner')
         if banner is not None:
             banner.string = ''
         self.html = str(soup)
 
-    def convert_rel_paths(self, soup, url_attr):
+    def convert_url_attr(self, soup, url_attr):
         """
         Convert relative to absolute path.
 

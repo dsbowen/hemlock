@@ -138,7 +138,9 @@ class Router(RouterMixin, db.Model):
             part.end_time = datetime.utcnow()
             part.completed = True
         page_html = page._render()
-        ViewingPage(part, page_html, first_presentation=not page.viewed)
+        part._viewing_pages.append(
+            ViewingPage(page_html, first_presentation=not page.viewed)
+        )
         page.viewed = True
         return page_html
     

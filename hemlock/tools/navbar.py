@@ -25,7 +25,7 @@ navbar = Navbar(
 \    href=url_root+'hemlock'
 )
 
-Page(navbar=navbar.render()).preview('Ubuntu')
+Page(navbar=navbar.render()).preview()
 ```
 """
 

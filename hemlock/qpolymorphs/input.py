@@ -66,8 +66,7 @@ class Input(InputGroup, InputBase, Question):
 
     push_app_context()
 
-    p = Page(Input('<p>Input text here.</p>'))
-    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    Page(Input('<p>Input text here.</p>')).preview()
     ```
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
@@ -83,6 +82,15 @@ class Input(InputGroup, InputBase, Question):
     @input_type.setter
     def input_type(self, val):
         self.input['type'] = val
+        self.body.changed()
+
+    @property
+    def placeholder(self):
+        return self.input.get('placeholder')
+
+    @placeholder.setter
+    def placeholder(self, val):
+        self.input['placeholder'] = val
         self.body.changed()
 
     def _submit(self, *args, **kwargs):

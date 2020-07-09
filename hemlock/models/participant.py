@@ -100,7 +100,6 @@ class Participant(UserMixin, Base, db.Model):
 
     part = Participant.gen_test_participant(start)
     part.current_page.preview()
-    # part.current_page.preview('Ubuntu') if running in Ubuntu/WSL
     ```
     """
     id = db.Column(db.Integer, primary_key=True)
@@ -255,13 +254,13 @@ class Participant(UserMixin, Base, db.Model):
         self._router.navigator.forward(forward_to)
         return self
 
-    def gen_test_participant(gen_root):
+    def gen_test_participant(gen_root=None):
         """
         Generate a test participant for debugging purposes.
 
         Parameters
         ----------
-        gen_root : callable
+        gen_root : callable or None, default=None
             Function to generate the root branch of the participant's tree.
             This should return a `hemlock.Branch`.
 
@@ -270,7 +269,8 @@ class Participant(UserMixin, Base, db.Model):
         part : hemlock.Participant
         """
         part = Participant(meta={})
-        part._init_tree(gen_root)
+        if gen_root:
+            part._init_tree(gen_root)
         login_user(part)
         return part
 

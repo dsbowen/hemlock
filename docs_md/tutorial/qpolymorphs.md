@@ -1,26 +1,27 @@
-# Demographics
+# Question polymorphs
 
 In the previous part of the tutorial, you learned how to initialize a hemlock application and run it locally.
 
-By the end of this part of the tutorial, you'll be able to add a variety of questions to your survey pages to create a demographics questionnaire.
+By the end of this part of the tutorial, you'll be able to add a variety of question polymorphs to your survey pages.
 
-## Creating the demographics page
+## Creating a demographics page
 
-We'll use jupyter notebook as a blackboard to iterate on our demographics page design.
-
-After pushing the application context, we'll create a page with an input question and ask participants to enter their age.
+We'll use jupyter notebook as a blackboard to iterate on our demographics page design. After pushing the application context, we'll create the following page:
 
 ```python
 from hemlock import Check, Input, Page, Label, Range, Select
 
 p = Page(
-    Input('<p>Please enter your date of birth in mm/dd/yyyy format.</p>'),
+    Input(
+        '<p>Enter your date of birth.</p>',
+        placeholder='mm/dd/yyyy'
+    ),
     Check(
-        '<p>Please indicate your gender.</p>',
+        '<p>Indicate your gender.</p>',
         ['Male', 'Female', 'Other']
     ),
     Check(
-        '<p>Please indicate your ethnicity. Check as many as apply.</p>',
+        '<p>Indicate your race or ethnicity. Check as many as apply.</p>',
         [
             'White',
             'Black or African-American',
@@ -31,8 +32,9 @@ p = Page(
         multiple=True
     ),
     Select(
-        '<p>Please select your current marital status.</p>',
+        '<p>Select your current marital status.</p>',
         [
+            '',
             'Married',
             'Widowed',
             'Divorced',
@@ -54,13 +56,13 @@ p = Page(
 )
 ```
 
-As usual, enter `p.preview()` (or `p.preview('Ubuntu')`) preview the page.
+As usual, use `p.preview()` to preview the page.
 
 ### Code explanation
 
 Here we add several 'question polymorphs' (i.e. types of questions) to our page. 
 
-The first is a free form input. 
+The first is a free form input. We add `placeholder='mm/dd/yyyy'` telling participants the expected format of their date of birth.
 
 The next two are check questions, which allow participants to check one or more choices. Notice that the first check question allows participants to check only one choice; we allow participants to check multiple choices in the second check question by passing `multiple=True`.
 
@@ -80,44 +82,10 @@ def start():
     return Branch(
         Page(
             Input(
-                '<p>Please enter your date of birth in mm/dd/yyyy format.</p>'
+                '<p>Enter your date of birth.</p>',
+                placeholder='mm/dd/yyyy'
             ),
-            Check(
-                '<p>Please indicate your gender.</p>',
-                ['Male', 'Female', 'Other']
-            ),
-            Check(
-                '<p>Please indicate your ethnicity. Check as many as apply.</p>',
-                [
-                    'White',
-                    'Black or African-American',
-                    'Asian',
-                    'Native Hawaiian or other Pacific Islander',
-                    'Other',
-                ],
-                multiple=True
-            ),
-            Select(
-                '<p>Please select your current marital status.</p>',
-                [
-                    'Married',
-                    'Widowed',
-                    'Divorced',
-                    'Separated',
-                    'Never married',
-                ]
-            ),
-            Range(
-                '''
-                <p>At the right end of the scale are the people who are the 
-                best off; those who have the most money, the most 
-                education, and the best jobs. On the left are the people 
-                who are the worst off; those who have the least money, the 
-                least education, and the worst jobs (or are unemployed). 
-                Please indicate where you think you stand on this scale.</p>
-                ''',
-                min=0, max=10
-            ),
+            # INSERT THE REST OF THE DEMOGRAPHICS PAGE HERE
         ),
         Page(
             Label('<p>Thank you for completing this survey.</p>'), 
@@ -130,4 +98,4 @@ def start():
 
 In this part of the tutorial, you learned how to create a demographics questionnaire using several question polymorphs.
 
-In the next part of the tutorial, you'll learn how to validate participant responses.
+In the next part of the tutorial, you'll learn how to store and download survey data.

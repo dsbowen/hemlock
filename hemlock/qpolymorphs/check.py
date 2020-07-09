@@ -63,8 +63,7 @@ class Check(ChoiceQuestion):
 
     push_app_context()
 
-    p = Page(Check('<p>Check one.</p>', ['Yes','No','Maybe']))
-    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    Page(Check('<p>Check one.</p>', ['Yes','No','Maybe'])).preview()
     ```
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)

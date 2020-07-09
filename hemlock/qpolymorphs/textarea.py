@@ -63,8 +63,7 @@ class Textarea(InputGroup, Question):
 
     push_app_context()
 
-    p = Page(Textarea('<p>This is a textarea.</p>'))
-    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    Page(Textarea('<p>This is a textarea.</p>')).preview()
     ```
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
@@ -81,6 +80,15 @@ class Textarea(InputGroup, Question):
     @rows.setter
     def rows(self, val):
         self.textarea['rows'] = val
+        self.body.changed()
+
+    @property
+    def placeholder(self):
+        return self.textarea.get('placeholder')
+
+    @placeholder.setter
+    def placeholder(self, val):
+        self.textarea['placeholder'] = val
         self.body.changed()
 
     @property

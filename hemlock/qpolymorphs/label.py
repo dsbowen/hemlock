@@ -1,7 +1,9 @@
 """# Label"""
 
-from ..app import db
+from ..app import db, settings
 from ..models import Question
+
+settings['Label'] = {'data': 1}
 
 class Label(Question):
     """
@@ -23,8 +25,7 @@ class Label(Question):
 
     push_app_context()
 
-    p = Page(Label('<p>Hello World</p>'))
-    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    Page(Label('<p>Hello World</p>')).preview()
     ```
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
@@ -34,3 +35,6 @@ class Label(Question):
             self, label='', template='hemlock/form-group.html', **kwargs
         ):
         super().__init__(label, template, **kwargs)
+
+    def _record_data(self):
+        return self

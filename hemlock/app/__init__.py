@@ -91,7 +91,8 @@ def create_app(settings=settings):
     settings['Page'].update({'back': True})
 
     app = create_app()
-    Page().preview() # Page().preview('Ubuntu') if running in Ubuntu/WSL
+    app.app_context().push()
+    Page().preview()
     ```
     """
     app = _create_app(settings)

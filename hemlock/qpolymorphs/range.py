@@ -68,8 +68,7 @@ class Range(InputBase, Question):
 
     push_app_context()
 
-    p = Page(Range('<p>This is a range slider.</p>'))
-    p.preview() # p.preview('Ubuntu') if working in Ubuntu/WSL
+    Page(Range('<p>This is a range slider.</p>')).preview()
     ```
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)

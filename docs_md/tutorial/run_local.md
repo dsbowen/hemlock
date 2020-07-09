@@ -87,4 +87,4 @@ We also passed a keyword (named) argument to the page constructor, `terminal=Tru
 
 In this part of the tutorial, you learned how to tell your application where to start and end, and run your application locally.
 
-In the next part of the tutorial, we're going to add a demographics questionnaire to the beginning of our survey.
+In the next part of the tutorial, we're going to use question polymorphs to add a demographics questionnaire to our survey.

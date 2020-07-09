@@ -6,13 +6,20 @@ edit_uri: edit/master/docs_md
 nav:
   - Home: index.md
   - Tutorial:
-    - Setup: setup.md
-    - Your first project: first_project.md
-    - Running hemlock locally: run_local.md
-    - Demographics: demographics.md
-    - Validation: validation.md
-  - Application: app.md
-  - Debugging: debug.md
+    - Setup: tutorial/setup.md
+    - Your first project: tutorial/first_project.md
+    - Running hemlock locally: tutorial/run_local.md
+    - Question polymorphs: tutorial/qpolymorphs.md
+    - Data: tutorial/data.md
+    - Validate: tutorial/validate.md
+    - Submit: tutorial/submit.md
+    - Compile: tutorial/compile.md
+    - Navigate: tutorial/navigate.md
+    - Page logic: tutorial/page_logic.md
+    - Comprehension check: tutorial/comp_check.md
+  - Application: 
+    - Basics: app.md
+    - Debugging: debug.md
   - Functions:
     - Compile: compile_functions.md
     - Debug: debug_functions.md
@@ -26,7 +33,7 @@ nav:
     - Function models: functions.md
     - Page: page.md
     - Participant: participant.md
-    - Question mixins: question.md
+    - Question: question.md
     - Workers: workers.md
   - Question polymorphs:
     - Check: check.md
