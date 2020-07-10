@@ -1,5 +1,7 @@
 """Hemlock tutorial"""
 
+# https://devcenter.heroku.com/articles/setting-up-apps-using-the-heroku-platform-api
+
 from hemlock import Branch, Check, Compile, Debug, Embedded, Input, Label, Navigate, Page, Range, Select, Submit, Validate, route, settings
 from hemlock.tools import Assigner, comprehension_check, join
 
@@ -11,7 +13,6 @@ N_ROUNDS = 5
 POT = 20
 
 settings.update({'password': 'my-password'})
-settings.update({'validate': False})
 assigner = Assigner({'Proposer': (0,1)})
 
 @route('/survey')
