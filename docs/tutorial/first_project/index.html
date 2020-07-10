@@ -255,7 +255,7 @@ $ source hemlock-venv/bin/activate
 </code></pre>
 
 <p>Install hemlock:</p>
-<pre><code class="bash">$ pip3 install hemlock-survey
+<pre><code class="bash">$ pip install hemlock-survey # or pip3 install hemlock-survey
 </code></pre>
 
 <h2 id="preview-a-page-in-jupyter-notebook">Preview a page in jupyter notebook</h2>
@@ -274,7 +274,7 @@ p.preview()
 
 <p>This opens a preview of your page in your browser.</p>
 <p>Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:</p>
-<pre><code class="python">os.remove(*app.tmpfiles)
+<pre><code class="python">[os.remove(tmpfile) for tmpfile in app.tmpfiles]
 </code></pre>
 
 <h3 id="modifications-if-using-wsl">Modifications if using WSL</h3>

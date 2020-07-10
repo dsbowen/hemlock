@@ -4,7 +4,7 @@ If you're new to python, or the installation and quickstart instructions don't m
 
 ## Installation
 
-```
+```bash
 $ pip install hemlock-survey
 ```
 

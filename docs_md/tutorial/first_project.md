@@ -43,7 +43,7 @@ $ source hemlock-venv/bin/activate
 Install hemlock:
 
 ```bash
-$ pip3 install hemlock-survey
+$ pip install hemlock-survey # or pip3 install hemlock-survey
 ```
 
 ## Preview a page in jupyter notebook
@@ -72,7 +72,7 @@ This opens a preview of your page in your browser.
 Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:
 
 ```python
-os.remove(*app.tmpfiles)
+[os.remove(tmpfile) for tmpfile in app.tmpfiles]
 ```
 
 ### Modifications if using WSL
