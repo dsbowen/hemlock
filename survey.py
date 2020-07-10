@@ -1,6 +1,11 @@
 """Hemlock tutorial"""
 
 # https://devcenter.heroku.com/articles/setting-up-apps-using-the-heroku-platform-api
+# make app.json
+# hlk deploy runs app setup using the platform API and configures the bucket
+# 1) commit to git
+# 2) run app setup using tarball
+# 3) configure bucket
 
 from hemlock import Branch, Check, Compile, Debug, Embedded, Input, Label, Navigate, Page, Range, Select, Submit, Validate, route, settings
 from hemlock.tools import Assigner, comprehension_check, join
@@ -126,8 +131,8 @@ def ultimatum_game(start_branch):
         players receive $0.</b></p>
 
         <p>You will play {} rounds of this game. Each round, you will be 
-        paired with a paired with another randomly selected participant. 
-        <b>You will rarely, if ever, play two rounds with the same player.</b>
+        paired with another randomly selected participant. <b>You will rarely,
+        if ever, play two rounds with the same player.</b>
 
         <p>We will test your understanding of these instructions on the 
         next page.</p>
