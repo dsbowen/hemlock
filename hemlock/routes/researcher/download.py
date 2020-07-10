@@ -313,24 +313,24 @@ class FileCreator():
             doc.add_paragraph(text)
             return
         path = page.mkstmp()
-        try:
-            dist = os.environ.get('WSL_DISTRIBUTION')
-            self.driver.get('file://'+(
-                'wsl$/' + dist + path if dist else os.path.real_path(path)
-            ))
-            self.accept_alerts()
-            width = self.driver.get_window_size()['width']
-            height = self.driver.execute_script(
-                'return document.body.parentNode.scrollHeight'
-            )
-            self.driver.set_window_size(width, height+HEIGHT_BUFFER)
-            form = self.driver.find_element_by_tag_name('form')
-            page_bytes = BytesIO()
-            page_bytes.write(form.screenshot_as_png)
-            doc.add_picture(page_bytes, width=SURVEY_VIEW_IMG_WIDTH)
-            page_bytes.close()
-        except:
-            pass
+        # try:
+        dist = os.environ.get('WSL_DISTRIBUTION')
+        self.driver.get('file://'+(
+            'wsl$/' + dist + path if dist else os.path.real_path(path)
+        ))
+        self.accept_alerts()
+        width = self.driver.get_window_size()['width']
+        height = self.driver.execute_script(
+            'return document.body.parentNode.scrollHeight'
+        )
+        self.driver.set_window_size(width, height+HEIGHT_BUFFER)
+        form = self.driver.find_element_by_tag_name('form')
+        page_bytes = BytesIO()
+        page_bytes.write(form.screenshot_as_png)
+        doc.add_picture(page_bytes, width=SURVEY_VIEW_IMG_WIDTH)
+        page_bytes.close()
+        # except:
+        #     pass
         os.remove(path)
 
     def accept_alerts(self):
