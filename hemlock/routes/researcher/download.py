@@ -317,9 +317,7 @@ class FileCreator():
             print('about to get wsl distro')
             dist = os.environ.get('WSL_DISTRIBUTION')
             print('got wsl distro, about to have driver get file')
-            self.driver.get('file://'+(
-                'wsl$/' + dist + path if dist else os.path.real_path(path)
-            ))
+            self.driver.get('file://'+('wsl$/'+dist+path if dist else path))
             print('driver got file, about to accept alerts')
             self.accept_alerts()
             print('driver accepted alerts, about to get window size')
