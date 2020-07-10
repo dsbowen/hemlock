@@ -5,4 +5,5 @@ dist/
 env/gcp-credentials.json
 hemlock-venv/
 data.db
+data.db-journal
 test.py
