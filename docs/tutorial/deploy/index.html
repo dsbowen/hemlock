@@ -252,7 +252,7 @@ settings.update({'password': 'my-password'})
 </code></pre>
 
 <p>Make sure your app name is unique. I do this by adding a few random digits to the end of the app name.</p>
-<p>Once this process finishes (~5 minutes), you'll be able to see your app at <a href="http://my-app-name.herokuapp.com/">http://my-app-name.herokuapp.com/</a>.</p>
+<p>Once this process finishes (~2-3 minutes), you'll be able to see your app at <a href="http://my-app-name.herokuapp.com/">http://my-app-name.herokuapp.com/</a>.</p>
 <p>Go through your app and check for bugs before you start purchasing time on heroku servers. In addition to going through it manually, you can run the debugger in the production environment with:</p>
 <pre><code class="bash">$ hlk debug --prod
 </code></pre>
@@ -267,7 +267,10 @@ settings.update({'password': 'my-password'})
 <pre><code class="bash">$ hlk production
 </code></pre>
 
-<p>This will destroy your existing free database (and redis server, if you have one), and you'll be prompted to enter the name of your app to confirm. It then replaces your database with a more powerful one.</p>
+<p>This will destroy your existing free database (and redis server, if you have one), and you'll be prompted to enter the name of your app to confirm. It then replaces your database with a more powerful one. It'll take a few minutes to create your new database, during which time your app won't work properly. You can check the status of the database with:</p>
+<pre><code class="bash">$ heroku pg
+</code></pre>
+
 <p>You're now renting a heroku database and 10 web processes. If you don't know what this means, don't worry. As of 07/09/2020, these resources cost just more than half a cent per minute. If you play with your hemlock app for the next 10 minutes, it'll cost $0.07. If you run an MTurk study and leave it up for the next 12 hours, it'll cost $5.</p>
 <p>Importantly, when you're done with your app, destroy it with:</p>
 <pre><code class="bash">$ hlk destroy

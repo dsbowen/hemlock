@@ -236,9 +236,10 @@
 <pre><code class="bash">$ hlk init my-first-project
 </code></pre>
 
-<p>This will 'clone' the template into a folder <code>my-first-project</code>, set up a virtual environment, and pip install hemlock. Change into the project directory and activate the virtual environment.</p>
+<p>This will 'clone' the template into a folder <code>my-first-project</code> and set up a virtual environment. Change into the project directory, activate the virtual environment, and install the requirements to run this project locally.</p>
 <pre><code class="bash">$ cd my-first-project
 $ source hemlock-venv/bin/activate
+$ pip install -r local-requirements.txt # or pip3 install -r local-requirements.txt
 </code></pre>
 
 <p>It's good practice to use <a href="https://docs.python.org/3/tutorial/venv.html">virtual environments</a> and activate them whenever you're working on a project.</p>

@@ -11,7 +11,7 @@ setuptools.setup(
     description="A package for creating and deploying surveys",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/dsbowen/hemlock",
+    url="https://dsbowen.github.io/hemlock",
     packages=setuptools.find_packages(),
     include_package_data=True,
     install_requires=[

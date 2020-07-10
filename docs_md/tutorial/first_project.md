@@ -14,11 +14,12 @@ I recommend starting hemlock projects from the hemlock template:
 $ hlk init my-first-project
 ```
 
-This will 'clone' the template into a folder `my-first-project`, set up a virtual environment, and pip install hemlock. Change into the project directory and activate the virtual environment.
+This will 'clone' the template into a folder `my-first-project` and set up a virtual environment. Change into the project directory, activate the virtual environment, and install the requirements to run this project locally.
 
 ```bash
 $ cd my-first-project
 $ source hemlock-venv/bin/activate
+$ pip install -r local-requirements.txt # or pip3 install -r local-requirements.txt
 ```
 
 It's good practice to use [virtual environments](https://docs.python.org/3/tutorial/venv.html) and activate them whenever you're working on a project.
