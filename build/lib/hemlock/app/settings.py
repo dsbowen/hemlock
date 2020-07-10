@@ -1,64 +1,100 @@
-"""Application settings and configuration object
+"""## Default application settings
 
-time_limit and status_logger_period must be in 'hh:mm:ss' format.
+Below are the default settings for Hemlock applications and extensions.
 
-validation : boolean
-    Turns all validation on or off. Developers may want to turn all validation off during testing.
+App settings
+------------
+clean_data : callable or None, default=None
+    Callable which cleans your data before downloading or creating a data 
+    profile. This callable takes and returns `pandas.DataFrame`. If `None`, no
+    additional cleaning is performend.
+
+duplicate_keys : list, default=[]
+    List of keys (column names) on which to block duplicate participants. If
+    empty, the app will not screen out duplicates.
+
+password : str, default=''
+    Password for accessing the researcher dashboard.
+
+restart_option : bool, default=True
+    Indicates that participants who attempt to re-navigate to the index page 
+    will be given the option to restart the survey. If `False`, participants 
+    to attempt to re-navigate to the index page will be redirected to their 
+    current survey page.
+
+restart_text : str, default='Click << to return...'
+    Text displayed to participants when given the option to restart or 
+    continue with the survey.
+
+screenout_csv : str, default='screenout.csv'
+    Name of the csv file containing criteria for screening out participants.
+
+screenout_keys : list, default=[]
+    List of keys (column names) on which to screen out participants. If empty,
+    participants will be screened out based on all keys in the screenout csv.
+
+screenout_text : str, default='...you have already participated...'
+    Text displayed to participants who are ineligible to participate in this 
+    survey.
+
+socket_js_src : str, default='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js'
+    Source of the websocket javascript.
+
+static_folder : str, default='static'
+    Path to the static folder.
+
+template_folder : str, default='templates'
+    Path to the template folder.
+
+time_expired_text : str, default='You have exceeded your time limit...'
+    Text displayed to participants whose time has expired.
+
+time_limit : datetime.timedelta or None, default=None
+    Time limit for participants to complete the survey.
+
+validate : bool, default=True
+    Indicate that all validation is active. Set to `False` to turn off all 
+    validation for testing.
+
+Config
+------
+SECRET_KEY : str
+    Looks for a `SECRET_KEY` environment variable.
+
+SQLALCHEMY_DATABASE_URI : str
+    Looks for `DATABASE_URL` environment variable. Otherwise, we use a SQLite 
+    database `data.db` in the current working directory.
+
+SQLALCHEMY_TRACK_MODIFICATIONS: bool, default=False
+
+REDIS_URL : str, default='redis://'
+    Looks for a `REDIS_URL` environment variable.
+
+DownloadBtnManager
+------------------
+
+Manager
+-------
+loading_img_blueprint : str or None, default='hemlock'
+    Name of the blueprint to which the loading image belongs. If `None`, the 
+    loading image is assumed to be in the app's `static` directory.
+
+loading_img_filename : str or None, default='img/worker_loading.gif'
+    Name of the loading image file.
+
+Notes
+-----
+See <https://flask.palletsprojects.com/en/1.1.x/config/> for more detail on 
+Flask application configuration.
+
+See <https://dsbowen.github.io/flask-download-btn/manager/> for more detail on 
+DownloadBtnManager settings.
+
+See <https://dsbowen.github.io/flask-worker/manager/> for more detail on 
+Manager settings.
 """
 
-from datetime import datetime, timedelta
-from glob import glob
-from werkzeug.security import generate_password_hash
 import os
-import pandas as pd
-
-
-class Config():
-    """Application configuration object"""
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'secret-key'
-    SQLALCHEMY_DATABASE_URI = (
-        os.environ.get('DATABASE_URL') 
-        or 'sqlite:///'+os.path.join(os.getcwd(), 'data.db')
-    )
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
-
-
-class Settings():
-    """Settings object"""
-    settings_funcs = {}
-
-    @classmethod
-    def register(cls, obj_name):
-        """Register a settings function
-
-        A settings function returns a settings dict associated with an 
-        object name. The settings dict maps object attribute names to 
-        values. These attributes are set when an object is initialized.
-        """
-        def wrapper(func):
-            if obj_name not in cls.settings_funcs:
-                cls.settings_funcs[obj_name] = []
-            cls.settings_funcs[obj_name].append(func)
-            return func()
-        return wrapper
-
-    @classmethod
-    def get(cls, *obj_names):
-        """Get the settings associated with a list of object names
-
-        Settings functions associated with the same object name override 
-        settings functions registered previously.
-        """
-        settings = {}
-        for obj_name in obj_names:
-            funcs = cls.settings_funcs.get(obj_name)
-            if funcs:
-                [settings.update(func()) for func in funcs]
-        return settings
-
-
-TIME_EXPIRED_TXT = 'You have exceeded your time limit for this survey'
 
 RESTART_TXT = """
 <p>Click << to return to your in progress survey. Click >> to restart the survey.</p>
@@ -70,69 +106,37 @@ SCREENOUT_TXT = """
 <p>Thank you for your continuing interest in our research.</p>
 """
 
-SOCKET_JS_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js'
+SOCKET_JS_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js'
 
-@Settings.register('app')
-def settings():
-    return {
-        'clean_data': None,
-        'duplicate_keys': [],
-        'offline': False,
-        'password': '',
-        'restart_option': True,
-        'restart_text': RESTART_TXT,
-        'screenout_folder': None,
-        'screenout_keys': ['IPv4', 'workerId'],
-        'screenout_text': SCREENOUT_TXT,
-        'socket_js_src': SOCKET_JS_SRC,
-        'static_folder': 'static',
-        'status_log_period': '00:02:00',
-        'template_folder': 'templates',
-        'time_expired_text': TIME_EXPIRED_TXT,
-        'time_limit': None,
-        'validation': True,
-    }
+TIME_EXPIRED_TXT = 'You have exceeded your time limit for this survey'
 
-@Settings.register('manager')
-def settings():
-    return {
+settings = {
+    'clean_data': None,
+    'duplicate_keys': [],
+    'password': '',
+    'restart_option': True,
+    'restart_text': RESTART_TXT,
+    'screenout_csv': 'screenout.csv',
+    'screenout_keys': [],
+    'screenout_text': SCREENOUT_TXT,
+    'socket_js_src': SOCKET_JS_SRC,
+    'static_folder': 'static',
+    'template_folder': 'templates',
+    'time_expired_text': TIME_EXPIRED_TXT,
+    'time_limit': None,
+    'validate': True,
+    'Config': {
+        'SECRET_KEY': os.environ.get('SECRET_KEY') or 'secret-key',
+        'SQLALCHEMY_DATABASE_URI': (
+            os.environ.get('DATABASE_URL')
+            or 'sqlite:///'+os.path.join(os.getcwd(), 'data.db')
+        ),
+        'SQLALCHEMY_TRACK_MODIFICATIONS': False,
+        'REDIS_URL': os.environ.get('REDIS_URL') or 'redis://',
+    },
+    'DownloadBtnManager': {},
+    'Manager': {
         'loading_img_blueprint': 'hemlock',
         'loading_img_filename': 'img/worker_loading.gif'
-    }
-
-def get_app_settings():
-    """Get application settings
-    
-    Convert settings to timedelta objects as needed.
-    
-    Then merge static and template folders with current working directory. 
-    Return these separately, as they need to be passed to the Flask 
-    constructor.
-    """
-    settings = Settings.get('app')
-    to_timedelta(settings, 'time_limit')
-    to_timedelta(settings, 'status_log_period')
-
-    password = settings.pop('password', '')
-    settings['password_hash'] = generate_password_hash(password)
-    static = os.path.join(os.getcwd(), settings.pop('static_folder'))
-    templates = os.path.join(os.getcwd(), settings.pop('template_folder'))
-    return settings, static, templates
-
-def to_timedelta(settings, key):
-    """Convert time expressed as 'hh:mm:ss' to timedelta object"""
-    time_str = settings[key]
-    if time_str is None:
-        return
-    t = datetime.strptime(time_str, '%H:%M:%S')
-    settings[key] = timedelta(hours=t.hour,minutes=t.minute,seconds=t.second)
-
-def get_screenouts(app):
-    """Store screenouts dictionary as application attribute"""
-    if not app.screenout_folder:
-        app.screenouts = None
-        return
-    app.screenout_folder = os.path.join(os.getcwd(), app.screenout_folder)
-    screenout_csvs = glob(app.screenout_folder+'/*.csv')
-    df = pd.concat([pd.read_csv(csv) for csv in screenout_csvs]).astype(str)
-    app.screenouts = df.to_dict(orient='list')
+    },
+}

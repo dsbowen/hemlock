@@ -71,7 +71,7 @@ Finally, we set `attempts=3` to give the participant 3 attempts to pass the chec
 
 ## Ultimatum game comprehension check
 
-We're going to use a comprehension check to explain the ultimatum game to our participants and test their understanding of it.
+We're going to use a comprehension check to explain the ultimatum game to our participants and test their understanding of it. First, open `app.py` and change `import tmp_survey` back to `import survey`.
 
 ### Instructions
 
@@ -85,7 +85,7 @@ N_ROUNDS = 5
 # the amount of money split
 POT = 20
 
-path = Page(Label('''
+Page(Label('''
 <p>You are about to play an ultimatum game. The game involves two
 players: a <b>proposer</b> and a <b>responder</b>. The proposer has 
 ${} to split between him/herself and the responder. The responder 
@@ -98,8 +98,8 @@ money according to the proposal. If the split is rejected, both
 players receive $0.</b></p>
 
 <p>You will play {} rounds of this game. Each round, you will be 
-paired with a paired with another randomly selected participant. 
-<b>You will rarely, if ever, play two rounds with the same player.</b>
+paired with another randomly selected participant. <b>You will rarely, 
+if ever, play two rounds with the same player.</b>
 
 <p>We will test your understanding of these instructions on the 
 next page.</p>

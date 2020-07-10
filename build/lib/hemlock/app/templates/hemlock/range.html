@@ -1,0 +1,6 @@
+{% extends 'hemlock/form-group.html' %}
+
+{% block content %}
+<input id="{{ self_.model_id }}" name="{{ self_.model_id }}" type="range" class="custom-range"/>
+<small>Value: <span id="{{ self_.model_id }}-value"></span></small>
+{% endblock %}

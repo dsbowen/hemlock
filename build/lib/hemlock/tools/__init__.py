@@ -1,8 +1,8 @@
 """Tools"""
 
-from hemlock.tools.comprehension_check import comprehension_check
-from hemlock.tools.language import plural
-from hemlock.tools.randomization import random_key, even_randomize, random_assign
-from hemlock.tools.statics import Img, Vid, src_from_bucket, url_from_bucket
-from hemlock.tools.url_for import url_for
-from hemlock.tools.webdriver import chromedriver
+from .comprehension import comprehension_check
+from .lang import indef_article, join, plural, pronouns
+from .navbar import Navbar, Navitem, Navitemdd, Dropdownitem
+from .random import Assigner, Randomizer, key
+from .statics import Img, Vid, src_from_bucket, url_from_bucket
+from .utils import chromedriver, get_data, url_for

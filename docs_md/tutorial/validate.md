@@ -10,7 +10,7 @@ I often run studies where I elicit numerical estimates. Early on, I noticed that
 
 > I believe the answer is fifty.
 
-We often want to make sure participants are entering the sort of answers we want, whether it's typing the same password twice, answering a comprehension check by clicking on the correct choice, or entering a number instead of a word.
+We often need to make sure participants are entering the right kind of answer, whether it's typing the same password twice, answering a comprehension check by clicking on the correct choice, or entering a number instead of a word.
 
 ## Basic syntax
 
@@ -106,7 +106,7 @@ Format your date of birth as mm/dd/yyyy.
 
 First, we import `datetime`, a native python package for handling dates and times. 
 
-Next, we register a new validate function with the `@Validate.register` decorator. The validate function takes the input question as its argument. In general, validate functions (and, as we will see, their cousins, compile, submit, and navigate functions) take their 'parent' (usually a branch, page, or question) as their first argument.
+Next, we register a new validate function with the `@Validate.register` decorator. The validate function takes the input question as its argument. In general, validate functions (and, as we will see, their cousins, submit, compile, and navigate functions) take their 'parent' (usually a branch, page, or question) as their first argument.
 
 The validate function tries to convert the input question's response to a `datetime` object and returns an error message if this fails. In general, validate functions return an error message (a string) if there is a problem, and `None` if the response is valid.
 

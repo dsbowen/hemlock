@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Debugging - Hemlock</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../../css/extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Debugging";
+    var mkdocs_page_input_path = "tutorial/debug.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> Hemlock</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tutorial</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../first_project/">Your first project</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../run_local/">Running hemlock locally</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../qpolymorphs/">Question polymorphs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../data/">Data</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../validate/">Validate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../submit/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../compile/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../navigate/">Navigate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../page_logic/">Page logic</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../comp_check/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../random_ass/">Random assignment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../proposer_branch/">Proposer branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../responder_branch/">Responder branch</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Debugging</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#why-a-custom-debugging-tool">Why a custom debugging tool?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#with-hemlock-cli-on-wsl">With hemlock-CLI on WSL</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#without-hemlock-cli">Without hemlock-CLI</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#basic-syntax">Basic syntax</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#default-debug-functions">Default debug functions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#custom-debug-functions">Custom debug functions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#debugging-our-app">Debugging our app</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#date-of-birth">Date of birth</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#comprehension-checks">Comprehension checks</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#proposals-and-responses">Proposals and responses</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#running-the-debugger">Running the debugger</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../deploy/">Deployment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../extra/">Bells and whistles</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Application</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Basics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../debug/">Debugging</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Functions</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../compile_functions/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../debug_functions/">Debug</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../submit_functions/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../validate_functions/">Validate</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Models</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../bases/">Bases</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../branch/">Branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../choice/">Choice</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../embedded/">Embedded data and timers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../functions/">Function models</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../page/">Page</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../participant/">Participant</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Question polymorphs</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../check/">Check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../download/">Download</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../file/">File upload</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../input/">Input</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../input_group/">Input group</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../label/">Label</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../range/">Range</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../select/">Select</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../textarea/">Textarea</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tools</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../comprehension/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../lang/">Language</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../navbar/">Navbar</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../random/">Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../statics/">Statics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../utils/">Utilities</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">Hemlock</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Tutorial &raquo;</li>
+        
+      
+    
+    <li>Debugging</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/tutorial/debug.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="debugging">Debugging</h1>
+<p>In the previous part of the tutorial, you implemented the responder branch.</p>
+<p>By the end of this part of the tutorial, you'll be able to use hemlock's debugging tool to make sure your app is running smoothly.</p>
+<h2 id="why-a-custom-debugging-tool">Why a custom debugging tool?</h2>
+<p>In the early days of hemlock, I coded a study in which I asked participants to estimate the ages of people in photographs. I used a submit function to change their data from strings to integers. Everything was running smoothly until one mischievous participant entered 'twenty-seven', breaking my survey and sending me home in a fit of rage.</p>
+<p>Since then, I've rewritten my submit functions to be more fault tolerant. If you run</p>
+<pre><code class="python">from hemlock import Input, Submit
+
+Submit.data_type(Input(data='twenty-seven'), int)._submit().data
+</code></pre>
+
+<p>it doesn't break; it simply converts the data to <code>None</code>.</p>
+<p>But that wasn't good enough. We often underestimate just how strangely participants will respond to our studies in ways that we can't foresee.</p>
+<p>To mitigate this problem, I wrote a custom debugging tool for hemlock. The tool sends an <em>AI participant</em> through your survey to check things out. 'AI participant' is a bit of a misnomer; if anything, it's an artificially stupid participant. It clicks random buttons, enters random things into inputs and text boxes, drags range sliders to random values; basically stress testing your code.</p>
+<h2 id="setup">Setup</h2>
+<p>To run hemlock's custom debugging tool locally, you'll need <a href="https://www.google.com/chrome/">Google Chrome</a> and <a href="https://chromedriver.chromium.org/downloads">Chromedriver</a>.</p>
+<h3 id="with-hemlock-cli-on-wsl">With hemlock-CLI on WSL</h3>
+<p>To install chromedriver, run:</p>
+<pre><code class="bash">$ hlk setup --chromedriver
+</code></pre>
+
+<p>This downloads a version of Chromdriver compatible with Chrome 83 and adds puts it here: <code>C:\Users\&lt;my-windows-username&gt;\webdrivers\chromedriver</code>. It also adds an environment variable for easy access in python. </p>
+<p>To verify your installation, close and re-open your terminal and run:</p>
+<pre><code class="bash">$ which chromedriver
+/mnt/c/users/&lt;my-windows-username&gt;/chromedriver
+</code></pre>
+
+<p><strong>Note.</strong> The Chromedriver version downloaded by the Hemlock CLI is compatible with Chrome 83. While Chrome upgrades automatically, Chromedriver does not. When Chrome updates, you will experience errors due to Chrome-Chromedriver incompatibility.</p>
+<p>To fix this, you will need to manually upgrade Chromedriver:</p>
+<ol>
+<li>Download the appropriate Chromedriver version from <a href="https://chromedriver.chromium.org/downloads/">https://chromedriver.chromium.org/downloads/</a>.</li>
+<li>Store the Chromedriver executable in <code>C:/users/&lt;my-windows-username&gt;/webdrivers/</code>.</li>
+<li>Rename the Chromedriver executable from <code>chromedriver.exe</code> to <code>chromedriver</code>.</li>
+</ol>
+<h3 id="without-hemlock-cli">Without hemlock-CLI</h3>
+<ol>
+<li>Download the appropriate version of Chromedriver from <a href="https://chromedriver.chromium.org/downloads/">https://chromedriver.chromium.org/downloads/</a>.</li>
+<li>Add the Chromedriver executable to your PATH (it's easy to find a guide for this online). </li>
+<li>If working in WSL, rename the Chromedriver executable from <code>chromedriver.exe</code> to <code>chromedriver</code>. (It took me hours of Googling + trial end error to figure this out).</li>
+</ol>
+<p>Verify your installation, close and re-open your terminal and run:</p>
+<pre><code class="bash">$ which chromedriver
+/path/to/my/chromedriver
+</code></pre>
+
+<h2 id="basic-syntax">Basic syntax</h2>
+<p>Open your jupyter notebook and run the following:</p>
+<pre><code class="python">from hemlock import Debug, Input, Page
+from hemlock.tools import chromedriver
+
+driver = chromedriver()
+
+p = Page(Debug.send_keys(Input(), 'hello world'))
+p.debug_functions.pop()
+p.preview(driver)._debug(driver)
+</code></pre>
+
+<p>First, we use <code>chromedriver</code> to open Chromedriver with <a href="https://selenium-python.readthedocs.io/">selenium python</a>.</p>
+<p>Next, we create a page, attaching a debug function to an input question on the page. Like the other functions you've seen, <code>Debug.send_keys(Input(), 'hello world')</code> attaches a <code>send_keys</code> debug function to the <code>Input()</code> with an argument <code>'hello world'</code> and returns the input question to which it is attached.</p>
+<p>We then pop the last debug function from the page we created. Why? By default, pages have two debug functions. The first executes its questions' debug methods in random order; as if the participant were randomly jumping between questions on a page. The second debug function randomly clicks a forward or back button (if it exists), or refreshes the page. Popping the debug function prevents the debugger from navigating, which is often a good idea in preview mode.</p>
+<p>Finally, we run the debug function. You'll notice it enters 'hello world' in the input.</p>
+<h2 id="default-debug-functions">Default debug functions</h2>
+<p>We can attach debug functions to pages or questions. Most questions have a default debug function. For example, input questions have a default debug function which sends random ASCII characters to the input.</p>
+<p>However, sometimes we need to attach additional debug functions. For example, our study begins by asking participants to enter their date of birth in <code>mm/dd/yyyy</code> format. If you wait for the default debug function to randomly enter a string which matches that pattern, you might not end up running your study before Trump releases his tax returns.</p>
+<p>Instead, we'll use something like:</p>
+<pre><code class="python">Page(Debug.send_keys(
+    Input('&lt;p&gt;Enter your date of birth.&lt;/p&gt;'), 
+    '10/26/1992', p_exec=.8
+))
+</code></pre>
+
+<p>You can pass <code>p_exec</code> as a keyword argument to any debug function. This is the probablity that the debug function will execute. This is useful because we want the debugger to occasionally enter something random into the date of birth input to see if anything breaks.</p>
+<p><code>send_keys</code> is just one of many pre-built <a href="../../debug_functions/">debug functions</a>.</p>
+<h2 id="custom-debug-functions">Custom debug functions</h2>
+<p>We won't need custom debug functions for our survey, but you may need them elsewhere. Creating custom debug function is similar to creating custom compile, validate, etc. functions, with one important difference: while the functions you've seen take their parent as their first argument, debug functions take a selenium webdriver as their first argument and their parent as their second argument:</p>
+<pre><code class="python">@Debug.register
+def f(driver, parent):
+    # debug something
+</code></pre>
+
+<h2 id="debugging-our-app">Debugging our app</h2>
+<p>Our app can be debugged largely with default debug functions. The exceptions are, 1) the date of birth input, 2) the comprehension check, 3) proposals and responses.</p>
+<h3 id="date-of-birth">Date of birth</h3>
+<p>Modify <code>survey.py</code> as follows:</p>
+<pre><code class="python">...
+
+@route('/survey')
+def start():
+    demographics_page = Page(
+        Debug.send_keys(
+            Submit.record_age(Validate.validate_date_format(Input(
+                '&lt;p&gt;Enter your date of birth.&lt;/p&gt;',
+                placeholder='mm/dd/yyyy',
+                var='DoB', data_rows=-1
+            ))),
+            '10/26/1992', p_exec=.8
+        ),
+        ...
+</code></pre>
+
+<h3 id="comprehension-checks">Comprehension checks</h3>
+<p>Because there is no attempt limit for our comprehension check, unless we tell the debugger to enter the correct answers, it's going to keep looping back to the instructions page.</p>
+<pre><code class="python">...
+
+@Compile.register
+def random_proposal(check_page, accept):
+    ...
+    # add submit functions to verify that the response was correct
+    check_page.questions[1].submit_functions.clear()
+    Debug.send_keys(
+        Submit.match(check_page.questions[1], str(payoff[0])), 
+        str(payoff[0]), p_exec=.8
+    )
+    check_page.questions[2].submit_functions.clear()
+    Debug.send_keys(
+        Submit.match(check_page.questions[2], str(payoff[1])),
+        str(payoff[1]), p_exec=.8
+    )
+
+...
+</code></pre>
+
+<h3 id="proposals-and-responses">Proposals and responses</h3>
+<p>It's unlikely the debugger will enter an integer between 0 and the size of the pot, so we'll give our debugger some help:</p>
+<pre><code class="python">...
+
+def gen_proposal_input(round_):
+    return Debug.send_keys(
+        Submit.data_type(
+            # REST OF THE FUNCTION HERE
+        ),
+        str(randint(0, POT)), p_exec=.8
+    )
+
+...
+</code></pre>
+
+<pre><code class="python">...
+
+def gen_response_input(round_):
+    return Debug.send_keys(
+        Submit.data_type(
+            # REST OF THE FUNCTION HERE
+        ),
+        str(randint(0, POT)), p_exec=.8
+    )
+
+...
+</code></pre>
+
+<h2 id="running-the-debugger">Running the debugger</h2>
+<p>Now that our debugger won't get stuck in any infinite loops, it's time to run it.</p>
+<p>Open two terminal windows. In one, run the hemlock app as usual. In the other, you can run the debugger with hemlock-CLI as follows:</p>
+<pre><code class="bash">$ hlk debug
+</code></pre>
+
+<p>To run several AI participants through the survey, e.g. 3, use:</p>
+<pre><code class="bash">$ hlk debug -b 3
+</code></pre>
+
+<p>If you don't want to use hemlock-CLI, you can run the debugger with the python interpreter:</p>
+<pre><code class="bash">$ python3
+&gt;&gt;&gt; from hemlock.debug import AIParticipant, debug
+&gt;&gt;&gt; debug() # or debug(&lt;x&gt;) to run x AI participants
+</code></pre>
+
+<h2 id="summary">Summary</h2>
+<p>In this part of the tutorial, you learned how to debug your app with hemlock's custom debugging tool.</p>
+<p>In the next part of the tutorial, you'll learn how to deploy your application (i.e. put it on the web).</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../deploy/" class="btn btn-neutral float-right" title="Deployment">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../responder_branch/" class="btn btn-neutral" title="Responder branch"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../responder_branch/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../deploy/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

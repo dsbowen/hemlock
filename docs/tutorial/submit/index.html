@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Submit - Hemlock</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../../css/extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Submit";
+    var mkdocs_page_input_path = "tutorial/submit.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> Hemlock</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tutorial</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../first_project/">Your first project</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../run_local/">Running hemlock locally</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../qpolymorphs/">Question polymorphs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../data/">Data</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../validate/">Validate</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Submit</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#why-submit-functions">Why submit functions?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#basic-syntax">Basic syntax</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#custom-submission">Custom submission</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#code-explanation">Code explanation</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#submission-in-our-app">Submission in our app</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../compile/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../navigate/">Navigate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../page_logic/">Page logic</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../comp_check/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../random_ass/">Random assignment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../proposer_branch/">Proposer branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../responder_branch/">Responder branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debug/">Debugging</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../deploy/">Deployment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../extra/">Bells and whistles</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Application</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Basics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../debug/">Debugging</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Functions</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../compile_functions/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../debug_functions/">Debug</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../submit_functions/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../validate_functions/">Validate</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Models</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../bases/">Bases</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../branch/">Branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../choice/">Choice</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../embedded/">Embedded data and timers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../functions/">Function models</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../page/">Page</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../participant/">Participant</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Question polymorphs</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../check/">Check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../download/">Download</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../file/">File upload</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../input/">Input</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../input_group/">Input group</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../label/">Label</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../range/">Range</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../select/">Select</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../textarea/">Textarea</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tools</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../comprehension/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../lang/">Language</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../navbar/">Navbar</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../random/">Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../statics/">Statics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../utils/">Utilities</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">Hemlock</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Tutorial &raquo;</li>
+        
+      
+    
+    <li>Submit</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/tutorial/submit.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="submit">Submit</h1>
+<p>In the previous part of the tutorial, you learned how to validate participant responses.</p>
+<p>By the end of this part of the tutorial, you'll be able to run functions to handle form submission.</p>
+<h2 id="why-submit-functions">Why submit functions?</h2>
+<p>Our demographics page asks participants to enter their date of birth. In addition to date of birth, we also want to record the participant's age.</p>
+<p>Submit functions run after a participant submits a page and their responses are validated. We're going to attach a submit function to our date of birth input question to record our participants' age as embedded data.</p>
+<h2 id="basic-syntax">Basic syntax</h2>
+<p>Open your jupyter notebook and run the following:</p>
+<pre><code class="python">from hemlock import Input, Submit
+
+inpt = Submit.match(Input('&lt;p&gt;Enter &quot;hello world&quot;&lt;/p&gt;'), 'hello world')
+inpt
+</code></pre>
+
+<p>Out:</p>
+<pre><code>&lt;Input 1&gt;
+</code></pre>
+
+<p><code>Submit.match</code> adds a submit function to a question, then returns the question. In this case, the submit function changes its question's data to 1 if the data matches a pattern, <code>'hello world'</code>, and 0 if it does not. Submit functions are available in the question's <code>submit_functions</code> attribute:</p>
+<pre><code class="python">inpt.submit_functions
+</code></pre>
+
+<p>Out:</p>
+<pre><code>[&lt;Submit 1&gt;]
+</code></pre>
+
+<p>Let's set the input question's reponse and watch our submit function work:</p>
+<pre><code class="python">inpt.data = 'hello world'
+inpt._submit()
+print(inpt.data)
+
+inpt.data = 'something other than hello world'
+inpt._submit()
+print(inpt.data)
+</code></pre>
+
+<p>Out:</p>
+<pre><code>1
+0
+</code></pre>
+
+<p><code>match</code> is just one of many <a href="../../submit_functions/">prebuilt submit functions</a>.</p>
+<h2 id="custom-submission">Custom submission</h2>
+<p>We're going to use a custom submit function to record our participants' age.</p>
+<pre><code class="python">from hemlock import Embedded, Page
+
+from datetime import datetime
+
+@Submit.register
+def record_age(inpt):
+    # calculate age in years
+    date_of_birth = datetime.strptime(inpt.data, '%m/%d/%Y')
+    age = (datetime.utcnow() - date_of_birth).days / 365.25
+    # record age as embedded data
+    inpt.page.embedded = [Embedded('Age', age, data_rows=-1)]
+
+page = Page(Submit.record_age(Input('&lt;p&gt;Enter your date of birth.&lt;/p&gt;')))
+inpt = page.questions[0]
+inpt.data = '10/26/1992'
+inpt._submit()
+page.embedded[0].data
+</code></pre>
+
+<p>Out:</p>
+<pre><code>27.698836413415467
+</code></pre>
+
+<h3 id="code-explanation">Code explanation</h3>
+<p>We register a new submit function with the <code>@Submit.register</code> decorator. The submit function takes the input question as its argument. It converts the input's data to a <code>datetime</code> object, computes the participant's age, and records it as embedded data.</p>
+<h2 id="submission-in-our-app">Submission in our app</h2>
+<p>Now that we've seen how to add submit functions in our notebook, let's add it to our app.</p>
+<p>In <code>survey.py</code>:</p>
+<pre><code class="python">from hemlock import Branch, Check, Embedded, Input, Label, Page, Range, Select, Submit, Validate, route
+
+from datetime import datetime
+
+@route('/survey')
+def start():
+    return Branch(
+        Page(
+            Submit.record_age(Validate.validate_date_format(Input(
+                '&lt;p&gt;Enter your date of birth.&lt;/p&gt;',
+                placeholder='mm/dd/yyyy',
+                var='DoB', data_rows=-1
+            ))),
+            # REST OF THE DEMOGRAPHICS PAGE HERE
+        ),
+        Page(
+            Label('&lt;p&gt;Thank you for completing the survey!&lt;/p&gt;'),
+            terminal=True
+        )
+    )
+
+...
+
+@Submit.register
+def record_age(inpt):
+    # calculate age in years
+    date_of_birth = datetime.strptime(inpt.data, '%m/%d/%Y')
+    age = (datetime.utcnow() - date_of_birth).days / 365.25
+    # record age as embedded data
+    inpt.page.embedded = [Embedded('Age', age, data_rows=-1)]
+</code></pre>
+
+<p>Run the app again, fill in the demographics page, and download the data. You'll now see a variable 'Age' in the data frame.</p>
+<h2 id="summary">Summary</h2>
+<p>In this part of the tutorial, you learned how create and run submit functions.</p>
+<p>In the next part of the tutorial, you'll implement a confirmation page using compile functions.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../compile/" class="btn btn-neutral float-right" title="Compile">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../validate/" class="btn btn-neutral" title="Validate"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../validate/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../compile/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

@@ -50,7 +50,7 @@ $ hlk deploy <my-app-name>
 
 Make sure your app name is unique. I do this by adding a few random digits to the end of the app name.
 
-Once this process finishes (expect 5-10 minutes), you'll be able to see your app at <http://my-app-name.herokuapp.com/>.
+Once this process finishes (~5 minutes), you'll be able to see your app at <http://my-app-name.herokuapp.com/>.
 
 Go through your app and check for bugs before you start purchasing time on heroku servers. In addition to going through it manually, you can run the debugger in the production environment with:
 
@@ -74,9 +74,9 @@ When you're satisfied that your app isn't going to crash, scale it up with:
 $ hlk production
 ```
 
-This will destroy your existing toy database (and redis server, if you have one), and you'll be prompted to enter the name of your app to confirm.
+This will destroy your existing free database (and redis server, if you have one), and you'll be prompted to enter the name of your app to confirm. It then replaces your database with a more powerful one.
 
-You're now renting a heroku database and 10 web processes. If you don't know what this means, don't worry. As of 07/09/2020, these resources cost just more than half a cent per minute. If you play with your hemlock app for the next 10 minutes, it'll cost \$0.07. If you run an MTurk study and leave it up for the next 12 hours, it'll cost \$5.
+You're now renting a heroku database and 10 web processes. If you don't know what this means, don't worry. As of 07/09/2020, these resources cost just more than half a cent per minute. If you play with your hemlock app for the next 10 minutes, it'll cost $0.07. If you run an MTurk study and leave it up for the next 12 hours, it'll cost $5.
 
 Importantly, when you're done with your app, destroy it with:
 

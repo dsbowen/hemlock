@@ -1,9 +1,8 @@
 # Your first project
 
-By the end of this part of the tutorial, you'll be able to:
+In the previous part of the tutorial, you installed the necessary software to get started with hemlock.
 
-1. Initialize a new hemlock project.
-2. Create and preview hemlock survey pages.
+By the end of this part of the tutorial, you'll be able to initialize a new hemlock project and create and preview hemlock survey pages.
 
 ## Initialize a new hemlock project
 
@@ -64,7 +63,7 @@ Now, create your first hemlock page. In a new code cell below the first one, ent
 from hemlock import Page, Label
 
 p = Page(Label('<p>Hello, World!</p>'))
-path = p.preview()
+p.preview()
 ```
 
 This opens a preview of your page in your browser.
@@ -99,7 +98,7 @@ $ export WSL_DISTRIBUTION=Ubuntu # or other WSL distribution
 
 ### Modifications if not using the template
 
-If you didn't use the hemlock template, create a new python3 jupyter notebook and enter the following in the first cell:
+If you're not using the hemlock template, create a new python3 jupyter notebook and enter the following in the first cell:
 
 ```python
 from hemlock import push_app_context
@@ -124,7 +123,7 @@ p = Page()
 p.questions = [Label('<p>Label 0</p>'), Label('<p>Label 1</p>')]
 ```
 
-The `Page`'s question is a `Label`, although this is in some sense a misnomer because it only contains text. The first argument to `Label` is a string, written in html, which the `Label` displays on its page.
+The `Page`'s question is a `Label`, although this is in some sense a misnomer because label objects only contains text. The first argument to `Label` is a string, written in html, which the label object displays on its page.
 
 **Note.** If you don't like writing html, you can easily find Word to html converters online.
 

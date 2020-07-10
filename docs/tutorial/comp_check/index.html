@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Comprehension check - Hemlock</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../../css/extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Comprehension check";
+    var mkdocs_page_input_path = "tutorial/comp_check.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> Hemlock</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tutorial</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../first_project/">Your first project</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../run_local/">Running hemlock locally</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../qpolymorphs/">Question polymorphs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../data/">Data</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../validate/">Validate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../submit/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../compile/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../navigate/">Navigate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../page_logic/">Page logic</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Comprehension check</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#why-comprehension-checks">Why comprehension checks?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#basic-syntax">Basic syntax</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#code-explanation">Code explanation</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ultimatum-game-comprehension-check">Ultimatum game comprehension check</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#instructions">Instructions</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#checks">Checks</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#adding-a-comprehension-check-to-our-app">Adding a comprehension check to our app</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../random_ass/">Random assignment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../proposer_branch/">Proposer branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../responder_branch/">Responder branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debug/">Debugging</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../deploy/">Deployment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../extra/">Bells and whistles</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Application</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Basics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../debug/">Debugging</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Functions</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../compile_functions/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../debug_functions/">Debug</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../submit_functions/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../validate_functions/">Validate</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Models</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../bases/">Bases</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../branch/">Branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../choice/">Choice</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../embedded/">Embedded data and timers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../functions/">Function models</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../page/">Page</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../participant/">Participant</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Question polymorphs</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../check/">Check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../download/">Download</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../file/">File upload</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../input/">Input</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../input_group/">Input group</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../label/">Label</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../range/">Range</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../select/">Select</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../textarea/">Textarea</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tools</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../comprehension/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../lang/">Language</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../navbar/">Navbar</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../random/">Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../statics/">Statics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../utils/">Utilities</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">Hemlock</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Tutorial &raquo;</li>
+        
+      
+    
+    <li>Comprehension check</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/tutorial/comp_check.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="comprehension-check">Comprehension check</h1>
+<p>In the previous part of the tutorial, you reviewed page logic.</p>
+<p>By the end of this part of the tutorial, you'll be able to set up comprehension checks.</p>
+<h2 id="why-comprehension-checks">Why comprehension checks?</h2>
+<p>We often give our participants instructions. To make sure they understand the instructions, we give them comprehension checks.</p>
+<p>Hemlock has a built-in tool for easy comprehension checks. The structure of a comprehension check is:</p>
+<ol>
+<li>One or more pages of instructions.</li>
+<li>One or more pages of 'checks'.</li>
+<li>If the participant fails a check, they return to the first instructions page.</li>
+<li>Participants do not have to repeat checks that they pass.</li>
+<li>We set a limit on the number of attempts participants have to pass each check.</li>
+</ol>
+<p>For example, suppose there are two checks, A and B. The participant passes check A but fails check B. He is brought back to the first page of the instructions. After rereading the instructions, he is brought directly to check B, skipping check A.</p>
+<p>(Think about what it would take to do this in Qualtrics).</p>
+<h2 id="basic-syntax">Basic syntax</h2>
+<p>Although we usually start with jupyter, the logic of comprehension checks is best illustrated by running an app. Open <code>app.py</code> and replace <code>import survey</code> with <code>import tmp_survey</code>. Now make a new file, <code>tmp_survey.py</code>, and enter the following:</p>
+<pre><code class="python">from hemlock import Branch, Check, Choice, Compile, Page, Input, Label, Submit, route
+from hemlock.tools import comprehension_check
+
+@route('/survey')
+def start():
+    correct = Choice('correct')
+    branch = comprehension_check(
+        Branch(),
+        instructions=Page(Label('&lt;p&gt;Here are some instructions.&lt;/p&gt;')),
+        checks=Compile.clear_response(Page(
+            Compile.shuffle(Submit.correct_choices(
+                Check(
+                    '&lt;p&gt;Click the correct choice.&lt;/p&gt;',
+                    [correct, 'incorrect', 'also incorrect']
+                ), 
+                correct=[correct]
+            ))
+        )),
+        attempts=3
+    )
+    branch.pages.append(
+        Page(Label('&lt;p&gt;The End!&lt;/p&gt;'), terminal=True)
+    )
+    return branch
+</code></pre>
+
+<p>Run the app and play with the comprehension check. Notice that when you don't click the correct choice, the survey brings you back to the instructions page.</p>
+<h3 id="code-explanation">Code explanation</h3>
+<p>First, we import our standard hemlock objects and the <code>comprehension_check</code> tool.</p>
+<p>At the top of our <code>start</code> function, we create a <code>Choice</code> object, which is the answer to the check question. <code>Choice</code> objects belong to <code>Check</code> questions.</p>
+<p>We then create a branch using the comprehension check tool. <code>comprehension_check</code> takes a branch as its first argument, followed by an instructions page (or a list of instructions pages), followed by a check page (or a list or check pages). The <code>comprehension_check</code> method returns the branch to which it added the comprehension check.</p>
+<p>The check page contains a <code>Check</code> question. Note that 'check' has different meanings here. A 'check page' in a comprehension check means <em>a page where you test the participant's understanding of the instructions</em>. A 'check question' means <em>a question where you can check one or more choices</em>.</p>
+<p>By default, the check page will record the participant's responses, and the check question will display the choices in their original order. These are both problems for testing comprehension. We don't want participants to simply click choices one after another until the hit the right one. To fix this, we add one compile function to the page to clear the responses, and another to the check question to re-shuffle the choices.</p>
+<p>A participant passes a check page when all of its questions' data evaluate to <code>True</code>. So, we'll add a submit function to the check question which converts its data to 1 if the participant selected the correct choice and 0 otherwise (<code>1</code> and <code>0</code> evaluate to <code>True</code> and <code>False</code> in most programming languages).</p>
+<p>Finally, we set <code>attempts=3</code> to give the participant 3 attempts to pass the check. If a participant fails the check 3 times, they'll simply continue the survey. We can require participants to pass the check by not passing an <code>attempts</code> parameter.</p>
+<h2 id="ultimatum-game-comprehension-check">Ultimatum game comprehension check</h2>
+<p>We're going to use a comprehension check to explain the ultimatum game to our participants and test their understanding of it. First, open <code>app.py</code> and change <code>import tmp_survey</code> back to <code>import survey</code>.</p>
+<h3 id="instructions">Instructions</h3>
+<p>Open jupyter and let's preview the instructions page:</p>
+<pre><code class="python">from hemlock import Page, Label
+
+# the number of rounds participants play
+N_ROUNDS = 5
+# the amount of money split
+POT = 20
+
+Page(Label('''
+&lt;p&gt;You are about to play an ultimatum game. The game involves two
+players: a &lt;b&gt;proposer&lt;/b&gt; and a &lt;b&gt;responder&lt;/b&gt;. The proposer has 
+${} to split between him/herself and the responder. The responder 
+names an amount of money such that he/she accepts any proposed 
+split which gives him/her at least this amount, and rejects any 
+proposed split which gives him/her less than this amount.&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;If the split is accepted, the proposer and responder split the 
+money according to the proposal. If the split is rejected, both 
+players receive $0.&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;You will play {} rounds of this game. Each round, you will be 
+paired with another randomly selected participant. &lt;b&gt;You will rarely, 
+if ever, play two rounds with the same player.&lt;/b&gt;
+
+&lt;p&gt;We will test your understanding of these instructions on the 
+next page.&lt;/p&gt;
+'''.format(POT, N_ROUNDS))).preview()
+</code></pre>
+
+<h3 id="checks">Checks</h3>
+<p>For the check pages, we're going to give participants a hypothetical proposal and response and ask them how much money the proposer and responder receive. We'll do this twice; once where the proposal is accepted, the other where it is rejected.</p>
+<p>Additionally, we want to avoid biasing participants' responses by giving them all the same hypothetical proposal-response pairs. So, we'll write a function to randomly generate proposals.</p>
+<p>Enter the following in your notebook:</p>
+<pre><code class="python">from hemlock import Compile, Input
+
+def gen_check_page(accept):
+    return Compile.clear_response(Compile.random_proposal(
+        Page(
+            Label(),
+            Input(
+                '&lt;p&gt;How much money does the proposer receive?&lt;/p&gt;',
+                prepend='$',
+                append='.00'
+            ),
+            Input(
+                '&lt;p&gt;How much money does the responder receive?&lt;/p&gt;',
+                prepend='$',
+                append='.00'
+            )
+        ),
+        accept=accept
+    ))
+
+@Compile.register
+def random_proposal(check_page, accept):
+    # WE'LL WRITE THIS FUNCTION IN A MOMENT
+    pass
+
+path = gen_check_page(accept=True).preview()
+</code></pre>
+
+<p>The <code>gen_check_page</code> function generates a check page. The <code>Label</code> with which the page starts is going to be populated by a randomly generated proposal-response pair which we'll create with the compile function <code>random_proposal</code>. Both <code>gen_check_page</code> and <code>random_proposal</code> take an <code>accept</code> argument which indicates whether the proposal will be accepted or rejected.</p>
+<p>Now, fill in the <code>random_proposal</code> function:</p>
+<pre><code class="python">from hemlock import Compile, Input, Submit
+
+from random import randint
+
+...
+
+@Compile.register
+def random_proposal(check_page, accept):
+    # randomly generate a proposed split and response
+    n = randint(1, POT-1)
+    proposal = POT-n, n # proposer receives POT-n, responder receives n
+    response = randint(0, n) if accept else randint(n+1, POT)
+    # compute the payoff
+    payoff = proposal if response&lt;=proposal[1] else (0, 0)
+    # describe the proposal and response in the label
+    check_page.questions[0].label = '''
+    &lt;p&gt;Imagine the proposer proposes the following split:&lt;/p&gt;
+    &lt;ul&gt;
+       &lt;li&gt;Proposer: ${}&lt;/li&gt;
+       &lt;li&gt;Responder: ${}&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;p&gt;The responder says, &quot;I will accept any proposal which gives 
+    me at least ${}.&quot;&lt;/p&gt;
+    '''.format(*proposal, response)
+    # add submit functions to verify that the response was correct
+    check_page.questions[1].submit_functions.clear()
+    Submit.match(check_page.questions[1], str(payoff[0]))
+    check_page.questions[2].submit_functions.clear()
+    Submit.match(check_page.questions[2], str(payoff[1]))
+
+check_page = gen_check_page(accept=True)
+path = check_page._compile().preview()
+</code></pre>
+
+<p><code>random_proposal</code> begins by generating a random proposal. We then generate a random response which will accept the proposal if <code>accept</code> is <code>True</code> and reject the proposal if <code>accept</code> is <code>False</code>.</p>
+<p>The <code>payoff</code> is the proposal if the proposal is accepted and <code>(0,0)</code> if the proposal is rejected.</p>
+<p>We then fill in the check page's label with the proposal and response.</p>
+<p>Finally, we add submit functions to the check page's input questions to verify that the participant's responses match the payoffs.</p>
+<h2 id="adding-a-comprehension-check-to-our-app">Adding a comprehension check to our app</h2>
+<p>Let's put this all together in <code>survey.py</code>:</p>
+<pre><code class="python">from hemlock import Branch, Check, Compile, Embedded, Input, Label, Navigate, Page, Range, Select, Submit, Validate, route
+from hemlock.tools import comprehension_check, join
+
+from datetime import datetime
+from random import randint
+
+N_ROUNDS = 5
+POT = 20
+
+...
+
+@Navigate.register
+def ultimatum_game(start_branch):
+    branch = comprehension_check(
+        Branch(),
+        Page(
+            # CONTENT OF INSTRUCTIONS PAGE HERE
+        ),
+        [gen_check_page(accept=True), gen_check_page(accept=False)],
+    )
+    branch.pages.append(Page(
+        Label('&lt;p&gt;You passed the check!&lt;/p&gt;'), terminal=True)
+    )
+    return branch
+
+def gen_check_page(accept):
+    # GEN_CHECK_PAGE FUNCTION HERE
+
+@Compile.register
+def random_proposal(check_page, accept):
+    # RANDOM PROPOSSAL FUNCTION HERE
+</code></pre>
+
+<p>Run your app and see your comprehension check at work!</p>
+<h2 id="summary">Summary</h2>
+<p>In this part of the tutorial, you learned how to add comprehension checks to your studies.</p>
+<p>In the next part of the tutorial, you'll learn how to assign participants to conditions.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../random_ass/" class="btn btn-neutral float-right" title="Random assignment">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../page_logic/" class="btn btn-neutral" title="Page logic"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../page_logic/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../random_ass/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

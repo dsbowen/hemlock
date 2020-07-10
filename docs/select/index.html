@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Select - Hemlock</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../css/extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Select";
+    var mkdocs_page_input_path = "select.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Hemlock</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tutorial</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/intro/">Introduction</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/setup/">Setup</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/first_project/">Your first project</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/run_local/">Running hemlock locally</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/qpolymorphs/">Question polymorphs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/data/">Data</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/validate/">Validate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/submit/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/compile/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/navigate/">Navigate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/page_logic/">Page logic</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/comp_check/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/random_ass/">Random assignment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/proposer_branch/">Proposer branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/responder_branch/">Responder branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/debug/">Debugging</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/deploy/">Deployment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/extra/">Bells and whistles</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Application</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../app/">Basics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debug/">Debugging</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Functions</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../compile_functions/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debug_functions/">Debug</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../submit_functions/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../validate_functions/">Validate</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Models</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../bases/">Bases</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../branch/">Branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../choice/">Choice</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../embedded/">Embedded data and timers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../functions/">Function models</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../page/">Page</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../participant/">Participant</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../question/">Question</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../workers/">Workers</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Question polymorphs</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../check/">Check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../download/">Download</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../file/">File upload</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../input/">Input</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../input_group/">Input group</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../label/">Label</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../range/">Range</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Select</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockclick_choices">hemlock.click_choices</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockselect">hemlock.Select</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../textarea/">Textarea</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tools</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../comprehension/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../lang/">Language</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../navbar/">Navbar</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../random/">Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../statics/">Statics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Hemlock</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Question polymorphs &raquo;</li>
+        
+      
+    
+    <li>Select</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/select.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<p><link rel="stylesheet" href="https://assets.readthedocs.org/static/css/readthedocs-doc-embed.css" type="text/css" /></p>
+<style>
+    a.src-href {
+        float: right;
+    }
+    p.attr {
+        margin-top: 0.5em;
+        margin-left: 1em;
+    }
+    p.func-header {
+        background-color: gainsboro;
+        border-radius: 0.1em;
+        padding: 0.5em;
+        padding-left: 1em;
+    }
+    table.field-table {
+        border-radius: 0.1em
+    }
+</style>
+
+<h1 id="select-dropdown">Select (dropdown)</h1>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+
+    </tbody>
+</table>
+
+<h2 id="hemlockclick_choices">hemlock.<strong>click_choices</strong></h2>
+<p class="func-header">
+    <i>def</i> hemlock.<b>click_choices</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/select.py#L7">[source]</a>
+</p>
+
+<p>Default select debug function. See <a href="../debug_functions/">click choices</a>.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+
+    </tbody>
+</table>
+
+<h2 id="hemlockselect">hemlock.<strong>Select</strong></h2>
+<p class="func-header">
+    <i>class</i> hemlock.<b>Select</b>(<i>label='', choices=[], template='hemlock/select.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/select.py#L23">[source]</a>
+</p>
+
+<p>Select questions allow participants to select one or more options from a
+dropdown menu.</p>
+<p>Inherits from <a href="../input_group/"><code>hemlock.InputGroup</code></a> and
+<a href="../question/"><code>hemlock.ChoiceQuestion</code></a>.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>label : <i>str or bs4.BeautifulSoup, default=''</i></b>
+<p class="attr">
+    Select question label.
+</p>
+<b>choices : <i>list of str or hemlock.Option, default=[]</i></b>
+<p class="attr">
+    Options which participants can select. String inputs are automatically converted to <code>hemlock.Option</code> objects.
+</p>
+<b>template : <i>str, default='hemlock/select.html'</i></b>
+<p class="attr">
+    Template for the select body.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Attributes:</b></td>
+    <td class="field-body" width="100%"><b>align : <i>str, default='left'</i></b>
+<p class="attr">
+    Choice alignment; <code>'left'</code>, <code>'center'</code>, or <code>'right'</code>.
+</p>
+<b>multiple : <i>bool, default=False</i></b>
+<p class="attr">
+    Indicates that the participant may select multiple choices.
+</p>
+<b>select : <i>bs4.Tag</i></b>
+<p class="attr">
+    <code>&lt;select&gt;</code> tag.
+</p>
+<b>size : <i>int or None, default=None</i></b>
+<p class="attr">
+    Number of rows of choices to display.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples">Examples</h4>
+<pre><code class="python">from hemlock import Page, Select, Option, push_app_context
+
+app = push_app_context()
+
+Page(Select('&lt;p&gt;Select one.&lt;/p&gt;', ['World','Moon','Star'])).preview()
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../textarea/" class="btn btn-neutral float-right" title="Textarea">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../range/" class="btn btn-neutral" title="Range"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../range/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../textarea/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

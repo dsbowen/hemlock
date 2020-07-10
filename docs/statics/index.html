@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Statics - Hemlock</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../css/extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Statics";
+    var mkdocs_page_input_path = "statics.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Hemlock</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tutorial</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/intro/">Introduction</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/setup/">Setup</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/first_project/">Your first project</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/run_local/">Running hemlock locally</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/qpolymorphs/">Question polymorphs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/data/">Data</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/validate/">Validate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/submit/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/compile/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/navigate/">Navigate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/page_logic/">Page logic</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/comp_check/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/random_ass/">Random assignment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/proposer_branch/">Proposer branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/responder_branch/">Responder branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/debug/">Debugging</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/deploy/">Deployment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/extra/">Bells and whistles</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Application</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../app/">Basics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debug/">Debugging</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Functions</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../compile_functions/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debug_functions/">Debug</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../submit_functions/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../validate_functions/">Validate</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Models</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../bases/">Bases</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../branch/">Branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../choice/">Choice</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../embedded/">Embedded data and timers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../functions/">Function models</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../page/">Page</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../participant/">Participant</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../question/">Question</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../workers/">Workers</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Question polymorphs</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../check/">Check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../download/">Download</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../file/">File upload</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../input/">Input</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../input_group/">Input group</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../label/">Label</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../range/">Range</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../select/">Select</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../textarea/">Textarea</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tools</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../comprehension/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../lang/">Language</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../navbar/">Navbar</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../random/">Randomization</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Statics</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolssrc_from_bucket">hemlock.tools.src_from_bucket</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolsurl_from_bucket">hemlock.tools.url_from_bucket</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_1">Examples</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolsstatic">hemlock.tools.Static</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#methods">Methods</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolsimg">hemlock.tools.Img</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_2">Examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#methods_1">Methods</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolsvid">hemlock.tools.Vid</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_3">Examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#methods_2">Methods</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Hemlock</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Tools &raquo;</li>
+        
+      
+    
+    <li>Statics</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/statics.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<p><link rel="stylesheet" href="https://assets.readthedocs.org/static/css/readthedocs-doc-embed.css" type="text/css" /></p>
+<style>
+    a.src-href {
+        float: right;
+    }
+    p.attr {
+        margin-top: 0.5em;
+        margin-left: 1em;
+    }
+    p.func-header {
+        background-color: gainsboro;
+        border-radius: 0.1em;
+        padding: 0.5em;
+        padding-left: 1em;
+    }
+    table.field-table {
+        border-radius: 0.1em
+    }
+</style>
+
+<h1 id="statics">Statics</h1>
+<p>Tool for generating statics (embedded images and videos).</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+
+    </tbody>
+</table>
+
+<h2 id="hemlocktoolssrc_from_bucket">hemlock.tools.<strong>src_from_bucket</strong></h2>
+<p class="func-header">
+    <i>def</i> hemlock.tools.<b>src_from_bucket</b>(<i>filename</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L21">[source]</a>
+</p>
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>filename : <i>str</i></b>
+<p class="attr">
+    Name of the file in the Google bucket.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>src : <i>str</i></b>
+<p class="attr">
+    <code>src</code> html attribute which references the specified file in the Google bucket.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples">Examples</h4>
+<p>Set up a
+<a href="https://cloud.google.com/storage/docs/creating-buckets">Google bucket</a>
+with the appropriate
+<a href="https://cloud.google.com/storage/docs/cross-origin">CORS permissions</a>.</p>
+<p>Set an environment variable <code>BUCKET</code> to the name of the bucket.</p>
+<pre><code>$ export BUCKET=&lt;my-bucket&gt;
+</code></pre>
+
+<p>Upload a file to the bucket, e.g. <a href="https://xkcd.com/2138/">https://xkcd.com/2138/</a> and name it
+<code>wanna_see_the_code.png</code>.</p>
+<pre><code class="python">from hemlock import Branch, Page, Label, push_app_context
+from hemlock.tools import Img, src_from_bucket
+
+app = push_app_context()
+
+img = Img(
+    src=src_from_bucket('wanna_see_the_code.png'),
+    align='center'
+).render()
+Page(Label(img)).preview()
+</code></pre>
+
+<h2 id="hemlocktoolsurl_from_bucket">hemlock.tools.<strong>url_from_bucket</strong></h2>
+<p class="func-header">
+    <i>def</i> hemlock.tools.<b>url_from_bucket</b>(<i>filename, expiration=1800, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L67">[source]</a>
+</p>
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>filename : <i>str</i></b>
+<p class="attr">
+    Name of the file in the Google bucket.
+</p>
+<b>expiration : <i>float, default=1800</i></b>
+<p class="attr">
+    Number of seconds until the url expires.
+</p>
+<b>**kwargs : <i></i></b>
+<p class="attr">
+    Keyword arguments are passed to the [<code>generate_signed_url</code> method] (https://cloud.google.com/storage/docs/access-control/signed-urls).
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>signed_url : <i>str</i></b>
+<p class="attr">
+    Signed url for the file in the app's bucket.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_1">Examples</h4>
+<p>Set up a
+<a href="https://cloud.google.com/storage/docs/creating-buckets">Google bucket</a>
+with the appropriate
+<a href="https://cloud.google.com/storage/docs/cross-origin">CORS permissions</a>.</p>
+<p>Set an environment variable <code>BUCKET</code> to the name of the bucket, and
+<code>GOOGLE_APPLICATION_CREDENTIALS</code> to the name of your
+<a href="https://cloud.google.com/docs/authentication/getting-started">Google application credentials JSON file</a>.</p>
+<pre><code>$ export BUCKET=&lt;my-bucket&gt; GOOGLE_APPLICATION_CREDENTIALS=&lt;my-credentials.json&gt;
+</code></pre>
+
+<p>In <code>survey.py</code>:</p>
+<pre><code class="python">from hemlock import Branch, Page, Download, route
+from hemlock.tools import url_from_bucket
+
+@route('/survey')
+def start():
+    filename = 'wanna_see_the_code.png'
+    url = url_from_bucket(filename)
+    return Branch(Page(Download(downloads=[(url, filename)])))
+</code></pre>
+
+<p>In <code>app.py</code>:</p>
+<pre><code class="python">import survey
+
+from hemlock import create_app
+
+app = create_app()
+
+if __name__ == '__main__':
+    from hemlock.app import socketio
+    socketio.run(app, debug=True)
+</code></pre>
+
+<p>Run the app locally with:</p>
+<pre><code>$ python app.py # or python3 app.py
+</code></pre>
+
+<p>And open your browser to <a href="http://localhost:5000/">http://localhost:5000/</a>. Click on the
+download button to download the file from your Google bucket.</p>
+<h2 id="hemlocktoolsstatic">hemlock.tools.<strong>Static</strong></h2>
+<p class="func-header">
+    <i>class</i> hemlock.tools.<b>Static</b>(<i>template, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L143">[source]</a>
+</p>
+
+<p>Base for static objects (images and videos).</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>template : <i>str</i></b>
+<p class="attr">
+    Path to template file. This is <em>not</em> a Jinja template, as you may wish to generate html for statics outside the application context.
+</p>
+<b>**kwargs : <i></i></b>
+<p class="attr">
+    Any attribute of the static object can be set by passing it as a keyword argument.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Attributes:</b></td>
+    <td class="field-body" width="100%"><b>body : <i>sqlalchemy_mutablesoup.MutableSoup</i></b>
+<p class="attr">
+    Html of the static object.
+</p>
+<b>src_params : <i>dict</i></b>
+<p class="attr">
+    Maps url parameter names to values. These will be attached to the <code>src</code> html attribute when the static is rendered.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="methods">Methods</h4>
+<p class="func-header">
+    <i></i> <b>render</b>(<i>self, tag_selector=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L171">[source]</a>
+</p>
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>tag_selector : <i>str</i></b>
+<p class="attr">
+    CSS selector for the html tag containing the <code>src</code> attribute.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>html : <i>str</i></b>
+<p class="attr">
+    Rendered html.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h2 id="hemlocktoolsimg">hemlock.tools.<strong>Img</strong></h2>
+<p class="func-header">
+    <i>class</i> hemlock.tools.<b>Img</b>(<i>template=os.path.join(DIR, 'img.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L208">[source]</a>
+</p>
+
+<p>Static image.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>template : <i>str, default='directory/img.html'</i></b>
+<p class="attr">
+    Image template. By default, this is a file stored in the directory of the current file.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Attributes:</b></td>
+    <td class="field-body" width="100%"><b>align : <i>str</i></b>
+<p class="attr">
+    Image alignment; <code>'left'</code>, <code>'center'</code>, or <code>'right</code>'.
+</p>
+<b>caption : <i>str</i></b>
+<p class="attr">
+    Image caption.
+</p>
+<b>figure : <i>bs4.Tag</i></b>
+<p class="attr">
+    <code>&lt;figure&gt;</code> tag.
+</p>
+<b>img : <i>bs4.Tag</i></b>
+<p class="attr">
+    <code>&lt;img&gt;</code> tag.
+</p>
+<b>src : <i>str</i></b>
+<p class="attr">
+    <code>src</code> attribute of the <code>&lt;img&gt;</code> tag.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_2">Examples</h4>
+<pre><code class="python">from hemlock import Page, Label, push_app_context
+from hemlock.tools import Img
+
+app = push_app_context()
+
+img = Img(
+    src='https://imgs.xkcd.com/comics/wanna_see_the_code.png',
+    align='center'
+).render()
+Page(Label(img)).preview()
+</code></pre>
+
+<h4 id="methods_1">Methods</h4>
+<p class="func-header">
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L297">[source]</a>
+</p>
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>html : <i>str</i></b>
+<p class="attr">
+    Rendered image html.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h2 id="hemlocktoolsvid">hemlock.tools.<strong>Vid</strong></h2>
+<p class="func-header">
+    <i>class</i> hemlock.tools.<b>Vid</b>(<i>template=os.path.join(DIR, 'vid.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L314">[source]</a>
+</p>
+
+<p>Static video.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>template : <i>str, default='directory/vid.html'</i></b>
+<p class="attr">
+    Video template. By default, this is a file stored in the directory of the current file.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Attributes:</b></td>
+    <td class="field-body" width="100%"><b>iframe : <i>bs4.Tag</i></b>
+<p class="attr">
+    <code>&lt;iframe&gt;</code> tag.
+</p>
+<b>src : <i>str</i></b>
+<p class="attr">
+    <code>src</code> attribute of the <code>&lt;iframe&gt;</code> tag.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_3">Examples</h4>
+<pre><code class="python">from hemlock import Page, Label, push_app_context
+from hemlock.tools import Vid
+
+app = push_app_context()
+
+vid = Vid.from_youtube('https://www.youtube.com/watch?v=UbQgXeY_zi4')
+Page(Label(vid.render())).preview()
+</code></pre>
+
+<h4 id="methods_2">Methods</h4>
+<p class="func-header">
+    <i></i> <b>from_youtube</b>(<i>src</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L359">[source]</a>
+</p>
+
+<p>Capture the YouTube video id and create an embedded src.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>src : <i>str</i></b>
+<p class="attr">
+    Link to the YouTube video.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>vid : <i>hemlock.tools.Vid</i></b>
+<p class="attr">
+    Video object.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<p class="func-header">
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L383">[source]</a>
+</p>
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>html : <i>str</i></b>
+<p class="attr">
+    Rendered video html.
+</p></td>
+</tr>
+    </tbody>
+</table>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../utils/" class="btn btn-neutral float-right" title="Utilities">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../random/" class="btn btn-neutral" title="Randomization"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../random/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../utils/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

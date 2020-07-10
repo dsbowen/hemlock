@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Debug - Hemlock</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../css/extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Debug";
+    var mkdocs_page_input_path = "debug_functions.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Hemlock</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tutorial</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/intro/">Introduction</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/setup/">Setup</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/first_project/">Your first project</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/run_local/">Running hemlock locally</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/qpolymorphs/">Question polymorphs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/data/">Data</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/validate/">Validate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/submit/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/compile/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/navigate/">Navigate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/page_logic/">Page logic</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/comp_check/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/random_ass/">Random assignment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/proposer_branch/">Proposer branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/responder_branch/">Responder branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/debug/">Debugging</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/deploy/">Deployment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/extra/">Bells and whistles</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Application</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../app/">Basics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debug/">Debugging</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Functions</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../compile_functions/">Compile</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Debug</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockfunctionsdebugforward">hemlock.functions.debug.forward</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockfunctionsdebugback">hemlock.functions.debug.back</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_1">Examples</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockfunctionsdebugsend_keys">hemlock.functions.debug.send_keys</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_2">Examples</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockfunctionsdebugrandom_str">hemlock.functions.debug.random_str</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_3">Examples</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockfunctionsdebugrandom_number">hemlock.functions.debug.random_number</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_4">Examples</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockfunctionsdebugsend_datetime">hemlock.functions.debug.send_datetime</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_5">Examples</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockfunctionsdebugdrag_range">hemlock.functions.debug.drag_range</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_6">Examples</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockfunctionsdebugclick_choices">hemlock.functions.debug.click_choices</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_7">Examples</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockfunctionsdebugclear_choices">hemlock.functions.debug.clear_choices</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#notes_1">Notes</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_8">Examples</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../submit_functions/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../validate_functions/">Validate</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Models</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../bases/">Bases</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../branch/">Branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../choice/">Choice</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../embedded/">Embedded data and timers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../functions/">Function models</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../page/">Page</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../participant/">Participant</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../question/">Question</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../workers/">Workers</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Question polymorphs</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../check/">Check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../download/">Download</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../file/">File upload</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../input/">Input</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../input_group/">Input group</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../label/">Label</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../range/">Range</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../select/">Select</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../textarea/">Textarea</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tools</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../comprehension/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../lang/">Language</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../navbar/">Navbar</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../random/">Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../statics/">Statics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Hemlock</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Functions &raquo;</li>
+        
+      
+    
+    <li>Debug</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/debug_functions.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<p><link rel="stylesheet" href="https://assets.readthedocs.org/static/css/readthedocs-doc-embed.css" type="text/css" /></p>
+<style>
+    a.src-href {
+        float: right;
+    }
+    p.attr {
+        margin-top: 0.5em;
+        margin-left: 1em;
+    }
+    p.func-header {
+        background-color: gainsboro;
+        border-radius: 0.1em;
+        padding: 0.5em;
+        padding-left: 1em;
+    }
+    table.field-table {
+        border-radius: 0.1em
+    }
+</style>
+
+<h1 id="debug-functions">Debug functions</h1>
+<p>Debug functions tell the AI participant what to do during debugging. They
+generally take a selenium webdriver as their first argument and a page or
+question as their second argument.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+
+    </tbody>
+</table>
+
+<h4 id="notes">Notes</h4>
+<p>The following examples open a webdriver. After running the examples, close the
+driver with <code>driver.close()</code>.</p>
+<p>By default, the last debug function of a page navigates. To remove this, run
+<code>page.debug_functions.pop()</code>.</p>
+<h2 id="hemlockfunctionsdebugforward">hemlock.functions.debug.<strong>forward</strong></h2>
+<p class="func-header">
+    <i>def</i> hemlock.functions.debug.<b>forward</b>(<i>driver, page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L30">[source]</a>
+</p>
+
+<p>Click the forward button.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
+<p class="attr">
+
+</p>
+<b>page : <i>hemlock.Page</i></b>
+<p class="attr">
+
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples">Examples</h4>
+<pre><code class="python">from hemlock import Debug, Page, push_app_context
+from hemlock.tools import chromedriver
+
+push_app_context()
+
+driver = chromedriver()
+
+p = Page()
+# by default, last debug function navigates
+# so we want to remove this and replace it with forward
+p.debug_functions.pop()
+Debug.forward(p)
+p.preview(driver)._debug(driver)
+</code></pre>
+
+<h2 id="hemlockfunctionsdebugback">hemlock.functions.debug.<strong>back</strong></h2>
+<p class="func-header">
+    <i>def</i> hemlock.functions.debug.<b>back</b>(<i>driver, page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L61">[source]</a>
+</p>
+
+<p>Click the back button.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
+<p class="attr">
+
+</p>
+<b>page : <i>hemlock.Page</i></b>
+<p class="attr">
+
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_1">Examples</h4>
+<pre><code class="python">from hemlock import Debug, Page, push_app_context
+from hemlock.tools import chromedriver
+
+push_app_context()
+
+driver = chromedriver()
+
+p = Page(back=True)
+# by default, last debug function navigates
+# so we want to remove this and replace it with forward
+p.debug_functions.pop()
+Debug.back(p)
+p.preview(driver)._debug(driver)
+</code></pre>
+
+<h2 id="hemlockfunctionsdebugsend_keys">hemlock.functions.debug.<strong>send_keys</strong></h2>
+<p class="func-header">
+    <i>def</i> hemlock.functions.debug.<b>send_keys</b>(<i>driver, question, *keys, p_num=0.5</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L94">[source]</a>
+</p>
+
+<p>Send the specified keys to the <code>&lt;textarea&gt;</code> or <code>&lt;input&gt;</code>.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
+<p class="attr">
+
+</p>
+<b>question : <i>hemlock.Question</i></b>
+<p class="attr">
+
+</p>
+<b>*keys : <i></i></b>
+<p class="attr">
+    Keys to send to the textarea or input. If empty, keys are randomly selected.
+</p>
+<b>p_num : <i>float, default=.5</i></b>
+<p class="attr">
+    Probability of sending a random number if keys are not specified (as opposed to a random string).
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_2">Examples</h4>
+<pre><code class="python">from hemlock import Debug, Input, Page, push_app_context
+from hemlock.tools import chromedriver
+
+push_app_context()
+
+driver = chromedriver()
+
+p = Page(Debug.send_keys(Input(), 'hello world'))
+p.preview(driver)._debug(driver)
+</code></pre>
+
+<h2 id="hemlockfunctionsdebugrandom_str">hemlock.functions.debug.<strong>random_str</strong></h2>
+<p class="func-header">
+    <i>def</i> hemlock.functions.debug.<b>random_str</b>(<i>driver, question, magnitude=2, p_whitespace=0.2</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L139">[source]</a>
+</p>
+
+<p>Send a random string to the textarea.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
+<p class="attr">
+
+</p>
+<b>question : <i>hemlock.Question</i></b>
+<p class="attr">
+
+</p>
+<b>magnitude : <i>int, default=2</i></b>
+<p class="attr">
+    Maximum magnitude of the length of the string. e.g. the default magnitude of 2 means that the maximum length is 10^2=100 characters.
+</p>
+<b>p_whitespace : <i>float, default=.2</i></b>
+<p class="attr">
+    Frequency with which whitespace characters appear in the string.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_3">Examples</h4>
+<pre><code class="python">from hemlock import Debug, Input, Page, push_app_context
+from hemlock.tools import chromedriver
+
+push_app_context()
+
+driver = chromedriver()
+
+p = Page(Debug.random_str(Input()))
+p.preview(driver)._debug(driver)
+</code></pre>
+
+<h2 id="hemlockfunctionsdebugrandom_number">hemlock.functions.debug.<strong>random_number</strong></h2>
+<p class="func-header">
+    <i>def</i> hemlock.functions.debug.<b>random_number</b>(<i>driver, question, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L177">[source]</a>
+</p>
+
+<p>Send a random number to the textarea or input.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
+<p class="attr">
+
+</p>
+<b>question : <i>hemlock.Question</i></b>
+<p class="attr">
+
+</p>
+<b>magn_lb : <i>int, default=0</i></b>
+<p class="attr">
+    Lower bound for the magnitude of the number.
+</p>
+<b>mag_ub : <i>int, default=10</i></b>
+<p class="attr">
+    Upper bound for the magnitude of the number.
+</p>
+<b>max_decimals : <i>int, default=5</i></b>
+<p class="attr">
+    Maximum number of decimals to which the number can be rounded.
+</p>
+<b>p_int : <i>float, default=.5</i></b>
+<p class="attr">
+    Probability that the number is an integer.
+</p>
+<b>p_neg : <i>float, default=.1</i></b>
+<p class="attr">
+    Probability that the number is negative.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_4">Examples</h4>
+<pre><code class="python">from hemlock import Debug, Input, Page, push_app_context
+from hemlock.tools import chromedriver
+
+push_app_context()
+
+driver = chromedriver()
+
+p = Page(Debug.random_number(Input()))
+p.preview(driver)._debug(driver)
+</code></pre>
+
+<h2 id="hemlockfunctionsdebugsend_datetime">hemlock.functions.debug.<strong>send_datetime</strong></h2>
+<p class="func-header">
+    <i>def</i> hemlock.functions.debug.<b>send_datetime</b>(<i>driver, question, datetime_=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L220">[source]</a>
+</p>
+
+<p>Send a <code>datetime.datetime</code> object to an input. Inputs should be of type
+'date', 'datetime-local', 'month', 'time', or 'week',</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
+<p class="attr">
+
+</p>
+<b>question : <i>hemlock.Question</i></b>
+<p class="attr">
+
+</p>
+<b>datetime_ : <i>datetime.datetime or None, default=None</i></b>
+<p class="attr">
+    The datetime object to send. If <code>None</code>, a date and time are chosen randomly.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_5">Examples</h4>
+<pre><code class="python">from hemlock import Debug, Input, Page, push_app_context
+from hemlock.tools import chromedriver
+
+from datetime import datetime
+
+push_app_context()
+
+driver = chromedriver()
+
+p = Page(Debug.send_datetime(Input(input_type='date'), datetime.utcnow()))
+p.preview(driver)._debug(driver)
+</code></pre>
+
+<h2 id="hemlockfunctionsdebugdrag_range">hemlock.functions.debug.<strong>drag_range</strong></h2>
+<p class="func-header">
+    <i>def</i> hemlock.functions.debug.<b>drag_range</b>(<i>driver, range_, target=None, tol=0, max_iter=10</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L259">[source]</a>
+</p>
+
+<p>Drag a range slider to specified target value.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
+<p class="attr">
+
+</p>
+<b>range_ : <i>hemlock.Range</i></b>
+<p class="attr">
+
+</p>
+<b>target : <i>float or None, default=None</i></b>
+<p class="attr">
+    Target value to which the slider should be dragged. If <code>None</code>, a random target value will be chosen.
+</p>
+<b>tol : <i>float, default=0</i></b>
+<p class="attr">
+    Tolerance for error if the slider cannot be dragged to the exact target.
+</p>
+<b>max_iter : <i>int, default=10</i></b>
+<p class="attr">
+    Maximum number of iterations for the slider to reach the target.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_6">Examples</h4>
+<pre><code class="python">from hemlock import Debug, Page, Range, push_app_context
+from hemlock.tools import chromedriver
+
+push_app_context()
+
+driver = chromedriver()
+
+p = Page(Debug.drag_range(Range(), 80))
+p.preview(driver)._debug(driver)
+</code></pre>
+
+<h2 id="hemlockfunctionsdebugclick_choices">hemlock.functions.debug.<strong>click_choices</strong></h2>
+<p class="func-header">
+    <i>def</i> hemlock.functions.debug.<b>click_choices</b>(<i>driver, question, *choices</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L308">[source]</a>
+</p>
+
+<p>Click on choices or options.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
+<p class="attr">
+
+</p>
+<b>question : <i>hemlock.ChoiceQuestion</i></b>
+<p class="attr">
+
+</p>
+<b>*choices : <i>hemlock.Choice</i></b>
+<p class="attr">
+    Choices on which to click. If no choices are specified, the debugger will click on random choices.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_7">Examples</h4>
+<pre><code class="python">from hemlock import Check, Debug, Page, push_app_context
+from hemlock.tools import chromedriver
+
+push_app_context()
+
+driver = chromedriver()
+
+check = Check('&lt;p&gt;Check label&lt;/p&gt;', ['Yes','No'])
+p = Page(Debug.click_choices(check, check.choices[0]))
+p.preview(driver)._debug(driver)
+</code></pre>
+
+<h2 id="hemlockfunctionsdebugclear_choices">hemlock.functions.debug.<strong>clear_choices</strong></h2>
+<p class="func-header">
+    <i>def</i> hemlock.functions.debug.<b>clear_choices</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L353">[source]</a>
+</p>
+
+<p>Clear selected choices.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
+<p class="attr">
+
+</p>
+<b>question : <i>hemlock.ChoiceQuestion</i></b>
+<p class="attr">
+
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="notes_1">Notes</h4>
+<p>Intended only for questions in which multiple choices may be selected.</p>
+<h4 id="examples_8">Examples</h4>
+<pre><code class="python">from hemlock import Check, Debug, Page, push_app_context
+from hemlock.tools import chromedriver
+
+push_app_context()
+
+driver = chromedriver()
+
+check = Check('&lt;p&gt;Check label&lt;/p&gt;', ['Yes','No'], multiple=True)
+check.default = list(check.choices)
+p = Page(Debug.clear_choices(check))
+p.preview(driver)._debug(driver)
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../submit_functions/" class="btn btn-neutral float-right" title="Submit">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../compile_functions/" class="btn btn-neutral" title="Compile"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../compile_functions/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../submit_functions/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

@@ -34,7 +34,6 @@ p = Page(
     Select(
         '<p>Select your current marital status.</p>',
         [
-            '',
             'Married',
             'Widowed',
             'Divorced',
@@ -62,7 +61,7 @@ As usual, use `p.preview()` to preview the page and `os.remove(*app.tmpfiles)` w
 
 Here we add several 'question polymorphs' (i.e. types of questions) to our page. 
 
-The first is a free form input. We add `placeholder='mm/dd/yyyy'` telling participants the expected format of their date of birth.
+The first is an input. We add `placeholder='mm/dd/yyyy'`, telling participants the expected format of their date of birth.
 
 The next two are check questions, which allow participants to check one or more choices. Notice that the first check question allows participants to check only one choice; we allow participants to check multiple choices in the second check question by passing `multiple=True`.
 

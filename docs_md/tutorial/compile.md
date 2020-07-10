@@ -2,7 +2,7 @@
 
 In the previous part of the tutorial, you learned how to run functions to handle form submission.
 
-In this part of the tutorial, you'll create a confirmation page using compile functions.
+In this part of the tutorial, you'll implement a confirmation page using compile functions.
 
 ## Why compile functions?
 
@@ -84,10 +84,8 @@ demographics_page = Page(
     Range(data='5')
 )
 p = Page(Compile.confirm(Label(), demographics_page), back=True)
-path = p._compile().preview()
+p._compile().preview()
 ```
-
-Remember to run `os.remove(path)` to remove the temporary file after you finish your preview.
 
 ### Code explanation
 
@@ -132,11 +130,11 @@ from datetime import datetime
 @route('/survey')
 def start():
     demographics_page = Page(
-        Input(
+        Submit.record_age(Validate.validate_date_format(Input(
             '<p>Enter your date of birth.</p>',
             placeholder='mm/dd/yyyy',
             var='DoB', data_rows=-1
-        ),
+        ))),
         # REST OF THE DEMOGRAPHICS PAGE HERE
     )
     return Branch(

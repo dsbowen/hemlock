@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Responder branch - Hemlock</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../../css/extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Responder branch";
+    var mkdocs_page_input_path = "tutorial/responder_branch.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> Hemlock</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tutorial</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../first_project/">Your first project</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../run_local/">Running hemlock locally</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../qpolymorphs/">Question polymorphs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../data/">Data</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../validate/">Validate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../submit/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../compile/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../navigate/">Navigate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../page_logic/">Page logic</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../comp_check/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../random_ass/">Random assignment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../proposer_branch/">Proposer branch</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Responder branch</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#adding-the-responder-branch-to-our-survey">Adding the responder branch to our survey</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-responder-input">The responder input</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#displaying-the-responder-outcome">Displaying the responder outcome</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debug/">Debugging</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../deploy/">Deployment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../extra/">Bells and whistles</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Application</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Basics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../debug/">Debugging</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Functions</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../compile_functions/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../debug_functions/">Debug</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../submit_functions/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../validate_functions/">Validate</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Models</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../bases/">Bases</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../branch/">Branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../choice/">Choice</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../embedded/">Embedded data and timers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../functions/">Function models</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../page/">Page</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../participant/">Participant</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Question polymorphs</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../check/">Check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../download/">Download</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../file/">File upload</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../input/">Input</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../input_group/">Input group</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../label/">Label</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../range/">Range</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../select/">Select</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../textarea/">Textarea</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tools</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../comprehension/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../lang/">Language</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../navbar/">Navbar</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../random/">Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../statics/">Statics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../utils/">Utilities</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">Hemlock</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Tutorial &raquo;</li>
+        
+      
+    
+    <li>Responder branch</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/tutorial/responder_branch.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="responder-branch">Responder branch</h1>
+<p>In the previous part of the tutorial, you implemented the proposer branch.</p>
+<p>In this part of the tutorial, you'll implement the responder branch.</p>
+<p>Because the responder branch is similar to the proposer branch, we'll skip the notebook and work straight in <code>survey.py</code>. I'll point out the differences as we go along.</p>
+<h2 id="adding-the-responder-branch-to-our-survey">Adding the responder branch to our survey</h2>
+<p>First, let's add a navigate function to the end of our ultimatum game branch to bring us to the responder branch:</p>
+<pre><code class="python">...
+
+@Navigate.register
+def ultimatum_game(start_branch):
+    ...
+    if proposer:
+        return Navigate.proposer_branch(branch)
+    else:
+        return Navigate.responder_branch(branch)
+
+...
+
+@Navigate.register
+def responder_branch(ultimatum_game_branch=None):
+    branch = Branch()
+    for round_ in range(N_ROUNDS):
+        response_input = gen_response_input(round_+1)
+        branch.pages.append(Page(response_input))
+        branch.pages.append(Page(Compile.responder_outcome(
+            Label(), response_input
+        )))
+    branch.pages.append(Page(
+        Label('&lt;p&gt;Thank you for completing the hemlock tutorial!&lt;/p&gt;'),
+        terminal=True        
+    ))
+    return branch
+</code></pre>
+
+<p>Like in the proposer branch, we add two pages to the responder branch for each of <code>N_ROUNDS</code>. Just as the first of these two pages asked the proposer for the proposal in the proposer branch, the first of these two pages asks the responder for their response in the responder branch. Like in the proposer branch, the second of these pages displays the outcome of the round.</p>
+<h2 id="the-responder-input">The responder input</h2>
+<p>Just as the proposer's input was created with <code>gen_proposal_input</code>, the responder's input is created with <code>gen_response_input</code>:</p>
+<pre><code class="python">...
+
+def gen_response_input(round_):
+    return Submit.data_type(
+        Validate.range_val(
+            Input(
+                '''
+                &lt;p&gt;&lt;b&gt;Round {} of {}&lt;/b&gt;&lt;/p&gt;
+                &lt;p&gt;The proposer has ${} to split between him/herself and you.
+                Complete this sentence:&lt;/p&gt;
+                &lt;p&gt;I will accept any proposal which gives me at least&lt;/p&gt;
+                '''.format(round_, N_ROUNDS, POT),
+                prepend='$',
+                append='.00',
+                var='Response'
+            ),
+            min_=0, max_=POT
+        ),
+        int
+    )
+</code></pre>
+
+<p>As before, we add valiation so that the input must be between 0 and the size of the pot, and a submit function which converts the data to an integer.</p>
+<h2 id="displaying-the-responder-outcome">Displaying the responder outcome</h2>
+<p>We register a compile function to display the responder outcome.</p>
+<pre><code class="python">...
+
+@Compile.register
+def responder_outcome(outcome_label, responder_input):
+    # get the response
+    response = responder_input.data
+    # randomly select a proposal
+    proposal_inputs = Input.query.filter(
+        Input.var=='Proposal', Input.data!=None
+    ).all()
+    if proposal_inputs:
+        # randomly choose a proposal
+        n = random.choice(proposal_inputs).data
+    else:
+        # no proposals are available
+        # e.g. if this is the first participant
+        n = randint(0, POT)
+    proposal = POT-n, n
+    # compute the payoff
+    accept = response &lt;= proposal[1]
+    payoff = proposal if accept else (0, 0)
+    # record results as embedded data
+    outcome_label.page.embedded = [
+        Embedded('Proposal', proposal[1]),
+        Embedded('Accept', int(accept)),
+        Embedded('ProposerPayoff', payoff[0]),
+        Embedded('ResponderPayoff', payoff[1])
+    ]
+    # describe the outcome of the round
+    outcome_label.label = '''
+        &lt;p&gt;The proposer proposed the following split:&lt;/p&gt;
+        &lt;ul&gt;
+            &lt;li&gt;Proposer: ${}&lt;/li&gt;
+            &lt;li&gt;You: ${}&lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;p&gt;You said you will accept any proposal which gives you at 
+        least ${}.&lt;/p&gt;
+        &lt;p&gt;&lt;b&gt;You {} the proposal, giving you a payoff of ${}.&lt;/b&gt;&lt;/p&gt;
+    '''.format(
+        *proposal, response, 'accepted' if accept else 'rejected', payoff[1]
+    )
+</code></pre>
+
+<p>This is similar to the <code>proposer_outcome</code> compile function. First, it gets the responder's response. Second, it matches the responder with a random proposer. If no proposer is avaiable (e.g. if the responder is the first participant in the survey), it generates a random proposal. Third, we compute the payoff for the round and record it using embedded data. Finally, we update the label to display the outcome of the round to the proposer.</p>
+<p>Run the app to see what the survey looks like in the responder condition.</p>
+<h2 id="summary">Summary</h2>
+<p>In this part of the tutorial, you implemented the responder branch.</p>
+<p>In the next part of the tutorial, you'll learn how to use hemlock's cutom debugger to make sure everything is running smoothly.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../debug/" class="btn btn-neutral float-right" title="Debugging">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../proposer_branch/" class="btn btn-neutral" title="Proposer branch"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../proposer_branch/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../debug/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

@@ -1,17 +1,60 @@
-# Hemlock
+Hemlock aspires to be the most powerful and flexible way to create online studies, with applications in marketing and behavioral science research.
 
-Hemlock provides tools and models for creating and deploying surveys. It aspires to be the most powerful and flexible method of survey creation.
+If you're new to python, or the installation and quickstart instructions don't make sense to you, check out the [tutorial](https://dsbowen.github.io/hemlock/tutorial/intro/).
 
-## Documentation
+## Installation
 
-You can find the latest documentation at [dsbowen.github.io/hemlock](dsbowen.github.io/hemlock).
+```
+$ pip install hemlock-survey
+```
+
+## Quickstart
+
+First, create a file `app.py` in the root directory of your project:
+
+```python
+import survey
+
+from hemlock import create_app
+
+app = create_app()
+
+if __name__ == '__main__':
+    from hemlock.app import socketio
+    socketio.run(app, debug=True)
+```
+
+Create another file `survey.py` in the same directory:
+
+```python
+from hemlock import Branch, Label, Page, route
+
+@route('/survey')
+def start():
+    return Branch(Page(Label('<p>Hello, World!</p>'), terminal=True))
+```
+
+Run your app:
+
+```bash
+$ python3 app.py
+```
+
+And navigate to <http://localhost:5000/> in your browser.
+
+## Citation
+
+```
+@software{bowen2020hemlock,
+  author = {Dillon Bowen},
+  title = {Hemlock},
+  url = {https://dsbowen.github.io/hemlock/},
+  date = {2020-07-10},
+}
+```
 
 ## License
 
-Hemlock was created first and foremost as a free, open-source tool for academic and non-profit research. I aim to obtain a license permitting unlimited free use for legitimate academic and non-profit research by February 2020.
+Users must cite this package in any publications which use it.
 
-Until I obtain this license, I require that all Hemlock users obtain written permission from its copyright holder, Dillon Bowen. Any use without written permission from the copyright holder is strictly prohibited.
-
-## Acknowledgments
-
-I would like to thank Sarah Yang Fenton Reed, an extraordinary coder, for her invaluable technical advice.
+It is licensed with the [Hemlock Research License](https://github.com/dsbowen/hemlock/blob/master/LICENSE). The license permits free use for academic research, and requires written permission from hemlock's author, Dillon Bowen, for commercial use.

@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {% if page.css is not none %}
+            {{ page.css.render() }}
+        {% endif %}
+        {% for q in page.questions%}
+            {% if q.css is not none %}
+                {{ q.css.render() }}
+            {% endif %}
+            {% for opt in q.options if opt.css is not none %}
+                {{ opt.css.render() }}
+            {% endfor %}
+        {% endfor %}
+
+        {% if page.js is not none %}
+            {{ page.js.render() }}
+        {% endif %}
+        {% for q in page.questions %}
+            {% if q.js is not none %}
+                {{ q.js.render() }}
+            {% endif %}
+            {% for opt in q.options if opt.js is not none %}
+                {{ opt.js.render() }}
+            {% endfor %}
+        {% endfor %}
+    </head>
+    <body>
+        {% if page.navbar is not none %}
+            {{ page.navbar.render() }}
+        {% endif %}
+
+        {{ page.body.render() }}
+    </body>
+</html>

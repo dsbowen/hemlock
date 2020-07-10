@@ -2,10 +2,7 @@
 
 In the previous part of the tutorial, you learned how to initialize a hemlock project and create and preview a hemlock page.
 
-By the end of this part of the tutorial, you'll be able to:
-
-1. Initialize a hemlock application.
-2. Run your hemlock application locally.
+By the end of this part of the tutorial, you'll be able to initialize a hemlock application and run it locally.
 
 **Note.** Running an app 'locally' means that you can play with it on your own computer, but it won't be available on the internet. We'll cover deployment later.
 
@@ -70,7 +67,7 @@ $ python3 app.py
 
 After our imports, we use the `@route('/survey')` decorator to register our first 'navigate' function. This essentially tells our application, 'start here'.
 
-Navigate functions direct the 'survey flow'. All navigate functions return `Branch` objects. A `Branch` contains a list of pages which it displays to participants. We set a branch's pages by passing them as arguments the constructor, or by setting a branch's `pages` attribute, meaning that the following are equivalent:
+Navigate functions direct the 'survey flow'. All navigate functions return `Branch` objects. A branch contains a list of pages which it displays to participants. We set a branch's pages by passing them as arguments the constructor, or by setting a branch's `pages` attribute, meaning that the following are equivalent:
 
 ```python
 b = Branch(Page(Label('<p>Label 0</p>')), Page(Label('<p>Label 1</p>')))
@@ -85,6 +82,6 @@ We also passed a keyword (named) argument to the page constructor, `terminal=Tru
 
 ## Summary
 
-In this part of the tutorial, you learned how to tell your application where to start and end, and run your application locally.
+In this part of the tutorial, you learned how to initialize a hemlock application and run it locally.
 
-In the next part of the tutorial, we're going to use question polymorphs to add a demographics questionnaire to our survey.
+In the next part of the tutorial, you'll learn how to use question polymorphs to add a demographics questionnaire to your survey.

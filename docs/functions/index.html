@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Function models - Hemlock</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../css/extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Function models";
+    var mkdocs_page_input_path = "functions.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Hemlock</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tutorial</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/intro/">Introduction</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/setup/">Setup</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/first_project/">Your first project</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/run_local/">Running hemlock locally</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/qpolymorphs/">Question polymorphs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/data/">Data</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/validate/">Validate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/submit/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/compile/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/navigate/">Navigate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/page_logic/">Page logic</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/comp_check/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/random_ass/">Random assignment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/proposer_branch/">Proposer branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/responder_branch/">Responder branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/debug/">Debugging</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/deploy/">Deployment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/extra/">Bells and whistles</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Application</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../app/">Basics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debug/">Debugging</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Functions</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../compile_functions/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debug_functions/">Debug</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../submit_functions/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../validate_functions/">Validate</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Models</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../bases/">Bases</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../branch/">Branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../choice/">Choice</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../embedded/">Embedded data and timers</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Function models</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockfunctionregistrar">hemlock.FunctionRegistrar</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#methods">Methods</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockcompile">hemlock.Compile</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockdebug">hemlock.Debug</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_1">Examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#methods_1">Methods</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockvalidate">hemlock.Validate</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_2">Examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#methods_2">Methods</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlocksubmit">hemlock.Submit</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_3">Examples</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlocknavigate">hemlock.Navigate</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_4">Examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#methods_3">Methods</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../page/">Page</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../participant/">Participant</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../question/">Question</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../workers/">Workers</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Question polymorphs</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../check/">Check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../download/">Download</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../file/">File upload</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../input/">Input</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../input_group/">Input group</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../label/">Label</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../range/">Range</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../select/">Select</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../textarea/">Textarea</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tools</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../comprehension/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../lang/">Language</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../navbar/">Navbar</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../random/">Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../statics/">Statics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Hemlock</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Models &raquo;</li>
+        
+      
+    
+    <li>Function models</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/functions.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+<p><link rel="stylesheet" href="https://assets.readthedocs.org/static/css/readthedocs-doc-embed.css" type="text/css" /></p>
+<style>
+    a.src-href {
+        float: right;
+    }
+    p.attr {
+        margin-top: 0.5em;
+        margin-left: 1em;
+    }
+    p.func-header {
+        background-color: gainsboro;
+        border-radius: 0.1em;
+        padding: 0.5em;
+        padding-left: 1em;
+    }
+    table.field-table {
+        border-radius: 0.1em
+    }
+</style>
+
+<h1 id="function-models">Function models</h1>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+
+    </tbody>
+</table>
+
+<h2 id="hemlockfunctionregistrar">hemlock.<strong>FunctionRegistrar</strong></h2>
+<p>Mixin for Function models which provides a method for function
+registration.</p>
+<p>Inherits from
+<a href="https://dsbowen.github.io/sqlalchemy-function/"><code>sqlalchemy_function.FunctionMixin</code></a>.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Attributes:</b></td>
+    <td class="field-body" width="100%"><b>index : <i>int or None</i></b>
+<p class="attr">
+    Order in which this Function will be executed, relative to other Functions belonging to the same parent object.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="methods">Methods</h4>
+<p class="func-header">
+    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L36">[source]</a>
+</p>
+
+<p>This decorator registers a function.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>func : <i>callable</i></b>
+<p class="attr">
+    The function to register.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h2 id="hemlockcompile">hemlock.<strong>Compile</strong></h2>
+<p>Helps compile a page or question html before it is rendered and displayed
+to a participant.</p>
+<p>Inherits from <code>hemlock.FunctionRegistrar</code>.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Relationships:</b></td>
+    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None</i></b>
+<p class="attr">
+    Page to which this model belongs.
+</p>
+<b>question : <i>hemlock.Question or None</i></b>
+<p class="attr">
+    Question to which this model belongs.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples">Examples</h4>
+<pre><code class="python">from hemlock import Compile, Input, Label, Page, push_app_context
+
+app = push_app_context()
+
+@Compile.register
+def greet(greet_q, name_q):
+    greet_q.label = '&lt;p&gt;Hello {}!&lt;/p&gt;'.format(name_q.response)
+
+name_q = Input(&quot;&lt;p&gt;What's your name?&lt;/p&gt;&quot;)
+p = Page(Compile.greet(Label(), name_q))
+name_q.response = 'World'
+p._compile().preview()
+</code></pre>
+
+<h2 id="hemlockdebug">hemlock.<strong>Debug</strong></h2>
+<p class="func-header">
+    <i>class</i> hemlock.<b>Debug</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L98">[source]</a>
+</p>
+
+<p>Run to help debug the survey.</p>
+<p>Inherits from <code>hemlock.FunctionRegistrar</code>.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Attributes:</b></td>
+    <td class="field-body" width="100%"><b>p_exec : <i>float, default=1.</i></b>
+<p class="attr">
+    Probability that the debug function will execute. You can set this by passing in an <code>p_exec</code> keyword argument to the constructor.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Relationships:</b></td>
+    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None</i></b>
+<p class="attr">
+    Page to which this model belongs.
+</p>
+<b>question : <i>hemlock.Question or None</i></b>
+<p class="attr">
+    Question to which this model belongs.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_1">Examples</h4>
+<pre><code class="python">from hemlock import Debug, Input, Page, push_app_context
+from hemlock.tools import chromedriver
+
+app = push_app_context()
+
+driver = chromedriver()
+
+@Debug.register
+def greet(driver, greet_q):
+    inpt = greet_q.input_from_driver(driver)
+    inpt.clear()
+    inpt.send_keys('Hello World!')
+
+p = Page(Debug.greet(Input('&lt;p&gt;Enter a greeting.&lt;/p&gt;')))
+p.preview(driver)._debug(driver)
+</code></pre>
+
+<h4 id="methods_1">Methods</h4>
+<p class="func-header">
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L147">[source]</a>
+</p>
+
+<p>Execute the debug function with probability <code>self.p_exec</code>.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+
+    </tbody>
+</table>
+
+<p class="func-header">
+    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L154">[source]</a>
+</p>
+
+<p>Similar to the Function Registrar's register function, but does not
+add functions if the <code>NO_DEBUG_FUNCTIONS</code> environment variable is set.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>func : <i>callable</i></b>
+<p class="attr">
+    The function to register.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h2 id="hemlockvalidate">hemlock.<strong>Validate</strong></h2>
+<p class="func-header">
+    <i>class</i> hemlock.<b>Validate</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L180">[source]</a>
+</p>
+
+<p>Validates a participant's response.</p>
+<p>Inherits from <code>hemlock.FunctionRegistrar</code>.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Attributes:</b></td>
+    <td class="field-body" width="100%"><b>error_msg : <i>str or None</i></b>
+<p class="attr">
+    If the validate function returns an error message, the <code>error_msg</code> attribute is returned instead of the output of the validate function. You can set this by passing in an <code>error_msg</code> keyword argument to the constructor.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Relationships:</b></td>
+    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None</i></b>
+<p class="attr">
+    Page to which this model belongs.
+</p>
+<b>question : <i>hemlock.Question or None</i></b>
+<p class="attr">
+    Question to which this model belongs.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_2">Examples</h4>
+<pre><code class="python">from hemlock import Input, Validate, push_app_context
+
+push_app_context()
+
+@Validate.register
+def my_validate_func(inpt):
+    if inpt.response != 'hello world':
+        return '&lt;p&gt;You entered &quot;{}&quot;, not &quot;hello world&quot;&lt;/p&gt;'.format(inpt.response)
+
+inpt = Validate.my_validate_func(Input('&lt;p&gt;Enter &quot;hello world&quot;&lt;/p&gt;'))
+inpt.response = 'goodbye moon'
+inpt._validate()
+inpt.error
+</code></pre>
+
+<p>Out:</p>
+<pre><code>You entered &quot;goodbye moon&quot;, not &quot;hello world&quot;
+</code></pre>
+
+<h4 id="methods_2">Methods</h4>
+<p class="func-header">
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L235">[source]</a>
+</p>
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>error_msg : <i>str or None</i></b>
+<p class="attr">
+    Return <code>None</code> if there is no error. If there is an error, return <code>self.error_msg</code> or the output of <code>self.func</code>.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h2 id="hemlocksubmit">hemlock.<strong>Submit</strong></h2>
+<p>Runs after a participant has successfully submitted a page.</p>
+<p>Inherits from <code>hemlock.FunctionRegistrar</code>.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Relationships:</b></td>
+    <td class="field-body" width="100%"><b>page : <i>hemlock.Page or None</i></b>
+<p class="attr">
+    Page to which this model belongs.
+</p>
+<b>question : <i>hemlock.Question or None</i></b>
+<p class="attr">
+    Question to which this model belongs.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_3">Examples</h4>
+<pre><code class="python">from hemlock import Input, Submit, push_app_context
+
+push_app_context()
+
+@Submit.register
+def get_initials(name_q):
+    names = name_q.response.split()
+    name_q.data = '.'.join([name[0] for name in names]) + '.'
+
+inpt = Submit.get_initials(Input(&quot;&lt;p&gt;What's your name?&lt;/p&gt;&quot;))
+inpt.response = 'Andrew Yang'
+inpt._submit()
+inpt.data
+</code></pre>
+
+<p>Out:</p>
+<pre><code>A.Y.
+</code></pre>
+
+<h2 id="hemlocknavigate">hemlock.<strong>Navigate</strong></h2>
+<p>Creates a new branch to which the participant will navigate.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Relationships:</b></td>
+    <td class="field-body" width="100%"><b>branch : <i>hemlock.Branch or None</i></b>
+<p class="attr">
+    Branch to which this model belongs.
+</p>
+<b>page : <i>hemlock.Page or None</i></b>
+<p class="attr">
+    Page to which this model belongs.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_4">Examples</h4>
+<pre><code class="python">from hemlock import Branch, Navigate, Page, Participant, push_app_context
+
+def start():
+    return Navigate.end(Branch(Page()))
+
+@Navigate.register
+def end(start_branch):
+    return Branch(Page(terminal=True))
+
+app = push_app_context()
+
+part = Participant.gen_test_participant(start)
+part.view_nav()
+</code></pre>
+
+<p>Out:</p>
+<pre><code>&lt;Branch 1&gt;
+&lt;Page 1&gt; C
+
+C = current page
+T = terminal page
+</code></pre>
+
+<p>In:</p>
+<pre><code class="python">part.forward().view_nav()
+</code></pre>
+
+<p>Out:</p>
+<pre><code>&lt;Branch 1&gt;
+&lt;Page 1&gt;
+    &lt;Branch 2&gt;
+    &lt;Page 2&gt; C T
+
+C = current page
+T = terminal page
+</code></pre>
+
+<h4 id="methods_3">Methods</h4>
+<p class="func-header">
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L351">[source]</a>
+</p>
+
+<p>Create a new branch and 'link' it to the tree. Linking in the new
+branch involves setting the <code>next_branch</code> and <code>origin_branch</code> or
+<code>origin_page</code> relationships.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+
+    </tbody>
+</table>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../page/" class="btn btn-neutral float-right" title="Page">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../embedded/" class="btn btn-neutral" title="Embedded data and timers"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../embedded/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../page/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

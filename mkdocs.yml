@@ -6,6 +6,7 @@ edit_uri: edit/master/docs_md
 nav:
   - Home: index.md
   - Tutorial:
+    - Introduction: tutorial/intro.md
     - Setup: tutorial/setup.md
     - Your first project: tutorial/first_project.md
     - Running hemlock locally: tutorial/run_local.md

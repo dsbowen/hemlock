@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Data - Hemlock</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../../css/extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Data";
+    var mkdocs_page_input_path = "tutorial/data.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> Hemlock</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tutorial</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../first_project/">Your first project</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../run_local/">Running hemlock locally</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../qpolymorphs/">Question polymorphs</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Data</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#previewing-data-from-a-single-participant">Previewing data from a single participant</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ordering">Ordering</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#data-rows">Data rows</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#adding-data-to-our-survey">Adding data to our survey</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#downloading-data">Downloading data</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../validate/">Validate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../submit/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../compile/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../navigate/">Navigate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../page_logic/">Page logic</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../comp_check/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../random_ass/">Random assignment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../proposer_branch/">Proposer branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../responder_branch/">Responder branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../debug/">Debugging</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../deploy/">Deployment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../extra/">Bells and whistles</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Application</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Basics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../debug/">Debugging</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Functions</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../compile_functions/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../debug_functions/">Debug</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../submit_functions/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../validate_functions/">Validate</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Models</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../bases/">Bases</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../branch/">Branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../choice/">Choice</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../embedded/">Embedded data and timers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../functions/">Function models</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../page/">Page</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../participant/">Participant</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Question polymorphs</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../check/">Check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../download/">Download</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../file/">File upload</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../input/">Input</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../input_group/">Input group</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../label/">Label</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../range/">Range</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../select/">Select</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../textarea/">Textarea</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tools</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../comprehension/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../lang/">Language</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../navbar/">Navbar</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../random/">Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../statics/">Statics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../utils/">Utilities</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">Hemlock</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Tutorial &raquo;</li>
+        
+      
+    
+    <li>Data</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/tutorial/data.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="data">Data</h1>
+<p>In the previous part of the tutorial, you learned how to create a demographics questionnaire using several question polymorphs.</p>
+<p>By the end of this part of the tutorial, you'll be able to store and download data.</p>
+<h2 id="previewing-data-from-a-single-participant">Previewing data from a single participant</h2>
+<p>Each participant contributes data to a data frame which you can download. We'll start by looking at the data belonging to a 'test participant'.</p>
+<p>Run the following in your jupyter notebook:</p>
+<pre><code class="python">from hemlock import Participant
+
+part = Participant.gen_test_participant()
+dict(part.get_data())
+</code></pre>
+
+<p>Out:</p>
+<pre><code>{'ID': [1],
+ 'EndTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
+ 'StartTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
+ 'Status': ['InProgress']}
+</code></pre>
+
+<p>This shows the data our test participant contributes to the data frame. The keys are variable names, and values are list of entries for that variable.</p>
+<p>An easy way to add data is with 'embedded data':</p>
+<pre><code class="python">from hemlock import Embedded
+
+part.embedded = [Embedded(var='MyVariable', data='MyData')]
+dict(part.get_data())
+</code></pre>
+
+<p>Out:</p>
+<pre><code>{'ID': [1],
+ 'EndTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
+ 'StartTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
+ 'Status': ['InProgress'],
+ 'MyVariable': ['MyData'],
+ 'MyVariableOrder': [0],
+ 'MyVariableIndex': [0]}
+</code></pre>
+
+<p>This adds an <code>Embedded</code> data object to our participant. Embedded data are a type of data element, like questions, but unlike questions, are not displayed to participants. We can add embedded data to a participant, branch, or page.</p>
+<p>When we examine the data, we see that the participant has a new variable named <code>'MyVariable'</code> with data <code>['MyData']</code>. We also see two additional variables named <code>'MyVariableOrder'</code> and <code>'MyVariableIndex'</code>. Hemlock automatically adds order and index data for every data element. Order is the order in which this data element appeared in the survey, relative to other data elements belonging to the same variable. Index is the order in which this data element appeared in its parent's list of children; for example, the order in which a question appeared on its page.</p>
+<h2 id="ordering">Ordering</h2>
+<p>The order in which data elements appear in the data frame is the order in which they were created; not necessarily the order in which they appear to the participant. For example:</p>
+<pre><code class="python">embedded1 = Embedded('MyVariable', 1)
+embedded0 = Embedded('MyVariable', 0)
+part.embedded = [embedded0, embedded1]
+dict(part.get_data())
+</code></pre>
+
+<p>Out:</p>
+<pre><code>{'ID': [1, 1],
+ 'EndTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
+  datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
+ 'StartTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
+  datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
+ 'Status': ['InProgress', 'InProgress'],
+ 'MyVariable': [1, 0],
+ 'MyVariableOrder': [1, 0],
+ 'MyVariableIndex': [1, 0]}
+</code></pre>
+
+<p>Note that the data for <code>'MyVariable'</code> are <code>[1, 0]</code> because we created <code>embedded1</code> before <code>embedded0</code>.</p>
+<h2 id="data-rows">Data rows</h2>
+<p>By default, data elements (embedded data and questions) contribute 1 row to the data frame. But we often want the same data to be repeated on multiple rows. We do this by setting the <code>data_rows</code> attribute:</p>
+<pre><code class="python">part.embedded = [Embedded('MyVariable', 'MyData', data_rows=3)]
+dict(part.get_data())
+</code></pre>
+
+<p>Out:</p>
+<pre><code>{'ID': [1, 1, 1],
+ 'EndTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
+  datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
+  datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
+ 'StartTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
+  datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
+  datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
+ 'Status': ['InProgress', 'InProgress', 'InProgress'],
+ 'MyVariable': ['MyData', 'MyData', 'MyData'],
+ 'MyVariableOrder': [0, 0, 0],
+ 'MyVariableIndex': [0, 0, 0]}
+</code></pre>
+
+<p>Additionally, we often want to 'fill in' rows of a variable to match the length of a data frame. For example, we may not know in advance how many rows a participant will contribute to the data frame, but we know that we want the participant's demographic information to appear on all rows. To do this, we set <code>data_rows</code> to a negative number. For example, <code>data_rows=-2</code> means 'fill in two rows with this data entry and, when you download the data, fill in any blank rows after this with the same data':</p>
+<pre><code class="python">part.embedded = [
+    # these data will fill in empty rows at the bottom of the data frame
+    Embedded('MyFilledVariable', 'MyFilledData', data_rows=-1),
+    # these data will appear on three rows of the data frame
+    Embedded('MyVariable', 'MyData', data_rows=3)
+]
+dict(part.get_data())['MyFilledVariable']
+</code></pre>
+
+<p>Out:</p>
+<pre><code>['MyFilledData', 'MyFilledData', 'MyFilledData']
+</code></pre>
+
+<h2 id="adding-data-to-our-survey">Adding data to our survey</h2>
+<p>We can add data to our existing survey in much the same way: by setting a question's <code>var</code> and (when necessary) <code>data_rows</code> attribute. We generally want demographics information to appear in all rows of the data frame, so we'll set <code>data_rows=-1</code>.</p>
+<p>In <code>survey.py</code>:</p>
+<pre><code class="python">...
+
+@route('/survey')
+def start():
+    return Branch(
+        Page(
+            Input(
+                '&lt;p&gt;Enter your date of birth.&lt;/p&gt;',
+                placeholder='mm/dd/yyyy',
+                var='DoB', data_rows=-1
+            ),
+            Check(
+                '&lt;p&gt;Indicate your gender.&lt;/p&gt;',
+                ['Male', 'Female', 'Other'],
+                var='Gender', data_rows=-1
+            ),
+            # SET THE `var` AND `data_rows` ATTRIBUTES FOR THE REST OF THE QUESTIONS
+            ...
+</code></pre>
+
+<h2 id="downloading-data">Downloading data</h2>
+<p>Run your survey locally, fill in the demographics page, and continue to the end of the survey. Your data will be recorded in the database.</p>
+<p>To download your data, navigate to <a href="http://localhost5000/download">http://localhost5000/download</a> in your browser. Select 'Data frame', then click the download button. This will download a zip file containing your data in .csv format. </p>
+<p>Take a look at the data. In addition to what we've already covered, there are a few things to notice:</p>
+<ol>
+<li>Variables like <code>GenderMaleIndex</code> and <code>GenderFemaleIndex</code> record the order in which a question displayed its choices.</li>
+<li>The data of questions for which you can select multiple choices are automatically one-hot encoded. For example, if <code>RaceWhite</code> and <code>RaceAsian</code> are both 1, and the rest of the race variables are 0, this means means the participant is part White and part Asian.</li>
+</ol>
+<p><strong>Note.</strong> You'll often want to wipe your database as you add and remove varaibles from your survey. To remove your database, open your terminal and enter:</p>
+<pre><code class="bash">$ rm data.db
+</code></pre>
+
+<h2 id="summary">Summary</h2>
+<p>In this part of the tutorial, you learned how to store and download data.</p>
+<p>In the next part of the tutorial, you'll implement validation for participant responses.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../validate/" class="btn btn-neutral float-right" title="Validate">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../qpolymorphs/" class="btn btn-neutral" title="Question polymorphs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../qpolymorphs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../validate/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

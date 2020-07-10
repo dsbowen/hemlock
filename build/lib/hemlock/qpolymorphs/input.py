@@ -1,28 +1,79 @@
-"""Input question"""
+"""# Input"""
 
-from hemlock.qpolymorphs.utils import *
+from ..app import db, settings
+from ..models import InputBase, Question
+from .input_group import InputGroup
 
-from datetime import datetime
+from datetime_selenium import get_datetime
 
-# Mapping of datetime input types to formats
-type_to_format = {
-    'date': '%Y-%m-%d',
-    'datetime-local': '%Y-%m-%dT%H:%M',
-    'month': '%Y-%m',
-    'time': '%H:%M',
-    'week': '%Y-W%W'
+html_datetime_types = (
+    'date',
+    'datetime-local',
+    'month',
+    'time',
+    'week',
+)
+
+def debug_func(driver, question):
+    """
+    Default debug function for input questions. This function sends a random 
+    string or number if the input takes text, or a random `datetime.datetime` 
+    object if the input takes dates or times.
+
+    Parameters
+    ----------
+    driver : selenium.webdriver.chrome.webdriver.WebDriver
+
+    question : hemlock.Input
+    """
+    from ..functions.debug import send_datetime, send_keys
+    if question.input_type in html_datetime_types:
+        send_datetime(driver, question)
+    else:
+        send_keys(driver, question)
+
+settings['Input'] = {
+    'input_type': 'text',
+    'debug_functions': debug_func,
 }
 
 
 class Input(InputGroup, InputBase, Question):
+    """
+    Inputs take text input by default, or other types of html inputs.
+
+    Inherits from [`hemlock.qpolymorphs.InputGroup`](input_group.md), 
+    [`hemlock.models.InputBase`](bases.md) and 
+    [`hemlock.Question`](question.md).
+
+    Parameters
+    ----------
+    label : str or bs4.BeautifulSoup, default=''
+        Input label.
+
+    template : str, default='hemlock/input.html'
+        Template for the input body.
+
+    Attributes
+    ----------
+    input_type : str, default='text'
+        Type of html input. See <https://www.w3schools.com/html/html_form_input_types.asp>.
+    
+    Examples
+    --------
+    ```python
+    from hemlock import Input, Page, push_app_context
+
+    app = push_app_context()
+
+    Page(Input('<p>Input text here.</p>')).preview()
+    ```
+    """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'input'}
 
-    @Question.init('Input')
-    def __init__(self, page=None, **kwargs):
-        super().__init__()
-        self.body = render_template('input.html', q=self)
-        return {'page': page, **kwargs}
+    def __init__(self, label='', template='hemlock/input.html', **kwargs):
+        super().__init__(label, template, **kwargs)
 
     @property
     def input_type(self):
@@ -33,12 +84,17 @@ class Input(InputGroup, InputBase, Question):
         self.input['type'] = val
         self.body.changed()
 
+    @property
+    def placeholder(self):
+        return self.input.get('placeholder')
+
+    @placeholder.setter
+    def placeholder(self, val):
+        self.input['placeholder'] = val
+        self.body.changed()
+
     def _submit(self, *args, **kwargs):
         """Convert data to `datetime` object if applicable"""
-        datetime_format = type_to_format.get(self.input_type)
-        if datetime_format is not None:
-            try: # will succeed if response is filled in
-                self.data = datetime.strptime(self.response, datetime_format)
-            except:
-                pass
+        if self.input_type in html_datetime_types:
+            self.data = get_datetime(self.response) or None
         return super()._submit(*args, **kwargs)

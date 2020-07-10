@@ -146,6 +146,8 @@ Out:
 
 ## Adding the proposer branch to our survey
 
+### Navigating to the proposer branch
+
 We'll begin by modifying the ultimatum game branch to navigate to the proposer branch if the participant was assigned to be a proposer. In `survey.py`:
 
 ```python
@@ -170,6 +172,8 @@ def ultimatum_game(start_branch):
 
 ...
 ```
+
+### The proposer branch navigate function
 
 Next we'll add our proposer navigate function to the bottom of `survey.py`:
 
@@ -201,7 +205,9 @@ def proposer_branch(ultimatum_game_branch=None):
 
 This navigate function simply adds two pages to the proposer branch for each of `N_ROUNDS`. The first page asks the proposer to propose a split. The second page displays the outcome of the round.
 
-Now we'll add the `gen_proposal_input` and `proposer_outcome` functions we wrote in our notebook:
+### Generating the proposal input and outcome label
+
+Finally, we'll add the `gen_proposal_input` and `proposer_outcome` functions we wrote in our notebook:
 
 ```python
 ...

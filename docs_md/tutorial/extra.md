@@ -61,6 +61,12 @@ Make sure you have a Google cloud computing account and Google Cloud SDK install
 $ hlk setup win --cloud-sdk
 ```
 
+Additionally, install the google cloud storage python API with:
+
+```bash
+$ pip3 install google-cloud-storage # or hlk install google-cloud-storage (see below)
+```
+
 ## Installing 3rd party packages
 
 We ordinarily install 3rd party packages with:

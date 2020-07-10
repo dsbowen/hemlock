@@ -132,6 +132,7 @@ In `survey.py`:
 
 ```python
 ...
+
 @route('/survey')
 def start():
     return Branch(
@@ -161,13 +162,11 @@ Take a look at the data. In addition to what we've already covered, there are a 
 1. Variables like `GenderMaleIndex` and `GenderFemaleIndex` record the order in which a question displayed its choices.
 2. The data of questions for which you can select multiple choices are automatically one-hot encoded. For example, if `RaceWhite` and `RaceAsian` are both 1, and the rest of the race variables are 0, this means means the participant is part White and part Asian.
 
-## Downloading a survey view
+**Note.** You'll often want to wipe your database as you add and remove varaibles from your survey. To remove your database, open your terminal and enter:
 
-Marketing researchers and behavioral scientists often want to share their survey materials with their managers and other researchers. Hemlock makes this easy with survey viewing.
-
-Enter a participant ID where it says 'Enter participant IDs for survey viewing' click the download button. 
-
-Participant IDs are assigned sequentially starting at 1. To see how many participants you can select from, toggle the navigation bar and select 'Participant status'.
+```bash
+$ rm data.db
+```
 
 ## Summary
 

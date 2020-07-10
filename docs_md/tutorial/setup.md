@@ -45,14 +45,14 @@ pip x.x.x from /usr/lib/python3/dist-packages (python 3.6)
 **Note.** When installing python packages, use `pip3` instead of `pip`:
 
 ```bash
-pip3 install xyz # instead of pip install xyz
+pip3 install <the-package-I-want> # instead of pip install <the-package-I-want>
 ```
 
 Finally, I recommend setting your `BROWSER` environment variable after installing hemlock-CLI (see below).
 
 ## Recommended
 
-The following aren't necessary to use Hemlock, but they will make your life easier. The rest of the tutorial assumes you have these.
+The following aren't necessary to use hemlock, but they will make your life easier. The rest of the tutorial assumes you have these.
 
 ### Hemlock-CLI
 
