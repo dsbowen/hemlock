@@ -1,4 +1,3 @@
-NO_DEBUG_FUNCTIONS: 1
 POSTGRES_PLAN: standard-0
 REDIS_PLAN: hobby-dev
 WEB_PROCTYPE: standard-1x

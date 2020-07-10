@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hemlock-survey",
-    version="0.0.16",
+    version="0.0.17",
     author="Dillon Bowen",
     author_email="dsbowen@wharton.upenn.edu",
     description="A package for creating and deploying surveys",
@@ -18,11 +18,11 @@ setuptools.setup(
         'bs4>=0.0.1',
         'eventlet>=0.25.1',
         'flask>=1.1.1',
-        'flask-download-btn>=0.0.18',
+        'flask-download-btn>=0.0.21',
         'flask-login>=0.4.1',
         'flask-socketi>=4.2.1',
         'flask-sqlalchemy>=2.4.1',
-        'flask-worker>=0.0.9',
+        'flask-worker>=0.0.10',
         'pandas>=1.0.1',
         'python-docx>=0.8.10',
         'redis>=3.3.11',
@@ -33,7 +33,7 @@ setuptools.setup(
         'sqlalchemy-function>=0.0.9',
         'sqlalchemy-modelid>=0.0.3',
         'sqlalchemy-mutable>=0.0.8',
-        'sqlalchemy-mutablesoup>=0.0.8',
+        'sqlalchemy-mutablesoup>=0.0.9',
         'sqlalchemy-orderingitem>=0.0.5',
     ],
     classifiers=[
