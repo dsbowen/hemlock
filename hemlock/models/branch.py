@@ -66,9 +66,9 @@ class Branch(BranchingBase, db.Model):
     ```python
     from hemlock import Branch, Label, Page, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    paths = Branch(
+    Branch(
     \    Page(Label('<p>Hello World</p>')),
     \    Page(Label('<p>Hello Moon</p>')),
     \    Page(Label('<p>Hello Star</p>'))
@@ -168,10 +168,10 @@ class Branch(BranchingBase, db.Model):
 
         Returns
         -------
-        paths : list of str
-            Paths to temporary files for previewing pages.
+        self : helock.Branch
         """
-        return [p.preview(driver) for p in self.pages]
+        [p.preview(driver) for p in self.pages]
+        self
 
     def view_nav(self):
         """

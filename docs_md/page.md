@@ -368,9 +368,9 @@ It inherits from [`hemlock.model.HTMLMixin`](bases.md).
 ```python
 from hemlock import Page, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-path = Page(Label('<p>Hello World</p>')).preview()
+Page(Label('<p>Hello World</p>')).preview()
 ```
 
 ####Methods
@@ -492,9 +492,9 @@ Preview the page in a browser window.
 </tr>
 <tr class="field">
     <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>path : <i>str</i></b>
+    <td class="field-body" width="100%"><b>self : <i>hemlock.Page</i></b>
 <p class="attr">
-    Path to temporary page preview file.
+    
 </p></td>
 </tr>
     </tbody>
@@ -514,7 +514,7 @@ This method does not run the compile functions.
 
 
 <p class="func-header">
-    <i></i> <b>view_nav</b>(<i>self, indent=0</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L635">[source]</a>
+    <i></i> <b>view_nav</b>(<i>self, indent=0</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L636">[source]</a>
 </p>
 
 Print the navigation starting at this page for debugging purposes.

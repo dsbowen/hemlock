@@ -70,7 +70,7 @@ Push an app context for debugging in shell or notebook.
 ```python
 from hemlock import push_app_context
 
-push_app_context()
+app = push_app_context()
 ```
 
 Out:

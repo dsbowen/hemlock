@@ -69,15 +69,13 @@ from hemlock import Compile, Page, push_app_context
 push_app_context()
 
 p = Compile.call_method(Page(error='Error message'), 'clear_error')
-path0 = p.preview()
-p._compile()
-path1 = p.preview()
+p.preview()._compile().preview()
 ```
 
 ##hemlock.functions.compile.**clear_error**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.compile.<b>clear_error</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L38">[source]</a>
+    <i>def</i> hemlock.functions.compile.<b>clear_error</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L36">[source]</a>
 </p>
 
 Calls the object's `clear_error` method.
@@ -104,15 +102,13 @@ from hemlock import Compile, Page, Check, push_app_context
 push_app_context()
 
 p = Compile.clear_error(Page(error='Error message'))
-path0 = p.preview()
-p._compile()
-path1 = p.preview()
+p.preview()._compile().preview()
 ```
 
 ##hemlock.functions.compile.**clear_response**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.compile.<b>clear_response</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L63">[source]</a>
+    <i>def</i> hemlock.functions.compile.<b>clear_response</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L59">[source]</a>
 </p>
 
 Calls the object's `clear_response` method.
@@ -139,15 +135,13 @@ from hemlock import Compile, Input, Page, push_app_context
 push_app_context()
 
 p = Compile.clear_response(Page(Input(response='Hello World')))
-path0 = p.preview()
-p._compile()
-path1 = p.preview()
+p.preview()._compile().preview()
 ```
 
 ##hemlock.functions.compile.**shuffle**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.compile.<b>shuffle</b>(<i>obj, *attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L88">[source]</a>
+    <i>def</i> hemlock.functions.compile.<b>shuffle</b>(<i>obj, *attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L82">[source]</a>
 </p>
 
 Shuffle an object's attributes.
@@ -188,7 +182,5 @@ push_app_context()
 p = Compile.shuffle(Page(
     Label('<p>Label {}</p>'.format(i)) for i in range(4)
 ))
-path0 = p.preview()
-p._compile()
-path1 = p.preview()
+p.preview()._compile().preview()
 ```

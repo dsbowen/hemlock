@@ -107,7 +107,7 @@ Inherits from [`hemlock.InputGroup`](input_group.md) and
 ```python
 from hemlock import Page, Select, Option, push_app_context
 
-push_app_context()
+app = push_app_context()
 
 Page(Select('<p>Select one.</p>', ['World','Moon','Star'])).preview()
 ```

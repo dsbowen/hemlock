@@ -292,9 +292,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     ```python
     from hemlock import Page, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    path = Page(Label('<p>Hello World</p>')).preview()
+    Page(Label('<p>Hello World</p>')).preview()
     ```
     """
     id = db.Column(db.Integer, primary_key=True)
@@ -564,8 +564,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
         Returns
         -------
-        path : str
-            Path to temporary page preview file.
+        self : hemlock.Page
 
         Notes
         -----
@@ -580,6 +579,8 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         """
         dist = os.environ.get('WSL_DISTRIBUTION')
         _, path = tempfile.mkstemp(suffix='.html')
+        if hasattr(current_app, 'tmpfiles'):
+            current_app.tmpfiles.append(path)
         soup = self._render(as_str=False)
         self._convert_rel_paths(soup, 'href', dist)
         self._convert_rel_paths(soup, 'src', dist)
@@ -592,7 +593,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
             webbrowser.open(preview_path)
         else:
             driver.get(preview_path)
-        return path
+        return self
 
     def _convert_rel_paths(self, soup, url_attr, dist=None):
         """

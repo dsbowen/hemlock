@@ -117,7 +117,7 @@ constructor has finished.
 ```python
 from hemlock import Range, Page, push_app_context
 
-push_app_context()
+app = push_app_context()
 
 Page(Range('<p>This is a range slider.</p>')).preview()
 ```

@@ -47,7 +47,7 @@ class Download(Question, DownloadBtnMixin):
     ```python
     from hemlock import Download, Page, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
     Page(Download(
     \    '<p>Click here to download a file.</p>',

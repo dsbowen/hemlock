@@ -79,7 +79,7 @@ class Compile(FunctionRegistrar, db.Model):
     ```python
     from hemlock import Compile, Input, Label, Page, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
     @Compile.register
     def greet(greet_q, name_q):
@@ -121,7 +121,7 @@ class Debug(FunctionRegistrar, db.Model):
     from hemlock import Debug, Input, Page, push_app_context
     from hemlock.tools import chromedriver
 
-    push_app_context()
+    app = push_app_context()
 
     driver = chromedriver()
 

@@ -50,7 +50,7 @@ def push_app_context():
     ```python
     from hemlock import push_app_context
 
-    push_app_context()
+    app = push_app_context()
     ```
 
     Out:
@@ -98,7 +98,8 @@ def create_app(settings=settings):
     app = _create_app(settings)
     _set_bucket(app)
     _set_redis(app)
-    _init_extensions(app, settings)    
+    _init_extensions(app, settings)
+    app.tmpfiles = []   
     return app
 
 def _create_app(settings):

@@ -110,7 +110,7 @@ horizontally, set `inline` to True.
 ```python
 from hemlock import Check, Page, push_app_context
 
-push_app_context()
+app = push_app_context()
 
 Page(Check('<p>Check one.</p>', ['Yes','No','Maybe'])).preview()
 ```

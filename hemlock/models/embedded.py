@@ -47,7 +47,7 @@ class Embedded(Data):
     def start():
     \    return Branch(Page())
 
-    push_app_context()
+    app = push_app_context()
 
     part = Participant.gen_test_participant(start)
     part.embedded = [Embedded('Name', 'Socrates', data_rows=-1)]
@@ -111,7 +111,7 @@ class Timer(Embedded):
 
     import time
 
-    push_app_context()
+    app = push_app_context()
 
     timer = Timer()
     print(timer.state)

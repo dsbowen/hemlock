@@ -51,7 +51,7 @@ def src_from_bucket(filename):
     from hemlock import Branch, Page, Label, push_app_context
     from hemlock.tools import Img, src_from_bucket
 
-    push_app_context()
+    app = push_app_context()
 
     img = Img(
     \    src=src_from_bucket('wanna_see_the_code.png'),
@@ -238,7 +238,7 @@ class Img(Static):
     from hemlock import Page, Label, push_app_context
     from hemlock.tools import Img
 
-    push_app_context()
+    app = push_app_context()
         
     img = Img(
     \    src='https://imgs.xkcd.com/comics/wanna_see_the_code.png', 
@@ -335,7 +335,7 @@ class Vid(Static):
     from hemlock import Page, Label, push_app_context
     from hemlock.tools import Vid
 
-    push_app_context()
+    app = push_app_context()
         
     vid = Vid.from_youtube('https://www.youtube.com/watch?v=UbQgXeY_zi4')
     Page(Label(vid.render())).preview()

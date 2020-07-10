@@ -56,7 +56,7 @@ p = Page(
 )
 ```
 
-As usual, use `p.preview()` to preview the page.
+As usual, use `p.preview()` to preview the page and `os.remove(*app.tmpfiles)` when you're done.
 
 ### Code explanation
 

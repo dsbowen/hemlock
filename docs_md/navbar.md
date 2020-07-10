@@ -35,7 +35,7 @@
 from hemlock import Page, push_app_context
 from hemlock.tools import Navbar, Navitem, Navitemdd, Dropdownitem
 
-push_app_context()
+app = push_app_context()
 
 url_root = 'https://dsbowen.github.io/'
 

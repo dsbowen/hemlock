@@ -23,7 +23,7 @@ class Label(Question):
     ```python
     from hemlock import Label, Page, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
     Page(Label('<p>Hello World</p>')).preview()
     ```

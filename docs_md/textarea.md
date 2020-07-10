@@ -112,7 +112,7 @@ constructor has finished.
 ```python
 from hemlock import Page, Textarea, push_app_context
 
-push_app_context()
+app = push_app_context()
 
 Page(Textarea('<p>This is a textarea.</p>')).preview()
 ```

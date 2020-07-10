@@ -88,7 +88,7 @@ from hemlock import Branch, Embedded, Page, Participant, push_app_context
 def start():
     return Branch(Page())
 
-push_app_context()
+app = push_app_context()
 
 part = Participant.gen_test_participant(start)
 part.embedded = [Embedded('Name', 'Socrates', data_rows=-1)]
@@ -156,7 +156,7 @@ from hemlock import Timer, push_app_context
 
 import time
 
-push_app_context()
+app = push_app_context()
 
 timer = Timer()
 print(timer.state)

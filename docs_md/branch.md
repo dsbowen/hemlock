@@ -115,9 +115,9 @@ Inherits from [`hemlock.models.Base`](bases.md).
 ```python
 from hemlock import Branch, Label, Page, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-paths = Branch(
+Branch(
     Page(Label('<p>Hello World</p>')),
     Page(Label('<p>Hello Moon</p>')),
     Page(Label('<p>Hello Star</p>'))
@@ -149,9 +149,9 @@ Preview the page queue in the a browser window.
 </tr>
 <tr class="field">
     <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>paths : <i>list of str</i></b>
+    <td class="field-body" width="100%"><b>self : <i>helock.Branch</i></b>
 <p class="attr">
-    Paths to temporary files for previewing pages.
+    
 </p></td>
 </tr>
     </tbody>

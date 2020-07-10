@@ -64,7 +64,7 @@ class Input(InputGroup, InputBase, Question):
     ```python
     from hemlock import Input, Page, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
     Page(Input('<p>Input text here.</p>')).preview()
     ```

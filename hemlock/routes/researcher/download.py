@@ -314,31 +314,19 @@ class FileCreator():
             return
         path = page.mkstmp()
         try:
-            print('about to get wsl distro')
             dist = os.environ.get('WSL_DISTRIBUTION')
-            print('got wsl distro, about to have driver get file')
             self.driver.get('file://'+('wsl$/'+dist+path if dist else path))
-            print('driver got file, about to accept alerts')
             self.accept_alerts()
-            print('driver accepted alerts, about to get window size')
             width = self.driver.get_window_size()['width']
-            print('drive got window size, about to exectue script')
             height = self.driver.execute_script(
                 'return document.body.parentNode.scrollHeight'
             )
-            print('driver exec script, about to set window size')
             self.driver.set_window_size(width, height+HEIGHT_BUFFER)
-            print('driver set window size, about to select form')
             form = self.driver.find_element_by_tag_name('form')
-            print('driver got form, about to set up bytes')
             page_bytes = BytesIO()
-            print('set up bytes, about to write')
             page_bytes.write(form.screenshot_as_png)
-            print('wrote, about to add pic')
             doc.add_picture(page_bytes, width=SURVEY_VIEW_IMG_WIDTH)
-            print('added pic, about to close bytes')
             page_bytes.close()
-            print('closed bytes')
         except:
             pass
         os.remove(path)

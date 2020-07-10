@@ -67,10 +67,12 @@ p = Page(Label('<p>Hello, World!</p>'))
 path = p.preview()
 ```
 
-This opens a preview of your page in your browser. Once you're done previewing your page, remove it with:
+This opens a preview of your page in your browser.
+
+Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:
 
 ```python
-os.remove(path)
+os.remove(*app.tmpfiles)
 ```
 
 ### Modifications if using WSL
@@ -102,7 +104,7 @@ If you didn't use the hemlock template, create a new python3 jupyter notebook an
 ```python
 from hemlock import push_app_context
 
-push_app_context()
+app = push_app_context()
 ```
 
 This sets up your hemlock environment, including an [application context](https://flask.palletsprojects.com/en/1.1.x/appcontext/), in the notebook.

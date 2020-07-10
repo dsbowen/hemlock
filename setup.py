@@ -20,7 +20,7 @@ setuptools.setup(
         'flask>=1.1.1',
         'flask-download-btn>=0.0.21',
         'flask-login>=0.4.1',
-        'flask-socketi>=4.2.1',
+        'flask-socketio>=4.2.1',
         'flask-sqlalchemy>=2.4.1',
         'flask-worker>=0.0.10',
         'pandas>=1.0.1',
