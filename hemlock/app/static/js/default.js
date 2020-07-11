@@ -24,14 +24,6 @@ $("form").submit( function(e) {
 });
 
 // Get socket.io url
+// OLD VERSION
 // $SOCKET_URL = location.protocol+"//"+document.domain+':'+location.port
-// $SOCKET_URL = window.location.origin // TEST THIS
-console.log('location protocol is', location.protocol)
-console.log('documetnion domain is', document.domain)
-console.log('port is', location.port)
-if (document.domain == 'localhost') {
-    $SOCKET_URL = window.location.origin
-}
-else {
-    $SOCKET_URL = "https://"+document.domain
-}
+$SOCKET_URL = window.location.origin
