@@ -242,9 +242,9 @@
                 <h1 id="setup">Setup</h1>
 <h2 id="essential">Essential</h2>
 <ol>
-<li><a href="https://www.google.com/chrome/">Google Chrome</a>.</li>
-<li><a href="https://www.python.org/downloads/">Python3 and pip3</a>, recommended version 3.6. This is hemlock's primary language.</li>
-<li>A way to open and edit python files. Recommended <a href="https://code.visualstudio.com/">Visual Studio Code</a>.</li>
+<li>Google Chrome. <a href="https://www.google.com/chrome/">Download here</a>.</li>
+<li>Python3 and pip3, recommended version 3.6. This is hemlock's primary language. <a href="https://www.python.org/downloads/">Download python here</a>.</li>
+<li>A way to open and edit python files; recommended Visual Studio Code. <a href="https://code.visualstudio.com/">Download here</a>.</li>
 </ol>
 <h2 id="pip-versus-pip3">pip versus pip3</h2>
 <p>You'll install several python packages using pip. Conventionally, the command to install these is:</p>
@@ -252,20 +252,19 @@
 </code></pre>
 
 <p><strong>Note 1.</strong> You don't type <code>$</code>; this just means 'the start of a command in your terminal window'.</p>
-<p><strong>Note 2.</strong> Depending on your operating system, you may need to replace <code>pip</code> with <code>pip3</code>.</p>
+<p><strong>Note 2.</strong> Depending on your operating system, you may need to replace <code>pip</code> with <code>pip3</code>:</p>
 <pre><code class="bash">$ pip3 install &lt;my-requested-package&gt;
 </code></pre>
 
 <p>If one doesn't work, try the other.</p>
 <h4 id="windows-users">Windows users</h4>
-<p>I recommend installing <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows Subsystem for Linux (WSL)</a> with the Ubuntu Linux distribution. Either WSL 1 or WSL 2 should work. This comes with python and pip.</p>
+<p>I recommend installing Windows Subsystem for Linux (WSL) with the Ubuntu Linux distribution. Either WSL 1 or WSL 2 should work. This comes with python and pip. <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Download instructions for WSL here</a>.</p>
 <p>After you've installed Ubuntu, open a terminal window (WIN + R, then enter 'ubuntu\&lt;xxxx>', where \&lt;xxxx> is your version of ubuntu, e.g. 'ubuntu2004'). You will be prompted to create a username and password.</p>
 <p>Verify your python installation with:</p>
 <pre><code>$ python3
 Python 3.6.x
 </code></pre>
 
-<p><strong>Note.</strong> You don't type <code>$</code> in the terminal window; it simply denotes the beginning of a terminal command.</p>
 <p>Update your package lists with:</p>
 <pre><code class="bash">$ sudo apt-get update
 </code></pre>
@@ -280,11 +279,6 @@ Python 3.6.x
 pip x.x.x from /usr/lib/python3/dist-packages (python 3.6)
 </code></pre>
 
-<p><strong>Note.</strong> When installing python packages, use <code>pip3</code> instead of <code>pip</code>:</p>
-<pre><code class="bash">$ pip3 install &lt;the-package-I-want&gt; # instead of pip install &lt;the-package-I-want&gt;
-</code></pre>
-
-<p>Finally, I recommend setting your <code>BROWSER</code> environment variable after installing hemlock-CLI (see below).</p>
 <h2 id="recommended">Recommended</h2>
 <p>The following aren't necessary to use hemlock, but they will make your life easier. The rest of the tutorial assumes you have these.</p>
 <h3 id="hemlock-cli">Hemlock-CLI</h3>
@@ -319,16 +313,9 @@ hlk, version x.x.x
 </code></pre>
 
 <h5 id="if-not-using-wsl_1">If not using WSL</h5>
-<p>Download [git here]((https://git-scm.com/downloads), and register for <a href="https://github.com/">github here</a>.</p>
+<p><a href="https://git-scm.com/downloads">Download git here</a>, and <a href="https://github.com/">register for github here</a>.</p>
 <h3 id="jupyter">Jupyter</h3>
-<p>Jupyter allows you to quickly iterate on project designs. For no good reason, I personally use Jupyter Notebook, not JupyterLab. [Download here]((https://jupyter.org/install).</p>
-<p>activate venv
-install local requirements
-add venv to jupyter using this command
-open notebook
-kernel ==&gt; change kernel to hemlock-venv
-(see what happens with Lance)
-https://www.google.com/url?q=https://towardsdatascience.com/create-virtual-environment-using-virtualenv-and-add-it-to-jupyter-notebook-6e1bf4e03415&amp;sa=D&amp;source=hangouts&amp;ust=1594571729871000&amp;usg=AFQjCNGWbqMRGF1tjs92L2g_Ja999wp53Q</p>
+<p>Jupyter allows you to quickly iterate on project designs. For no good reason, I personally use Jupyter Notebook, not JupyterLab. <a href="https://jupyter.org/install">Download jupyter here</a>.</p>
               
             </div>
           </div>

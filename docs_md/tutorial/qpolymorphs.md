@@ -55,9 +55,9 @@ p = Page(
 )
 ```
 
-As usual, use `p.preview()` to preview the page and `os.remove(*app.tmpfiles)` when you're done.
+As usual, use `p.preview()` to preview the page and `[os.remove(tmpfile) for tmpfile in app.tmpfiles]` when you're done.
 
-### Code explanation
+## Code explanation
 
 Here we add several 'question polymorphs' (i.e. types of questions) to our page. 
 

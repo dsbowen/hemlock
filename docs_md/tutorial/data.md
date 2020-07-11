@@ -155,14 +155,14 @@ def start():
 
 Run your survey locally, fill in the demographics page, and continue to the end of the survey. Your data will be recorded in the database.
 
-To download your data, navigate to <http://localhost5000/download> in your browser. Select 'Data frame', then click the download button. This will download a zip file containing your data in .csv format. 
+To download your data, navigate to <http://localhost:5000/download> in your browser. Select 'Data frame', then click the download button. This will download a zip file containing your data in .csv format. 
 
 Take a look at the data. In addition to what we've already covered, there are a few things to notice:
 
 1. Variables like `GenderMaleIndex` and `GenderFemaleIndex` record the order in which a question displayed its choices.
 2. The data of questions for which you can select multiple choices are automatically one-hot encoded. For example, if `RaceWhite` and `RaceAsian` are both 1, and the rest of the race variables are 0, this means means the participant is part White and part Asian.
 
-**Note.** You'll often want to wipe your database as you add and remove varaibles from your survey. To remove your database, open your terminal and enter:
+**Note.** You'll often want to wipe your database as you add and remove variables from your survey. To remove your database, open your terminal and enter:
 
 ```bash
 $ rm data.db

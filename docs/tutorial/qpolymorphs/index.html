@@ -65,10 +65,8 @@
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Question polymorphs</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#creating-a-demographics-page">Creating a demographics page</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#code-explanation">Code explanation</a>
     </li>
-        </ul>
+    <li class="toctree-l2"><a class="reference internal" href="#code-explanation">Code explanation</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#adding-the-page-to-the-survey">Adding the page to the survey</a>
     </li>
@@ -268,8 +266,8 @@ p = Page(
 )
 </code></pre>
 
-<p>As usual, use <code>p.preview()</code> to preview the page and <code>os.remove(*app.tmpfiles)</code> when you're done.</p>
-<h3 id="code-explanation">Code explanation</h3>
+<p>As usual, use <code>p.preview()</code> to preview the page and <code>[os.remove(tmpfile) for tmpfile in app.tmpfiles]</code> when you're done.</p>
+<h2 id="code-explanation">Code explanation</h2>
 <p>Here we add several 'question polymorphs' (i.e. types of questions) to our page. </p>
 <p>The first is an input. We add <code>placeholder='mm/dd/yyyy'</code>, telling participants the expected format of their date of birth.</p>
 <p>The next two are check questions, which allow participants to check one or more choices. Notice that the first check question allows participants to check only one choice; we allow participants to check multiple choices in the second check question by passing <code>multiple=True</code>.</p>

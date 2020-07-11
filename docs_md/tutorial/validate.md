@@ -102,7 +102,7 @@ Out:
 Format your date of birth as mm/dd/yyyy.
 ```
 
-### Code explanation
+## Code explanation
 
 First, we import `datetime`, a native python package for handling dates and times. 
 
@@ -153,9 +153,9 @@ def validate_date_format(inpt):
         return '<p>Format your date of birth as mm/dd/yyyy.</p>'
 ```
 
-Run the app again and try to continue past the demographics page; enter and invalid date of birth, leave some questions blank, and see your validation at work.
+Run the app again and try to continue past the demographics page; enter an invalid date of birth, leave some questions blank, and see your validation at work.
 
-**Note.** You can attack multiple validation functions to a single page or question. Validate functions run in the order in which you add them, stopping with the first validate function which returns an error.
+**Note.** You can attach multiple validation functions to a single page or question. Validate functions run in the order in which you add them, stopping with the first validate function which returns an error.
 
 ## Summary
 

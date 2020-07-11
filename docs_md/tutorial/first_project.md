@@ -14,17 +14,36 @@ Run the following:
 $ hlk init my-first-project
 ```
 
-This will 'clone' the template into a folder `my-first-project` and set up a virtual environment. Change into the project directory, activate the virtual environment, and install the requirements to run this project locally.
+This will 'clone' the template into a folder `my-first-project` and set up a virtual environment. Then, follow these steps:
+
+Change into the project directory and check out the folder structure:
 
 ```bash
 $ cd my-first-project
+$ ls
+```
+
+#### Set up your virtual environment
+
+Activate your virtual environment:
+
+```bash
 $ source hemlock-venv/bin/activate
+```
+
+Install the required python packages to run this project locally:
+
+```bash
 $ pip install -r local-requirements.txt # or pip3 install -r local-requirements.txt
 ```
 
-It's good practice to use [virtual environments](https://docs.python.org/3/tutorial/venv.html) and activate them whenever you're working on a project.
+Add your virtual environment to jupyter:
 
-**Note.** You need to be in the directory where your virtual environment exists to activate it.
+```bash
+$ python3 -m ipykernel install --user --name=hemlock-venv
+```
+
+It's good practice to use [virtual environments](https://docs.python.org/3/tutorial/venv.html) and activate them whenever you're working on a project.
 
 #### If using WSL
 
@@ -37,44 +56,22 @@ $ code env/local-env.yml
 And add the following line:
 
 ```yaml
-WSL_DISTRIBUTION: Ubuntu # or other WSL distribution
+WSL_DISTRIBUTION: Ubuntu-20.04 # or other WSL distribution
 ```
 
-## Alternatively, from scratch
-
-#### Initialize a new hemlock project
-
-Create a folder for your project and change into it:
+If you're not sure which distribution you have, run:
 
 ```bash
-$ mkdir my-first-project
-$ cd my-first-project
+$ explorer.exe .
 ```
 
-Create your virtual environment and activate it:
+This will open a file explorer. At the top of the file explorer, you'll see:
 
-```bash
-$ python3 -m venv hemlock-venv
-$ source hemlock-venv/bin/activate
-```
+> \<my-wsl-distribution\>\\home\\\<my-wsl-username\>\\my-first-project
 
-Install hemlock:
+We're looking for \<my-wsl-distribution\>.
 
-```bash
-$ pip install hemlock-survey # or pip3 install hemlock-survey
-```
-
-#### If using WSL
-
-If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable.
-
-```bash
-$ export WSL_DISTRIBUTION=Ubuntu # or other WSL distribution
-```
-
-Make sure your `WSL_DISTRIBUTION` environment variable is set every time you open a terminal.
-
-## Preview a page in jupyter notebook
+#### Preview a page in jupyter notebook
 
 Jupyter notebook is a great tool for iterating quickly on project designs. I recommend using it for most of your work. Open the jupyter dashboard with:
 
@@ -84,7 +81,11 @@ $ jupyter notebook
 
 Jupyter will attempt to open the dashboard automatically in your browser. If this fails, the terminal window will show you links to the dashboard that you can manually copy and paste into your browser.
 
-Open the file named `blackboard.ipynb`. Run the first cell (Shift + Enter on windows) to set up the environment and application context. It's not important right now to understand exactly what it does.
+Open the file named `blackboard.ipynb`.
+
+Change the kernel to `hemlock-venv`. At the top of the notebook click Kernel >> Change kernel >> hemlock-venv.
+
+Run the first cell (Shift + Enter on windows) to set up the environment and application context. It's not important right now to understand exactly what it does.
 
 Now, create your first hemlock page. In a new code cell below the first one, enter the following:
 
@@ -103,11 +104,104 @@ Previewing works by creating temporary preview files. When you're done previewin
 [os.remove(tmpfile) for tmpfile in app.tmpfiles]
 ```
 
-#### Code explanation
+## Alternatively, from scratch
+
+#### Initialize a new hemlock project
+
+Create a folder for your project and change into it:
+
+```bash
+$ mkdir my-first-project
+$ cd my-first-project
+```
+
+#### Set up your virtual environment
+
+Create your virtual environment and activate it:
+
+```bash
+$ python3 -m venv hemlock-venv
+$ source hemlock-venv/bin/activate
+```
+
+Install hemlock and ipykernel:
+
+```bash
+$ pip install hemlock-survey ipykernel
+```
+
+Add your virtual environment to jupyter:
+
+```bash
+$ python3 -m ipykernel install --user --name=hemlock-venv
+```
+
+#### If using WSL
+
+If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable.
+
+```bash
+$ export WSL_DISTRIBUTION=Ubuntu-20.04 # or other WSL distribution
+```
+
+Make sure your `WSL_DISTRIBUTION` environment variable is set every time you open a terminal.
+
+If you're not sure which distribution you have, run:
+
+```bash
+$ explorer.exe .
+```
+
+This will open a file explorer. At the top of the file explorer, you'll see:
+
+> \<my-wsl-distribution\>\\home\\\<my-wsl-username\>\\my-first-project
+
+We're looking for \<my-wsl-distribution\>.
+
+#### Preview a page in jupyter notebook
+
+Jupyter notebook is a great tool for iterating quickly on project designs. I recommend using it for most of your work. Open the jupyter dashboard with:
+
+```bash
+$ jupyter notebook
+```
+
+Jupyter will attempt to open the dashboard automatically in your browser. If this fails, the terminal window will show you links to the dashboard that you can manually copy and paste into your browser.
+
+Create a new notebook. In the upper right, click New >> hemlock-venv. 
+
+Run the following in the first cell of your notebook:
+
+```python
+from hemlock import push_app_context
+
+push_app_context()
+```
+
+This sets up the hemlock environment, including the application context. It's not important right now to understand exactly what it does.
+
+Now, create your first hemlock page. In a new code cell below the first one, enter the following:
+
+```python
+from hemlock import Page, Label
+
+p = Page(Label('<p>Hello, World!</p>'))
+p.preview()
+```
+
+This opens a preview of your page in your browser.
+
+Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:
+
+```python
+[os.remove(tmpfile) for tmpfile in app.tmpfiles]
+```
+
+## Code explanation
 
 The first line simply imports `Page` and `Label` objects.
 
-The next line, `p = Page(Label('<p>Hello, World!</p>'))`, creates a `Page` instance. A `Page` contains a list of 'questions' which it displays to participants. We set a page's questions by passing them as arguments to the constructor, or by setting the page's `questions` attribute, meaning that the following are equivalent:
+The next line, `p = Page(Label('<p>Hello, World!</p>'))`, creates a `Page` instance. A `Page` contains a list of 'questions' which it displays to participants. We can set a page's questions by passing them as arguments to the `Page` constructor. Alternatively, we can set a page's questions by setting the page's `questions` attribute, meaning that the following are equivalent:
 
 ```python
 p = Page(Label('<p>Label 0</p>'), Label('<p>Label 1</p>'))

@@ -19,5 +19,5 @@ sqlalchemy-mutable>=0.0.8
 sqlalchemy-mutablesoup>=0.0.9
 sqlalchemy-orderingitem>=0.0.5
 
-gunicorn==18.0
+gunicorn>=20.0.4
 psycopg2>=2.8.4

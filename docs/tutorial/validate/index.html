@@ -73,10 +73,8 @@
     <li class="toctree-l2"><a class="reference internal" href="#basic-syntax">Basic syntax</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#custom-validation">Custom validation</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#code-explanation">Code explanation</a>
     </li>
-        </ul>
+    <li class="toctree-l2"><a class="reference internal" href="#code-explanation">Code explanation</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#validation-in-our-app">Validation in our app</a>
     </li>
@@ -295,7 +293,7 @@ inpt.error
 <pre><code>Format your date of birth as mm/dd/yyyy.
 </code></pre>
 
-<h3 id="code-explanation">Code explanation</h3>
+<h2 id="code-explanation">Code explanation</h2>
 <p>First, we import <code>datetime</code>, a native python package for handling dates and times. </p>
 <p>Next, we register a new validate function with the <code>@Validate.register</code> decorator. The validate function takes the input question as its argument. In general, validate functions (and, as we will see, their cousins, submit, compile, and navigate functions) take their 'parent' (usually a branch, page, or question) as their first argument.</p>
 <p>The validate function tries to convert the input question's response to a <code>datetime</code> object and returns an error message if this fails. In general, validate functions return an error message (a string) if there is a problem, and <code>None</code> if the response is valid.</p>
@@ -338,8 +336,8 @@ def validate_date_format(inpt):
         return '&lt;p&gt;Format your date of birth as mm/dd/yyyy.&lt;/p&gt;'
 </code></pre>
 
-<p>Run the app again and try to continue past the demographics page; enter and invalid date of birth, leave some questions blank, and see your validation at work.</p>
-<p><strong>Note.</strong> You can attack multiple validation functions to a single page or question. Validate functions run in the order in which you add them, stopping with the first validate function which returns an error.</p>
+<p>Run the app again and try to continue past the demographics page; enter an invalid date of birth, leave some questions blank, and see your validation at work.</p>
+<p><strong>Note.</strong> You can attach multiple validation functions to a single page or question. Validate functions run in the order in which you add them, stopping with the first validate function which returns an error.</p>
 <h2 id="summary">Summary</h2>
 <p>In this part of the tutorial, you learned how to validate participant responses.</p>
 <p>In the next part of the tutorial, you'll learn how to run submit functions to modify participant data after they submit a page.</p>

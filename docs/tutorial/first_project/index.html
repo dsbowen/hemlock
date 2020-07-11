@@ -64,7 +64,11 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#initialize-a-new-hemlock-project">Initialize a new hemlock project</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#set-up-your-virtual-environment">Set up your virtual environment</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#if-using-wsl">If using WSL</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#preview-a-page-in-jupyter-notebook">Preview a page in jupyter notebook</a>
     </li>
         </ul>
     </li>
@@ -72,15 +76,15 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#initialize-a-new-hemlock-project_1">Initialize a new hemlock project</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#set-up-your-virtual-environment_1">Set up your virtual environment</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#if-using-wsl_1">If using WSL</a>
     </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#preview-a-page-in-jupyter-notebook">Preview a page in jupyter notebook</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#code-explanation">Code explanation</a>
+    <li class="toctree-l3"><a class="reference internal" href="#preview-a-page-in-jupyter-notebook_1">Preview a page in jupyter notebook</a>
     </li>
         </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#code-explanation">Code explanation</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a>
     </li>
@@ -240,52 +244,53 @@
 <pre><code class="bash">$ hlk init my-first-project
 </code></pre>
 
-<p>This will 'clone' the template into a folder <code>my-first-project</code> and set up a virtual environment. Change into the project directory, activate the virtual environment, and install the requirements to run this project locally.</p>
+<p>This will 'clone' the template into a folder <code>my-first-project</code> and set up a virtual environment. Then, follow these steps:</p>
+<p>Change into the project directory and check out the folder structure:</p>
 <pre><code class="bash">$ cd my-first-project
-$ source hemlock-venv/bin/activate
-$ pip install -r local-requirements.txt # or pip3 install -r local-requirements.txt
+$ ls
+</code></pre>
+
+<h4 id="set-up-your-virtual-environment">Set up your virtual environment</h4>
+<p>Activate your virtual environment:</p>
+<pre><code class="bash">$ source hemlock-venv/bin/activate
+</code></pre>
+
+<p>Install the required python packages to run this project locally:</p>
+<pre><code class="bash">$ pip install -r local-requirements.txt # or pip3 install -r local-requirements.txt
+</code></pre>
+
+<p>Add your virtual environment to jupyter:</p>
+<pre><code class="bash">$ python3 -m ipykernel install --user --name=hemlock-venv
 </code></pre>
 
 <p>It's good practice to use <a href="https://docs.python.org/3/tutorial/venv.html">virtual environments</a> and activate them whenever you're working on a project.</p>
-<p><strong>Note.</strong> You need to be in the directory where your virtual environment exists to activate it.</p>
 <h4 id="if-using-wsl">If using WSL</h4>
 <p>If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable. Open a file which specifies your local environment variables:</p>
 <pre><code class="bash">$ code env/local-env.yml
 </code></pre>
 
 <p>And add the following line:</p>
-<pre><code class="yaml">WSL_DISTRIBUTION: Ubuntu # or other WSL distribution
+<pre><code class="yaml">WSL_DISTRIBUTION: Ubuntu-20.04 # or other WSL distribution
 </code></pre>
 
-<h2 id="alternatively-from-scratch">Alternatively, from scratch</h2>
-<h4 id="initialize-a-new-hemlock-project_1">Initialize a new hemlock project</h4>
-<p>Create a folder for your project and change into it:</p>
-<pre><code class="bash">$ mkdir my-first-project
-$ cd my-first-project
+<p>If you're not sure which distribution you have, run:</p>
+<pre><code class="bash">$ explorer.exe .
 </code></pre>
 
-<p>Create your virtual environment and activate it:</p>
-<pre><code class="bash">$ python3 -m venv hemlock-venv
-$ source hemlock-venv/bin/activate
-</code></pre>
-
-<p>Install hemlock:</p>
-<pre><code class="bash">$ pip install hemlock-survey # or pip3 install hemlock-survey
-</code></pre>
-
-<h4 id="if-using-wsl_1">If using WSL</h4>
-<p>If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable.</p>
-<pre><code class="bash">$ export WSL_DISTRIBUTION=Ubuntu # or other WSL distribution
-</code></pre>
-
-<p>Make sure your <code>WSL_DISTRIBUTION</code> environment variable is set every time you open a terminal.</p>
-<h2 id="preview-a-page-in-jupyter-notebook">Preview a page in jupyter notebook</h2>
+<p>This will open a file explorer. At the top of the file explorer, you'll see:</p>
+<blockquote>
+<p>\&lt;my-wsl-distribution>\home\\&lt;my-wsl-username>\my-first-project</p>
+</blockquote>
+<p>We're looking for \&lt;my-wsl-distribution>.</p>
+<h4 id="preview-a-page-in-jupyter-notebook">Preview a page in jupyter notebook</h4>
 <p>Jupyter notebook is a great tool for iterating quickly on project designs. I recommend using it for most of your work. Open the jupyter dashboard with:</p>
 <pre><code class="bash">$ jupyter notebook
 </code></pre>
 
 <p>Jupyter will attempt to open the dashboard automatically in your browser. If this fails, the terminal window will show you links to the dashboard that you can manually copy and paste into your browser.</p>
-<p>Open the file named <code>blackboard.ipynb</code>. Run the first cell (Shift + Enter on windows) to set up the environment and application context. It's not important right now to understand exactly what it does.</p>
+<p>Open the file named <code>blackboard.ipynb</code>.</p>
+<p>Change the kernel to <code>hemlock-venv</code>. At the top of the notebook click Kernel &gt;&gt; Change kernel &gt;&gt; hemlock-venv.</p>
+<p>Run the first cell (Shift + Enter on windows) to set up the environment and application context. It's not important right now to understand exactly what it does.</p>
 <p>Now, create your first hemlock page. In a new code cell below the first one, enter the following:</p>
 <pre><code class="python">from hemlock import Page, Label
 
@@ -298,9 +303,71 @@ p.preview()
 <pre><code class="python">[os.remove(tmpfile) for tmpfile in app.tmpfiles]
 </code></pre>
 
-<h4 id="code-explanation">Code explanation</h4>
+<h2 id="alternatively-from-scratch">Alternatively, from scratch</h2>
+<h4 id="initialize-a-new-hemlock-project_1">Initialize a new hemlock project</h4>
+<p>Create a folder for your project and change into it:</p>
+<pre><code class="bash">$ mkdir my-first-project
+$ cd my-first-project
+</code></pre>
+
+<h4 id="set-up-your-virtual-environment_1">Set up your virtual environment</h4>
+<p>Create your virtual environment and activate it:</p>
+<pre><code class="bash">$ python3 -m venv hemlock-venv
+$ source hemlock-venv/bin/activate
+</code></pre>
+
+<p>Install hemlock and ipykernel:</p>
+<pre><code class="bash">$ pip install hemlock-survey ipykernel
+</code></pre>
+
+<p>Add your virtual environment to jupyter:</p>
+<pre><code class="bash">$ python3 -m ipykernel install --user --name=hemlock-venv
+</code></pre>
+
+<h4 id="if-using-wsl_1">If using WSL</h4>
+<p>If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable.</p>
+<pre><code class="bash">$ export WSL_DISTRIBUTION=Ubuntu-20.04 # or other WSL distribution
+</code></pre>
+
+<p>Make sure your <code>WSL_DISTRIBUTION</code> environment variable is set every time you open a terminal.</p>
+<p>If you're not sure which distribution you have, run:</p>
+<pre><code class="bash">$ explorer.exe .
+</code></pre>
+
+<p>This will open a file explorer. At the top of the file explorer, you'll see:</p>
+<blockquote>
+<p>\&lt;my-wsl-distribution>\home\\&lt;my-wsl-username>\my-first-project</p>
+</blockquote>
+<p>We're looking for \&lt;my-wsl-distribution>.</p>
+<h4 id="preview-a-page-in-jupyter-notebook_1">Preview a page in jupyter notebook</h4>
+<p>Jupyter notebook is a great tool for iterating quickly on project designs. I recommend using it for most of your work. Open the jupyter dashboard with:</p>
+<pre><code class="bash">$ jupyter notebook
+</code></pre>
+
+<p>Jupyter will attempt to open the dashboard automatically in your browser. If this fails, the terminal window will show you links to the dashboard that you can manually copy and paste into your browser.</p>
+<p>Create a new notebook. In the upper right, click New &gt;&gt; hemlock-venv. </p>
+<p>Run the following in the first cell of your notebook:</p>
+<pre><code class="python">from hemlock import push_app_context
+
+push_app_context()
+</code></pre>
+
+<p>This sets up the hemlock environment, including the application context. It's not important right now to understand exactly what it does.</p>
+<p>Now, create your first hemlock page. In a new code cell below the first one, enter the following:</p>
+<pre><code class="python">from hemlock import Page, Label
+
+p = Page(Label('&lt;p&gt;Hello, World!&lt;/p&gt;'))
+p.preview()
+</code></pre>
+
+<p>This opens a preview of your page in your browser.</p>
+<p>Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:</p>
+<pre><code class="python">[os.remove(tmpfile) for tmpfile in app.tmpfiles]
+</code></pre>
+
+<h2 id="code-explanation">Code explanation</h2>
 <p>The first line simply imports <code>Page</code> and <code>Label</code> objects.</p>
-<p>The next line, <code>p = Page(Label('&lt;p&gt;Hello, World!&lt;/p&gt;'))</code>, creates a <code>Page</code> instance. A <code>Page</code> contains a list of 'questions' which it displays to participants. We set a page's questions by passing them as arguments to the constructor, or by setting the page's <code>questions</code> attribute, meaning that the following are equivalent:</p>
+<p>The next line, <code>p = Page(Label('&lt;p&gt;Hello, World!&lt;/p&gt;'))</code>, creates a <code>Page</code> instance. A <code>Page</code> contains a list of 'questions' which it displays to participants. We can set a page's questions by passing them as arguments to the <code>Page</code> constructor. Alternatively, we can set a page's questions by setting the page's <code>questions</code> attribute, meaning that the following are equivalent:</p>
 <pre><code class="python">p = Page(Label('&lt;p&gt;Label 0&lt;/p&gt;'), Label('&lt;p&gt;Label 1&lt;/p&gt;'))
 </code></pre>
 
