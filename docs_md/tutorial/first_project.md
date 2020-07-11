@@ -4,11 +4,11 @@ In the previous part of the tutorial, you installed the necessary software to ge
 
 By the end of this part of the tutorial, you'll be able to initialize a new hemlock project and create and preview hemlock survey pages.
 
-## Initialize a new hemlock project
+## From the hemlock template (recommended)
 
-### From the hemlock template (recommended)
+#### Initialize a new hemlock project
 
-I recommend starting hemlock projects from the hemlock template:
+Run the following:
 
 ```bash
 $ hlk init my-first-project
@@ -24,7 +24,25 @@ $ pip install -r local-requirements.txt # or pip3 install -r local-requirements.
 
 It's good practice to use [virtual environments](https://docs.python.org/3/tutorial/venv.html) and activate them whenever you're working on a project.
 
-### Alternatively, from scratch
+**Note.** You need to be in the directory where your virtual environment exists to activate it.
+
+#### If using WSL
+
+If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable. Open a file which specifies your local environment variables:
+
+```bash
+$ code env/local-env.yml
+```
+
+And add the following line:
+
+```yaml
+WSL_DISTRIBUTION: Ubuntu # or other WSL distribution
+```
+
+## Alternatively, from scratch
+
+#### Initialize a new hemlock project
 
 Create a folder for your project and change into it:
 
@@ -45,6 +63,16 @@ Install hemlock:
 ```bash
 $ pip install hemlock-survey # or pip3 install hemlock-survey
 ```
+
+#### If using WSL
+
+If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable.
+
+```bash
+$ export WSL_DISTRIBUTION=Ubuntu # or other WSL distribution
+```
+
+Make sure your `WSL_DISTRIBUTION` environment variable is set every time you open a terminal.
 
 ## Preview a page in jupyter notebook
 
@@ -75,41 +103,7 @@ Previewing works by creating temporary preview files. When you're done previewin
 [os.remove(tmpfile) for tmpfile in app.tmpfiles]
 ```
 
-### Modifications if using WSL
-
-If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable. 
-
-If using the hemlock template, open your local environment file:
-
-```bash
-$ code env/local-env.yml
-```
-
-And add the following line:
-
-```yaml
-WSL_DISTRIBUTION: Ubuntu # or other WSL distribution
-```
-
-If not using the hemlock template, export the environment variable:
-
-```bash
-$ export WSL_DISTRIBUTION=Ubuntu # or other WSL distribution
-```
-
-### Modifications if not using the template
-
-If you're not using the hemlock template, create a new python3 jupyter notebook and enter the following in the first cell:
-
-```python
-from hemlock import push_app_context
-
-app = push_app_context()
-```
-
-This sets up your hemlock environment, including an [application context](https://flask.palletsprojects.com/en/1.1.x/appcontext/), in the notebook.
-
-### Code explanation
+#### Code explanation
 
 The first line simply imports `Page` and `Label` objects.
 

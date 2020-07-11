@@ -200,7 +200,7 @@ def random_proposal(check_page, accept):
     )
 
 @Navigate.register
-def proposer_branch(ultimatum_game_branch=None):
+def proposer_branch(ultimatum_game_branch):
     branch = Branch()
     for round_ in range(N_ROUNDS):
         proposal_input = gen_proposal_input(round_+1)
@@ -276,7 +276,7 @@ def proposer_outcome(outcome_label, proposal_input):
     )
 
 @Navigate.register
-def responder_branch(ultimatum_game_branch=None):
+def responder_branch(ultimatum_game_branch):
     branch = Branch()
     for round_ in range(N_ROUNDS):
         response_input = gen_response_input(round_+1)

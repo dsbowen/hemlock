@@ -60,20 +60,24 @@
                     </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Your first project</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#initialize-a-new-hemlock-project">Initialize a new hemlock project</a>
+    <li class="toctree-l2"><a class="reference internal" href="#from-the-hemlock-template-recommended">From the hemlock template (recommended)</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#from-the-hemlock-template-recommended">From the hemlock template (recommended)</a>
+    <li class="toctree-l3"><a class="reference internal" href="#initialize-a-new-hemlock-project">Initialize a new hemlock project</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#alternatively-from-scratch">Alternatively, from scratch</a>
+    <li class="toctree-l3"><a class="reference internal" href="#if-using-wsl">If using WSL</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#alternatively-from-scratch">Alternatively, from scratch</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#initialize-a-new-hemlock-project_1">Initialize a new hemlock project</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#if-using-wsl_1">If using WSL</a>
     </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#preview-a-page-in-jupyter-notebook">Preview a page in jupyter notebook</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#modifications-if-using-wsl">Modifications if using WSL</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#modifications-if-not-using-the-template">Modifications if not using the template</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#code-explanation">Code explanation</a>
     </li>
         </ul>
@@ -230,9 +234,9 @@
                 <h1 id="your-first-project">Your first project</h1>
 <p>In the previous part of the tutorial, you installed the necessary software to get started with hemlock.</p>
 <p>By the end of this part of the tutorial, you'll be able to initialize a new hemlock project and create and preview hemlock survey pages.</p>
-<h2 id="initialize-a-new-hemlock-project">Initialize a new hemlock project</h2>
-<h3 id="from-the-hemlock-template-recommended">From the hemlock template (recommended)</h3>
-<p>I recommend starting hemlock projects from the hemlock template:</p>
+<h2 id="from-the-hemlock-template-recommended">From the hemlock template (recommended)</h2>
+<h4 id="initialize-a-new-hemlock-project">Initialize a new hemlock project</h4>
+<p>Run the following:</p>
 <pre><code class="bash">$ hlk init my-first-project
 </code></pre>
 
@@ -243,7 +247,18 @@ $ pip install -r local-requirements.txt # or pip3 install -r local-requirements.
 </code></pre>
 
 <p>It's good practice to use <a href="https://docs.python.org/3/tutorial/venv.html">virtual environments</a> and activate them whenever you're working on a project.</p>
-<h3 id="alternatively-from-scratch">Alternatively, from scratch</h3>
+<p><strong>Note.</strong> You need to be in the directory where your virtual environment exists to activate it.</p>
+<h4 id="if-using-wsl">If using WSL</h4>
+<p>If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable. Open a file which specifies your local environment variables:</p>
+<pre><code class="bash">$ code env/local-env.yml
+</code></pre>
+
+<p>And add the following line:</p>
+<pre><code class="yaml">WSL_DISTRIBUTION: Ubuntu # or other WSL distribution
+</code></pre>
+
+<h2 id="alternatively-from-scratch">Alternatively, from scratch</h2>
+<h4 id="initialize-a-new-hemlock-project_1">Initialize a new hemlock project</h4>
 <p>Create a folder for your project and change into it:</p>
 <pre><code class="bash">$ mkdir my-first-project
 $ cd my-first-project
@@ -258,6 +273,12 @@ $ source hemlock-venv/bin/activate
 <pre><code class="bash">$ pip install hemlock-survey # or pip3 install hemlock-survey
 </code></pre>
 
+<h4 id="if-using-wsl_1">If using WSL</h4>
+<p>If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable.</p>
+<pre><code class="bash">$ export WSL_DISTRIBUTION=Ubuntu # or other WSL distribution
+</code></pre>
+
+<p>Make sure your <code>WSL_DISTRIBUTION</code> environment variable is set every time you open a terminal.</p>
 <h2 id="preview-a-page-in-jupyter-notebook">Preview a page in jupyter notebook</h2>
 <p>Jupyter notebook is a great tool for iterating quickly on project designs. I recommend using it for most of your work. Open the jupyter dashboard with:</p>
 <pre><code class="bash">$ jupyter notebook
@@ -277,29 +298,7 @@ p.preview()
 <pre><code class="python">[os.remove(tmpfile) for tmpfile in app.tmpfiles]
 </code></pre>
 
-<h3 id="modifications-if-using-wsl">Modifications if using WSL</h3>
-<p>If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable. </p>
-<p>If using the hemlock template, open your local environment file:</p>
-<pre><code class="bash">$ code env/local-env.yml
-</code></pre>
-
-<p>And add the following line:</p>
-<pre><code class="yaml">WSL_DISTRIBUTION: Ubuntu # or other WSL distribution
-</code></pre>
-
-<p>If not using the hemlock template, export the environment variable:</p>
-<pre><code class="bash">$ export WSL_DISTRIBUTION=Ubuntu # or other WSL distribution
-</code></pre>
-
-<h3 id="modifications-if-not-using-the-template">Modifications if not using the template</h3>
-<p>If you're not using the hemlock template, create a new python3 jupyter notebook and enter the following in the first cell:</p>
-<pre><code class="python">from hemlock import push_app_context
-
-app = push_app_context()
-</code></pre>
-
-<p>This sets up your hemlock environment, including an <a href="https://flask.palletsprojects.com/en/1.1.x/appcontext/">application context</a>, in the notebook.</p>
-<h3 id="code-explanation">Code explanation</h3>
+<h4 id="code-explanation">Code explanation</h4>
 <p>The first line simply imports <code>Page</code> and <code>Label</code> objects.</p>
 <p>The next line, <code>p = Page(Label('&lt;p&gt;Hello, World!&lt;/p&gt;'))</code>, creates a <code>Page</code> instance. A <code>Page</code> contains a list of 'questions' which it displays to participants. We set a page's questions by passing them as arguments to the constructor, or by setting the page's <code>questions</code> attribute, meaning that the following are equivalent:</p>
 <pre><code class="python">p = Page(Label('&lt;p&gt;Label 0&lt;/p&gt;'), Label('&lt;p&gt;Label 1&lt;/p&gt;'))
