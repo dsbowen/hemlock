@@ -117,13 +117,12 @@ TIME_EXPIRED_TXT = 'You have exceeded your time limit for this survey'
 settings = {
     'clean_data': None,
     'csp': {
-        'default-src': ['\'self\'', '\'unsafe-inline\''],
+        'default-src': ['\'self\'', '\'unsafe-inline\'', 'data:'],
         'frame-src': 'https://youtube.com',
         'font-src': [
             'https://fonts.googleapis.com',
             'https://fonts.gstatic.com',
         ],
-        'img-src': ['\'self\'', 'data:'],
         'script-src': [
             '\'self\'',
             '\'unsafe-inline\'',
