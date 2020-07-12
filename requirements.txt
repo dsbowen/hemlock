@@ -5,6 +5,7 @@ flask-download-btn>=0.0.21
 flask-login>=0.4.1
 flask-socketio>=4.2.1
 flask-sqlalchemy>=2.4.1
+flask-talisman>=0.0.7
 flask-worker>=0.0.10
 pandas>=1.0.1
 python-docx>=0.8.10

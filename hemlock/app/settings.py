@@ -9,6 +9,10 @@ clean_data : callable or None, default=None
     profile. This callable takes and returns `pandas.DataFrame`. If `None`, no
     additional cleaning is performend.
 
+csp : dict
+    Content security policy for 
+    [flask-talisman](https://github.com/GoogleCloudPlatform/flask-talisman).
+
 duplicate_keys : list, default=[]
     List of keys (column names) on which to block duplicate participants. If
     empty, the app will not screen out duplicates.
@@ -112,6 +116,28 @@ TIME_EXPIRED_TXT = 'You have exceeded your time limit for this survey'
 
 settings = {
     'clean_data': None,
+    'csp': {
+        'default-src': ['\'self\'', '\'unsafe-inline\''],
+        'frame-src': 'https://youtube.com',
+        'font-src': [
+            'https://fonts.googleapis.com',
+            'https://fonts.gstatic.com',
+        ],
+        'img-src': ['\'self\'', 'data:'],
+        'script-src': [
+            '\'self\'',
+            '\'unsafe-inline\'',
+            'https://code.jquery.com', 
+            'https://cdn.jsdelivr.net', 
+            'https://stackpath.bootstrapcdn.com',
+        ],
+        'style-src-elem': [
+            '\'self\'',
+            '\'unsafe-inline\'',
+            'https://fonts.googleapis.com',
+            'https://stackpath.bootstrapcdn.com', 
+        ],
+    },
     'duplicate_keys': [],
     'password': '',
     'restart_option': True,
