@@ -59,6 +59,7 @@ nav:
     - Randomization: random.md
     - Statics: statics.md
     - Utilities: utils.md
+  - Security: security.md
 theme: readthedocs
 extra_css:
   - css/extra.css

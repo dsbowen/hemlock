@@ -7,7 +7,7 @@ from flask import request
 from sqlalchemy_orderingitem import OrderingItem
 
 import os
-import tempfile
+from tempfile import NamedTemporaryFile
 
 
 class ViewingPage(OrderingItem, db.Model):
@@ -63,12 +63,11 @@ class ViewingPage(OrderingItem, db.Model):
         path : str
             Path to temporary html file.
         """
-        dist = os.environ.get('WSL_DISTRIBUTION')
-        _, path = tempfile.mkstemp(suffix='.html')
         self.convert_rel_paths()
-        with open(path, 'w') as f:
+        with NamedTemporaryFile('w', suffix='.html', delete=False) as f:
             f.write(self.html)
-        return path
+            uri = f.name
+        return uri
 
     def convert_rel_paths(self):
         """

@@ -1,5 +1,26 @@
 # Setup
 
+<!-- 
+python3.6 on windows
+https://www.python.org/downloads/release/python-368/
+later versions don't have windows specific downloads
+then open terminal with cmd
+find python exe location with `where python`
+go there and change the exe from `python.exe` to `python3.exe`
+verify with `python3`
+`python3 -m pip install --upgrade pip`
+
+verify webbrowser with 
+```
+>>> import webbrowser
+>>> webbrowser.open('https://dsbowen.github.io/hemlock/')
+```
+
+windows download git https://git-scm.com/download/win
+
+CLI: export_env not working
+-->
+
 ## Essential
 
 1. Google Chrome. [Download here](https://www.google.com/chrome/).
@@ -24,11 +45,11 @@ $ pip3 install <my-requested-package>
 
 If one doesn't work, try the other.
 
-#### Windows users
+#### Windows and Redis
 
-I recommend installing Windows Subsystem for Linux (WSL) with the Ubuntu Linux distribution. Either WSL 1 or WSL 2 should work. This comes with python and pip. [Download instructions for WSL here](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+If you want to use hemlock's redis queue functionality, I recommend installing Windows Subsystem for Linux (WSL) with the Ubuntu Linux distribution. Either WSL 1 or WSL 2 should work. This comes with python and pip. [Download instructions for WSL here](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
-After you've installed Ubuntu, open a terminal window (WIN + R, then enter 'ubuntu\<xxxx\>', where \<xxxx\> is your version of ubuntu, e.g. 'ubuntu2004'). You will be prompted to create a username and password.
+After you've installed Ubuntu, open a terminal window (WIN + R, then enter 'ubuntu<xxxx>', where <xxxx> is your version of ubuntu, e.g. 'ubuntu2004'). You will be prompted to create a username and password.
 
 Verify your python installation with:
 
@@ -119,3 +140,9 @@ $ hlk setup win --git
 ### Jupyter
 
 Jupyter allows you to quickly iterate on project designs. For no good reason, I personally use Jupyter Notebook, not JupyterLab. [Download jupyter here](https://jupyter.org/install).
+
+Additionally, to activate virtual environments in jupyter:
+
+```bash
+$ pip3 install ipykernel
+```

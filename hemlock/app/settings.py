@@ -123,6 +123,7 @@ settings = {
             'https://fonts.googleapis.com',
             'https://fonts.gstatic.com',
         ],
+        'img-src': ['\'self\'', '\'unsafe-inline\'', 'data:'],
         'script-src': [
             '\'self\'',
             '\'unsafe-inline\'',

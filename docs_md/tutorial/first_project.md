@@ -20,7 +20,7 @@ Change into the project directory and check out the folder structure:
 
 ```bash
 $ cd my-first-project
-$ ls
+$ ls # dir on windows command prompt
 ```
 
 #### Set up your virtual environment
@@ -28,13 +28,13 @@ $ ls
 Activate your virtual environment:
 
 ```bash
-$ source hemlock-venv/bin/activate
+$ source hemlock-venv/bin/activate # hemlock-venv\scripts\activate.bat on windows command prompt
 ```
 
 Install the required python packages to run this project locally:
 
 ```bash
-$ pip install -r local-requirements.txt # or pip3 install -r local-requirements.txt
+$ pip install -r local-requirements.txt
 ```
 
 Add your virtual environment to jupyter:
@@ -67,9 +67,9 @@ $ explorer.exe .
 
 This will open a file explorer. At the top of the file explorer, you'll see:
 
-> \<my-wsl-distribution\>\\home\\\<my-wsl-username\>\\my-first-project
+> <my-wsl-distribution>\\home\\<my-wsl-username>\\my-first-project
 
-We're looking for \<my-wsl-distribution\>.
+We're looking for <my-wsl-distribution>.
 
 #### Preview a page in jupyter notebook
 
@@ -100,6 +100,8 @@ This opens a preview of your page in your browser.
 
 Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:
 
+<!-- not working on windows native -->
+
 ```python
 [os.remove(tmpfile) for tmpfile in app.tmpfiles]
 ```
@@ -121,7 +123,7 @@ Create your virtual environment and activate it:
 
 ```bash
 $ python3 -m venv hemlock-venv
-$ source hemlock-venv/bin/activate
+$ source hemlock-venv/bin/activate # hemlock-venv\scripts\activate.bat on windows command prompt
 ```
 
 Install hemlock and ipykernel:
@@ -154,9 +156,9 @@ $ explorer.exe .
 
 This will open a file explorer. At the top of the file explorer, you'll see:
 
-> \<my-wsl-distribution\>\\home\\\<my-wsl-username\>\\my-first-project
+> <my-wsl-distribution>\\home\\<my-wsl-username>\\my-first-project
 
-We're looking for \<my-wsl-distribution\>.
+We're looking for <my-wsl-distribution>.
 
 #### Preview a page in jupyter notebook
 

@@ -101,7 +101,7 @@ As the name `blackboard.ipynb` suggests, I treat jupyter like a blackboard. Once
 You may also want to clear the database after running your app:
 
 ```
-$ rm data.db
+$ rm data.db # del data.db on windows command prompt
 ```
 
 ## Summary
