@@ -9,10 +9,6 @@ clean_data : callable or None, default=None
     profile. This callable takes and returns `pandas.DataFrame`. If `None`, no
     additional cleaning is performend.
 
-csp : dict
-    Content security policy for 
-    [flask-talisman](https://github.com/GoogleCloudPlatform/flask-talisman).
-
 duplicate_keys : list, default=[]
     List of keys (column names) on which to block duplicate participants. If
     empty, the app will not screen out duplicates.
@@ -86,6 +82,14 @@ loading_img_blueprint : str or None, default='hemlock'
 loading_img_filename : str or None, default='img/worker_loading.gif'
     Name of the loading image file.
 
+Talisman
+--------
+content_security_policy : dict
+    Content security policy for 
+    [flask-talisman](https://github.com/GoogleCloudPlatform/flask-talisman).
+    Default allows for third party content from Google API, JQuery, JSDeliver,
+    Bootstrap, and YouTube.
+
 Notes
 -----
 See <https://flask.palletsprojects.com/en/1.1.x/config/> for more detail on 
@@ -116,28 +120,6 @@ TIME_EXPIRED_TXT = 'You have exceeded your time limit for this survey'
 
 settings = {
     'clean_data': None,
-    'csp': {
-        'default-src': ['\'self\'', '\'unsafe-inline\'', 'data:'],
-        'frame-src': 'https://youtube.com',
-        'font-src': [
-            'https://fonts.googleapis.com',
-            'https://fonts.gstatic.com',
-        ],
-        'img-src': ['\'self\'', '\'unsafe-inline\'', 'data:'],
-        'script-src': [
-            '\'self\'',
-            '\'unsafe-inline\'',
-            'https://code.jquery.com', 
-            'https://cdn.jsdelivr.net', 
-            'https://stackpath.bootstrapcdn.com',
-        ],
-        'style-src-elem': [
-            '\'self\'',
-            '\'unsafe-inline\'',
-            'https://fonts.googleapis.com',
-            'https://stackpath.bootstrapcdn.com', 
-        ],
-    },
     'duplicate_keys': [],
     'password': '',
     'restart_option': True,
@@ -165,4 +147,33 @@ settings = {
         'loading_img_blueprint': 'hemlock',
         'loading_img_filename': 'img/worker_loading.gif'
     },
+    'Talisman': {
+        'content_security_policy': {
+            'default-src': ['\'self\'', '\'unsafe-inline\'', 'data:'],
+            'frame-src': [
+                '\'self\'', 
+                '\'unsafe-inline\'', 
+                'data:',
+                'https://youtube.com',
+            ],
+            'font-src': [
+                'https://fonts.googleapis.com',
+                'https://fonts.gstatic.com',
+            ],
+            'img-src': ['\'self\'', '\'unsafe-inline\'', 'data:'],
+            'script-src': [
+                '\'self\'',
+                '\'unsafe-inline\'',
+                'https://code.jquery.com', 
+                'https://cdn.jsdelivr.net', 
+                'https://stackpath.bootstrapcdn.com',
+            ],
+            'style-src-elem': [
+                '\'self\'',
+                '\'unsafe-inline\'',
+                'https://fonts.googleapis.com',
+                'https://stackpath.bootstrapcdn.com', 
+            ],
+        },
+    }
 }

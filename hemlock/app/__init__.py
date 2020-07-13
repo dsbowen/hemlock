@@ -155,4 +155,4 @@ def _init_extensions(app, settings):
     # scheduler.start()
     socketio.init_app(app, message_queue=app.config.get('REDIS_URL'))
     manager.init_app(app, **settings.get('Manager'))
-    talisman.init_app(app, content_security_policy=settings['csp'])
+    talisman.init_app(app, **settings.get('Talisman'))

@@ -7,7 +7,6 @@ nav:
   - Home: index.md
   - Tutorial:
     - Introduction: tutorial/intro.md
-    - Setup: tutorial/setup.md
     - Your first project: tutorial/first_project.md
     - Running hemlock locally: tutorial/run_local.md
     - Question polymorphs: tutorial/qpolymorphs.md
@@ -24,8 +23,11 @@ nav:
     - Debugging: tutorial/debug.md
     - Deployment: tutorial/deploy.md
     - Bells and whistles: tutorial/extra.md
+  - Setup:
+    - Windows: setup/win.md
+    - Windows subsystem for linux: setup/wsl.md
   - Application: 
-    - Basics: app.md
+    - Setting and initialization: app.md
     - Debugging: debug.md
   - Functions:
     - Compile: compile_functions.md

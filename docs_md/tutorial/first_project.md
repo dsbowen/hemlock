@@ -1,8 +1,26 @@
 # Your first project
 
-In the previous part of the tutorial, you installed the necessary software to get started with hemlock.
-
 By the end of this part of the tutorial, you'll be able to initialize a new hemlock project and create and preview hemlock survey pages.
+
+## Getting started
+
+Before getting started, I recommend you visit the setup page for your OS and download the following:
+
+1. Git and github
+2. Python3 and pip3
+3. Hemlock-CLI
+4. Visual studio code
+5. Jupyter
+6. Google chrome
+
+You can save the rest of the setup for later.
+
+Find the setup page for your OS here:
+
+1. [Windows](../setup/win.md)
+2. [Windows Subsystem for Linux](../setup/wsl.md)
+3. Mac: coming soon
+4. Linux: coming soon
 
 ## From the hemlock template (recommended)
 
@@ -20,18 +38,26 @@ Change into the project directory and check out the folder structure:
 
 ```bash
 $ cd my-first-project
-$ ls # dir on windows command prompt
+$ ls
 ```
 
 #### Set up your virtual environment
 
-Activate your virtual environment:
+Activate your virtual environment.
+
+Activate from git bash:
 
 ```bash
-$ source hemlock-venv/bin/activate # hemlock-venv\scripts\activate.bat on windows command prompt
+$ source hemlock-venv/scripts/activate
 ```
 
-Install the required python packages to run this project locally:
+Activate from WSL:
+
+```bash
+$ source hemlock-venv/bin/activate
+```
+
+Next, install the required python packages to run this project locally:
 
 ```bash
 $ pip install -r local-requirements.txt
@@ -123,10 +149,27 @@ Create your virtual environment and activate it:
 
 ```bash
 $ python3 -m venv hemlock-venv
-$ source hemlock-venv/bin/activate # hemlock-venv\scripts\activate.bat on windows command prompt
 ```
 
-Install hemlock and ipykernel:
+Activate from git bash:
+
+```bash
+$ source hemlock-venv/scripts/activate
+```
+
+Activate from Windows command prompt:
+
+```bash
+$ hemlock-venv\scripts\activate.bat
+```
+
+Activate from WSL:
+
+```bash
+$ source hemlock-venv/bin/activate
+```
+
+Next, install hemlock and ipykernel:
 
 ```bash
 $ pip install hemlock-survey ipykernel

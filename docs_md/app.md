@@ -46,7 +46,7 @@
 ##hemlock.app.**push_app_context**
 
 <p class="func-header">
-    <i>def</i> hemlock.app.<b>push_app_context</b>(<i></i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L40">[source]</a>
+    <i>def</i> hemlock.app.<b>push_app_context</b>(<i></i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L42">[source]</a>
 </p>
 
 Push an app context for debugging in shell or notebook.
@@ -82,7 +82,7 @@ Out:
 ##hemlock.app.**create_app**
 
 <p class="func-header">
-    <i>def</i> hemlock.app.<b>create_app</b>(<i>settings=settings</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L71">[source]</a>
+    <i>def</i> hemlock.app.<b>create_app</b>(<i>settings=settings</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L73">[source]</a>
 </p>
 
 Create a Hemlock application.
@@ -221,6 +221,13 @@ Below are the default settings for Hemlock applications and extensions.
 <b>loading_img_filename : <i>str or None, default='img/worker_loading.gif'</i></b>
 <p class="attr">
     Name of the loading image file.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Talisman:</b></td>
+    <td class="field-body" width="100%"><b>content_security_policy : <i>dict</i></b>
+<p class="attr">
+    Content security policy for <a href="https://github.com/GoogleCloudPlatform/flask-talisman">flask-talisman</a>. Default allows for third party content from Google API, JQuery, JSDeliver, and Bootstrap.
 </p></td>
 </tr>
     </tbody>
