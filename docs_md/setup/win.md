@@ -17,7 +17,7 @@ This command moves you up a directory.
 
 **Note 1.** You don't type `$`; it simply indicates the beginning of a bash command.
 
-**Note 2.** Always make sure you're in your home directory after you open the git bash terminal.
+**Note 2.** For this tutorial, always make sure to change to your home directory after you open the git bash terminal.
 
 Verify your git installation:
 
@@ -30,7 +30,7 @@ Then, create a [github account here](https://github.com). Configure your github 
 
 ```bash
 $ git config --global user.name <my-github-username>
-$ git config --global user.email <my-github.user-email>
+$ git config --global user.email <my-github-user-email>
 ```
 
 ## Python3 and pip3
@@ -47,10 +47,10 @@ Close and re-open your terminal window and enter:
 
 ```bash
 $ which python
-/c/Users/DBSpe/AppData/Local/Programs/Python/Python36-32/python
+/c/Users/DBSpe/AppData/Local/Programs/Python/Python<xx-xx>/python
 ```
 
-The line underneath `which python` is the location of your python executable, where <xx-xx> is your python version.
+The line underneath `which python` is the location of your python executable, where 'xx-xx' is your python version.
 
 Change directories into this folder, for example:
 
@@ -61,7 +61,7 @@ $ cd appdata/local/programs/python/python<xx-xx>
 Rename `python.exe` to `python3.exe`:
 
 ```bash
-$ ls python.exe python3.exe
+$ mv python.exe python3.exe
 ```
 
 Verify your python installation:
@@ -81,7 +81,7 @@ Verify your pip installation:
 
 ```bash
 $ pip3 --version
-pip xx.x.x from c:\users\dbspe\appdata\local\programs\python\python36-32\lib\site-packages\pip (python 3.x)
+pip xx.x.x from c:\users\dbspe\appdata\local\programs\python\pythonxx-xx\lib\site-packages\pip (python 3.x)
 ```
 
 Now, go back to your home directory (enter `cd ..` a few times).
@@ -103,7 +103,7 @@ hlk x.x.x
 
 ## Visual studio code
 
-I recommend visual studio code for editing python files. [Download here](https://code.visualstudio.com/).
+I recommend visual studio code for editing python files. [Download VS code here](https://code.visualstudio.com/).
 
 Close and re-open your terminal. Verify your VS code installation:
 
@@ -159,6 +159,20 @@ Close and re-open your terminal. Verify your chromedriver installation:
 
 ```bash
 $ which chromedriver.exe
+/c/users/<my-windows-username>/webdrivers/chromedriver.exe
+```
+
+#### Chrome and chromedriver compatibility
+
+As of 07/14/2020, `hlk setup win --chromedriver` installs chromedriver for chrome 83. While chrome updates automatically, chromedriver does not. This means that you will encounter compatibility issues when chrome updates to version 84+. To fix this:
+
+1. [Download the latest chromedriver here](https://chromedriver.chromium.org/downloads).
+2. Put the chrome executable in `C:\users\<my-windows-username>\webdrivers\`.
+
+Chromedriver should still be in your path, which you can verify:
+
+```bash
+$ which chromedriver
 /c/users/<my-windows-username>/webdrivers/chromedriver.exe
 ```
 

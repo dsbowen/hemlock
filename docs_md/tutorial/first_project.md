@@ -6,21 +6,21 @@ By the end of this part of the tutorial, you'll be able to initialize a new heml
 
 Before getting started, I recommend you visit the setup page for your OS and download the following:
 
-1. Git and github
-2. Python3 and pip3
-3. Hemlock-CLI
-4. Visual studio code
-5. Jupyter
-6. Google chrome
+- Git and github
+- Python3 and pip3
+- Hemlock-CLI
+- Visual studio code
+- Jupyter
+- Google chrome
 
 You can save the rest of the setup for later.
 
 Find the setup page for your OS here:
 
-1. [Windows](../setup/win.md)
-2. [Windows Subsystem for Linux](../setup/wsl.md)
-3. Mac: coming soon
-4. Linux: coming soon
+- [Windows](../setup/win.md)
+- [Windows Subsystem for Linux](../setup/wsl.md)
+- Mac: coming soon
+- Linux: coming soon
 
 ## From the hemlock template (recommended)
 
@@ -93,9 +93,9 @@ $ explorer.exe .
 
 This will open a file explorer. At the top of the file explorer, you'll see:
 
-> <my-wsl-distribution>\\home\\<my-wsl-username>\\my-first-project
+> `<my-wsl-distribution>\home\<my-wsl-username>\my-first-project`
 
-We're looking for <my-wsl-distribution>.
+We're looking for `<my-wsl-distribution>`.
 
 #### Preview a page in jupyter notebook
 
@@ -199,9 +199,9 @@ $ explorer.exe .
 
 This will open a file explorer. At the top of the file explorer, you'll see:
 
-> <my-wsl-distribution>\\home\\<my-wsl-username>\\my-first-project
+> `<my-wsl-distribution>\home\<my-wsl-username>\my-first-project`
 
-We're looking for <my-wsl-distribution>.
+We're looking for `<my-wsl-distribution>`.
 
 #### Preview a page in jupyter notebook
 
@@ -220,7 +220,7 @@ Run the following in the first cell of your notebook:
 ```python
 from hemlock import push_app_context
 
-push_app_context()
+app = push_app_context()
 ```
 
 This sets up the hemlock environment, including the application context. It's not important right now to understand exactly what it does.

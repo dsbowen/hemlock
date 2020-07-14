@@ -25,7 +25,9 @@ nav:
     - Bells and whistles: tutorial/extra.md
   - Setup:
     - Windows: setup/win.md
-    - Windows subsystem for linux: setup/wsl.md
+    - Windows Subsystem for Linux: setup/wsl.md
+    - Mac: setup/mac.md
+    - Linux: setup/linux.md
   - Application: 
     - Setting and initialization: app.md
     - Debugging: debug.md

@@ -41,9 +41,9 @@ from sqlalchemy_mutablesoup import MutableSoupType
 
 import os
 import re
-import tempfile
 import webbrowser
 from random import shuffle, random
+from tempfile import NamedTemporaryFile
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -578,21 +578,18 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         This method does not run the compile functions.
         """
         dist = os.environ.get('WSL_DISTRIBUTION')
-        _, path = tempfile.mkstemp(suffix='.html')
-        if hasattr(current_app, 'tmpfiles'):
-            current_app.tmpfiles.append(path)
         soup = self._render(as_str=False)
         self._convert_rel_paths(soup, 'href', dist)
         self._convert_rel_paths(soup, 'src', dist)
-        with open(path, 'w') as f:
+        with NamedTemporaryFile('w', suffix='.html', delete=False) as f:
             f.write(str(soup))
-        preview_path = 'file://'+(
-            'wsl$/'+ dist + path if dist else os.path.realpath(path)
-        )
+            uri = 'file://'+('wsl$/'+ dist + f.name if dist else f.name)
+            if hasattr(current_app, 'tmpfiles'):
+                current_app.tmpfiles.append(f.name)
         if driver is None:
-            webbrowser.open(preview_path)
+            webbrowser.open(uri)
         else:
-            driver.get(preview_path)
+            driver.get(uri)
         return self
 
     def _convert_rel_paths(self, soup, url_attr, dist=None):

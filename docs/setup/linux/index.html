@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../../img/favicon.ico">
-  <title>Setup - Hemlock</title>
+  <title>Linux - Hemlock</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../../css/theme.css" />
@@ -19,8 +19,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Setup";
-    var mkdocs_page_input_path = "tutorial/setup.md";
+    var mkdocs_page_name = "Linux";
+    var mkdocs_page_input_path = "setup/linux.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -53,81 +53,58 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Tutorial</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/intro/">Introduction</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/first_project/">Your first project</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/run_local/">Running hemlock locally</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/qpolymorphs/">Question polymorphs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/data/">Data</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/validate/">Validate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/submit/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/compile/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/navigate/">Navigate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/page_logic/">Page logic</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/comp_check/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/random_ass/">Random assignment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/proposer_branch/">Proposer branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/responder_branch/">Responder branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/debug/">Debugging</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/deploy/">Deployment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/extra/">Bells and whistles</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Setup</span></p>
                 <ul class="current">
-                    <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../win/">Windows</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Setup</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../wsl/">Windows Subsystem for Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../mac/">Mac</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Linux</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#essential">Essential</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#pip-versus-pip3">pip versus pip3</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#windows-users">Windows users</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#recommended">Recommended</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#hemlock-cli">Hemlock-CLI</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#chrome">Chrome</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#if-using-wsl">If using WSL</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#if-not-using-wsl">If not using WSL</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#git">Git</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#if-using-wsl_1">If using WSL</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#if-not-using-wsl_1">If not using WSL</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#jupyter">Jupyter</a>
-    </li>
-        </ul>
-    </li>
     </ul>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../first_project/">Your first project</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../run_local/">Running hemlock locally</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../qpolymorphs/">Question polymorphs</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../data/">Data</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../validate/">Validate</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../submit/">Submit</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../compile/">Compile</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../navigate/">Navigate</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../page_logic/">Page logic</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../comp_check/">Comprehension check</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../random_ass/">Random assignment</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../proposer_branch/">Proposer branch</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../responder_branch/">Responder branch</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../debug/">Debugging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../deploy/">Deployment</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../extra/">Bells and whistles</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Application</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Basics</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Setting and initialization</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../debug/">Debugging</a>
                     </li>
@@ -200,6 +177,10 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../utils/">Utilities</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -221,14 +202,14 @@
     
       
         
-          <li>Tutorial &raquo;</li>
+          <li>Setup &raquo;</li>
         
       
     
-    <li>Setup</li>
+    <li>Linux</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/tutorial/setup.md"
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/setup/linux.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -239,83 +220,19 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="setup">Setup</h1>
-<h2 id="essential">Essential</h2>
+                <h1 id="linux-setup-coming-soon">Linux setup coming soon</h1>
+<p>Recommended software:</p>
 <ol>
-<li>Google Chrome. <a href="https://www.google.com/chrome/">Download here</a>.</li>
-<li>Python3 and pip3, recommended version 3.6. This is hemlock's primary language. <a href="https://www.python.org/downloads/">Download python here</a>.</li>
-<li>A way to open and edit python files; recommended Visual Studio Code. <a href="https://code.visualstudio.com/">Download here</a>.</li>
+<li>Python3 and pip3.</li>
+<li>Hemlock-cli; <code>pip install hemlock-cli</code>.</li>
+<li>Git and github.</li>
+<li>A way to edit python code. Recommended visual studio code.</li>
+<li>Jupyter notebook.</li>
+<li>Google chrome</li>
+<li>Chromedriver</li>
+<li>Heroku and heroku-cli.</li>
 </ol>
-<h2 id="pip-versus-pip3">pip versus pip3</h2>
-<p>You'll install several python packages using pip. Conventionally, the command to install these is:</p>
-<pre><code class="bash">$ pip install &lt;my-requested-package&gt;
-</code></pre>
-
-<p><strong>Note 1.</strong> You don't type <code>$</code>; this just means 'the start of a command in your terminal window'.</p>
-<p><strong>Note 2.</strong> Depending on your operating system, you may need to replace <code>pip</code> with <code>pip3</code>:</p>
-<pre><code class="bash">$ pip3 install &lt;my-requested-package&gt;
-</code></pre>
-
-<p>If one doesn't work, try the other.</p>
-<h4 id="windows-users">Windows users</h4>
-<p>I recommend installing Windows Subsystem for Linux (WSL) with the Ubuntu Linux distribution. Either WSL 1 or WSL 2 should work. This comes with python and pip. <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Download instructions for WSL here</a>.</p>
-<p>After you've installed Ubuntu, open a terminal window (WIN + R, then enter 'ubuntu\&lt;xxxx>', where \&lt;xxxx> is your version of ubuntu, e.g. 'ubuntu2004'). You will be prompted to create a username and password.</p>
-<p>Verify your python installation with:</p>
-<pre><code>$ python3
-Python 3.6.x
-</code></pre>
-
-<p>Update your package lists with:</p>
-<pre><code class="bash">$ sudo apt-get update
-</code></pre>
-
-<p>Install pip3 with:</p>
-<pre><code class="bash">$ sudo apt install -f -y python3-pip
-</code></pre>
-
-<p>Respond 'Yes' if asked whether you want to restart services automatically.</p>
-<p>Verify your pip3 installation:</p>
-<pre><code class="bash">$ pip3 --version
-pip x.x.x from /usr/lib/python3/dist-packages (python 3.6)
-</code></pre>
-
-<h2 id="recommended">Recommended</h2>
-<p>The following aren't necessary to use hemlock, but they will make your life easier. The rest of the tutorial assumes you have these.</p>
-<h3 id="hemlock-cli">Hemlock-CLI</h3>
-<p>Use pip to install the hemlock command line interface (CLI).</p>
-<pre><code class="bash">$ pip install hemlock-cli
-</code></pre>
-
-<p>Verify your installation:</p>
-<pre><code class="bash">$ hlk --version
-hlk, version x.x.x
-</code></pre>
-
-<h3 id="chrome">Chrome</h3>
-<p>I assume most users will access your hemlock applications through Google chrome.</p>
-<h5 id="if-using-wsl">If using WSL</h5>
-<p>To set chrome as your default browser from WSL, run:</p>
-<pre><code class="bash">$ hlk setup win --chrome
-</code></pre>
-
-<p>Close and re-open your terminal, then verify your <code>BROWSER</code> variable:</p>
-<pre><code class="bash">$ echo $BROWSER
-/mnt/c/program files (x86)/google/chrome/application/chrome.exe
-</code></pre>
-
-<h5 id="if-not-using-wsl">If not using WSL</h5>
-<p>You will need a <code>BROWSER</code> environment variable, which should be set for you automatically.</p>
-<h3 id="git">Git</h3>
-<p>Git and github are version control tools for sharing, downloading, and collaborating on software, including hemock projects. </p>
-<h5 id="if-using-wsl_1">If using WSL</h5>
-<p>Run:</p>
-<pre><code class="bash">$ hlk setup win --git
-</code></pre>
-
-<h5 id="if-not-using-wsl_1">If not using WSL</h5>
-<p><a href="https://git-scm.com/downloads">Download git here</a>, and <a href="https://github.com/">register for github here</a>.</p>
-<h3 id="jupyter">Jupyter</h3>
-<p>Jupyter allows you to quickly iterate on project designs. For no good reason, I personally use Jupyter Notebook, not JupyterLab. <a href="https://jupyter.org/install">Download jupyter here</a>.</p>
+<p>Let's be honest, if you're using Linux, you probably don't need detailed setup instructions anyway. (But they are coming!)</p>
               
             </div>
           </div>
@@ -323,10 +240,10 @@ hlk, version x.x.x
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../first_project/" class="btn btn-neutral float-right" title="Your first project">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../../app/" class="btn btn-neutral float-right" title="Setting and initialization">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../intro/" class="btn btn-neutral" title="Introduction"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../mac/" class="btn btn-neutral" title="Mac"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -354,10 +271,10 @@ hlk, version x.x.x
           <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../intro/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../mac/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../first_project/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../../app/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

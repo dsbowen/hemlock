@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Basics - Hemlock</title>
+  <title>Setting and initialization - Hemlock</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -19,7 +19,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Basics";
+    var mkdocs_page_name = "Setting and initialization";
     var mkdocs_page_input_path = "app.md";
     var mkdocs_page_url = null;
   </script>
@@ -56,8 +56,6 @@
                 <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../tutorial/intro/">Introduction</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/setup/">Setup</a>
-                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../tutorial/first_project/">Your first project</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../tutorial/run_local/">Running hemlock locally</a>
@@ -91,9 +89,20 @@
                     <li class="toctree-l1"><a class="reference internal" href="../tutorial/extra/">Bells and whistles</a>
                     </li>
                 </ul>
+                <p class="caption"><span class="caption-text">Setup</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../setup/win/">Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../setup/wsl/">Windows Subsystem for Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../setup/mac/">Mac</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../setup/linux/">Linux</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Application</span></p>
                 <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Basics</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Setting and initialization</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#hemlockapppush_app_context">hemlock.app.push_app_context</a>
         <ul>
@@ -186,6 +195,10 @@
                     <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -211,7 +224,7 @@
         
       
     
-    <li>Basics</li>
+    <li>Setting and initialization</li>
     <li class="wy-breadcrumbs-aside">
       
         <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/app.md"
@@ -266,7 +279,7 @@
 
 <h2 id="hemlockapppush_app_context">hemlock.app.<strong>push_app_context</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.app.<b>push_app_context</b>(<i></i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L40">[source]</a>
+    <i>def</i> hemlock.app.<b>push_app_context</b>(<i></i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L42">[source]</a>
 </p>
 
 <p>Push an app context for debugging in shell or notebook.</p>
@@ -296,7 +309,7 @@ app = push_app_context()
 
 <h2 id="hemlockappcreate_app">hemlock.app.<strong>create_app</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.app.<b>create_app</b>(<i>settings=settings</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L71">[source]</a>
+    <i>def</i> hemlock.app.<b>create_app</b>(<i>settings=settings</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L73">[source]</a>
 </p>
 
 <p>Create a Hemlock application.</p>
@@ -431,6 +444,13 @@ Page().preview()
     Name of the loading image file.
 </p></td>
 </tr>
+<tr class="field">
+    <th class="field-name"><b>Talisman:</b></td>
+    <td class="field-body" width="100%"><b>content_security_policy : <i>dict</i></b>
+<p class="attr">
+    Content security policy for <a href="https://github.com/GoogleCloudPlatform/flask-talisman">flask-talisman</a>. Default allows for third party content from Google API, JQuery, JSDeliver, and Bootstrap.
+</p></td>
+</tr>
     </tbody>
 </table>
 
@@ -451,7 +471,7 @@ Manager settings.</p>
         <a href="../debug/" class="btn btn-neutral float-right" title="Debugging">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../tutorial/extra/" class="btn btn-neutral" title="Bells and whistles"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../setup/linux/" class="btn btn-neutral" title="Linux"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -479,7 +499,7 @@ Manager settings.</p>
           <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../tutorial/extra/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../setup/linux/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../debug/" style="color: #fcfcfc">Next &raquo;</a></span>

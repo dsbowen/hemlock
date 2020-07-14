@@ -56,8 +56,6 @@
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a>
-                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../first_project/">Your first project</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../run_local/">Running hemlock locally</a>
@@ -105,9 +103,20 @@
                     <li class="toctree-l1"><a class="reference internal" href="../extra/">Bells and whistles</a>
                     </li>
                 </ul>
+                <p class="caption"><span class="caption-text">Setup</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/win/">Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/wsl/">Windows Subsystem for Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/mac/">Mac</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/linux/">Linux</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Application</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Basics</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Setting and initialization</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../debug/">Debugging</a>
                     </li>
@@ -178,6 +187,10 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../statics/">Statics</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../utils/">Utilities</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
       </div>
@@ -344,10 +357,6 @@ def start():
 <li>Variables like <code>GenderMaleIndex</code> and <code>GenderFemaleIndex</code> record the order in which a question displayed its choices.</li>
 <li>The data of questions for which you can select multiple choices are automatically one-hot encoded. For example, if <code>RaceWhite</code> and <code>RaceAsian</code> are both 1, and the rest of the race variables are 0, this means means the participant is part White and part Asian.</li>
 </ol>
-<p><strong>Note.</strong> You'll often want to wipe your database as you add and remove variables from your survey. To remove your database, open your terminal and enter:</p>
-<pre><code class="bash">$ rm data.db
-</code></pre>
-
 <h2 id="summary">Summary</h2>
 <p>In this part of the tutorial, you learned how to store and download data.</p>
 <p>In the next part of the tutorial, you'll implement validation for participant responses.</p>

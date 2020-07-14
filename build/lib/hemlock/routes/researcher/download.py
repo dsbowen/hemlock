@@ -323,10 +323,10 @@ class FileCreator():
             )
             self.driver.set_window_size(width, height+HEIGHT_BUFFER)
             form = self.driver.find_element_by_tag_name('form')
-            page_bytes = BytesIO()
-            page_bytes.write(form.screenshot_as_png)
-            doc.add_picture(page_bytes, width=SURVEY_VIEW_IMG_WIDTH)
-            page_bytes.close()
+            with BytesIO() as page_bytes:
+                page_bytes = BytesIO()
+                page_bytes.write(form.screenshot_as_png)
+                doc.add_picture(page_bytes, width=SURVEY_VIEW_IMG_WIDTH)
         except:
             pass
         os.remove(path)
@@ -349,15 +349,14 @@ class FileCreator():
         """
         stage = 'Zipping files'
         yield self.btn.reset(stage, 0)
-        zipf_bytes = BytesIO()
-        zipf = ZipFile(zipf_bytes, 'w')
-        for i, (filename, io) in enumerate(self.files):
-            yield self.btn.report(stage, 100.*i/len(self.files))
-            zipf.writestr(filename, io.getvalue())
-            io.close()
-        zipf.close()
-        data = b64encode(zipf_bytes.getvalue()).decode()
-        url = 'data:application/zip;base64,' + data
-        self.btn.tmp_downloads = [(url, 'hemlock-survey-data.zip')]
-        zipf_bytes.close()
+        with BytesIO() as zipf_bytes:
+            zipf = ZipFile(zipf_bytes, 'w')
+            for i, (filename, io) in enumerate(self.files):
+                yield self.btn.report(stage, 100.*i/len(self.files))
+                zipf.writestr(filename, io.getvalue())
+                io.close()
+            zipf.close()
+            data = b64encode(zipf_bytes.getvalue()).decode()
+            url = 'data:application/zip;base64,' + data
+            self.btn.tmp_downloads = [(url, 'hemlock-survey-data.zip')]
         yield self.btn.report(stage, 100)

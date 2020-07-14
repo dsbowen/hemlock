@@ -162,12 +162,6 @@ Take a look at the data. In addition to what we've already covered, there are a 
 1. Variables like `GenderMaleIndex` and `GenderFemaleIndex` record the order in which a question displayed its choices.
 2. The data of questions for which you can select multiple choices are automatically one-hot encoded. For example, if `RaceWhite` and `RaceAsian` are both 1, and the rest of the race variables are 0, this means means the participant is part White and part Asian.
 
-**Note.** You'll often want to wipe your database as you add and remove variables from your survey. To remove your database, open your terminal and enter:
-
-```bash
-$ rm data.db
-```
-
 ## Summary
 
 In this part of the tutorial, you learned how to store and download data.

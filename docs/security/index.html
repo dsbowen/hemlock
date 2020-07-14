@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Software - Hemlock</title>
+  <title>Security - Hemlock</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -19,8 +19,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Software";
-    var mkdocs_page_input_path = "software.md";
+    var mkdocs_page_name = "Security";
+    var mkdocs_page_input_path = "security.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -56,8 +56,6 @@
                 <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../tutorial/intro/">Introduction</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../tutorial/setup/">Setup</a>
-                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../tutorial/first_project/">Your first project</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../tutorial/run_local/">Running hemlock locally</a>
@@ -91,9 +89,20 @@
                     <li class="toctree-l1"><a class="reference internal" href="../tutorial/extra/">Bells and whistles</a>
                     </li>
                 </ul>
+                <p class="caption"><span class="caption-text">Setup</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../setup/win/">Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../setup/wsl/">Windows Subsystem for Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../setup/mac/">Mac</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../setup/linux/">Linux</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Application</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../app/">Basics</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../app/">Setting and initialization</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../debug/">Debugging</a>
                     </li>
@@ -166,6 +175,20 @@
                     <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
                     </li>
                 </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Security</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#heroku-and-amazon-web-services">Heroku and Amazon Web Services</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#secure-sockets-layer-ssl-certification">Secure Sockets Layer (SSL) certification</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#password-protection">Password protection</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cross-site-request-forgery-csrf-protection">Cross-site request forgery (CSRF) protection</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -187,10 +210,10 @@
     
       
     
-    <li>Software</li>
+    <li>Security</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/software.md"
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/security.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -201,38 +224,40 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="software">Software</h1>
-<p>Find installations instructions for:</p>
+                <h1 id="security-features">Security features</h1>
+<h2 id="heroku-and-amazon-web-services">Heroku and Amazon Web Services</h2>
+<p>The location of your data depends on your method of deployment. In the tutorial, I suggest deploying through heroku, which in turn deploys your application using AWS cloud computing. Both haven extensive security infrastructures. Read more about <a href="https://www.heroku.com/policy/security">heroku security</a> and <a href="https://aws.amazon.com/security/">AWS security</a>.</p>
+<h2 id="secure-sockets-layer-ssl-certification">Secure Sockets Layer (SSL) certification</h2>
+<p>Hemlock-CLI's <code>hlk production</code> command, which scales your application in a production environment before distribution to participants, automatically creates an SSL certificate for your application. Hemlock uses <a href="https://github.com/GoogleCloudPlatform/flask-talisman">flask talisman</a>, developed by Google Cloud Platform, to force HTTPS requests.</p>
+<p>Hemlock's default content security policy allows application content from only the following third parties:</p>
 <ol>
-<li><a href="win_setup.md">Windows</a></li>
-<li>Mac and Linux in progress</li>
+<li>Google API</li>
+<li>JQuery</li>
+<li>JSDeliver</li>
+<li>Bootstrap</li>
 </ol>
-<p>Here are the prerequisites I recommend to take advantage of the full range of tools Hemlock offers. Unless otherwise specified, I recommend you download the latest stable version of the following:</p>
-<p><strong>Essential</strong></p>
-<ol>
-<li><em>Python3 and pip3</em>. Python is Hemlock's primary language. pip allows you to install Python packages, including Hemlock itself. I recommend <a href="https://www.python.org/downloads/release/python-366/">Python3.6</a>, the version you will use for Heroku deployment (see below). Additionally, you should be able to create <a href="https://docs.python.org/3/library/venv.html">virtual environments</a>.</li>
-<li><em>Code editor</em>. I work in <a href="https://code.visualstudio.com/download">Visual Studio (VS) Code</a> with the <a href="https://code.visualstudio.com/docs/remote/wsl">Remote-WSL</a> extension, but any code editor will do.</li>
-</ol>
-<p><strong>Strongly recommended</strong></p>
-<ol>
-<li><em>Heroku and Heroku-CLI</em>. <a href="https://heroku.com/">Heroku</a> is an inexpensive and accessible service for deploying web applications. The Hemlock command line interface builds on the <a href="https://devcenter.heroku.com/articles/heroku-cli">Heroku command line interface (CLI)</a>.</li>
-<li><em>Git</em>. <a href="https://git-scm.com/">Git</a> is a version control system which I use to 'push' applications to Heroku. Relatedly, I recommend <a href="https://github.com/">Github</a> for backing up Hemlock projects and sharing them with collaborators.</li>
-</ol>
-<p>With the above software, you are ready to create, share, and deploy Hemlock projects.</p>
-<p>The software below is encouraged for debugging, file storage, and Redis testing. They are not essential. If you're eager to get started with Hemlock, you can come back to these if and when you need them.</p>
-<p><strong>Encouraged</strong></p>
-<ol>
-<li><em>Google Chrome and Chromedriver</em>. Hemlock's custom debugging tool requires <a href="https://www.google.com/chrome/">Google Chrome</a> and <a href="https://chromedriver.chromium.org/downloads">Chromedriver</a> to run locally.</li>
-<li><em>Google Cloud and Cloud SDK</em>. Hemlock easily integrates with <a href="https://cloud.google.com/">Google Cloud</a> for storing statics (such as images to display during a survey) and user uploaded files. The Hemlock command line interface builds on <a href="https://cloud.google.com/sdk/">Cloud Software Development Kit (SDK)</a>.</li>
-</ol>
-<p><strong>Advanced</strong></p>
-<ol>
-<li><em>Redis</em>. Hemlock seamlessly interfaces with <a href="https://redis.io">Redis</a> to run complex background processes during surveys. Redis runs natively on Mac and Linux. For Windows users, I recommend <a href="https://ubuntu.com/">Ubuntu</a> on <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows Subsystem for Linux (WSL)</a>. </li>
-</ol>
+<h2 id="password-protection">Password protection</h2>
+<p>Hemlock users should password protect their applications before distribution to participants. This can be done simply with:</p>
+<pre><code class="python">from hemlock import settings
+
+settings['password'] = '&lt;my-secret-password&gt;'
+</code></pre>
+
+<p>Hemlock will encrypt your password with the <a href="https://werkzeug.palletsprojects.com/en/1.0.x/utils/">werkzeug password hash utility</a>.</p>
+<p><strong>Note.</strong> Be sure not to have your password set in a public code repository while your application is in production.</p>
+<h2 id="cross-site-request-forgery-csrf-protection">Cross-site request forgery (CSRF) protection</h2>
+<p>Hemlock uses <a href="https://dsbowen.github.io/flask-download-btn/">flask download button</a> to protect your data from CSRF attacks. This package employs a standard CSRF prevention technique; it stores a strongly random temporary CSRF authentication token in your browser's session, then authenticates the token when you issue a request to download your data.</p>
               
             </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../utils/" class="btn btn-neutral" title="Utilities"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
@@ -257,6 +282,8 @@
       
           <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
+      
+        <span><a href="../utils/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
     </span>

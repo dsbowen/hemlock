@@ -24,46 +24,12 @@ To mitigate this problem, I wrote a custom debugging tool for hemlock. The tool 
 
 ## Setup
 
-To run hemlock's custom debugging tool locally, you'll need [Google Chrome](https://www.google.com/chrome/) and [Chromedriver](https://chromedriver.chromium.org/downloads).
+To run hemlock's custom debugging tool locally, you'll need [Google Chrome](https://www.google.com/chrome/) and [Chromedriver](https://chromedriver.chromium.org/downloads). Check out the setup page for your OS for specific instructions:
 
-### With hemlock-CLI on WSL
-
-To install chromedriver, run:
-
-```bash
-$ hlk setup --chromedriver
-```
-
-This downloads a version of Chromdriver compatible with Chrome 83 and adds puts it here: `C:\Users\<my-windows-username>\webdrivers\chromedriver`. It also adds an environment variable for easy access in python. 
-
-To verify your installation, close and re-open your terminal and run:
-
-```bash
-$ which chromedriver
-/mnt/c/users/<my-windows-username>/chromedriver
-```
-
-**Note.** The Chromedriver version downloaded by the Hemlock CLI is compatible with Chrome 83. While Chrome upgrades automatically, Chromedriver does not. When Chrome updates, you will experience errors due to Chrome-Chromedriver incompatibility.
-
-To fix this, you will need to manually upgrade Chromedriver:
-
-1. Download the appropriate Chromedriver version from <https://chromedriver.chromium.org/downloads/>.
-2. Store the Chromedriver executable in `C:/users/<my-windows-username>/webdrivers/`.
-3. Rename the Chromedriver executable from `chromedriver.exe` to `chromedriver`.
-
-
-### Without hemlock-CLI
-
-1. Download the appropriate version of Chromedriver from <https://chromedriver.chromium.org/downloads/>.
-2. Add the Chromedriver executable to your PATH (it's easy to find a guide for this online). 
-3. If working in WSL, rename the Chromedriver executable from `chromedriver.exe` to `chromedriver`. (It took me hours of Googling + trial end error to figure this out).
-
-Verify your installation, close and re-open your terminal and run:
-
-```bash
-$ which chromedriver
-/path/to/my/chromedriver
-```
+- [Windows](../setup/win.md)
+- [Windows Subsystem for Linux](../setup/wsl.md)
+- Mac: coming soon
+- Linux: coming soon
 
 ## Basic syntax
 
@@ -212,7 +178,7 @@ $ hlk debug
 To run several AI participants through the survey, e.g. 3, use:
 
 ```bash
-$ hlk debug -b 3
+$ hlk debug -n 3
 ```
 
 If you don't want to use hemlock-CLI, you can run the debugger with the python interpreter:

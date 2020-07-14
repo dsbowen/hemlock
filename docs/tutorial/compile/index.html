@@ -56,8 +56,6 @@
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a>
-                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../first_project/">Your first project</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../run_local/">Running hemlock locally</a>
@@ -107,9 +105,20 @@
                     <li class="toctree-l1"><a class="reference internal" href="../extra/">Bells and whistles</a>
                     </li>
                 </ul>
+                <p class="caption"><span class="caption-text">Setup</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/win/">Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/wsl/">Windows Subsystem for Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/mac/">Mac</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/linux/">Linux</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Application</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Basics</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Setting and initialization</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../debug/">Debugging</a>
                     </li>
@@ -180,6 +189,10 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../statics/">Statics</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../utils/">Utilities</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
       </div>
@@ -339,24 +352,7 @@ def start():
 
 @Compile.register
 def confirm(label, demographics_page):
-    # get the participant's data from the demographics page
-    demographics = [q.data for q in demographics_page.questions]
-    # re-format the race demographic data
-    race_data = demographics_page.questions[2].data
-    race = join('and', *(key for key in race_data if race_data[key]))
-    demographics[2] = race
-    # set the label based on the participant's demographics data
-    label.label = '''
-    &lt;p&gt;Confirm the following information:&lt;/p&gt;
-    &lt;ul&gt;
-        &lt;li&gt;Date of birth: {}&lt;/li&gt;
-        &lt;li&gt;Gender: {}&lt;/li&gt;
-        &lt;li&gt;Race/Ethnicity: {}&lt;/li&gt;
-        &lt;li&gt;Marital status: {}&lt;/li&gt;
-        &lt;li&gt;Subjective socio-economic status: {}&lt;/li&gt;
-    &lt;/ul&gt;
-    &lt;p&gt;To correct this information, click '&lt;&lt;'.&lt;/p&gt;
-    '''.format(*demographics)
+    # PUT YOUR COMPILE FUNCTION HERE
 </code></pre>
 
 <p>Run the app again to see your confirmation page.</p>

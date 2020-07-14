@@ -56,10 +56,10 @@
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a>
-                    </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Your first project</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#from-the-hemlock-template-recommended">From the hemlock template (recommended)</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#initialize-a-new-hemlock-project">Initialize a new hemlock project</a>
@@ -121,9 +121,20 @@
                     <li class="toctree-l1"><a class="reference internal" href="../extra/">Bells and whistles</a>
                     </li>
                 </ul>
+                <p class="caption"><span class="caption-text">Setup</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/win/">Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/wsl/">Windows Subsystem for Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/mac/">Mac</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/linux/">Linux</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Application</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Basics</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Setting and initialization</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../debug/">Debugging</a>
                     </li>
@@ -196,6 +207,10 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../utils/">Utilities</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -236,8 +251,25 @@
             <div class="section">
               
                 <h1 id="your-first-project">Your first project</h1>
-<p>In the previous part of the tutorial, you installed the necessary software to get started with hemlock.</p>
 <p>By the end of this part of the tutorial, you'll be able to initialize a new hemlock project and create and preview hemlock survey pages.</p>
+<h2 id="getting-started">Getting started</h2>
+<p>Before getting started, I recommend you visit the setup page for your OS and download the following:</p>
+<ul>
+<li>Git and github</li>
+<li>Python3 and pip3</li>
+<li>Hemlock-CLI</li>
+<li>Visual studio code</li>
+<li>Jupyter</li>
+<li>Google chrome</li>
+</ul>
+<p>You can save the rest of the setup for later.</p>
+<p>Find the setup page for your OS here:</p>
+<ul>
+<li><a href="../../setup/win/">Windows</a></li>
+<li><a href="../../setup/wsl/">Windows Subsystem for Linux</a></li>
+<li>Mac: coming soon</li>
+<li>Linux: coming soon</li>
+</ul>
 <h2 id="from-the-hemlock-template-recommended">From the hemlock template (recommended)</h2>
 <h4 id="initialize-a-new-hemlock-project">Initialize a new hemlock project</h4>
 <p>Run the following:</p>
@@ -251,12 +283,17 @@ $ ls
 </code></pre>
 
 <h4 id="set-up-your-virtual-environment">Set up your virtual environment</h4>
-<p>Activate your virtual environment:</p>
+<p>Activate your virtual environment.</p>
+<p>Activate from git bash:</p>
+<pre><code class="bash">$ source hemlock-venv/scripts/activate
+</code></pre>
+
+<p>Activate from WSL:</p>
 <pre><code class="bash">$ source hemlock-venv/bin/activate
 </code></pre>
 
-<p>Install the required python packages to run this project locally:</p>
-<pre><code class="bash">$ pip install -r local-requirements.txt # or pip3 install -r local-requirements.txt
+<p>Next, install the required python packages to run this project locally:</p>
+<pre><code class="bash">$ pip install -r local-requirements.txt
 </code></pre>
 
 <p>Add your virtual environment to jupyter:</p>
@@ -279,9 +316,9 @@ $ ls
 
 <p>This will open a file explorer. At the top of the file explorer, you'll see:</p>
 <blockquote>
-<p>\&lt;my-wsl-distribution>\home\\&lt;my-wsl-username>\my-first-project</p>
+<p><code>&lt;my-wsl-distribution&gt;\home\&lt;my-wsl-username&gt;\my-first-project</code></p>
 </blockquote>
-<p>We're looking for \&lt;my-wsl-distribution>.</p>
+<p>We're looking for <code>&lt;my-wsl-distribution&gt;</code>.</p>
 <h4 id="preview-a-page-in-jupyter-notebook">Preview a page in jupyter notebook</h4>
 <p>Jupyter notebook is a great tool for iterating quickly on project designs. I recommend using it for most of your work. Open the jupyter dashboard with:</p>
 <pre><code class="bash">$ jupyter notebook
@@ -300,6 +337,8 @@ p.preview()
 
 <p>This opens a preview of your page in your browser.</p>
 <p>Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:</p>
+<!-- not working on windows native -->
+
 <pre><code class="python">[os.remove(tmpfile) for tmpfile in app.tmpfiles]
 </code></pre>
 
@@ -313,10 +352,21 @@ $ cd my-first-project
 <h4 id="set-up-your-virtual-environment_1">Set up your virtual environment</h4>
 <p>Create your virtual environment and activate it:</p>
 <pre><code class="bash">$ python3 -m venv hemlock-venv
-$ source hemlock-venv/bin/activate
 </code></pre>
 
-<p>Install hemlock and ipykernel:</p>
+<p>Activate from git bash:</p>
+<pre><code class="bash">$ source hemlock-venv/scripts/activate
+</code></pre>
+
+<p>Activate from Windows command prompt:</p>
+<pre><code class="bash">$ hemlock-venv\scripts\activate.bat
+</code></pre>
+
+<p>Activate from WSL:</p>
+<pre><code class="bash">$ source hemlock-venv/bin/activate
+</code></pre>
+
+<p>Next, install hemlock and ipykernel:</p>
 <pre><code class="bash">$ pip install hemlock-survey ipykernel
 </code></pre>
 
@@ -336,9 +386,9 @@ $ source hemlock-venv/bin/activate
 
 <p>This will open a file explorer. At the top of the file explorer, you'll see:</p>
 <blockquote>
-<p>\&lt;my-wsl-distribution>\home\\&lt;my-wsl-username>\my-first-project</p>
+<p><code>&lt;my-wsl-distribution&gt;\home\&lt;my-wsl-username&gt;\my-first-project</code></p>
 </blockquote>
-<p>We're looking for \&lt;my-wsl-distribution>.</p>
+<p>We're looking for <code>&lt;my-wsl-distribution&gt;</code>.</p>
 <h4 id="preview-a-page-in-jupyter-notebook_1">Preview a page in jupyter notebook</h4>
 <p>Jupyter notebook is a great tool for iterating quickly on project designs. I recommend using it for most of your work. Open the jupyter dashboard with:</p>
 <pre><code class="bash">$ jupyter notebook
@@ -349,7 +399,7 @@ $ source hemlock-venv/bin/activate
 <p>Run the following in the first cell of your notebook:</p>
 <pre><code class="python">from hemlock import push_app_context
 
-push_app_context()
+app = push_app_context()
 </code></pre>
 
 <p>This sets up the hemlock environment, including the application context. It's not important right now to understand exactly what it does.</p>
@@ -390,7 +440,7 @@ p.questions = [Label('&lt;p&gt;Label 0&lt;/p&gt;'), Label('&lt;p&gt;Label 1&lt;/
         <a href="../run_local/" class="btn btn-neutral float-right" title="Running hemlock locally">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../setup/" class="btn btn-neutral" title="Setup"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../intro/" class="btn btn-neutral" title="Introduction"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -418,7 +468,7 @@ p.questions = [Label('&lt;p&gt;Label 0&lt;/p&gt;'), Label('&lt;p&gt;Label 1&lt;/
           <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../setup/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../intro/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../run_local/" style="color: #fcfcfc">Next &raquo;</a></span>

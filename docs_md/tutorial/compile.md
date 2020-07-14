@@ -150,24 +150,7 @@ def start():
 
 @Compile.register
 def confirm(label, demographics_page):
-    # get the participant's data from the demographics page
-    demographics = [q.data for q in demographics_page.questions]
-    # re-format the race demographic data
-    race_data = demographics_page.questions[2].data
-    race = join('and', *(key for key in race_data if race_data[key]))
-    demographics[2] = race
-    # set the label based on the participant's demographics data
-    label.label = '''
-    <p>Confirm the following information:</p>
-    <ul>
-        <li>Date of birth: {}</li>
-        <li>Gender: {}</li>
-        <li>Race/Ethnicity: {}</li>
-        <li>Marital status: {}</li>
-        <li>Subjective socio-economic status: {}</li>
-    </ul>
-    <p>To correct this information, click '<<'.</p>
-    '''.format(*demographics)
+    # PUT YOUR COMPILE FUNCTION HERE
 ```
 
 Run the app again to see your confirmation page.

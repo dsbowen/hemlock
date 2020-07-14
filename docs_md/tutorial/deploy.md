@@ -22,23 +22,14 @@ Hemlock uses a [Flask](https://flask.palletsprojects.com/en/1.1.x/) backend, whi
 
 I remember deployment was the scariest part of this whole process when I was starting out. So, if you're using the hemlock template and hemlock-CLI, I've built in some tools to make this as easy as possible for you.
 
-## Setup with heroku
+## Setup
 
-The easiest way to deploy web apps is with [heroku](https://heroku.com/). The hemlock-CLI builds on the [heroku-CLI]((https://devcenter.heroku.com/articles/heroku-cli)) for deployment.
+The easiest way to deploy web apps is with [heroku](https://heroku.com/). Hemlock-cli builds on the [heroku-cli]((https://devcenter.heroku.com/articles/heroku-cli)) for deployment. Find the setup page for your OS for specific instructions:
 
-You can install these with hemlock-CLI:
-
-```bash
-$ hlk setup win --heroku
-```
-
-You will be prompted to login and create an account. All deployment options, including heroku, costs money, but not much, and hemlock studies aren't usually resource intensive. For reference, most hemlock studies I've run cost less than $10. Heroku also offers free resources so you can preview your app online without paying anything. 
-
-Close and re-open your terminal, then verify your installation with:
-
-```bash
-$ heroku --version
-```
+- [Windows](../setup/win.md)
+- [Windows Subsystem for Linux](../setup/wsl.md)
+- Mac: coming soon
+- Linux: coming soon
 
 ## Production-lite
 
@@ -50,7 +41,7 @@ $ hlk deploy <my-app-name>
 
 Make sure your app name is unique. I do this by adding a few random digits to the end of the app name.
 
-Once this process finishes (~2-3 minutes), you'll be able to see your app at <http://my-app-name.herokuapp.com/>.
+Once this process finishes (~2-3 minutes), you'll be able to see your app at <https://my-app-name.herokuapp.com/>.
 
 Go through your app and check for bugs before you start purchasing time on heroku servers. In addition to going through it manually, you can run the debugger in the production environment with:
 

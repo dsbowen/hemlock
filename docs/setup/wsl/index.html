@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Windows Subsystem for Linux - Hemlock</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../../css/extra.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Windows Subsystem for Linux";
+    var mkdocs_page_input_path = "setup/wsl.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> Hemlock</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tutorial</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/intro/">Introduction</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/first_project/">Your first project</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/run_local/">Running hemlock locally</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/qpolymorphs/">Question polymorphs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/data/">Data</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/validate/">Validate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/submit/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/compile/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/navigate/">Navigate</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/page_logic/">Page logic</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/comp_check/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/random_ass/">Random assignment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/proposer_branch/">Proposer branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/responder_branch/">Responder branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/debug/">Debugging</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/deploy/">Deployment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tutorial/extra/">Bells and whistles</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Setup</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../win/">Windows</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Windows Subsystem for Linux</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#python3-and-pip3">Python3 and pip3</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#pip-versus-pip3">pip versus pip3</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlock-cli">Hemlock-CLI</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#git-and-github">Git and github</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#visual-studio-code">Visual studio code</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#jupyter">Jupyter</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#google-chrome">Google chrome</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#chromedriver">Chromedriver</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#chrome-and-chromedriver-compatibility">Chrome and chromedriver compatibility</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#heroku">Heroku</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../mac/">Mac</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../linux/">Linux</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Application</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Setting and initialization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../debug/">Debugging</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Functions</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../compile_functions/">Compile</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../debug_functions/">Debug</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../submit_functions/">Submit</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../validate_functions/">Validate</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Models</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../bases/">Bases</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../branch/">Branch</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../choice/">Choice</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../embedded/">Embedded data and timers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../functions/">Function models</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../page/">Page</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../participant/">Participant</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Question polymorphs</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../check/">Check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../download/">Download</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../file/">File upload</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../input/">Input</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../input_group/">Input group</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../label/">Label</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../range/">Range</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../select/">Select</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../textarea/">Textarea</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Tools</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../comprehension/">Comprehension check</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../lang/">Language</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../navbar/">Navbar</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../random/">Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../statics/">Statics</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../utils/">Utilities</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">Hemlock</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Setup &raquo;</li>
+        
+      
+    
+    <li>Windows Subsystem for Linux</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/setup/wsl.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="windows-subsystem-for-linux-wsl-setup">Windows Subsystem for Linux (WSL) setup</h1>
+<p>Why WSL? The main reason I use WSL is that Windows OS doesn't have a fork (only a spoon), which means you'll need WSL if you want to run Redis. <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Download instructions for WSL here</a>. Either WSL 1 or 2 should work.</p>
+<p>After you've installed WSL, open a terminal window (WIN + R, then enter e.g. 'ubuntu2004'. You may be prompted to create a username and password.</p>
+<h2 id="python3-and-pip3">Python3 and pip3</h2>
+<p>Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-cli.</p>
+<p>Most WSL distributions come with python3. Verify your python installation with:</p>
+<pre><code>$ python3
+Python 3.x.x
+</code></pre>
+
+<p>If you don't have python intalled on your WSL distribution, <a href="https://www.python.org/downloads/">download python here</a>. I recommend python3.6, rather than the latest version. Why? Because heroku, my recommended method of app deployment, uses python3.6, meaning that if you develop in python3.7+ and deploy in python3.6, you may encounter compatibility issues.</p>
+<p>Update your package lists:</p>
+<pre><code class="bash">$ sudo apt-get update
+</code></pre>
+
+<p>Install pip3:</p>
+<pre><code class="bash">$ sudo apt install -f -y python3-pip
+</code></pre>
+
+<p>Respond 'Yes' if asked whether you want to restart services automatically.</p>
+<p>Verify your pip3 installation:</p>
+<pre><code class="bash">$ pip3 --version
+pip x.x.x from /usr/lib/python3/dist-packages (python 3.x)
+</code></pre>
+
+<p>You'll also need the ability to create virtual environments:</p>
+<pre><code class="bash">$ apt install -f -y python3-venv
+</code></pre>
+
+<h4 id="pip-versus-pip3">pip versus pip3</h4>
+<p>You'll install several python packages using pip. Conventionally, the command to install these is:</p>
+<pre><code class="bash">$ pip install &lt;my-requested-package&gt;
+</code></pre>
+
+<p>You may need to replace this with:</p>
+<pre><code class="bash">$ pip3 install &lt;my-requested-package&gt;
+</code></pre>
+
+<p>Many hemlock-cli commands assume you can pip install with <code>pip3</code>.</p>
+<h2 id="hemlock-cli">Hemlock-CLI</h2>
+<p>Hemlock's command line interface, hemlock-CLI, defines many useful commands for initializing, editing, and deploying hemlock projects. Download with:</p>
+<pre><code class="bash">$ pip install hemlock-cli
+</code></pre>
+
+<p>Verify your hemlock-cli installation:</p>
+<pre><code class="bash">$ hlk --version
+hlk x.x.x
+</code></pre>
+
+<h2 id="git-and-github">Git and github</h2>
+<p><a href="https://git-scm.com/">Git</a> is a version control system, and <a href="https://github.com/">github</a> hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.</p>
+<p>If you have hemlock-cli, you can install git and configure the git command line tools with:</p>
+<pre><code class="bash">$ hlk setup wsl --git
+</code></pre>
+
+<p>This will prompt you to create and log in to a github account.</p>
+<p>Verify your git installation:</p>
+<pre><code class="bash">$ git --version
+git version x.xx.x
+</code></pre>
+
+<h2 id="visual-studio-code">Visual studio code</h2>
+<p>I recommend visual studio code for editing python files. <a href="https://code.visualstudio.com/">Download VS code here</a>.</p>
+<p><strong>Note.</strong> Make sure to download the Windows version, not the Linux version.</p>
+<p>Close and re-open your terminal. Verify your VS code installation:</p>
+<pre><code class="bash">$ code --version
+1.xx.x
+</code></pre>
+
+<h2 id="jupyter">Jupyter</h2>
+<p><a href="https://jupyter.org/">Jupyter</a> allows you to quickly iterate on project designs. Install with pip:</p>
+<pre><code class="bash">$ pip install notebook
+</code></pre>
+
+<p>Close and re-open your terminal. Verify your jupyter installation:</p>
+<pre><code class="bash">$ jupyter --version
+jupyter core     : x.x.x
+jupyter-notebook : x.x.x
+...
+</code></pre>
+
+<h2 id="google-chrome">Google chrome</h2>
+<p>Hemlock is developed and tested primarily on chrome. <a href="https://www.google.com/chrome/">Download chrome here</a>.</p>
+<p>Verify that you can open it using the <code>webbrowser</code> command:</p>
+<pre><code class="bash">$ python3
+&gt;&gt;&gt; import webbrowser
+&gt;&gt;&gt; webbrowser.open('https://dsbowen.github.io/hemlock')
+True
+&gt;&gt;&gt; exit()
+</code></pre>
+
+<p>You should see chrome open to the hemlock docs.</p>
+<p><strong>Note.</strong> If this doesn't work, it's probably because the chrome executable isn't in your path. Run the following:</p>
+<pre><code class="bash">$ hlk setup wsl --chrome
+</code></pre>
+
+<p>Close and re-open your terminal. Verify your <code>BROWSER</code> variable:</p>
+<pre><code class="bash">$ echo $BROWSER
+/mnt/c/program files (x86)/google/chrome/application/chrome.exe
+</code></pre>
+
+<p>Now try again to open the webbrowser.</p>
+<h2 id="chromedriver">Chromedriver</h2>
+<p>Hemlock's custom debugging tool and survey view functions use <a href="https://chromedriver.chromium.org/downloads">chromedriver</a>. To use these features locally, you'll need to download chromedriver:</p>
+<pre><code class="bash">$ hlk setup wsl --chromedriver
+</code></pre>
+
+<p>Close and re-open your terminal. Verify your chromedriver installation:</p>
+<pre><code class="bash">$ which chromedriver
+/mnt/c/users/&lt;my-windows-username&gt;/webdrivers/chromedriver
+</code></pre>
+
+<h4 id="chrome-and-chromedriver-compatibility">Chrome and chromedriver compatibility</h4>
+<p>As of 07/14/2020, <code>hlk setup wsl --chromedriver</code> installs chromedriver for chrome 83. While chrome updates automatically, chromedriver does not. This means that you will encounter compatibility issues when chrome updates to version 84+. To fix this:</p>
+<ol>
+<li><a href="https://chromedriver.chromium.org/downloads">Download the latest chromedriver here</a>. Windows version, not Linux version.</li>
+<li>Put the chrome executable in <code>C:\users\&lt;my-windows-username&gt;\webdrivers\</code>.</li>
+<li>Rename the executable from <code>chromedriver.exe</code> to <code>chromedriver</code>.</li>
+</ol>
+<p>Chromedriver should still be in your path, which you can verify:</p>
+<pre><code class="bash">$ which chromedriver
+/mnt/c/users/&lt;my-windows-username&gt;/webdrivers/chromedriver
+</code></pre>
+
+<h2 id="heroku">Heroku</h2>
+<p><a href="https://devcenter.heroku.com/articles/heroku-cli">Heroku</a> is an easy and inexpensive service for deploying web applications, including hemlock applications.</p>
+<p>If using hemlock-cli, you can install and configure the heroku command line interface with:</p>
+<pre><code class="bash">$ hlk setup wsl --heroku-cli
+</code></pre>
+
+<p>This will prompt you to create and log in to a heroku account.</p>
+<p>Verify your heroku-cli installation:</p>
+<pre><code class="bash">$ heroku --version
+heroku/x.xx.x win32-x64 node-v11.14.0
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../mac/" class="btn btn-neutral float-right" title="Mac">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../win/" class="btn btn-neutral" title="Windows"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../win/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../mac/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

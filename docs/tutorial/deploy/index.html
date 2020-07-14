@@ -56,8 +56,6 @@
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a>
-                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../first_project/">Your first project</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../run_local/">Running hemlock locally</a>
@@ -92,7 +90,7 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#deployment-options">Deployment options</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#setup-with-heroku">Setup with heroku</a>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#production-lite">Production-lite</a>
     </li>
@@ -107,9 +105,20 @@
                     <li class="toctree-l1"><a class="reference internal" href="../extra/">Bells and whistles</a>
                     </li>
                 </ul>
+                <p class="caption"><span class="caption-text">Setup</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/win/">Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/wsl/">Windows Subsystem for Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/mac/">Mac</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/linux/">Linux</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Application</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Basics</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Setting and initialization</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../debug/">Debugging</a>
                     </li>
@@ -182,6 +191,10 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../utils/">Utilities</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -235,24 +248,21 @@ settings.update({'password': 'my-password'})
 <h2 id="deployment-options">Deployment options</h2>
 <p>Hemlock uses a <a href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> backend, which means you can deploy it just as you would any other Flask app. The <a href="https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world">Flask Mega-Tutorial</a> is, imho, the best resource for learning Flask, including deployment.</p>
 <p>I remember deployment was the scariest part of this whole process when I was starting out. So, if you're using the hemlock template and hemlock-CLI, I've built in some tools to make this as easy as possible for you.</p>
-<h2 id="setup-with-heroku">Setup with heroku</h2>
-<p>The easiest way to deploy web apps is with <a href="https://heroku.com/">heroku</a>. The hemlock-CLI builds on the <a href="(https://devcenter.heroku.com/articles/heroku-cli)">heroku-CLI</a> for deployment.</p>
-<p>You can install these with hemlock-CLI:</p>
-<pre><code class="bash">$ hlk setup win --heroku
-</code></pre>
-
-<p>You will be prompted to login and create an account. All deployment options, including heroku, costs money, but not much, and hemlock studies aren't usually resource intensive. For reference, most hemlock studies I've run cost less than $10. Heroku also offers free resources so you can preview your app online without paying anything. </p>
-<p>Close and re-open your terminal, then verify your installation with:</p>
-<pre><code class="bash">$ heroku --version
-</code></pre>
-
+<h2 id="setup">Setup</h2>
+<p>The easiest way to deploy web apps is with <a href="https://heroku.com/">heroku</a>. Hemlock-cli builds on the <a href="(https://devcenter.heroku.com/articles/heroku-cli)">heroku-cli</a> for deployment. Find the setup page for your OS for specific instructions:</p>
+<ul>
+<li><a href="../../setup/win/">Windows</a></li>
+<li><a href="../../setup/wsl/">Windows Subsystem for Linux</a></li>
+<li>Mac: coming soon</li>
+<li>Linux: coming soon</li>
+</ul>
 <h2 id="production-lite">Production-lite</h2>
 <p>Before scaling up your app, I recommend previewing it in what I call a 'production-lite' environment using free heroku resources:</p>
 <pre><code class="bash">$ hlk deploy &lt;my-app-name&gt;
 </code></pre>
 
 <p>Make sure your app name is unique. I do this by adding a few random digits to the end of the app name.</p>
-<p>Once this process finishes (~2-3 minutes), you'll be able to see your app at <a href="http://my-app-name.herokuapp.com/">http://my-app-name.herokuapp.com/</a>.</p>
+<p>Once this process finishes (~2-3 minutes), you'll be able to see your app at <a href="https://my-app-name.herokuapp.com/">https://my-app-name.herokuapp.com/</a>.</p>
 <p>Go through your app and check for bugs before you start purchasing time on heroku servers. In addition to going through it manually, you can run the debugger in the production environment with:</p>
 <pre><code class="bash">$ hlk debug --prod
 </code></pre>

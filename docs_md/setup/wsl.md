@@ -1,70 +1,29 @@
-# Setup
+# Windows Subsystem for Linux (WSL) setup
 
-<!-- 
-python3.6 on windows
-https://www.python.org/downloads/release/python-368/
-later versions don't have windows specific downloads
-then open terminal with cmd
-find python exe location with `where python`
-go there and change the exe from `python.exe` to `python3.exe`
-verify with `python3`
-`python3 -m pip install --upgrade pip`
+Why WSL? The main reason I use WSL is that Windows OS doesn't have a fork (only a spoon), which means you'll need WSL if you want to run Redis. [Download instructions for WSL here](https://docs.microsoft.com/en-us/windows/wsl/install-win10). Either WSL 1 or 2 should work.
 
-verify webbrowser with 
-```
->>> import webbrowser
->>> webbrowser.open('https://dsbowen.github.io/hemlock/')
-```
+After you've installed WSL, open a terminal window (WIN + R, then enter e.g. 'ubuntu2004'. You may be prompted to create a username and password.
 
-windows download git https://git-scm.com/download/win
+## Python3 and pip3
 
-CLI: export_env not working
--->
+Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-cli.
 
-## Essential
-
-1. Google Chrome. [Download here](https://www.google.com/chrome/).
-2. Python3 and pip3, recommended version 3.6. This is hemlock's primary language. [Download python here](https://www.python.org/downloads/).
-3. A way to open and edit python files; recommended Visual Studio Code. [Download here](https://code.visualstudio.com/).
-
-## pip versus pip3
-
-You'll install several python packages using pip. Conventionally, the command to install these is:
-
-```bash
-$ pip install <my-requested-package>
-```
-
-**Note 1.** You don't type `$`; this just means 'the start of a command in your terminal window'.
-
-**Note 2.** Depending on your operating system, you may need to replace `pip` with `pip3`:
-
-```bash
-$ pip3 install <my-requested-package>
-```
-
-If one doesn't work, try the other.
-
-#### Windows and Redis
-
-If you want to use hemlock's redis queue functionality, I recommend installing Windows Subsystem for Linux (WSL) with the Ubuntu Linux distribution. Either WSL 1 or WSL 2 should work. This comes with python and pip. [Download instructions for WSL here](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
-
-After you've installed Ubuntu, open a terminal window (WIN + R, then enter 'ubuntu<xxxx>', where <xxxx> is your version of ubuntu, e.g. 'ubuntu2004'). You will be prompted to create a username and password.
-
-Verify your python installation with:
+Most WSL distributions come with python3. Verify your python installation with:
 
 ```
 $ python3
-Python 3.6.x
+Python 3.x.x
 ```
 
-Update your package lists with:
+If you don't have python intalled on your WSL distribution, [download python here](https://www.python.org/downloads/). I recommend python3.6, rather than the latest version. Why? Because heroku, my recommended method of app deployment, uses python3.6, meaning that if you develop in python3.7+ and deploy in python3.6, you may encounter compatibility issues.
+
+Update your package lists:
 
 ```bash
 $ sudo apt-get update
 ```
 
-Install pip3 with:
+Install pip3:
 
 ```bash
 $ sudo apt install -f -y python3-pip
@@ -76,73 +35,171 @@ Verify your pip3 installation:
 
 ```bash
 $ pip3 --version
-pip x.x.x from /usr/lib/python3/dist-packages (python 3.6)
+pip x.x.x from /usr/lib/python3/dist-packages (python 3.x)
 ```
 
-## Recommended
+You'll also need the ability to create virtual environments:
 
-The following aren't necessary to use hemlock, but they will make your life easier. The rest of the tutorial assumes you have these.
+```bash
+$ apt install -f -y python3-venv
+```
 
-### Hemlock-CLI
+#### pip versus pip3
 
-Use pip to install the hemlock command line interface (CLI).
+You'll install several python packages using pip. Conventionally, the command to install these is:
+
+```bash
+$ pip install <my-requested-package>
+```
+
+You may need to replace this with:
+
+```bash
+$ pip3 install <my-requested-package>
+```
+
+Many hemlock-cli commands assume you can pip install with `pip3`.
+
+## Hemlock-CLI
+
+Hemlock's command line interface, hemlock-CLI, defines many useful commands for initializing, editing, and deploying hemlock projects. Download with:
 
 ```bash
 $ pip install hemlock-cli
 ```
 
-Verify your installation:
+Verify your hemlock-cli installation:
 
 ```bash
 $ hlk --version
-hlk, version x.x.x
+hlk x.x.x
 ```
 
-### Chrome
+## Git and github
 
-I assume most users will access your hemlock applications through Google chrome.
+[Git](https://git-scm.com/) is a version control system, and [github](https://github.com/) hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.
 
-##### If using WSL
-
-To set chrome as your default browser from WSL, run:
+If you have hemlock-cli, you can install git and configure the git command line tools with:
 
 ```bash
-$ hlk setup win --chrome
+$ hlk setup wsl --git
 ```
 
-Close and re-open your terminal, then verify your `BROWSER` variable:
+This will prompt you to create and log in to a github account.
+
+Verify your git installation:
+
+```bash
+$ git --version
+git version x.xx.x
+```
+
+## Visual studio code
+
+I recommend visual studio code for editing python files. [Download VS code here](https://code.visualstudio.com/).
+
+**Note.** Make sure to download the Windows version, not the Linux version.
+
+Close and re-open your terminal. Verify your VS code installation:
+
+```bash
+$ code --version
+1.xx.x
+```
+
+## Jupyter
+
+[Jupyter](https://jupyter.org/) allows you to quickly iterate on project designs. Install with pip:
+
+```bash
+$ pip install notebook
+```
+
+Close and re-open your terminal. Verify your jupyter installation:
+
+```bash
+$ jupyter --version
+jupyter core     : x.x.x
+jupyter-notebook : x.x.x
+...
+```
+
+## Google chrome
+
+Hemlock is developed and tested primarily on chrome. [Download chrome here](https://www.google.com/chrome/).
+
+Verify that you can open it using the `webbrowser` command:
+
+```bash
+$ python3
+>>> import webbrowser
+>>> webbrowser.open('https://dsbowen.github.io/hemlock')
+True
+>>> exit()
+```
+
+You should see chrome open to the hemlock docs.
+
+**Note.** If this doesn't work, it's probably because the chrome executable isn't in your path. Run the following:
+
+```bash
+$ hlk setup wsl --chrome
+```
+
+Close and re-open your terminal. Verify your `BROWSER` variable:
 
 ```bash
 $ echo $BROWSER
 /mnt/c/program files (x86)/google/chrome/application/chrome.exe
 ```
 
-##### If not using WSL
+Now try again to open the webbrowser.
 
-You will need a `BROWSER` environment variable, which should be set for you automatically.
+## Chromedriver
 
-### Git
-
-Git and github are version control tools for sharing, downloading, and collaborating on software, including hemock projects. 
-
-##### If using WSL
-
-Run:
+Hemlock's custom debugging tool and survey view functions use [chromedriver](https://chromedriver.chromium.org/downloads). To use these features locally, you'll need to download chromedriver:
 
 ```bash
-$ hlk setup win --git
+$ hlk setup wsl --chromedriver
 ```
 
-##### If not using WSL
-
-[Download git here](https://git-scm.com/downloads), and [register for github here](https://github.com/).
-
-### Jupyter
-
-Jupyter allows you to quickly iterate on project designs. For no good reason, I personally use Jupyter Notebook, not JupyterLab. [Download jupyter here](https://jupyter.org/install).
-
-Additionally, to activate virtual environments in jupyter:
+Close and re-open your terminal. Verify your chromedriver installation:
 
 ```bash
-$ pip3 install ipykernel
+$ which chromedriver
+/mnt/c/users/<my-windows-username>/webdrivers/chromedriver
+```
+
+#### Chrome and chromedriver compatibility
+
+As of 07/14/2020, `hlk setup wsl --chromedriver` installs chromedriver for chrome 83. While chrome updates automatically, chromedriver does not. This means that you will encounter compatibility issues when chrome updates to version 84+. To fix this:
+
+1. [Download the latest chromedriver here](https://chromedriver.chromium.org/downloads). Windows version, not Linux version.
+2. Put the chrome executable in `C:\users\<my-windows-username>\webdrivers\`.
+3. Rename the executable from `chromedriver.exe` to `chromedriver`.
+
+Chromedriver should still be in your path, which you can verify:
+
+```bash
+$ which chromedriver
+/mnt/c/users/<my-windows-username>/webdrivers/chromedriver
+```
+
+## Heroku
+
+[Heroku](https://devcenter.heroku.com/articles/heroku-cli) is an easy and inexpensive service for deploying web applications, including hemlock applications.
+
+If using hemlock-cli, you can install and configure the heroku command line interface with:
+
+```bash
+$ hlk setup wsl --heroku-cli
+```
+
+This will prompt you to create and log in to a heroku account.
+
+Verify your heroku-cli installation:
+
+```bash
+$ heroku --version
+heroku/x.xx.x win32-x64 node-v11.14.0
 ```

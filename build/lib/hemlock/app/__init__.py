@@ -10,6 +10,7 @@ from flask_download_btn import DownloadBtnManager
 from flask_login import LoginManager
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
+from flask_talisman import Talisman
 from flask_worker import Manager
 from werkzeug.security import generate_password_hash
 
@@ -36,6 +37,7 @@ login_manager.login_message = None
 eventlet.monkey_patch(socket=True)
 socketio = SocketIO(async_mode='eventlet')
 manager = Manager(db=db, socketio=socketio)
+talisman = Talisman()
 
 def push_app_context():
     """
@@ -153,3 +155,4 @@ def _init_extensions(app, settings):
     # scheduler.start()
     socketio.init_app(app, message_queue=app.config.get('REDIS_URL'))
     manager.init_app(app, **settings.get('Manager'))
+    talisman.init_app(app, **settings.get('Talisman'))

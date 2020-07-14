@@ -24,5 +24,6 @@ $("form").submit( function(e) {
 });
 
 // Get socket.io url
+// OLD VERSION
 // $SOCKET_URL = location.protocol+"//"+document.domain+':'+location.port
-$SOCKET_URL = window.location.origin // TEST THIS
+$SOCKET_URL = window.location.origin

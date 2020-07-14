@@ -56,8 +56,6 @@
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a>
-                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../first_project/">Your first project</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../run_local/">Running hemlock locally</a>
@@ -89,12 +87,6 @@
     <li class="toctree-l2"><a class="reference internal" href="#why-a-custom-debugging-tool">Why a custom debugging tool?</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#with-hemlock-cli-on-wsl">With hemlock-CLI on WSL</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#without-hemlock-cli">Without hemlock-CLI</a>
-    </li>
-        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#basic-syntax">Basic syntax</a>
     </li>
@@ -123,9 +115,20 @@
                     <li class="toctree-l1"><a class="reference internal" href="../extra/">Bells and whistles</a>
                     </li>
                 </ul>
+                <p class="caption"><span class="caption-text">Setup</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/win/">Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/wsl/">Windows Subsystem for Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/mac/">Mac</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../setup/linux/">Linux</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Application</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Basics</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../app/">Setting and initialization</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../debug/">Debugging</a>
                     </li>
@@ -198,6 +201,10 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../utils/">Utilities</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -252,36 +259,13 @@ Submit.data_type(Input(data='twenty-seven'), int)._submit().data
 <p>But that wasn't good enough. We often underestimate just how strangely participants will respond to our studies in ways that we can't foresee.</p>
 <p>To mitigate this problem, I wrote a custom debugging tool for hemlock. The tool sends an <em>AI participant</em> through your survey to check things out. 'AI participant' is a bit of a misnomer; if anything, it's an artificially stupid participant. It clicks random buttons, enters random things into inputs and text boxes, drags range sliders to random values; basically stress testing your code.</p>
 <h2 id="setup">Setup</h2>
-<p>To run hemlock's custom debugging tool locally, you'll need <a href="https://www.google.com/chrome/">Google Chrome</a> and <a href="https://chromedriver.chromium.org/downloads">Chromedriver</a>.</p>
-<h3 id="with-hemlock-cli-on-wsl">With hemlock-CLI on WSL</h3>
-<p>To install chromedriver, run:</p>
-<pre><code class="bash">$ hlk setup --chromedriver
-</code></pre>
-
-<p>This downloads a version of Chromdriver compatible with Chrome 83 and adds puts it here: <code>C:\Users\&lt;my-windows-username&gt;\webdrivers\chromedriver</code>. It also adds an environment variable for easy access in python. </p>
-<p>To verify your installation, close and re-open your terminal and run:</p>
-<pre><code class="bash">$ which chromedriver
-/mnt/c/users/&lt;my-windows-username&gt;/chromedriver
-</code></pre>
-
-<p><strong>Note.</strong> The Chromedriver version downloaded by the Hemlock CLI is compatible with Chrome 83. While Chrome upgrades automatically, Chromedriver does not. When Chrome updates, you will experience errors due to Chrome-Chromedriver incompatibility.</p>
-<p>To fix this, you will need to manually upgrade Chromedriver:</p>
-<ol>
-<li>Download the appropriate Chromedriver version from <a href="https://chromedriver.chromium.org/downloads/">https://chromedriver.chromium.org/downloads/</a>.</li>
-<li>Store the Chromedriver executable in <code>C:/users/&lt;my-windows-username&gt;/webdrivers/</code>.</li>
-<li>Rename the Chromedriver executable from <code>chromedriver.exe</code> to <code>chromedriver</code>.</li>
-</ol>
-<h3 id="without-hemlock-cli">Without hemlock-CLI</h3>
-<ol>
-<li>Download the appropriate version of Chromedriver from <a href="https://chromedriver.chromium.org/downloads/">https://chromedriver.chromium.org/downloads/</a>.</li>
-<li>Add the Chromedriver executable to your PATH (it's easy to find a guide for this online). </li>
-<li>If working in WSL, rename the Chromedriver executable from <code>chromedriver.exe</code> to <code>chromedriver</code>. (It took me hours of Googling + trial end error to figure this out).</li>
-</ol>
-<p>Verify your installation, close and re-open your terminal and run:</p>
-<pre><code class="bash">$ which chromedriver
-/path/to/my/chromedriver
-</code></pre>
-
+<p>To run hemlock's custom debugging tool locally, you'll need <a href="https://www.google.com/chrome/">Google Chrome</a> and <a href="https://chromedriver.chromium.org/downloads">Chromedriver</a>. Check out the setup page for your OS for specific instructions:</p>
+<ul>
+<li><a href="../../setup/win/">Windows</a></li>
+<li><a href="../../setup/wsl/">Windows Subsystem for Linux</a></li>
+<li>Mac: coming soon</li>
+<li>Linux: coming soon</li>
+</ul>
 <h2 id="basic-syntax">Basic syntax</h2>
 <p>Open your jupyter notebook and run the following:</p>
 <pre><code class="python">from hemlock import Debug, Input, Page
@@ -394,7 +378,7 @@ def gen_response_input(round_):
 </code></pre>
 
 <p>To run several AI participants through the survey, e.g. 3, use:</p>
-<pre><code class="bash">$ hlk debug -b 3
+<pre><code class="bash">$ hlk debug -n 3
 </code></pre>
 
 <p>If you don't want to use hemlock-CLI, you can run the debugger with the python interpreter:</p>
