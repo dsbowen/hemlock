@@ -2,7 +2,7 @@
 
 ## Heroku and Amazon Web Services
 
-The location of your data depends on your method of deployment. In the tutorial, I suggest deploying through heroku, which in turn deploys your application using AWS cloud computing. Both haven extensive security infrastructures. Read more about [heroku security](https://www.heroku.com/policy/security) and [AWS security](https://aws.amazon.com/security/).
+The location of your data depends on your method of deployment. In the tutorial, I suggest deploying through heroku, which in turn deploys your application using AWS cloud computing. Both have extensive security infrastructures. Read more about [heroku security](https://www.heroku.com/policy/security) and [AWS security](https://aws.amazon.com/security/).
 
 ## Secure Sockets Layer (SSL) certification
 

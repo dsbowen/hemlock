@@ -4,7 +4,7 @@
 
 Git is a version control system, and github hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.
 
-[Download git here](https://git-scm.com/download/win). You will be prompted to restart your computer.
+[Download git here](https://git-scm.com/download/win). You may be prompted to restart your computer.
 
 
 We'll use the git bash terminal for this tutorial. Right click anywhere on your desktop and select 'Git Bash Here`. You should see a terminal window appear. Change to your home directory with:
