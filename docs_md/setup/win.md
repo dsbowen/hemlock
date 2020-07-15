@@ -1,5 +1,7 @@
 # Windows setup
 
+These instructions were written for Windows 10.
+
 ## Git and github
 
 Git is a version control system, and github hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.
@@ -35,7 +37,7 @@ $ git config --global user.email <my-github-user-email>
 
 ## Python3 and pip3
 
-Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-cli.
+Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-CLI.
 
 You can [download the latest version of python here](https://www.python.org/downloads/). 
 
@@ -94,7 +96,7 @@ Hemlock's command line interface, hemlock-CLI, defines many useful commands for 
 $ pip install hemlock-cli
 ```
 
-Verify your hemlock-cli installation:
+Verify your hemlock-CLI installation:
 
 ```bash
 $ hlk --version
@@ -172,7 +174,7 @@ As of 07/14/2020, `hlk setup win --chromedriver` installs chromedriver for chrom
 Chromedriver should still be in your path, which you can verify:
 
 ```bash
-$ which chromedriver
+$ which chromedriver.exe
 /c/users/<my-windows-username>/webdrivers/chromedriver.exe
 ```
 
@@ -180,11 +182,11 @@ $ which chromedriver
 
 Heroku is an easy and inexpensive service for deploying web applications, including hemlock applications. [Download the command line interface here](https://devcenter.heroku.com/articles/heroku-cli).
 
-Close and re-open your terminal. Verify your heroku-cli installation:
+Close and re-open your terminal. Verify your heroku-CLI installation:
 
 ```bash
 $ heroku --version
-heroku/x.xx.x win32-x64 node-v11.14.0
+heroku/x.xx.x win32-x64 node-vxx.xx.x
 ```
 
 Log into heroku:

@@ -97,6 +97,28 @@
                     </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Mac</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#open-a-terminal-window">Open a terminal window</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#python3-and-pip3">Python3 and pip3</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlock-cli">Hemlock-CLI</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#git-and-github">Git and github</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#visual-studio-code">Visual studio code</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#jupyter">Jupyter</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#google-chrome">Google chrome</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#chromedriver">Chromedriver</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#chrome-and-chromedriver-compatibility">Chrome and chromedriver compatibility</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#heroku">Heroku</a>
+    </li>
     </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../linux/">Linux</a>
@@ -220,18 +242,117 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="mac-setup-coming-soon">Mac setup coming soon</h1>
-<p>Recommended software:</p>
+                <h1 id="mac-setup">Mac setup</h1>
+<p>These instructions were written for Mac OS 10.9.</p>
+<h2 id="open-a-terminal-window">Open a terminal window</h2>
+<p>Hemlock requires you to use a terminal window for setting up, editing, and deploying hemlock projects. To open a terminal window, enter 'terminal' in spotlight search. Terminal commands are written in bash:</p>
+<pre><code class="bash">$ &lt;my-bash-command&gt;
+</code></pre>
+
+<p><strong>Note 1.</strong> You don't type <code>$</code>; it simply indicates the beginning of a bash command.</p>
+<p><strong>Note 2.</strong> For this tutorial, always make sure to change to your home directory after you open your terminal.</p>
+<h2 id="python3-and-pip3">Python3 and pip3</h2>
+<p>Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-CLI.</p>
+<p>You can <a href="https://www.python.org/downloads/">download the latest version of python here</a>. </p>
+<p>However, I recommend an earlier version, python3.6. <a href="https://www.python.org/ftp/python/3.6.8/python-3.6.8-macosx10.9.pkg">Download python3.6 here</a>. Why? Because heroku, my recommended method of app deployment, uses python3.6, meaning that if you develop in python3.7+ and deploy in python3.6, you may encounter compatibility issues.</p>
+<p><strong>Make sure to click <em>Add Python to PATH</em> on the first page of the installer.</strong></p>
+<p>Close and re-open your terminal window. Verify your python installation.</p>
+<pre><code class="bash">$ python3 --version
+Python 3.x.x
+</code></pre>
+
+<p>Upgrade pip:</p>
+<pre><code class="bash">$ python3 -m pip install --upgrade pip
+</code></pre>
+
+<p>Verify your pip installation:</p>
+<pre><code class="bash">$ pip3 --version
+pip xx.x.x ...
+</code></pre>
+
+<h2 id="hemlock-cli">Hemlock-CLI</h2>
+<p>Hemlock's command line interface, hemlock-CLI, defines many useful commands for initializing, editing, and deploying hemlock projects. Download with:</p>
+<pre><code class="bash">$ pip install hemlock-cli
+</code></pre>
+
+<p>Verify your hemlockCLI installation:</p>
+<pre><code class="bash">$ hlk --version
+hlk x.x.x
+</code></pre>
+
+<h2 id="git-and-github">Git and github</h2>
+<p><a href="https://git-scm.com/">Git</a> is a version control system, and <a href="https://github.com/">github</a> hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.</p>
+<p>You can install git using hemlock-CLI:</p>
+<pre><code class="bash">$ hlk setup mac --git
+</code></pre>
+
+<p>You will be prompted to create a github account.</p>
+<p>Verify your git installation:</p>
+<pre><code class="bash">$ git --version
+</code></pre>
+
+<h2 id="visual-studio-code">Visual studio code</h2>
+<p>I recommend visual studio code for editing python files. <a href="https://code.visualstudio.com/">Download VS code here</a>.</p>
+<p>Close and re-open your terminal. Verify your VS code installation:</p>
+<pre><code class="bash">$ code --version
+1.xx.x
+</code></pre>
+
+<h2 id="jupyter">Jupyter</h2>
+<p><a href="https://jupyter.org/">Jupyter</a> allows you to quickly iterate on project designs. Install with pip:</p>
+<pre><code class="bash">$ pip install notebook
+</code></pre>
+
+<p>Close and re-open your terminal. Verify your jupyter installation:</p>
+<pre><code class="bash">$ jupyter --version
+jupyter core     : x.x.x
+jupyter-notebook : x.x.x
+...
+</code></pre>
+
+<h2 id="google-chrome">Google chrome</h2>
+<p>Hemlock is developed and tested primarily on chrome. <a href="https://www.google.com/chrome/">Download chrome here</a>.</p>
+<p>Verify that you can open it using the <code>webbrowser</code> command:</p>
+<pre><code class="bash">$ python3
+&gt;&gt;&gt; import webbrowser
+&gt;&gt;&gt; webbrowser.open('https://dsbowen.github.io/hemlock')
+True
+&gt;&gt;&gt; exit()
+</code></pre>
+
+<p>You should see chrome open to the hemlock docs.</p>
+<p><strong>Note.</strong> <code>&gt;&gt;&gt;</code> is where you enter python commands in the python interpreter.</p>
+<h2 id="chromedriver">Chromedriver</h2>
+<p>Hemlock's custom debugging tool and survey view functions use <a href="https://chromedriver.chromium.org/downloads">chromedriver</a>. To use these features locally, you'll need to download chromedriver:</p>
+<pre><code class="bash">$ hlk setup mac --chromedriver
+</code></pre>
+
+<p>Close and re-open your terminal. Verify your chromedriver installation:</p>
+<pre><code class="bash">$ which chromedriver
+/users/&lt;my-mac-username&gt;/webdrivers/chromedriver
+</code></pre>
+
+<h4 id="chrome-and-chromedriver-compatibility">Chrome and chromedriver compatibility</h4>
+<p>As of 07/14/2020, <code>hlk setup mac --chromedriver</code> installs chromedriver for chrome 83. While chrome updates automatically, chromedriver does not. This means that you will encounter compatibility issues when chrome updates to version 84+. To fix this:</p>
 <ol>
-<li>Python3 and pip3.</li>
-<li>Hemlock-cli; <code>pip install hemlock-cli</code>.</li>
-<li>Git and github.</li>
-<li>A way to edit python code. Recommended visual studio code.</li>
-<li>Jupyter notebook.</li>
-<li>Google chrome</li>
-<li>Chromedriver</li>
-<li>Heroku and heroku-cli.</li>
+<li><a href="https://chromedriver.chromium.org/downloads">Download the latest chromedriver here</a>.</li>
+<li>Put the chrome executable in <code>/users/&lt;my-mac-username&gt;/webdrivers/</code>.</li>
 </ol>
+<p>Chromedriver should still be in your path, which you can verify:</p>
+<pre><code class="bash">$ which chromedriver
+/users/&lt;my-mac-username&gt;/webdrivers/chromedriver
+</code></pre>
+
+<h2 id="heroku">Heroku</h2>
+<p>Heroku is an easy and inexpensive service for deploying web applications, including hemlock applications.</p>
+<p>You can install heroku-CLI using hemlock-CLI:</p>
+<pre><code class="bash">$ hlk setup mac --heroku-cli
+</code></pre>
+
+<p>Verify your heroku-CLI installation:</p>
+<pre><code class="bash">$ heroku --version
+heroku/x.xx.x mac-x64 node-vxx.xx.x
+</code></pre>
               
             </div>
           </div>

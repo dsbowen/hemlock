@@ -245,10 +245,11 @@
             <div class="section">
               
                 <h1 id="windows-subsystem-for-linux-wsl-setup">Windows Subsystem for Linux (WSL) setup</h1>
-<p>Why WSL? The main reason I use WSL is that Windows OS doesn't have a fork (only a spoon), which means you'll need WSL if you want to run Redis. <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Download instructions for WSL here</a>. Either WSL 1 or 2 should work.</p>
+<p>These instructions were written for Windows 10.</p>
+<p>Why WSL? The main reason I use WSL is that Windows OS doesn't have a fork (only a spoon), which means you'll need WSL if you want to run Redis. You can find <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">download instructions for WSL here</a>. Either WSL 1 or 2 should work.</p>
 <p>After you've installed WSL, open a terminal window (WIN + R, then enter e.g. 'ubuntu2004'. You may be prompted to create a username and password.</p>
 <h2 id="python3-and-pip3">Python3 and pip3</h2>
-<p>Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-cli.</p>
+<p>Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-CLI.</p>
 <p>Most WSL distributions come with python3. Verify your python installation with:</p>
 <pre><code>$ python3
 Python 3.x.x
@@ -282,27 +283,28 @@ pip x.x.x from /usr/lib/python3/dist-packages (python 3.x)
 <pre><code class="bash">$ pip3 install &lt;my-requested-package&gt;
 </code></pre>
 
-<p>Many hemlock-cli commands assume you can pip install with <code>pip3</code>.</p>
+<p>Many hemlock-CLI commands assume you can pip install with <code>pip3</code>.</p>
 <h2 id="hemlock-cli">Hemlock-CLI</h2>
 <p>Hemlock's command line interface, hemlock-CLI, defines many useful commands for initializing, editing, and deploying hemlock projects. Download with:</p>
 <pre><code class="bash">$ pip install hemlock-cli
 </code></pre>
 
-<p>Verify your hemlock-cli installation:</p>
+<p>Verify your hemlock-CLI installation:</p>
 <pre><code class="bash">$ hlk --version
 hlk x.x.x
 </code></pre>
 
 <h2 id="git-and-github">Git and github</h2>
 <p><a href="https://git-scm.com/">Git</a> is a version control system, and <a href="https://github.com/">github</a> hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.</p>
-<p>If you have hemlock-cli, you can install git and configure the git command line tools with:</p>
-<pre><code class="bash">$ hlk setup wsl --git
-</code></pre>
-
-<p>This will prompt you to create and log in to a github account.</p>
+<p><a href="https://git-scm.com/download/linux">Find installation instructions for git here</a>.</p>
 <p>Verify your git installation:</p>
 <pre><code class="bash">$ git --version
-git version x.xx.x
+git version x.xx.x.windows.1
+</code></pre>
+
+<p>Then, create a <a href="https://github.com">github account here</a>. Configure your github command line interface:</p>
+<pre><code class="bash">$ git config --global user.name &lt;my-github-username&gt;
+$ git config --global user.email &lt;my-github-user-email&gt;
 </code></pre>
 
 <h2 id="visual-studio-code">Visual studio code</h2>
@@ -370,14 +372,14 @@ True
 
 <h2 id="heroku">Heroku</h2>
 <p><a href="https://devcenter.heroku.com/articles/heroku-cli">Heroku</a> is an easy and inexpensive service for deploying web applications, including hemlock applications.</p>
-<p>If using hemlock-cli, you can install and configure the heroku command line interface with:</p>
+<p>If using hemlock-CLI, you can install and configure the heroku command line interface with:</p>
 <pre><code class="bash">$ hlk setup wsl --heroku-cli
 </code></pre>
 
 <p>This will prompt you to create and log in to a heroku account.</p>
-<p>Verify your heroku-cli installation:</p>
+<p>Verify your heroku-CLI installation:</p>
 <pre><code class="bash">$ heroku --version
-heroku/x.xx.x win32-x64 node-v11.14.0
+heroku/x.xx.x linux-x64 node-vxx.xx.x
 </code></pre>
               
             </div>

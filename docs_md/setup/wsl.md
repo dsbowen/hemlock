@@ -1,12 +1,14 @@
 # Windows Subsystem for Linux (WSL) setup
 
-Why WSL? The main reason I use WSL is that Windows OS doesn't have a fork (only a spoon), which means you'll need WSL if you want to run Redis. [Download instructions for WSL here](https://docs.microsoft.com/en-us/windows/wsl/install-win10). Either WSL 1 or 2 should work.
+These instructions were written for Windows 10.
+
+Why WSL? The main reason I use WSL is that Windows OS doesn't have a fork (only a spoon), which means you'll need WSL if you want to run Redis. You can find [download instructions for WSL here](https://docs.microsoft.com/en-us/windows/wsl/install-win10). Either WSL 1 or 2 should work.
 
 After you've installed WSL, open a terminal window (WIN + R, then enter e.g. 'ubuntu2004'. You may be prompted to create a username and password.
 
 ## Python3 and pip3
 
-Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-cli.
+Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-CLI.
 
 Most WSL distributions come with python3. Verify your python installation with:
 
@@ -58,7 +60,7 @@ You may need to replace this with:
 $ pip3 install <my-requested-package>
 ```
 
-Many hemlock-cli commands assume you can pip install with `pip3`.
+Many hemlock-CLI commands assume you can pip install with `pip3`.
 
 ## Hemlock-CLI
 
@@ -68,7 +70,7 @@ Hemlock's command line interface, hemlock-CLI, defines many useful commands for 
 $ pip install hemlock-cli
 ```
 
-Verify your hemlock-cli installation:
+Verify your hemlock-CLI installation:
 
 ```bash
 $ hlk --version
@@ -79,19 +81,20 @@ hlk x.x.x
 
 [Git](https://git-scm.com/) is a version control system, and [github](https://github.com/) hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.
 
-If you have hemlock-cli, you can install git and configure the git command line tools with:
-
-```bash
-$ hlk setup wsl --git
-```
-
-This will prompt you to create and log in to a github account.
+[Find installation instructions for git here](https://git-scm.com/download/linux).
 
 Verify your git installation:
 
 ```bash
 $ git --version
-git version x.xx.x
+git version x.xx.x.windows.1
+```
+
+Then, create a [github account here](https://github.com). Configure your github command line interface:
+
+```bash
+$ git config --global user.name <my-github-username>
+$ git config --global user.email <my-github-user-email>
 ```
 
 ## Visual studio code
@@ -189,7 +192,7 @@ $ which chromedriver
 
 [Heroku](https://devcenter.heroku.com/articles/heroku-cli) is an easy and inexpensive service for deploying web applications, including hemlock applications.
 
-If using hemlock-cli, you can install and configure the heroku command line interface with:
+If using hemlock-CLI, you can install and configure the heroku command line interface with:
 
 ```bash
 $ hlk setup wsl --heroku-cli
@@ -197,9 +200,9 @@ $ hlk setup wsl --heroku-cli
 
 This will prompt you to create and log in to a heroku account.
 
-Verify your heroku-cli installation:
+Verify your heroku-CLI installation:
 
 ```bash
 $ heroku --version
-heroku/x.xx.x win32-x64 node-v11.14.0
+heroku/x.xx.x linux-x64 node-vxx.xx.x
 ```

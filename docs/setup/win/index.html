@@ -241,6 +241,7 @@
             <div class="section">
               
                 <h1 id="windows-setup">Windows setup</h1>
+<p>These instructions were written for Windows 10.</p>
 <h2 id="git-and-github">Git and github</h2>
 <p>Git is a version control system, and github hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.</p>
 <p><a href="https://git-scm.com/download/win">Download git here</a>. You may be prompted to restart your computer.</p>
@@ -262,7 +263,7 @@ $ git config --global user.email &lt;my-github-user-email&gt;
 </code></pre>
 
 <h2 id="python3-and-pip3">Python3 and pip3</h2>
-<p>Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-cli.</p>
+<p>Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-CLI.</p>
 <p>You can <a href="https://www.python.org/downloads/">download the latest version of python here</a>. </p>
 <p>However, I recommend an earlier version, python3.6. <a href="https://www.python.org/ftp/python/3.6.8/python-3.6.8.exe">Download python3.6 here</a>. Why? Because heroku, my recommended method of app deployment, uses python3.6, meaning that if you develop in python3.7+ and deploy in python3.6, you may encounter compatibility issues.</p>
 <p><strong>Make sure to click <em>Add Python to PATH</em> on the first page of the installer.</strong></p>
@@ -300,7 +301,7 @@ pip xx.x.x from c:\users\dbspe\appdata\local\programs\python\pythonxx-xx\lib\sit
 <pre><code class="bash">$ pip install hemlock-cli
 </code></pre>
 
-<p>Verify your hemlock-cli installation:</p>
+<p>Verify your hemlock-CLI installation:</p>
 <pre><code class="bash">$ hlk --version
 hlk x.x.x
 </code></pre>
@@ -353,15 +354,15 @@ True
 <li>Put the chrome executable in <code>C:\users\&lt;my-windows-username&gt;\webdrivers\</code>.</li>
 </ol>
 <p>Chromedriver should still be in your path, which you can verify:</p>
-<pre><code class="bash">$ which chromedriver
+<pre><code class="bash">$ which chromedriver.exe
 /c/users/&lt;my-windows-username&gt;/webdrivers/chromedriver.exe
 </code></pre>
 
 <h2 id="heroku">Heroku</h2>
 <p>Heroku is an easy and inexpensive service for deploying web applications, including hemlock applications. <a href="https://devcenter.heroku.com/articles/heroku-cli">Download the command line interface here</a>.</p>
-<p>Close and re-open your terminal. Verify your heroku-cli installation:</p>
+<p>Close and re-open your terminal. Verify your heroku-CLI installation:</p>
 <pre><code class="bash">$ heroku --version
-heroku/x.xx.x win32-x64 node-v11.14.0
+heroku/x.xx.x win32-x64 node-vxx.xx.x
 </code></pre>
 
 <p>Log into heroku:</p>
