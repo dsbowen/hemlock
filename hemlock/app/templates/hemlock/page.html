@@ -1,5 +1,7 @@
+<!doctype html>
 <html>
     <head>
+        <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         {% if page.css is not none %}
             {{ page.css.render() }}
@@ -12,6 +14,13 @@
                 {{ opt.css.render() }}
             {% endfor %}
         {% endfor %}
+    </head>
+    <body>
+        {% if page.navbar is not none %}
+            {{ page.navbar.render() }}
+        {% endif %}
+
+        {{ page.body.render() }}
 
         {% if page.js is not none %}
             {{ page.js.render() }}
@@ -24,12 +33,5 @@
                 {{ opt.js.render() }}
             {% endfor %}
         {% endfor %}
-    </head>
-    <body>
-        {% if page.navbar is not none %}
-            {{ page.navbar.render() }}
-        {% endif %}
-
-        {{ page.body.render() }}
     </body>
 </html>
