@@ -28,8 +28,8 @@ The easiest way to deploy web apps is with [heroku](https://heroku.com/). Hemloc
 
 - [Windows](../setup/win.md)
 - [Windows Subsystem for Linux](../setup/wsl.md)
-- Mac: coming soon
-- Linux: coming soon
+- [Mac](../setup/mac.md)
+- [Linux](../setup/linux.md)
 
 ## Production-lite
 

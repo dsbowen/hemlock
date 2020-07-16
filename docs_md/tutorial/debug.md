@@ -28,8 +28,8 @@ To run hemlock's custom debugging tool locally, you'll need [Google Chrome](http
 
 - [Windows](../setup/win.md)
 - [Windows Subsystem for Linux](../setup/wsl.md)
-- Mac: coming soon
-- Linux: coming soon
+- [Mac](../setup/mac.md)
+- [Linux](../setup/linux.md)
 
 ## Basic syntax
 
