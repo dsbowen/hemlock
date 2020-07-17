@@ -4,7 +4,9 @@ By the end of this part of the tutorial, you'll be able to initialize a new heml
 
 ## Getting started
 
-Before getting started, I recommend you visit the setup page for your OS and download the following:
+I've written setup pages for different operating systems (OS) below. You don't need everything in the setup page right now. First, read this list of things you need. Then, check out the setup page for your OS for download and installation instructions.
+
+What you need to get started:
 
 - Git and github
 - Python3 and pip3
@@ -13,9 +15,7 @@ Before getting started, I recommend you visit the setup page for your OS and dow
 - Jupyter
 - Google chrome
 
-You can save the rest of the setup for later.
-
-Find the setup page for your OS here:
+Check out the setup page for your OS:
 
 - [Windows](../setup/win.md)
 - [Windows Subsystem for Linux](../setup/wsl.md)

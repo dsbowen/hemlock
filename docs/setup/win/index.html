@@ -244,58 +244,79 @@
 <p>These instructions were written for Windows 10.</p>
 <h2 id="git-and-github">Git and github</h2>
 <p>Git is a version control system, and github hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.</p>
-<p><a href="https://git-scm.com/download/win">Download git here</a>. You may be prompted to restart your computer.</p>
-<p>We'll use the git bash terminal for this tutorial. Right click anywhere on your desktop and select 'Git Bash Here`. You should see a terminal window appear. Change to your home directory with:</p>
-<pre><code class="bash">$ cd ..
+<p>You can find <a href="https://git-scm.com/download/win">git download and installation instructions here</a>.</p>
+<p>We'll use the git bash terminal for this tutorial. Right click anywhere on your desktop and select 'Git Bash Here`. You should see a terminal window appear. Enter the following into your terminal:</p>
+<pre><code class="bash">$ cd
 </code></pre>
 
-<p>This command moves you up a directory.</p>
+<p>This moves you to your home directory. It's not important that you understand exactly what this means, but if you're dying to find out, <a href="https://towardsdatascience.com/basics-of-bash-for-beginners-92e53a4c117a">read this</a>.</p>
 <p><strong>Note 1.</strong> You don't type <code>$</code>; it simply indicates the beginning of a bash command.</p>
-<p><strong>Note 2.</strong> For this tutorial, always make sure to change to your home directory after you open the git bash terminal.</p>
+<p><strong>Note 2.</strong> For this tutorial, always make sure to change to your home directory by entering <code>cd</code> after you open the git bash terminal.</p>
 <p>Verify your git installation:</p>
 <pre><code class="bash">$ git --version
-git version x.xx.x.windows.1
+git version 2.27.0.windows.1
 </code></pre>
 
+<p><strong>Note 1.</strong> The first line, <code>git --version</code>, is what you enter in the terminal. The second line, <code>git version 2.27.0.windows.1</code>, is the output. In general, lines that start with <code>$</code> are things you enter in your terminal; lines without <code>$</code> are the output of what you just entered.</p>
+<p><strong>Note 2.</strong> It's okay if you have a slightly different version of git. For example, your second line may read <code>git version 2.28.0.windows.1</code>.</p>
 <p>Then, create a <a href="https://github.com">github account here</a>. Configure your github command line interface:</p>
 <pre><code class="bash">$ git config --global user.name &lt;my-github-username&gt;
 $ git config --global user.email &lt;my-github-user-email&gt;
 </code></pre>
 
 <h2 id="python3-and-pip3">Python3 and pip3</h2>
-<p>Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-CLI.</p>
+<p>Python is hemlock's primary language. Pip allows you to install python packages, including hemlock itself. In this section, we're going to download and install python3 and pip3.</p>
+<p><strong>Read everything until STOP before downloading or installing anything.</strong></p>
 <p>You can <a href="https://www.python.org/downloads/">download the latest version of python here</a>. </p>
-<p>However, I recommend an earlier version, python3.6. <a href="https://www.python.org/ftp/python/3.6.8/python-3.6.8.exe">Download python3.6 here</a>. Why? Because heroku, my recommended method of app deployment, uses python3.6, meaning that if you develop in python3.7+ and deploy in python3.6, you may encounter compatibility issues.</p>
-<p><strong>Make sure to click <em>Add Python to PATH</em> on the first page of the installer.</strong></p>
+<p>However, I recommend an earlier version, python3.6. <a href="https://www.python.org/ftp/python/3.6.8/python-3.6.8.exe">Download python3.6 here</a>. Then, click on the file you just downloaded to install it. </p>
+<p>Why do I recommend 3.6 instead of the latest version of python? Because heroku, my recommended method of app deployment, uses python3.6, meaning that if you develop in python3.7+ and deploy in python3.6, you may encounter compatibility issues.</p>
+<p><strong>When you start the python installer, you'll see an <em>Add Python to PATH</em> option on the first page. Make sure to select this option.</strong></p>
+<p><strong>STOP.</strong></p>
 <p>Close and re-open your terminal window and enter:</p>
 <pre><code class="bash">$ which python
-/c/Users/DBSpe/AppData/Local/Programs/Python/Python&lt;xx-xx&gt;/python
 </code></pre>
 
-<p>The line underneath <code>which python</code> is the location of your python executable, where 'xx-xx' is your python version.</p>
-<p>Change directories into this folder, for example:</p>
-<pre><code class="bash">$ cd appdata/local/programs/python/python&lt;xx-xx&gt;
+<p>You should see a line print underneath <code>which python</code>. This is the location of your python executable (i.e. the file that runs python). On my computer, it looks like:</p>
+<pre><code class="bash">/c/Users/DBSpe/AppData/Local/Programs/Python/Python36-32/python
 </code></pre>
 
-<p>Rename <code>python.exe</code> to <code>python3.exe</code>:</p>
-<pre><code class="bash">$ mv python.exe python3.exe
+<p>The python executable may be in a different location on your computer. In general, it'll look like:</p>
+<pre><code class="bash">&lt;my-python-location&gt;/python
+</code></pre>
+
+<p>We're going to change directories to that location (i.e. we're going to go to where the python executable is). On my computer, I would enter:</p>
+<pre><code class="bash">$ cd /c/Users/DBSpe/AppData/Local/Programs/Python/Python36-32
+</code></pre>
+
+<p>In general, you would enter:</p>
+<pre><code class="bash">$ cd &lt;my-python-location&gt;
+</code></pre>
+
+<p><strong>Note.</strong> The line that printed under <code>which python</code> was <code>&lt;my-python-location&gt;/python</code>; you'll then enter <code>cd &lt;my-python-location&gt;</code>, <em>not</em> <code>cd &lt;my-python-location&gt;/python</code>.</p>
+<p>Copy <code>python.exe</code> to <code>python3.exe</code>:</p>
+<pre><code class="bash">$ cp python.exe python3.exe
 </code></pre>
 
 <p>Verify your python installation:</p>
 <pre><code class="bash">$ python3 --version
-Python 3.x.x
+Python 3.6.8
 </code></pre>
 
-<p>Upgrade pip:</p>
+<p>It's okay if you have a different version of python.</p>
+<p>Next, upgrade pip:</p>
 <pre><code class="bash">$ python3 -m pip install --upgrade pip
 </code></pre>
 
 <p>Verify your pip installation:</p>
 <pre><code class="bash">$ pip3 --version
-pip xx.x.x from c:\users\dbspe\appdata\local\programs\python\pythonxx-xx\lib\site-packages\pip (python 3.x)
+pip 20.1.1 from c:\users\dbspe\appdata\local\programs\python\python36-32\lib\site-packages\pip (python3.6)
 </code></pre>
 
-<p>Now, go back to your home directory (enter <code>cd ..</code> a few times).</p>
+<p>Again, it's okay to have a slightly different version of pip.</p>
+<p>Congratulations! You've installed python. Now return to your home directory:</p>
+<pre><code class="bash">$ cd
+</code></pre>
+
 <h2 id="hemlock-cli">Hemlock-CLI</h2>
 <p>Hemlock's command line interface, hemlock-CLI, defines many useful commands for initializing, editing, and deploying hemlock projects. Download with:</p>
 <pre><code class="bash">$ pip install hemlock-cli
@@ -303,26 +324,35 @@ pip xx.x.x from c:\users\dbspe\appdata\local\programs\python\pythonxx-xx\lib\sit
 
 <p>Verify your hemlock-CLI installation:</p>
 <pre><code class="bash">$ hlk --version
-hlk x.x.x
+hlk 0.0.10
 </code></pre>
 
 <h2 id="visual-studio-code">Visual studio code</h2>
-<p>I recommend visual studio code for editing python files. <a href="https://code.visualstudio.com/">Download VS code here</a>.</p>
+<p>I recommend visual studio code for editing python files. You can find <a href="https://code.visualstudio.com/">download and installation instructions for VS code here</a>.</p>
 <p>Close and re-open your terminal. Verify your VS code installation:</p>
 <pre><code class="bash">$ code --version
-1.xx.x
+1.47.2
+17299e413d5590b14ab0340ea477cdd86ff13dafx64
 </code></pre>
 
 <h2 id="jupyter">Jupyter</h2>
-<p><a href="https://jupyter.org/">Jupyter</a> allows you to quickly iterate on project designs. Install with pip:</p>
+<p><a href="https://jupyter.org/">Jupyter</a> allows you to quickly iterate on project designs. Install jupyter notebook with pip:</p>
 <pre><code class="bash">$ pip install notebook
 </code></pre>
 
 <p>Close and re-open your terminal. Verify your jupyter installation:</p>
 <pre><code class="bash">$ jupyter --version
-jupyter core     : x.x.x
-jupyter-notebook : x.x.x
-...
+jupyter core     : 4.6.3
+jupyter-notebook : 6.0.3
+qtconsole        : not installed
+ipython          : 7.16.1
+ipykernel        : 5.3.2
+jupyter client   : 6.1.5
+jupyter lab      : not installed
+nbconvert        : 5.6.1
+ipywidgets       : not installed
+nbformat         : 5.0.7
+traitlets        : 4.3.3
 </code></pre>
 
 <h2 id="google-chrome">Google chrome</h2>
@@ -336,7 +366,7 @@ True
 </code></pre>
 
 <p>You should see chrome open to the hemlock docs.</p>
-<p><strong>Note.</strong> <code>&gt;&gt;&gt;</code> is where you enter python commands in the python interpreter.</p>
+<p><strong>Note.</strong> <code>&gt;&gt;&gt;</code> is where you enter python commands. This is called the 'python interpreter'.</p>
 <h2 id="chromedriver">Chromedriver</h2>
 <p>Hemlock's custom debugging tool and survey view functions use <a href="https://chromedriver.chromium.org/downloads">chromedriver</a>. To use these features locally, you'll need to download chromedriver:</p>
 <pre><code class="bash">$ hlk setup win --chromedriver
@@ -344,22 +374,26 @@ True
 
 <p>Close and re-open your terminal. Verify your chromedriver installation:</p>
 <pre><code class="bash">$ which chromedriver.exe
-/c/users/&lt;my-windows-username&gt;/webdrivers/chromedriver.exe
 </code></pre>
 
+<p>The line underneath <code>which chromedriver.exe</code> is the location of your chromedriver executable. On my computer, it looks like:</p>
+<pre><code class="bash">/c/users/dbspe/webdrivers/chromedriver.exe
+</code></pre>
+
+<p>It's okay if your chromedriver executable is in a different location.</p>
 <h4 id="chrome-and-chromedriver-compatibility">Chrome and chromedriver compatibility</h4>
 <p>As of 07/14/2020, <code>hlk setup win --chromedriver</code> installs chromedriver for chrome 83. While chrome updates automatically, chromedriver does not. This means that you will encounter compatibility issues when chrome updates to version 84+. To fix this:</p>
 <ol>
 <li><a href="https://chromedriver.chromium.org/downloads">Download the latest chromedriver here</a>.</li>
-<li>Put the chrome executable in <code>C:\users\&lt;my-windows-username&gt;\webdrivers\</code>.</li>
+<li>Put the chrome executable in <code>C:\users\&lt;my-windows-username&gt;\webdrivers\</code>. For example, I would put my chromedriver executable in <code>C:\users\dbspe\webdrivers\</code>.</li>
 </ol>
 <p>Chromedriver should still be in your path, which you can verify:</p>
 <pre><code class="bash">$ which chromedriver.exe
-/c/users/&lt;my-windows-username&gt;/webdrivers/chromedriver.exe
+&lt;my-chromedriver-location&gt;/chromedriver.exe
 </code></pre>
 
 <h2 id="heroku">Heroku</h2>
-<p>Heroku is an easy and inexpensive service for deploying web applications, including hemlock applications. <a href="https://devcenter.heroku.com/articles/heroku-cli">Download the command line interface here</a>.</p>
+<p>Heroku is an easy and inexpensive service for deploying web applications (i.e. putting them online), including hemlock applications. You can find <a href="https://devcenter.heroku.com/articles/heroku-cli">download and installation instructions for the heroku command line interface (heroku-CLI) here</a>.</p>
 <p>Close and re-open your terminal. Verify your heroku-CLI installation:</p>
 <pre><code class="bash">$ heroku --version
 heroku/x.xx.x win32-x64 node-vxx.xx.x

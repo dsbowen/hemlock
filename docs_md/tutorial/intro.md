@@ -14,7 +14,26 @@ The ultimatum game is famous; studied in hundreds of academic papers in discipli
 
 With nearly 2000 citations, [this 1991 American Economic Review paper](https://www.jstor.org/stable/2006907) studies how play evolves over successive rounds. It finds that proposers usually make 'fair' offers (about a 50-50 split), and responders usually reject unfair offers, in early rounds. As the game continues, proposers make more unfair offers, and responders are more accepting of them. The study we'll make in the hemlock tutorial is designed to replicate this finding.
 
-## Technical note on equilibrium concepts
+## Prerequisites
+
+This tutorial assumes a very basic knowledge of two programming languages: bash and python.
+
+#### Tutorials
+
+There are a thousand excellent 'bash/python for beginners' tutorials online. The following should teach you enough bash and python to get started with hemlock in about 1-2 hours. 
+
+- Read up to 'Viewing Files' in [this bash tutorial](https://towardsdatascience.com/basics-of-bash-for-beginners-92e53a4c117a). 
+- Complete up to Lesson 15 in [code the blocks](https://codetheblocks.com/).
+- Learn how dictionaries work in [thinkcspy](https://runestone.academy/runestone/books/published/thinkcspy/Dictionaries/intro-Dictionaries.html).
+
+#### What to do if something doesn't make sense
+
+If and when you run into something which doesn't make sense to you, try the following:
+
+1. **Keep going.** As best you can, press on with the tutorial. You don't have to 100% understand what's going on to get things working. You'll also find that things which don't make sense now often 'fall into place' just a short while later.
+2. **Look it up.** I've done my best to write a clear, thorough tutorial. But no tutorial is comprehensive. If you run into something so puzzling that you can't just keep going, look it up! The internet is inundated with great programming resources.
+
+## A note on equilibrium concepts which is totally irrelevant to the hemlock tutorial
 
 This note is irrelevant to the hemlock tutorial; it's mostly to appease the game theorists in the audience.
 

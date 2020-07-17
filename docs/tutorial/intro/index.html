@@ -58,7 +58,15 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#start-with-the-end-product-in-mind">Start with the end product in mind</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#technical-note-on-equilibrium-concepts">Technical note on equilibrium concepts</a>
+    <li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#tutorials">Tutorials</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#what-to-do-if-something-doesnt-make-sense">What to do if something doesn't make sense</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#a-note-on-equilibrium-concepts-which-is-totally-irrelevant-to-the-hemlock-tutorial">A note on equilibrium concepts which is totally irrelevant to the hemlock tutorial</a>
     </li>
     </ul>
                     </li>
@@ -233,7 +241,22 @@
 <p>In this spirit, our goal is to create a behavioral study in which participants play an <em>ultimatum game</em> with each other in real time. You can see the end product here: <a href="https://hemlock-tutorial.herokuapp.com/">https://hemlock-tutorial.herokuapp.com/</a>. The complete survey code is here: <a href="https://github.com/dsbowen/hemlock/blob/master/survey.py">https://github.com/dsbowen/hemlock/blob/master/survey.py</a>.</p>
 <p>The ultimatum game is famous; studied in hundreds of academic papers in disciplines such as game theory, behavioral economics, experimental economics, marketing, psychology, sociology, and neuroscience. It involves two players; a <em>proposer</em> and a <em>responder</em>. We begin by endowing the proposer with a 'pot' of (usually) money, e.g. $20. The proposer then proposes a 'split' of the pot between him/herself and the responder (e.g. <em>I get $15, you get $5</em>). The responder can accept or reject the proposed split. If the responder accepts, the pot is split according to the proposal (e.g. proposer gets $15, responder gets $5). If the responder rejects the proposal, both players get nothing.</p>
 <p>With nearly 2000 citations, <a href="https://www.jstor.org/stable/2006907">this 1991 American Economic Review paper</a> studies how play evolves over successive rounds. It finds that proposers usually make 'fair' offers (about a 50-50 split), and responders usually reject unfair offers, in early rounds. As the game continues, proposers make more unfair offers, and responders are more accepting of them. The study we'll make in the hemlock tutorial is designed to replicate this finding.</p>
-<h2 id="technical-note-on-equilibrium-concepts">Technical note on equilibrium concepts</h2>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>This tutorial assumes a very basic knowledge of two programming languages: bash and python.</p>
+<h4 id="tutorials">Tutorials</h4>
+<p>There are a thousand excellent 'bash/python for beginners' tutorials online. The following should teach you enough bash and python to get started with hemlock in about 1-2 hours. </p>
+<ul>
+<li>Read up to 'Viewing Files' in <a href="https://towardsdatascience.com/basics-of-bash-for-beginners-92e53a4c117a">this bash tutorial</a>. </li>
+<li>Complete up to Lesson 15 in <a href="https://codetheblocks.com/">code the blocks</a>.</li>
+<li>Learn how dictionaries work in <a href="https://runestone.academy/runestone/books/published/thinkcspy/Dictionaries/intro-Dictionaries.html">thinkcspy</a>.</li>
+</ul>
+<h4 id="what-to-do-if-something-doesnt-make-sense">What to do if something doesn't make sense</h4>
+<p>If and when you run into something which doesn't make sense to you, try the following:</p>
+<ol>
+<li><strong>Keep going.</strong> As best you can, press on with the tutorial. You don't have to 100% understand what's going on to get things working. You'll also find that things which don't make sense now often 'fall into place' just a short while later.</li>
+<li><strong>Look it up.</strong> I've done my best to write a clear, thorough tutorial. But no tutorial is comprehensive. If you run into something so puzzling that you can't just keep going, look it up! The internet is inundated with great programming resources.</li>
+</ol>
+<h2 id="a-note-on-equilibrium-concepts-which-is-totally-irrelevant-to-the-hemlock-tutorial">A note on equilibrium concepts which is totally irrelevant to the hemlock tutorial</h2>
 <p>This note is irrelevant to the hemlock tutorial; it's mostly to appease the game theorists in the audience.</p>
 <p>We may object to the description of 'fair' versus 'unfair' offers; preferring to discuss equilibrium and non-equilibrium strategies. I'll take a moment to discuss equilibrium strategies and outcomes assuming that a player's utility is monotonically increasing in his/her own payoff and is independent of other players' payoffs.</p>
 <p>In the classical ultimatum game in which the proposer has a continuous action space, there are multiple Nash equilibria, but a unique subgame perfect Nash equilibrium (SPNE). The SPNE strategies are that the proposer offers $0 and the responder will accept any offer, meaning that the SPNE outcome is that the proposer will receive the entire pot and the responder will receive $0.</p>

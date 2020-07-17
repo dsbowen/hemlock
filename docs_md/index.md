@@ -2,7 +2,7 @@
 
 Hemlock aspires to be the most powerful and flexible way to create online studies, with applications in marketing and behavioral science research.
 
-If you're new to python, or the installation and quickstart instructions don't make sense to you, check out the [tutorial](https://dsbowen.github.io/hemlock/tutorial/intro/).
+If the installation and quickstart instructions don't make sense to you, check out the [tutorial](https://dsbowen.github.io/hemlock/tutorial/intro/).
 
 ## Installation
 
