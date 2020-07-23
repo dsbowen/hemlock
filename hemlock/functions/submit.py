@@ -6,7 +6,7 @@ from .utils import convert, correct_choices as correct_choices_
 import re
 
 @Submit.register
-def correct_choices(question, correct):
+def correct_choices(question, *values):
     """
     Convert the question's data to a 0-1 indicator that the participant 
     selected the correct choice(s).
@@ -15,8 +15,8 @@ def correct_choices(question, correct):
     ----------
     question : hemlock.ChoiceQuestion
 
-    correct : list of hemlock.Choice
-        Correct choices.
+    \*values :
+        Values of the correct choices.
 
     Notes
     -----
@@ -26,19 +26,17 @@ def correct_choices(question, correct):
     Examples
     --------
     ```python
-    from hemlock import Check, Submit, push_app_context
+    from hemlock import Check, Submit as S, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
     check = Check(
-    \    '<p>Select one</p>', 
-    \    ['correct', 'incorrect', 'also incorrect']
+    \    '<p>Select the correct choice.</p>',
+    \    ['correct', 'incorrect', 'also incorrect'],
+    \    submit=S.correct_choices('correct')
     )
-    correct_choice = check.choices[0]
-    Submit.correct_choices(check, [correct_choice])
-    check.response = correct_choice
-    check._submit()
-    check.data
+    check.response = check.choices[0]
+    check._submit().data
     ```
 
     Out:
@@ -47,7 +45,7 @@ def correct_choices(question, correct):
     1
     ```
     """
-    question.data = int(correct_choices_(question, correct))
+    question.data = int(correct_choices_(question, *correct))
 
 @Submit.register
 def data_type(question, new_type, *args, **kwargs):
@@ -67,11 +65,11 @@ def data_type(question, new_type, *args, **kwargs):
     Examples
     --------
     ```python
-    from hemlock import Input, Submit, push_app_context
+    from hemlock import Input, Submit as S, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Submit.data_type(Input(data='1'), int)
+    inpt = Input(data='1', submit=S.data_type(int))
     inpt._submit()
     inpt.data, isinstance(inpt.data, int)
     ```
@@ -102,13 +100,12 @@ def match(question, pattern):
     Examples
     --------
     ```python
-    from hemlock import Input, Submit, push_app_context
+    from hemlock import Input, Submit as S, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Submit.match(Input(data='hello world'), 'hello world')
-    inpt._submit()
-    inpt.data
+    inpt = Input(data='hello world', submit=S.match('hello *'))
+    inpt._submit().data
     ```
 
     Out:

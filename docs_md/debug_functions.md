@@ -70,18 +70,18 @@ Click the forward button.
 ####Examples
 
 ```python
-from hemlock import Debug, Page, push_app_context
+from hemlock import Debug as D, Page, push_app_context
 from hemlock.tools import chromedriver
 
-push_app_context()
+app = push_app_context()
 
 driver = chromedriver()
 
 p = Page()
 # by default, last debug function navigates
 # so we want to remove this and replace it with forward
-p.debug_functions.pop()
-Debug.forward(p)
+p.debug.pop()
+p.debug = D.forward()
 p.preview(driver)._debug(driver)
 ```
 
@@ -114,18 +114,18 @@ Click the back button.
 ####Examples
 
 ```python
-from hemlock import Debug, Page, push_app_context
+from hemlock import Debug as D, Page, push_app_context
 from hemlock.tools import chromedriver
 
-push_app_context()
+app = push_app_context()
 
 driver = chromedriver()
 
 p = Page(back=True)
 # by default, last debug function navigates
 # so we want to remove this and replace it with forward
-p.debug_functions.pop()
-Debug.back(p)
+p.debug.pop()
+p.debug = D.back()
 p.preview(driver)._debug(driver)
 ```
 
@@ -166,21 +166,22 @@ Send the specified keys to the `<textarea>` or `<input>`.
 ####Examples
 
 ```python
-from hemlock import Debug, Input, Page, push_app_context
+from hemlock import Debug as D, Input, Page, push_app_context
 from hemlock.tools import chromedriver
 
-push_app_context()
+app = push_app_context()
 
 driver = chromedriver()
 
-p = Page(Debug.send_keys(Input(), 'hello world'))
+p = Page(Input(debug=D.send_keys('hello world')))
+p.debug.pop()
 p.preview(driver)._debug(driver)
 ```
 
 ##hemlock.functions.debug.**random_str**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>random_str</b>(<i>driver, question, magnitude=2, p_whitespace=0.2</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L139">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>random_str</b>(<i>driver, question, magnitude=2, p_whitespace=0.2</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L140">[source]</a>
 </p>
 
 Send a random string to the textarea.
@@ -214,21 +215,22 @@ Send a random string to the textarea.
 ####Examples
 
 ```python
-from hemlock import Debug, Input, Page, push_app_context
+from hemlock import Debug as D, Input, Page, push_app_context
 from hemlock.tools import chromedriver
 
-push_app_context()
+app = push_app_context()
 
 driver = chromedriver()
 
-p = Page(Debug.random_str(Input()))
+p = Page(Input(debug=D.random_str()))
+p.debug.pop()
 p.preview(driver)._debug(driver)
 ```
 
 ##hemlock.functions.debug.**random_number**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>random_number</b>(<i>driver, question, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L177">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>random_number</b>(<i>driver, question, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L179">[source]</a>
 </p>
 
 Send a random number to the textarea or input.
@@ -274,21 +276,22 @@ Send a random number to the textarea or input.
 ####Examples
 
 ```python
-from hemlock import Debug, Input, Page, push_app_context
+from hemlock import Debug as D, Input, Page, push_app_context
 from hemlock.tools import chromedriver
 
-push_app_context()
+app = push_app_context()
 
 driver = chromedriver()
 
-p = Page(Debug.random_number(Input()))
+p = Page(Input(debug=D.random_number()))
+p.debug.pop()
 p.preview(driver)._debug(driver)
 ```
 
 ##hemlock.functions.debug.**send_datetime**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>send_datetime</b>(<i>driver, question, datetime_=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L220">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>send_datetime</b>(<i>driver, question, datetime_=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L223">[source]</a>
 </p>
 
 Send a `datetime.datetime` object to an input. Inputs should be of type
@@ -319,23 +322,24 @@ Send a `datetime.datetime` object to an input. Inputs should be of type
 ####Examples
 
 ```python
-from hemlock import Debug, Input, Page, push_app_context
+from hemlock import Debug as D, Input, Page, push_app_context
 from hemlock.tools import chromedriver
 
 from datetime import datetime
 
-push_app_context()
+app = push_app_context()
 
 driver = chromedriver()
 
-p = Page(Debug.send_datetime(Input(input_type='date'), datetime.utcnow()))
+p = Page(Input(input_type='date', debug=D.send_datetime(datetime.utcnow())))
+p.debug.pop()
 p.preview(driver)._debug(driver)
 ```
 
 ##hemlock.functions.debug.**drag_range**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>drag_range</b>(<i>driver, range_, target=None, tol=0, max_iter=10</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L259">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>drag_range</b>(<i>driver, range_, target=None, tol=0, max_iter=10</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L263">[source]</a>
 </p>
 
 Drag a range slider to specified target value.
@@ -373,21 +377,22 @@ Drag a range slider to specified target value.
 ####Examples
 
 ```python
-from hemlock import Debug, Page, Range, push_app_context
+from hemlock import Debug as D, Page, Range, push_app_context
 from hemlock.tools import chromedriver
 
-push_app_context()
+app = push_app_context()
 
 driver = chromedriver()
 
-p = Page(Debug.drag_range(Range(), 80))
+p = Page(Range(debug=D.drag_range(80)))
+p.debug.pop()
 p.preview(driver)._debug(driver)
 ```
 
 ##hemlock.functions.debug.**click_choices**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>click_choices</b>(<i>driver, question, *choices</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L308">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>click_choices</b>(<i>driver, question, *values</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L313">[source]</a>
 </p>
 
 Click on choices or options.
@@ -406,9 +411,9 @@ Click on choices or options.
 <p class="attr">
     
 </p>
-<b>*choices : <i>hemlock.Choice</i></b>
+<b>*values : <i></i></b>
 <p class="attr">
-    Choices on which to click. If no choices are specified, the debugger will click on random choices.
+    Values of the choices on which to click. If no choices are specified, the debugger will click on random choices.
 </p></td>
 </tr>
     </tbody>
@@ -417,22 +422,28 @@ Click on choices or options.
 ####Examples
 
 ```python
-from hemlock import Check, Debug, Page, push_app_context
+from hemlock import Check, Debug as D, Page, push_app_context
 from hemlock.tools import chromedriver
 
-push_app_context()
+app = push_app_context()
 
 driver = chromedriver()
 
-check = Check('<p>Check label</p>', ['Yes','No'])
-p = Page(Debug.click_choices(check, check.choices[0]))
+p = Page(
+    Check(
+        '<p>Click "Yes".</p>',
+        ['Yes', 'No'],
+        debug=D.click_choices('Yes')
+    )
+)
+p.debug.pop()
 p.preview(driver)._debug(driver)
 ```
 
 ##hemlock.functions.debug.**clear_choices**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>clear_choices</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L353">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>clear_choices</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L366">[source]</a>
 </p>
 
 Clear selected choices.
@@ -462,15 +473,21 @@ Intended only for questions in which multiple choices may be selected.
 ####Examples
 
 ```python
-from hemlock import Check, Debug, Page, push_app_context
+from hemlock import Check, Debug as D, Page, push_app_context
 from hemlock.tools import chromedriver
 
-push_app_context()
+app = push_app_context()
 
 driver = chromedriver()
 
-check = Check('<p>Check label</p>', ['Yes','No'], multiple=True)
-check.default = list(check.choices)
-p = Page(Debug.clear_choices(check))
+p = Page(
+    Check(
+        '<p>Click "Yes".</p>',
+        ['Yes', 'No'],
+        multiple=True,
+        debug=D.clear_choices()
+    )
+)
+p.debug.pop()
 p.preview(driver)._debug(driver)
 ```

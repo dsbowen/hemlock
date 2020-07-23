@@ -34,14 +34,14 @@ def convert(obj, type_, *args, **kwargs):
     except:
         return obj, False
 
-def correct_choices(q, correct):
+def correct_choices(q, *values):
     """
     Parameters
     ----------
     q : hemlock.ChoiceQuestion
 
-    correct : list of hemlock.Choice
-        Correct choices.
+    \*values : 
+        Values of the correct choices.
 
     Returns
     -------
@@ -53,8 +53,11 @@ def correct_choices(q, correct):
     If the participant can only select one choice, indicate whether the 
     participant selected one of the correct choices.
     """
-    resp = q.response.unshell() if isinstance(q.response,list) else q.response
-    return set(resp) == set(correct) if q.multiple else resp in correct
+    data = (
+        [c.value for c in q.response] if isinstance(q.response, list) 
+        else q.response.value
+    )
+    return set(data) == set(values) if q.multiple else data in values
 
 def gen_datetime():
     try:

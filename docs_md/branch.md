@@ -98,7 +98,7 @@ Inherits from [`hemlock.models.Base`](bases.md).
 <p class="attr">
     All data elements belonging to this branch, in order of embedded data then page data.
 </p>
-<b>navigate_function : <i>hemlock.Navigate</i></b>
+<b>navigate : <i>hemlock.Navigate</i></b>
 <p class="attr">
     Navigate function which returns a new branch once the participant has reached the end of this branch (i.e. the end of the page queue associated with this branch).
 </p>

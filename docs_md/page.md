@@ -323,7 +323,7 @@ It inherits from [`hemlock.model.HTMLMixin`](bases.md).
 <p class="attr">
     List of data elements which belong to this page; in order, <code>self. timer</code>, <code>self.embedded</code>, <code>self.questions</code>.
 </p>
-<b>compile_functions : <i>list of hemlock.Compile</i></b>
+<b>compile : <i>list of hemlock.Compile</i></b>
 <p class="attr">
     List of compile functions; run before the page is rendered. The default page compile function runs its questions' compile functions in index order.
 </p>
@@ -331,7 +331,7 @@ It inherits from [`hemlock.model.HTMLMixin`](bases.md).
 <p class="attr">
     Worker which sends the compile functions to a Redis queue.
 </p>
-<b>validate_functions : <i>list of hemlock.Validate</i></b>
+<b>validate : <i>list of hemlock.Validate</i></b>
 <p class="attr">
     List of validate functions; run to validate participant responses. The default page validate function runs its questions' validate functions in index order.
 </p>
@@ -339,7 +339,7 @@ It inherits from [`hemlock.model.HTMLMixin`](bases.md).
 <p class="attr">
     Worker which sends the validate functions to a Redis queue.
 </p>
-<b>submit_functions : <i>list of hemlock.Submit</i></b>
+<b>submit : <i>list of hemlock.Submit</i></b>
 <p class="attr">
     List of submit functions; run after participant responses have been validated. The default submit function runs its questions' submit functions in index order.
 </p>
@@ -347,7 +347,7 @@ It inherits from [`hemlock.model.HTMLMixin`](bases.md).
 <p class="attr">
     Worker which sends the submit functions to a Redis queue.
 </p>
-<b>navigate_function : <i>hemlock.Navigate or None, default=None</i></b>
+<b>navigate : <i>hemlock.Navigate or None, default=None</i></b>
 <p class="attr">
     Navigate function which returns a new branch originating from this page.
 </p>

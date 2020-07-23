@@ -62,7 +62,7 @@ Inherits from
 
 
 <p class="func-header">
-    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L36">[source]</a>
+    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L34">[source]</a>
 </p>
 
 This decorator registers a function.
@@ -113,16 +113,16 @@ Inherits from `hemlock.FunctionRegistrar`.
 ####Examples
 
 ```python
-from hemlock import Compile, Input, Label, Page, push_app_context
+from hemlock import Compile as C, Input, Label, Page, push_app_context
 
 app = push_app_context()
 
-@Compile.register
+@C.register
 def greet(greet_q, name_q):
     greet_q.label = '<p>Hello {}!</p>'.format(name_q.response)
 
 name_q = Input("<p>What's your name?</p>")
-p = Page(Compile.greet(Label(), name_q))
+p = Page(Label(compile=C.greet(name_q)))
 name_q.response = 'World'
 p._compile().preview()
 ```
@@ -132,7 +132,7 @@ p._compile().preview()
 ##hemlock.**Debug**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Debug</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L98">[source]</a>
+    <i>class</i> hemlock.<b>Debug</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L87">[source]</a>
 </p>
 
 Run to help debug the survey.
@@ -167,20 +167,21 @@ Inherits from `hemlock.FunctionRegistrar`.
 ####Examples
 
 ```python
-from hemlock import Debug, Input, Page, push_app_context
+from hemlock import Debug as D, Input, Page, push_app_context
 from hemlock.tools import chromedriver
 
 app = push_app_context()
 
 driver = chromedriver()
 
-@Debug.register
+@D.register
 def greet(driver, greet_q):
     inpt = greet_q.input_from_driver(driver)
     inpt.clear()
     inpt.send_keys('Hello World!')
 
-p = Page(Debug.greet(Input('<p>Enter a greeting.</p>')))
+p = Page(Input('<p>Enter a greeting.</p>', debug=D.greet()))
+p.debug.pop(-1) # so the page won't navigate
 p.preview(driver)._debug(driver)
 ```
 
@@ -189,7 +190,7 @@ p.preview(driver)._debug(driver)
 
 
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L147">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L137">[source]</a>
 </p>
 
 Execute the debug function with probability `self.p_exec`.
@@ -207,7 +208,7 @@ Execute the debug function with probability `self.p_exec`.
 
 
 <p class="func-header">
-    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L154">[source]</a>
+    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L144">[source]</a>
 </p>
 
 Similar to the Function Registrar's register function, but does not
@@ -232,7 +233,7 @@ add functions if the `NO_DEBUG_FUNCTIONS` environment variable is set.
 ##hemlock.**Validate**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Validate</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L180">[source]</a>
+    <i>class</i> hemlock.<b>Validate</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L163">[source]</a>
 </p>
 
 Validates a participant's response.
@@ -267,16 +268,17 @@ Inherits from `hemlock.FunctionRegistrar`.
 ####Examples
 
 ```python
-from hemlock import Input, Validate, push_app_context
+from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
 @Validate.register
-def my_validate_func(inpt):
-    if inpt.response != 'hello world':
-        return '<p>You entered "{}", not "hello world"</p>'.format(inpt.response)
+def match(inpt, pattern):
+    if inpt.response != pattern:
+        return '<p>You entered "{}", not "{}"</p>'.format(inpt.response, pattern)
 
-inpt = Validate.my_validate_func(Input('<p>Enter "hello world"</p>'))
+pattern = 'hello world'
+inpt = Input(validate=V.match(pattern))
 inpt.response = 'goodbye moon'
 inpt._validate()
 inpt.error
@@ -293,7 +295,7 @@ You entered "goodbye moon", not "hello world"
 
 
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L235">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L219">[source]</a>
 </p>
 
 
@@ -343,19 +345,18 @@ Inherits from `hemlock.FunctionRegistrar`.
 ####Examples
 
 ```python
-from hemlock import Input, Submit, push_app_context
+from hemlock import Input, Submit as S, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-@Submit.register
+@S.register
 def get_initials(name_q):
     names = name_q.response.split()
     name_q.data = '.'.join([name[0] for name in names]) + '.'
 
-inpt = Submit.get_initials(Input("<p>What's your name?</p>"))
+inpt = Input("<p>What's your name?</p>", submit=S.get_initials())
 inpt.response = 'Andrew Yang'
-inpt._submit()
-inpt.data
+inpt._submit().data
 ```
 
 Out:
@@ -393,12 +394,12 @@ Creates a new branch to which the participant will navigate.
 ####Examples
 
 ```python
-from hemlock import Branch, Navigate, Page, Participant, push_app_context
+from hemlock import Branch, Navigate as N, Page, Participant, push_app_context
 
 def start():
-    return Navigate.end(Branch(Page()))
+    return Branch(Page(), navigate=N.end())
 
-@Navigate.register
+@N.register
 def end(start_branch):
     return Branch(Page(terminal=True))
 
@@ -441,7 +442,7 @@ T = terminal page
 
 
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L351">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L334">[source]</a>
 </p>
 
 Create a new branch and 'link' it to the tree. Linking in the new

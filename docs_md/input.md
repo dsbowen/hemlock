@@ -64,7 +64,7 @@ object if the input takes dates or times.
 ##hemlock.**Input**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Input</b>(<i>label='', template='hemlock/input.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/input.py#L41">[source]</a>
+    <i>class</i> hemlock.<b>Input</b>(<i>label='', template='hemlock/input.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/input.py#L38">[source]</a>
 </p>
 
 Inputs take text input by default, or other types of html inputs.

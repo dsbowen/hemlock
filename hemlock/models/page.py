@@ -147,10 +147,10 @@ settings['Page'] = {
     'forward': True,
     'banner': BANNER.render(),
     'terminal': False,
-    'compile_functions': compile_func,
-    'validate_functions': validate_func,
-    'submit_functions': submit_func,
-    'debug_functions': [debug_func, navigate],
+    'compile': compile_func,
+    'validate': validate_func,
+    'submit': submit_func,
+    'debug': [debug_func, navigate],
 }
 
 
@@ -252,7 +252,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         List of data elements which belong to this page; in order, `self.
         timer`, `self.embedded`, `self.questions`.
 
-    compile_functions : list of hemlock.Compile
+    compile : list of hemlock.Compile
         List of compile functions; run before the page is rendered. The 
         default page compile function runs its questions' compile functions 
         in index order.
@@ -260,7 +260,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     compile_worker : hemlock.CompileWorker or None, default=None
         Worker which sends the compile functions to a Redis queue.
 
-    validate_functions : list of hemlock.Validate
+    validate : list of hemlock.Validate
         List of validate functions; run to validate participant responses. 
         The default page validate function runs its questions' validate 
         functions in index order.
@@ -268,7 +268,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     validate_worker : hemlock.ValidateWorker or None, default=None
         Worker which sends the validate functions to a Redis queue.
 
-    submit_functions : list of hemlock.Submit
+    submit : list of hemlock.Submit
         List of submit functions; run after participant responses have been 
         validated. The default submit function runs its questions' submit 
         functions in index order.
@@ -276,7 +276,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     submit_worker : hemlock.SubmitWorker or None, default=None
         Worker which sends the submit functions to a Redis queue.
 
-    navigate_function : hemlock.Navigate or None, default=None
+    navigate : hemlock.Navigate or None, default=None
         Navigate function which returns a new branch originating from this 
         page.
 
@@ -353,7 +353,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         timer = [self.timer] if self.timer else []
         return self.embedded + timer + self.questions
     
-    compile_functions = db.relationship(
+    compile = db.relationship(
         'Compile',
         backref='page',
         order_by='Compile.index',
@@ -365,7 +365,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         uselist=False
     )
 
-    validate_functions = db.relationship(
+    validate = db.relationship(
         'Validate',
         backref='page',
         order_by='Validate.index',
@@ -377,7 +377,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         uselist=False
     )
 
-    submit_functions = db.relationship(
+    submit = db.relationship(
         'Submit',
         backref='page',
         order_by='Submit.index',
@@ -389,7 +389,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         uselist=False
     )
 
-    navigate_function = db.relationship(
+    navigate = db.relationship(
         'Navigate', 
         backref='page', 
         uselist=False
@@ -408,11 +408,11 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     )
 
     @property
-    def debug_functions(self):
+    def debug(self):
         return self._debug_functions
 
-    @debug_functions.setter
-    def debug_functions(self, val):
+    @debug.setter
+    def debug(self, val):
         if not os.environ.get('NO_DEBUG_FUNCTIONS'):
             self._debug_functions = val
     
@@ -668,9 +668,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         -------
         self
         """
-        [compile_func(self) for compile_func in self.compile_functions]
+        [f(self) for f in self.compile]
         if self.cache_compile:
-            self.compile_functions.clear()
+            self.compile.clear()
             self.compile_worker = None
         if self.timer is not None:
             self.timer.start()
@@ -757,8 +757,8 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         and return False. Otherwise, return True.
         """
         self.error = None
-        for validate_func in self.validate_functions:
-            error = validate_func(self)
+        for f in self.validate:
+            error = f(self)
             if error:
                 self.error = error
                 break
@@ -768,9 +768,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     
     def _submit(self):
         [q._record_data() for q in self.questions]
-        [submit_func(self) for submit_func in self.submit_functions]
+        [f(self) for f in self.submit]
         return self
 
     def _debug(self, driver):
-        [debug_func(driver, self) for debug_func in self.debug_functions]
+        [f(driver, self) for f in self.debug]
         return self

@@ -94,19 +94,19 @@ It inherits from
 <p class="attr">
     The page to which this question belongs.
 </p>
-<b>compile_functions : <i>list of hemlock.Compile, default=[]</i></b>
+<b>compile : <i>list of hemlock.Compile, default=[]</i></b>
 <p class="attr">
     List of compile functions; run before the question is rendered.
 </p>
-<b>validate_functions : <i>list of hemlock.Validate, default=[]</i></b>
+<b>validate : <i>list of hemlock.Validate, default=[]</i></b>
 <p class="attr">
     List of validate functions; run to validate the participant's response.
 </p>
-<b>submit_functions : <i>list of hemlock.Submit, default=[]</i></b>
+<b>submit : <i>list of hemlock.Submit, default=[]</i></b>
 <p class="attr">
     List of submit functions; run after the participant's responses have been validated for all questions on a page.
 </p>
-<b>debug_functions : <i>list of hemlock.Debug, default=[]</i></b>
+<b>debug : <i>list of hemlock.Debug, default=[]</i></b>
 <p class="attr">
     List of debug functions; run during debugging. The default debug function is unique to the question type.
 </p></td>

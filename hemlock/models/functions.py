@@ -3,8 +3,6 @@
 from ..app import db
 from .bases import Base
 from .branch import Branch
-from .page import Page
-from .question import Question
 
 from sqlalchemy_function import FunctionMixin
 
@@ -43,17 +41,8 @@ class FunctionRegistrar(FunctionMixin, Base):
         func : callable
             The function to register.
         """
-        def add_function(parent, *args, **kwargs):
-            model = cls(func, *args, **kwargs)
-            if isinstance(parent, Branch):
-                model.branch = parent
-            elif isinstance(parent, Page):
-                model.page = parent
-            elif isinstance(parent, Question):
-                model.question = parent
-            else:
-                raise ValueError(PARENT_ERR_MSG.format(parent))
-            return parent
+        def add_function(*args, **kwargs):
+            return cls(func, *args, **kwargs)
                 
         setattr(cls, func.__name__, add_function)
         return func
@@ -77,16 +66,16 @@ class Compile(FunctionRegistrar, db.Model):
     Examples
     --------
     ```python
-    from hemlock import Compile, Input, Label, Page, push_app_context
+    from hemlock import Compile as C, Input, Label, Page, push_app_context
 
     app = push_app_context()
 
-    @Compile.register
+    @C.register
     def greet(greet_q, name_q):
     \    greet_q.label = '<p>Hello {}!</p>'.format(name_q.response)
 
     name_q = Input("<p>What's your name?</p>")
-    p = Page(Compile.greet(Label(), name_q))
+    p = Page(Label(compile=C.greet(name_q)))
     name_q.response = 'World'
     p._compile().preview()
     ```
@@ -118,20 +107,21 @@ class Debug(FunctionRegistrar, db.Model):
     Examples
     --------
     ```python
-    from hemlock import Debug, Input, Page, push_app_context
+    from hemlock import Debug as D, Input, Page, push_app_context
     from hemlock.tools import chromedriver
 
     app = push_app_context()
 
     driver = chromedriver()
 
-    @Debug.register
+    @D.register
     def greet(driver, greet_q):
     \    inpt = greet_q.input_from_driver(driver)
     \    inpt.clear()
     \    inpt.send_keys('Hello World!')
 
-    p = Page(Debug.greet(Input('<p>Enter a greeting.</p>')))
+    p = Page(Input('<p>Enter a greeting.</p>', debug=D.greet()))
+    p.debug.pop(-1) # so the page won't navigate
     p.preview(driver)._debug(driver)
     ```
     """
@@ -162,16 +152,9 @@ class Debug(FunctionRegistrar, db.Model):
         func : callable
             The function to register.
         """
-        def add_function(parent, *args, **kwargs):
+        def add_function(*args, **kwargs):
             if not os.environ.get('NO_DEBUG_FUNCTIONS'):
-                model = cls(func, *args, **kwargs)
-                if isinstance(parent, Page):
-                    model.page = parent
-                elif isinstance(parent, Question):
-                    model.question = parent
-                else:
-                    raise ValueError(PARENT_ERR_MSG.format(parent))
-            return parent
+                return cls(func, *args, **kwargs)
                 
         setattr(cls, func.__name__, add_function)
         return func
@@ -202,16 +185,17 @@ class Validate(FunctionRegistrar, db.Model):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
     @Validate.register
-    def my_validate_func(inpt):
-    \    if inpt.response != 'hello world':
-    \        return '<p>You entered "{}", not "hello world"</p>'.format(inpt.response)
-        
-    inpt = Validate.my_validate_func(Input('<p>Enter "hello world"</p>'))
+    def match(inpt, pattern):
+    \    if inpt.response != pattern:
+    \        return '<p>You entered "{}", not "{}"</p>'.format(inpt.response, pattern)
+
+    pattern = 'hello world'
+    inpt = Input(validate=V.match(pattern))
     inpt.response = 'goodbye moon'
     inpt._validate()
     inpt.error
@@ -262,19 +246,18 @@ class Submit(FunctionRegistrar, db.Model):
     Examples
     --------
     ```python
-    from hemlock import Input, Submit, push_app_context
+    from hemlock import Input, Submit as S, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    @Submit.register
+    @S.register
     def get_initials(name_q):
     \    names = name_q.response.split()
     \    name_q.data = '.'.join([name[0] for name in names]) + '.'
 
-    inpt = Submit.get_initials(Input("<p>What's your name?</p>"))
+    inpt = Input("<p>What's your name?</p>", submit=S.get_initials())
     inpt.response = 'Andrew Yang'
-    inpt._submit()
-    inpt.data
+    inpt._submit().data
     ```
 
     Out:
@@ -302,15 +285,15 @@ class Navigate(FunctionRegistrar, db.Model):
     Examples
     --------
     ```python
-    from hemlock import Branch, Navigate, Page, Participant, push_app_context
+    from hemlock import Branch, Navigate as N, Page, Participant, push_app_context
 
     def start():
-    \    return Navigate.end(Branch(Page()))
-        
-    @Navigate.register
+    \    return Branch(Page(), navigate=N.end())
+
+    @N.register
     def end(start_branch):
     \    return Branch(Page(terminal=True))
-        
+
     app = push_app_context()
 
     part = Participant.gen_test_participant(start)
@@ -369,5 +352,6 @@ class Navigate(FunctionRegistrar, db.Model):
             next_branch.origin_page = None
             next_branch.origin_branch = parent
         else:
+            # origin is hemlock.Page
             next_branch.origin_branch = None
             next_branch.origin_page = parent

@@ -20,10 +20,7 @@ def debug_func(driver, question):
     from ..functions.debug import random_keys
     return random_keys(driver, question)
 
-settings['Textarea'] = {
-    'debug_functions': debug_func,
-    'rows': 3,
-}
+settings['Textarea'] = {'debug': debug_func, 'rows': 3}
 
 
 class Textarea(InputGroup, Question):

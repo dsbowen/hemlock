@@ -227,7 +227,7 @@ Below are the default settings for Hemlock applications and extensions.
     <th class="field-name"><b>Talisman:</b></td>
     <td class="field-body" width="100%"><b>content_security_policy : <i>dict</i></b>
 <p class="attr">
-    Content security policy for <a href="https://github.com/GoogleCloudPlatform/flask-talisman">flask-talisman</a>. Default allows for third party content from Google API, JQuery, JSDeliver, and Bootstrap.
+    Content security policy for <a href="https://github.com/GoogleCloudPlatform/flask-talisman">flask-talisman</a>. Default allows for third party content from Google API, JQuery, JSDeliver, Bootstrap, and YouTube.
 </p></td>
 </tr>
     </tbody>

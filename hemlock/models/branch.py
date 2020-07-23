@@ -53,7 +53,7 @@ class Branch(BranchingBase, db.Model):
         All data elements belonging to this branch, in order of embedded data 
         then page data.
 
-    navigate_function : hemlock.Navigate
+    navigate : hemlock.Navigate
         Navigate function which returns a new branch once the participant has 
         reached the end of this branch (i.e. the end of the page queue 
         associated with this branch).
@@ -139,7 +139,7 @@ class Branch(BranchingBase, db.Model):
         [elements.extend(p.data_elements) for p in self.pages]
         return elements
         
-    navigate_function = db.relationship(
+    navigate = db.relationship(
         'Navigate',
         backref='branch', 
         uselist=False

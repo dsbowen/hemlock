@@ -34,7 +34,7 @@
 ##hemlock.functions.submit.**correct_choices**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>correct_choices</b>(<i>question, correct</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L8">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>correct_choices</b>(<i>question, *values</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L8">[source]</a>
 </p>
 
 Convert the question's data to a 0-1 indicator that the participant
@@ -50,9 +50,9 @@ selected the correct choice(s).
 <p class="attr">
     
 </p>
-<b>correct : <i>list of hemlock.Choice</i></b>
+<b>*values : <i></i></b>
 <p class="attr">
-    Correct choices.
+    Values of the correct choices.
 </p></td>
 </tr>
     </tbody>
@@ -66,19 +66,17 @@ participant selected one of the correct choices.
 ####Examples
 
 ```python
-from hemlock import Check, Submit, push_app_context
+from hemlock import Check, Submit as S, push_app_context
 
-push_app_context()
+app = push_app_context()
 
 check = Check(
-    '<p>Select one</p>',
-    ['correct', 'incorrect', 'also incorrect']
+    '<p>Select the correct choice.</p>',
+    ['correct', 'incorrect', 'also incorrect'],
+    submit=S.correct_choices('correct')
 )
-correct_choice = check.choices[0]
-Submit.correct_choices(check, [correct_choice])
-check.response = correct_choice
-check._submit()
-check.data
+check.response = check.choices[0]
+check._submit().data
 ```
 
 Out:
@@ -90,7 +88,7 @@ Out:
 ##hemlock.functions.submit.**data_type**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>data_type</b>(<i>question, new_type, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L52">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>data_type</b>(<i>question, new_type, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L50">[source]</a>
 </p>
 
 Convert the quesiton's data to a new type. If the question's data cannot
@@ -121,11 +119,11 @@ be converted, it is changed to `None`.
 ####Examples
 
 ```python
-from hemlock import Input, Submit, push_app_context
+from hemlock import Input, Submit as S, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Submit.data_type(Input(data='1'), int)
+inpt = Input(data='1', submit=S.data_type(int))
 inpt._submit()
 inpt.data, isinstance(inpt.data, int)
 ```
@@ -139,7 +137,7 @@ Out:
 ##hemlock.functions.submit.**match**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>match</b>(<i>question, pattern</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L89">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>match</b>(<i>question, pattern</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L87">[source]</a>
 </p>
 
 Convert the question's data to a 0-1 indicator that the data matches the
@@ -166,13 +164,12 @@ pattern.
 ####Examples
 
 ```python
-from hemlock import Input, Submit, push_app_context
+from hemlock import Input, Submit as S, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Submit.match(Input(data='hello world'), 'hello world')
-inpt._submit()
-inpt.data
+inpt = Input(data='hello world', submit=S.match('hello *'))
+inpt._submit().data
 ```
 
 Out:

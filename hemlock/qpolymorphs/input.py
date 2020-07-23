@@ -32,10 +32,7 @@ def debug_func(driver, question):
     else:
         send_keys(driver, question)
 
-settings['Input'] = {
-    'input_type': 'text',
-    'debug_functions': debug_func,
-}
+settings['Input'] = {'input_type': 'text', 'debug': debug_func}
 
 
 class Input(InputGroup, InputBase, Question):

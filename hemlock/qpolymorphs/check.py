@@ -14,7 +14,7 @@ def click_choices(driver, question):
 settings['Check'] = {
     'align': 'left',
     'inline': False,
-    'debug_functions': click_choices,
+    'debug': click_choices,
     'multiple': False,
 }
 

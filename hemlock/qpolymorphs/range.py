@@ -19,12 +19,7 @@ def debug_func(driver, question):
     from ..functions.debug import drag_range
     return drag_range(driver, question)
 
-settings['Range'] = {
-    'debug_functions': debug_func,
-    'max': 100,
-    'min': 0,
-    'step': 1,
-}
+settings['Range'] = {'debug': debug_func, 'max': 100, 'min': 0, 'step': 1}
 
 
 class Range(InputBase, Question):

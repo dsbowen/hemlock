@@ -63,7 +63,7 @@ Default debug function for range inputs. See
 ##hemlock.**Range**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Range</b>(<i>label='', template='hemlock/range.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L30">[source]</a>
+    <i>class</i> hemlock.<b>Range</b>(<i>label='', template='hemlock/range.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L25">[source]</a>
 </p>
 
 Range sliders can be dragged between minimum and maximum values in step
