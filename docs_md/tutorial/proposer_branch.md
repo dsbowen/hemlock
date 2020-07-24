@@ -9,27 +9,21 @@ In this part of the tutorial, you'll implement the proposer branch of the ultima
 First, we'll write a function to generate an input question where the proposer will input the proposed split. Enter the following in your jupyter notebook:
 
 ```python
-from hemlock import Input, Label, Page, Submit, Validate
+from hemlock import Input, Label, Page, Submit as S, Validate as V
 
 N_ROUNDS = 5
 POT = 20
 
 def gen_proposal_input(round_):
-    return Submit.data_type(
-        Validate.range_val(
-            Input(
-                '''
-                <p><b>Round {} of {}</b></p>
-                <p>You have ${} to split between you and the responder. How 
-                much money would you like to offer to the responder?</p>
-                '''.format(round_, N_ROUNDS, POT),
-                prepend='$',
-                append='.00',
-                var='Proposal'
-            ),
-            min_=0, max_=POT
-        ),
-        int
+    return Input(
+        '''
+        <p><b>Round {} of {}</b></p>
+        <p>You have ${} to split between you and the responder. How 
+        much money would you like to offer to the responder?</p>
+        '''.format(round_, N_ROUNDS, POT),
+        prepend='$', append='.00', var='Proposal',
+        validate=V.range_val(0, POT),
+        submit=S.data_type(int)
     )
 
 path = Page(gen_proposal_input(1)).preview()
@@ -39,7 +33,7 @@ This function generates an input which asks the proposer how much money they wou
 
 We add range validation so that the proposer inputs an integer between 0 and the size of the pot. We also add a submit function which converts the data type to an integer.
 
-**Note.** For input questions, the data are recorded as strings. We want to reference this question's data as an integer, so we use `Submit.data_type(Input(), int)` to convert it when the page is submitted.
+**Note.** For input questions, the data are recorded as strings. We want to reference this question's data as an integer, so we use `S.data_type(int)` to convert it when the page is submitted.
 
 ## Finding a responder
 
@@ -70,11 +64,11 @@ As expected, this matches the data from our response input.
 Now we want to display the outcome of the round to the proposer. This calls for a compile function:
 
 ```python
-from hemlock import Compile, Embedded
+from hemlock import Compile as C, Embedded
 
 from random import randint
 
-@Compile.register
+@C.register
 def proposer_outcome(outcome_label, proposal_input):
     # get the proposal
     proposal = POT-proposal_input.data, proposal_input.data
@@ -113,10 +107,12 @@ def proposer_outcome(outcome_label, proposal_input):
         *proposal, response, 'accepted' if accept else 'rejected', payoff[0]
     )
 
-proposal_outcome_page = Page(Compile.proposer_outcome(
-    Label(), Input(data=10)
-))
-path = proposal_outcome_page._compile().preview()
+proposal_outcome_page = Page(
+    Label(
+        compile=C.proposer_outcome(Input(data=10))
+    )
+)
+proposal_outcome_page._compile().preview()
 ```
 
 Let's go through this step by step.
@@ -153,22 +149,21 @@ We'll begin by modifying the ultimatum game branch to navigate to the proposer b
 ```python
 ...
 
-@Navigate.register
-def ultimatum_game(start_branch):
-    ...
+@N.register
+def ultimatum_game(start_branch=None):
     proposer = assigner.next()['Proposer']
-    branch.pages.append(Page(
-        Label('''
-            <p>You are about to play an ultimatum game as a <b>{}</b>.</p>
-        '''.format('proposer' if proposer else 'responder')
+    return Branch(
+        # COMPREHENSION CHECK HERE
+        Page(
+            Label(
+                '''
+                <p>You are about to play an ultimatum game as a <b>{}</b>.</p>
+                '''.format('proposer' if proposer else 'responder')
+            )
+            # DELETE terminal=True
         ),
-        # REMOVE terminal=True
-    ))
-    if proposer:
-        return Navigate.proposer_branch(branch)
-    else:
-        # WE'LL IMPLEMENT THE RESPONDER BRANCH IN THE NEXT PART OF THE TUTORIAL
-        return branch
+        navigate=N.proposer_branch()
+    )
 
 ...
 ```
@@ -178,8 +173,7 @@ def ultimatum_game(start_branch):
 Next we'll add our proposer navigate function to the bottom of `survey.py`:
 
 ```python
-from hemlock import Branch, Check, Compile, Embedded, Input, Label, Navigate, Page, Range, Select, Submit, Validate, route
-from hemlock.tools import Assigner, comprehension_check, join
+...
 
 import random # ADD THIS IMPORT AT THE TOP OF THE FILE
 from datetime import datetime
@@ -187,15 +181,15 @@ from random import randint
 
 ...
 
-@Navigate.register
-def proposer_branch(ultimatum_game_branch=None):
+@N.register
+def proposer_branch(ultimatum_game_branch):
     branch = Branch()
     for round_ in range(N_ROUNDS):
         proposal_input = gen_proposal_input(round_+1)
         branch.pages.append(Page(proposal_input))
-        branch.pages.append(Page(Compile.proposer_outcome(
-            Label(), proposal_input
-        )))
+        branch.pages.append(Page(
+            Label(compile=C.proposer_outcome(proposal_input))
+        ))
     branch.pages.append(Page(
         Label('<p>Thank you for completing the hemlock tutorial!</p>'),
         terminal=True      
@@ -215,7 +209,7 @@ Finally, we'll add the `gen_proposal_input` and `proposer_outcome` functions we 
 def gen_proposal_input(round_):
     # AS IN THE NOTEBOOK
 
-@Compile.register
+@C.register
 def proposer_outcome(outcome_label, proposal_input):
     # AS IN THE NOTEBOOK
 ```

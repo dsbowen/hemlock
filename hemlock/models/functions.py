@@ -41,11 +41,12 @@ class FunctionRegistrar(FunctionMixin, Base):
         func : callable
             The function to register.
         """
-        def add_function(*args, **kwargs):
-            return cls(func, *args, **kwargs)
-                
-        setattr(cls, func.__name__, add_function)
-        return func
+        if not (cls == Debug and os.environ.get('NO_DEBUG_FUNCTIONS')):
+            def add_function(*args, **kwargs):
+                    return cls(func, *args, **kwargs)
+                    
+            setattr(cls, func.__name__, add_function)
+            return func
 
 
 class Compile(FunctionRegistrar, db.Model):
@@ -140,24 +141,6 @@ class Debug(FunctionRegistrar, db.Model):
         """
         if random() < self.p_exec:
             return super().__call__(*args, **kwargs)
-
-    @classmethod
-    def register(cls, func):
-        """
-        Similar to the Function Registrar's register function, but does not
-        add functions if the `NO_DEBUG_FUNCTIONS` environment variable is set.
-
-        Parameters
-        ----------
-        func : callable
-            The function to register.
-        """
-        def add_function(*args, **kwargs):
-            if not os.environ.get('NO_DEBUG_FUNCTIONS'):
-                return cls(func, *args, **kwargs)
-                
-        setattr(cls, func.__name__, add_function)
-        return func
 
 
 class Validate(FunctionRegistrar, db.Model):

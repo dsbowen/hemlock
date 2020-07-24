@@ -10,7 +10,7 @@ The following examples open a webdriver. After running the examples, close the
 driver with `driver.close()`.
 
 By default, the last debug function of a page navigates. To remove this, run
-`page.debug_functions.pop()`.
+`page.debug.pop()`.
 """
 
 from ..app import settings
@@ -48,11 +48,7 @@ def forward(driver, page):
 
     driver = chromedriver()
 
-    p = Page()
-    # by default, last debug function navigates
-    # so we want to remove this and replace it with forward
-    p.debug.pop()
-    p.debug = D.forward()
+    p = Page(debug=[D.debug_questions(), D.forward()])
     p.preview(driver)._debug(driver)
     ```
     """
@@ -79,11 +75,7 @@ def back(driver, page):
 
     driver = chromedriver()
 
-    p = Page(back=True)
-    # by default, last debug function navigates
-    # so we want to remove this and replace it with forward
-    p.debug.pop()
-    p.debug = D.back()
+    p = Page(debug=[D.debug_questions(), D.back()])
     p.preview(driver)._debug(driver)
     ```
     """
@@ -121,7 +113,6 @@ def send_keys(driver, question, *keys, p_num=.5):
     driver = chromedriver()
 
     p = Page(Input(debug=D.send_keys('hello world')))
-    p.debug.pop()
     p.preview(driver)._debug(driver)
     ```
     """
@@ -166,7 +157,6 @@ def random_str(driver, question, magnitude=2, p_whitespace=.2):
     driver = chromedriver()
 
     p = Page(Input(debug=D.random_str()))
-    p.debug.pop()
     p.preview(driver)._debug(driver)
     ```
     """
@@ -213,7 +203,6 @@ def random_number(driver, question, *args, **kwargs):
     driver = chromedriver()
 
     p = Page(Input(debug=D.random_number()))
-    p.debug.pop()
     p.preview(driver)._debug(driver)
     ```
     """
@@ -249,7 +238,6 @@ def send_datetime(driver, question, datetime_=None):
     driver = chromedriver()
 
     p = Page(Input(input_type='date', debug=D.send_datetime(datetime.utcnow())))
-    p.debug.pop()
     p.preview(driver)._debug(driver)
     ```
     """
@@ -293,7 +281,6 @@ def drag_range(driver, range_, target=None, tol=0, max_iter=10):
     driver = chromedriver()
 
     p = Page(Range(debug=D.drag_range(80)))
-    p.debug.pop()
     p.preview(driver)._debug(driver)
     ```
     """
@@ -342,7 +329,6 @@ def click_choices(driver, question, *values):
     \        debug=D.click_choices('Yes')
     \    )
     )
-    p.debug.pop()
     p.preview(driver)._debug(driver)
     ```
     """
@@ -396,7 +382,6 @@ def clear_choices(driver, question):
     \        debug=D.clear_choices()
     \    )
     )
-    p.debug.pop()
     p.preview(driver)._debug(driver)
     ```
     """

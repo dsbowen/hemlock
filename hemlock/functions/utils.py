@@ -51,8 +51,12 @@ def correct_choices(q, *values):
     Notes
     -----
     If the participant can only select one choice, indicate whether the 
-    participant selected one of the correct choices.
+    participant selected one of the correct choices. If the participant
+    selected no choices, indicate whether there were any correct values
+    available to select.
     """
+    if not q.response:
+        return not bool(values)
     data = (
         [c.value for c in q.response] if isinstance(q.response, list) 
         else q.response.value

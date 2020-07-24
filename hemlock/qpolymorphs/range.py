@@ -1,25 +1,12 @@
 """# Range slider"""
 
 from ..app import db, settings
+from ..functions.debug import drag_range
 from ..models import InputBase, Question
 
 from flask import render_template
 
-def debug_func(driver, question):
-    """
-    Default debug function for range inputs. See 
-    [`drag_range`](debug_functions.md).
-
-    Parameters
-    ----------
-    driver : selenium.webdriver.chrome.webdriver.WebDriver
-
-    question : hemlock.Range
-    """
-    from ..functions.debug import drag_range
-    return drag_range(driver, question)
-
-settings['Range'] = {'debug': debug_func, 'max': 100, 'min': 0, 'step': 1}
+settings['Range'] = {'debug': drag_range, 'max': 100, 'min': 0, 'step': 1}
 
 
 class Range(InputBase, Question):

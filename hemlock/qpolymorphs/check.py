@@ -1,15 +1,8 @@
 """# Check"""
 
 from ..app import db, settings
+from ..functions.debug import click_choices
 from ..models import ChoiceQuestion
-
-def click_choices(driver, question):
-    """
-    Default debug function. See 
-    [`hemlock.functions.debug.click_choices`](debug_functions.md).
-    """
-    from ..functions.debug import click_choices as click_choices_
-    click_choices_(driver, question)
 
 settings['Check'] = {
     'align': 'left',
@@ -26,8 +19,8 @@ class Check(ChoiceQuestion):
 
     Inherits from [`hemlock.ChoiceQuestion`](question.md).
 
-    By default, choices are positioned vertically. To position them 
-    horizontally, set `inline` to True.
+    Its default debug function is 
+    [`check_choices`](debug_functions.md#hemlockfunctionsdebugclick_choices).
 
     Parameters
     ----------

@@ -15,22 +15,10 @@ Submit functions run after a participant submits a page and their responses are 
 Open your jupyter notebook and run the following:
 
 ```python
-from hemlock import Input, Submit
+from hemlock import Input, Submit as S
 
-inpt = Submit.match(Input('<p>Enter "hello world"</p>'), 'hello world')
-inpt
-```
-
-Out:
-
-```
-<Input 1>
-```
-
-`Submit.match` adds a submit function to a question, then returns the question. In this case, the submit function changes its question's data to 1 if the data matches a pattern, `'hello world'`, and 0 if it does not. Submit functions are available in the question's `submit_functions` attribute:
-
-```python
-inpt.submit_functions
+inpt = Input('<p>Enter "hello world"</p>', submit=S.match('hello world'))
+inpt.submit
 ```
 
 Out:
@@ -39,37 +27,49 @@ Out:
 [<Submit 1>]
 ```
 
-Let's set the input question's reponse and watch our submit function work:
+You can add submit functions to a page or question by settings its `submit` attribute or passing a `submit` argument to its constructor. Submit functions run when a participant successfully submits a page.
+
+The `match` submit function changes a question's data to 1 if the data matches a regex pattern, in this case `'hello world'`, and 0 if it does not.
+
+Let's set the input question's data and watch our submit function work:
 
 ```python
 inpt.data = 'hello world'
-inpt._submit()
-print(inpt.data)
-
-inpt.data = 'something other than hello world'
-inpt._submit()
-print(inpt.data)
+inpt._submit().data
 ```
 
 Out:
 
 ```
 1
+```
+
+```python
+inpt.data = 'something other than hello world'
+inpt._submit().data
+```
+
+Out:
+
+```
 0
 ```
 
-`match` is just one of many [prebuilt submit functions](../submit_functions.md).
+**Notes.**
+
+1. You don't need to run `_submit` yourself in the survey; hemlock takes care of this automatically for you.
+2. `match` is just one of many [prebuilt submit functions](../submit_functions.md).
 
 ## Custom submission
 
-We're going to use a custom submit function to record our participants' age.
+We're going to use a custom submit function to record our participants' age. Let's see how to do this in our notebook.
 
 ```python
 from hemlock import Embedded, Page
 
 from datetime import datetime
 
-@Submit.register
+@S.register
 def record_age(inpt):
     # calculate age in years
     date_of_birth = datetime.strptime(inpt.data, '%m/%d/%Y')
@@ -77,7 +77,9 @@ def record_age(inpt):
     # record age as embedded data
     inpt.page.embedded = [Embedded('Age', age, data_rows=-1)]
 
-page = Page(Submit.record_age(Input('<p>Enter your date of birth.</p>')))
+page = Page(
+    Input('<p>Enter your date of birth.</p>', submit=S.record_age()
+)
 inpt = page.questions[0]
 inpt.data = '10/26/1992'
 inpt._submit()
@@ -87,12 +89,12 @@ page.embedded[0].data
 Out:
 
 ```
-27.698836413415467
+27.742642026009584
 ```
 
 ### Code explanation
 
-We register a new submit function with the `@Submit.register` decorator. The submit function takes the input question as its argument. It converts the input's data to a `datetime` object, computes the participant's age, and records it as embedded data.
+We register a new submit function with the `@S.register` decorator. The submit function takes the input question as its argument. In general, submit functions take their parent as their first argument. `record_age` converts the input's data to a `datetime` object, computes the participant's age, and records it as embedded data.
 
 ## Submission in our app
 
@@ -101,7 +103,7 @@ Now that we've seen how to add submit functions in our notebook, let's add it to
 In `survey.py`:
 
 ```python
-from hemlock import Branch, Check, Embedded, Input, Label, Page, Range, Select, Submit, Validate, route
+from hemlock import Branch, Check, Embedded, Input, Label, Page, Range, Select, Submit as S, Validate as V, route
 
 from datetime import datetime
 
@@ -109,11 +111,13 @@ from datetime import datetime
 def start():
     return Branch(
         Page(
-            Submit.record_age(Validate.validate_date_format(Input(
+            Input(
                 '<p>Enter your date of birth.</p>',
                 placeholder='mm/dd/yyyy',
-                var='DoB', data_rows=-1
-            ))),
+                var='DoB', data_rows=-1,
+                validate=[V.require(), V.date_format()],
+                submit=S.record_age()
+            ),
             # REST OF THE DEMOGRAPHICS PAGE HERE
         ),
         Page(
@@ -124,7 +128,7 @@ def start():
 
 ...
 
-@Submit.register
+@S.register
 def record_age(inpt):
     # calculate age in years
     date_of_birth = datetime.strptime(inpt.data, '%m/%d/%Y')

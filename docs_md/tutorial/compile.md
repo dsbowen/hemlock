@@ -15,28 +15,14 @@ In our case, we're going to make a confirmation page for the participant's demog
 Open your jupyter notebook and run the following:
 
 ```python
-from hemlock import Check, Compile
+from hemlock import Check, Compile as C
 
-check = Compile.shuffle(Check(
+check = Check(
     '<p>Select the correct answer.</p>',
-    ['correct', 'incorrect', 'also incorrect']
-))
-check._compile()
-[choice.label for choice in check.choices]
-```
-
-Out:
-
-```
-['also incorrect', 'incorrect', 'correct']
-```
-
-Run this a few times and notice how the order of the choices changes. This particular behavior is useful for comprehension checks, as we'll see later.
-
-`Compile.shuffle` adds a compile function to a page or question, then returns the page or question. In this case, we shuffle the choices of a check question every time the participant reloads the page. Compile functions are available in the question's `compile_functions` attribute:
-
-```python
-check.compile_functions
+    ['Correct', 'Incorrect', 'Also incorrect'],
+    compile=C.shuffle()
+)
+check.compile
 ```
 
 Out:
@@ -45,18 +31,42 @@ Out:
 [<Compile 1>]
 ```
 
+You can add compile functions to a page or question by setting its `compile` attribute or passing a `compile` argument to its constructor. Compile functions run just before a page's html is compiled.
+
+The `shuffle` compile function shuffles a question's choices. (Or, if attached to a page, shuffles its page's questions).
+
+Let's watch our compile function at work:
+
+```
+check._compile()
+[choice.label for choice in check.choices]
+```
+
+Out:
+
+```
+['Incorrect', 'Also incorrect', 'Correct']
+```
+
+Run this a few times and notice how the order of the choices changes. This behavior is useful for comprehension checks, as we'll see later.
+
+**Notes.**
+
+1. You don't need to run `_compile` yourself in the survey; hemlock takes care of this automatically for you.
+2. `shuffle` is just one of many [prebuilt compile functions](../compile_functions.md).
+
 ## Custom compilation
 
-We want to take the participant's responses to the demographics page and display them on a new page. We'll ask the participant to correct any errors by going back to the demographics page.
+We're going to take the participant's responses to the demographics page and display them on a new page. We'll ask the participant to correct any errors by going back to the demographics page.
 
 Let's see how to do this in our notebook:
 
 ```python
-from hemlock import Input, Label, Page
+from hemlock import Input, Label, Page, Range, Select
 from hemlock.tools import join
 
-@Compile.register
-def confirm(label, demographics_page):
+@C.register
+def confirm(confirm_label, demographics_page):
     # get the participant's data from the demographics page
     demographics = [q.data for q in demographics_page.questions]
     # re-format the race demographic data
@@ -64,7 +74,7 @@ def confirm(label, demographics_page):
     race = join('and', *(key for key in race.data if race.data[key]))
     demographics[2] = race
     # set the label based on the participant's demographics data
-    label.label = '''
+    confirm_label.label = '''
     <p>Confirm the following information:</p>
     <ul>
         <li>Date of birth: {}</li>
@@ -83,19 +93,22 @@ demographics_page = Page(
     Select(data='Never married'),
     Range(data='5')
 )
-p = Page(Compile.confirm(Label(), demographics_page), back=True)
-p._compile().preview()
+confirm_page = Page(
+    Label(compile=C.confirm(demographics_page)), 
+    back=True
+)
+confirm_page._compile().preview()
 ```
 
 ### Code explanation
 
-First, we register a new compile function with the `@Compile.register` decorator. The compile function takes a page or question as its argument. We also pass in the demographics page as the compile function's second argument.
+First, we register a new compile function with the `@C.register` decorator. The compile function takes the confirmation label as its first argument. In general, compile functions take their parent as their first argument. We also pass in the demographics page as the compile function's second argument.
 
 Next, we add a back button to the page with `back=True`.
 
-Then, we compile and preview the page. Note that you won't need to run `_compile` in your survey files; hemlock does this automatically for you.
+Then, we compile and preview the page.
 
-Our `confirm` function begins by gathering the demographics data from the demographics page. The data are well formatted to insert into our confirmation page except for race. For `Check` and `Select` questions, if the participant can select multiple choices, the data are stored as a dictionary mapping choice values (`'White'`, `'Black'`, etc.) to a 0-1 indicator that the participant selected that choice. We fix this with the following:
+`confirm` begins by gathering the demographics data from the demographics page. The data are well formatted to insert into our confirmation page except for race. For `Check` and `Select` questions, if the participant can select multiple choices, the data are stored as a dictionary mapping choice values (`'White'`, `'Black'`, etc.) to a 0-1 indicator that the participant selected that choice. We fix this with the following:
 
 ```python
 from hemlock.tools import join
@@ -113,7 +126,7 @@ join('and', *(key for key in race_data if race_data[key]))
 
 means 'join all of the selected keys with "and", e.g. "White and Black"'.
 
-Finally, our compile function adds the demographics to the confirmation page.
+Finally, `confirm` adds the demographics to the confirmation label.
 
 ## Compilation in our app
 
@@ -122,7 +135,7 @@ Now that we've seen how to add compile functions in our notebook, let's add it t
 In `survey.py`:
 
 ```python
-from hemlock import Branch, Check, Compile, Embedded, Input, Label, Page, Range, Select, Submit, Validate, route
+from hemlock import Branch, Check, Compile as C, Embedded, Input, Label, Page, Range, Select, Submit as S, Validate as V, route
 from hemlock.tools import join
 
 from datetime import datetime
@@ -130,26 +143,27 @@ from datetime import datetime
 @route('/survey')
 def start():
     demographics_page = Page(
-        Submit.record_age(Validate.validate_date_format(Input(
+        Input(
             '<p>Enter your date of birth.</p>',
             placeholder='mm/dd/yyyy',
-            var='DoB', data_rows=-1
-        ))),
+            var='DoB', data_rows=-1,
+            validate=[V.require(), V.date_format()],
+            submit=S.record_age()
+        ),
         # REST OF THE DEMOGRAPHICS PAGE HERE
     )
     return Branch(
         demographics_page,
         Page(
-            Compile.confirm(Label(), demographics_page), 
-            back=True, 
-            terminal=True
+            Label(compile=C.confirm(demographics_page)),
+            back=True, terminal=True
         )
     )
 
 ...
 
-@Compile.register
-def confirm(label, demographics_page):
+@C.register
+def confirm(confirm_label, demographics_page):
     # PUT YOUR COMPILE FUNCTION HERE
 ```
 

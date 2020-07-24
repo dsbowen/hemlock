@@ -31,6 +31,7 @@ from ..app import db, settings
 from ..tools import Img
 from .bases import BranchingBase, HTMLMixin
 from .embedded import Timer
+from .functions import Compile, Validate, Submit, Debug
 
 from bs4 import BeautifulSoup, Tag
 from flask import Markup, current_app, render_template, request
@@ -51,10 +52,10 @@ BANNER = Img(src='/hemlock/static/img/hemlock_banner.png', align='center')
 BANNER.img['style'] = 'max-width:200px;'
 BANNER.img['alt'] = 'Hemlock banner'
 
-def compile_func(page):
+@Compile.register
+def compile_questions(page):
     """
-    Default page compile function; executes its questions' compile methods in
-    index order.
+    Execute the page's questions' compile methods in index order.
 
     Parameters
     ----------
@@ -62,10 +63,10 @@ def compile_func(page):
     """
     [q._compile() for q in page.questions]
 
-def validate_func(page):
+@Validate.register
+def validate_questions(page):
     """
-    Default page validate function; executes its questions' validate methods
-    in index order.
+    Execute the page's questions' validate methods in index order.
 
     Parameters
     ----------
@@ -73,10 +74,10 @@ def validate_func(page):
     """
     [q._validate() for q in page.questions]
     
-def submit_func(page):
+@Submit.register
+def submit_questions(page):
     """
-    Default page submit function; executes its questions' submit methods in
-    index order.
+    Execute the page's questions' submit methods in index order.
 
     Parameters
     ----------
@@ -84,10 +85,10 @@ def submit_func(page):
     """
     [q._submit() for q in page.questions]
 
-def debug_func(driver, page):
+@Debug.register
+def debug_questions(driver, page):
     """
-    Default page debug function; execute its questions' debug methods in 
-    *random* order.
+    Execute the page's questions' debug methods in  *random* order.
 
     Parameters
     ----------
@@ -99,10 +100,11 @@ def debug_func(driver, page):
     shuffle(order)
     [page.questions[i]._debug(driver) for i in order]
 
+@Debug.register
 def navigate(driver, page, p_forward=.8, p_back=.1, sleep_time=3):
     """
-    This method randomly navigates forward or backward, or refreshes the 
-    page. By default it is executed after the default page debug function.
+    Randomly navigate forward or backward, or refresh the page. By default, it
+    is executed after the default page debug function.
 
     Parameters
     ----------
@@ -147,10 +149,10 @@ settings['Page'] = {
     'forward': True,
     'banner': BANNER.render(),
     'terminal': False,
-    'compile': compile_func,
-    'validate': validate_func,
-    'submit': submit_func,
-    'debug': [debug_func, navigate],
+    'compile': compile_questions,
+    'validate': validate_questions,
+    'submit': submit_questions,
+    'debug': [debug_questions, navigate],
 }
 
 

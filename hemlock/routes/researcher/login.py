@@ -27,14 +27,12 @@ def login():
 @researcher_page('login')
 def login_page():
     """Create login page"""
-    login_p = Page(
+    return Page(
         Input(PASSWORD_PROMPT, input_type='password'), 
         back=False, 
-        forward='Login'
+        forward='Login',
+        validate=check_password
     )
-    login_p.body.select_one('#forward-btn')['class'] += ' w-100'
-    login_p.validate_functions = check_password
-    return login_p
 
 def check_password(login_page):
     """Check the input password against researcher password"""

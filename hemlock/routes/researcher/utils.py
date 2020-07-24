@@ -8,13 +8,11 @@ from flask import current_app, redirect, request, session, url_for
 
 LOGIN_REQUIRED = 'Login required to access this page.'
 
-BRAND = '''
-<img src="/hemlock/static/img/hemlock_favicon.svg" class="d-inline-block align-top" alt="" style="max-height:30px;">
-<span style="font-family:'Josefin Sans';">HEMLOCK</span>
-'''
-
 navbar = Navbar(
-    BRAND, 
+    '''
+    <img src="/hemlock/static/img/hemlock_favicon.svg" class="d-inline-block align-top" alt="" style="max-height:30px;">
+    <span style="font-family:'Josefin Sans';">HEMLOCK</span>
+    ''', 
     [
         Navitem('Participant status', href='/status'),
         Navitem('Download', href='/download'),

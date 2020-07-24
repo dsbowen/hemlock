@@ -41,33 +41,37 @@ Out:
 In `survey.py`:
 
 ```python
-from hemlock import Branch, Check, Compile, Embedded, Input, Label, Navigate, Page, Range, Select, Submit, Validate, route
+...
 from hemlock.tools import Assigner, comprehension_check, join
 
 from datetime import datetime
 from random import randint
 
+# the number of rounds participants play
 N_ROUNDS = 5
+# the amount of money split
 POT = 20
 
-assigner = Assigner({'Proposer': (0,1)})
+assigner = Assigner({'Proposer': (0, 1)})
 
 ...
 
-@Navigate.register
-def ultimatum_game(start_branch):
-    branch = comprehension_check(
-        # COMPREHENSION CHECK HERE
-    )
+@N.register
+def ultimatum_game(start_branch=None):
     proposer = assigner.next()['Proposer']
-    branch.pages.append(Page(
-        Label('''
-            <p>You are about to play an ultimatum game as a <b>{}</b>.</p>
-        '''.format('proposer' if proposer else 'responder')
-        ), 
-        terminal=True
-    ))
-    return branch
+    return Branch(
+        *comprehension_check(
+            # COMPREHENSION CHECK ARGUMENTS HERE
+        ),
+        Page(
+            Label(
+                '''
+                <p>You are about to play an ultimatum game as a <b>{}</b>.</p>
+                '''.format('proposer' if proposer else 'responder')
+            ),
+            terminal=True
+        )
+    )
 ```
 
 Run your app and pass the comprehenion check to see which condition you've been assigned to.

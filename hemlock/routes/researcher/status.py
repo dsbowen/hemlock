@@ -43,12 +43,14 @@ def status():
 @researcher_page('status')
 def status_page():
     """Return the Participant Status page"""
-    status_p = Page(Label(), navbar=navbar.render(), back=False, forward=False)
+    status_p = Page(
+        Label(compile=live_status), 
+        navbar=navbar.render(), back=False, forward=False
+    )
     status_p.add_external_js(src=current_app.settings['socket_js_src'])
     status_p.add_external_js(
         src=url_for('hemlock.static', filename='js/status.js')
     )
-    status_p.questions[0].compile_functions = live_status
     return status_p
 
 def live_status(status_label):

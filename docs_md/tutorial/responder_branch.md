@@ -13,25 +13,25 @@ First, let's add a navigate function to the end of our ultimatum game branch to 
 ```python
 ...
 
-@Navigate.register
-def ultimatum_game(start_branch):
-    ...
-    if proposer:
-        return Navigate.proposer_branch(branch)
-    else:
-        return Navigate.responder_branch(branch)
+@N.register
+def ultimatum_game(start_branch=None):
+    proposer = assigner.next()['Proposer']
+    return Branch(
+        # ULTIMATUM GAME PAGES HERE
+        navigate=N.proposer_branch() if proposer else N.responder_branch()
+    )
 
 ...
 
-@Navigate.register
+@N.register
 def responder_branch(ultimatum_game_branch=None):
     branch = Branch()
     for round_ in range(N_ROUNDS):
         response_input = gen_response_input(round_+1)
         branch.pages.append(Page(response_input))
-        branch.pages.append(Page(Compile.responder_outcome(
-            Label(), response_input
-        )))
+        branch.pages.append(Page(
+            Label(compile=C.responder_outcome(response_input))
+        ))
     branch.pages.append(Page(
         Label('<p>Thank you for completing the hemlock tutorial!</p>'),
         terminal=True        
@@ -49,22 +49,16 @@ Just as the proposer's input was created with `gen_proposal_input`, the responde
 ...
 
 def gen_response_input(round_):
-    return Submit.data_type(
-        Validate.range_val(
-            Input(
-                '''
-                <p><b>Round {} of {}</b></p>
-                <p>The proposer has ${} to split between him/herself and you.
-                Complete this sentence:</p>
-                <p>I will accept any proposal which gives me at least</p>
-                '''.format(round_, N_ROUNDS, POT),
-                prepend='$',
-                append='.00',
-                var='Response'
-            ),
-            min_=0, max_=POT
-        ),
-        int
+    return Input(
+        '''
+        <p><b>Round {} of {}</b></p>
+        <p>The proposer has ${} to split between him/herself and you. Complete
+        this sentence:</p>
+        <p>I will accept any proposal which gives me at least</p>
+        '''.format(round_, N_ROUNDS, POT),
+        prepend='$', append='.00', var='Response',
+        validate=V.range_val(0, POT),
+        submit=S.data_type(int)
     )
 ```
 

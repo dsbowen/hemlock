@@ -33,7 +33,7 @@ If and when you run into something which doesn't make sense to you, try the foll
 1. **Keep going.** As best you can, press on with the tutorial. You don't have to 100% understand what's going on to get things working. You'll also find that things which don't make sense now often 'fall into place' just a short while later.
 2. **Look it up.** I've done my best to write a clear, thorough tutorial. But no tutorial is comprehensive. If you run into something so puzzling that you can't just keep going, look it up! The internet is inundated with great programming resources.
 
-## A note on equilibrium concepts which is totally irrelevant to the hemlock tutorial
+<!-- ## For game theorists: a note on equilibrium concepts
 
 This note is irrelevant to the hemlock tutorial; it's mostly to appease the game theorists in the audience.
 
@@ -46,4 +46,4 @@ Our game modifies the classical ultimatum game in two respects. First, the propo
 The second and more important modification is that players move simultaneously, rather than sequentially. Rather than receiving an offer then accepting or rejecting it, responders announce a number such that they will accept any offer which gives them at least that amount of money. To predict gameplay, consider trembling hand perfect equilibria (THPE). The THPE strategy sets and outcomes are similar to the SPNE strategy sets and outcomes:
 
 1. The proposer offers $0 with probability \(1-(|A_p|-1)\epsilon\), where \(A_p\) is the proposer's action set, and offers all other amounts with probability \(\epsilon\). The responder announces $0 with probability \(1-(|A_r|-1)\epsilon\), where \(A_r\) is the responder's action set, and announces all other amounts with probability \(\epsilon\). The modal equilibrium outcome is that the proposer receives the entire pot and the responder receives $0.
-2. The proposer offers $1 with probability \(1-(|A_p|-1)\epsilon\), and offers all other amounts with probability \(\epsilon\). The responder announces $1 with probability \(1-(|A_r|-1)\epsilon\), and all other amounts with probability \(\epsilon\). The modal equilibrium outcome is that the proposer receives the entire pot minus $1 and the responder receives $1.
+2. The proposer offers $1 with probability \(1-(|A_p|-1)\epsilon\), and offers all other amounts with probability \(\epsilon\). The responder announces $1 with probability \(1-(|A_r|-1)\epsilon\), and all other amounts with probability \(\epsilon\). The modal equilibrium outcome is that the proposer receives the entire pot minus $1 and the responder receives $1. -->

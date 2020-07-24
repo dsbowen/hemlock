@@ -17,22 +17,10 @@ We often need to make sure participants are entering the right kind of answer, w
 Open your jupyter notebook and run the following:
 
 ```python
-from hemlock import Input, Validate
+from hemlock import Input, Validate as V
 
-inpt = Validate.require(Input('<p>You must respond to this question.</p>'))
-inpt
-```
-
-Out:
-
-```
-<Input 1>
-```
-
-`Validate.require` adds a validate function to a question, then returns the question. In this case, we require a response from the participant. Validate functions are available in the question's `validate_functions` attribute:
-
-```python
-inpt.validate_functions
+inpt = Input(validate=V.require())
+inpt.validate
 ```
 
 Out:
@@ -41,19 +29,24 @@ Out:
 [<Validate 1>]
 ```
 
-We can see that there is currently no response or error associated with the input question:
+You can add validate functions to a page or question by setting its `validate` attribute or passing a `validate` argument to its constructor Validate functions run when a participant attempts to submit a page. If the participant's response is valid, the function returns `None`, allowing the participant to continue the survey. If the participant's response is invalid, the function returns an error message.
+
+As its name indicates, the validate function requires the participant to respond to the input question. By default, the input question has no response. It also has no error message. We can see this as follows:
 
 ```python
-not inpt.response and not inpt.error
+(
+    'The input has no response or error message', 
+    not inpt.response and not inpt.error
+)
 ```
 
 Out:
 
 ```
-True
+('The input has no response or error message', True)
 ```
 
-Because the validate function requires a response, and because there is no response, running the validate functions sets the input question's error message as follows:
+Now, let's run the validate function. Because the input question has no response, the validate function will return an error message. This error message is stored in the input question's `error` attribute:
 
 ```python
 inpt._validate()
@@ -63,12 +56,13 @@ inpt.error
 Out:
 
 ```
-Please respond to this question.
+'Please respond to this question.'
 ```
 
-You don't need to run `_validate()` yourself in the survey; hemlock takes care of this automatically for you.
+**Notes:**
 
-`require` is just one of many [prebuilt validate functions](../validate_functions.md).
+1. You don't need to run `_validate` yourself in the survey; hemlock takes care of this automatically for you.
+2. `require` is just one of many [prebuilt validate functions](../validate_functions.md).
 
 ## Custom validation
 
@@ -79,8 +73,8 @@ For this, we're going to need a custom validate function. Let's see how to do th
 ```python
 from datetime import datetime
 
-@Validate.register
-def validate_date_format(inpt):
+@V.register
+def date_format(inpt):
     try:
         # try to convert to a datetime object
         datetime.strptime(inpt.response, '%m/%d/%Y')
@@ -88,7 +82,7 @@ def validate_date_format(inpt):
         # if this fails, the participant entered an invalid response
         return '<p>Format your date of birth as mm/dd/yyyy.</p>'
     
-inpt = Validate.validate_date_format(inpt)
+inpt = Input(validate=V.date_format())
 inpt.response = '''
 I, George Thaddeus Thatch the Third, was born in the first fortnight of August 1792.
 '''
@@ -104,11 +98,11 @@ Format your date of birth as mm/dd/yyyy.
 
 ## Code explanation
 
-First, we import `datetime`, a native python package for handling dates and times. 
+First, we import `datetime`, a native python package for handling dates and times.
 
-Next, we register a new validate function with the `@Validate.register` decorator. The validate function takes the input question as its argument. In general, validate functions (and, as we will see, their cousins, submit, compile, and navigate functions) take their 'parent' (usually a branch, page, or question) as their first argument.
+Next, we register a new validate function with the `@V.register` decorator. The validate function takes the input question as its argument. In general, validate functions (and, as we will see, their cousins, submit, compile, and navigate functions) take their 'parent' (usually a branch, page, or question) as their first argument.
 
-The validate function tries to convert the input question's response to a `datetime` object and returns an error message if this fails. In general, validate functions return an error message (a string) if there is a problem, and `None` if the response is valid.
+The validate function tries to convert the input question's response to a `datetime` object and returns an error message if this fails.
 
 ## Validation in our app
 
@@ -117,7 +111,7 @@ Now that we've seen how to add validation in our notebook, let's add it to our a
 In `survey.py`:
 
 ```python
-from hemlock import Branch, Check, Input, Label, Page, Range, Select, Validate, route
+from hemlock import Branch, Check, Input, Label, Page, Range, Select, Validate as V, route
 
 from datetime import datetime
 
@@ -125,16 +119,18 @@ from datetime import datetime
 def start():
     return Branch(
         Page(
-            Validate.validate_date_format(Input(
+            Input(
                 '<p>Enter your date of birth.</p>',
                 placeholder='mm/dd/yyyy',
-                var='DoB', data_rows=-1
-            )),
-            Validate.require(Check(
+                var='DoB', data_rows=-1, 
+                validate=V.date_format()
+            ),
+            Check(
                 '<p>Indicate your gender.</p>',
                 ['Male', 'Female', 'Other'],
-                var='Gender', data_rows=-1
-            )),
+                var='Gender', data_rows=-1,
+                validate=V.require()
+            ),
             # REST OF THE DEMOGRAPHICS PAGE HERE
         ),
         Page(
@@ -143,8 +139,8 @@ def start():
         )
     )
 
-@Validate.register
-def validate_date_format(inpt):
+@V.register
+def date_format(inpt):
     try:
         # try to convert to a datetime object
         datetime.strptime(inpt.response, '%m/%d/%Y')
@@ -155,7 +151,11 @@ def validate_date_format(inpt):
 
 Run the app again and try to continue past the demographics page; enter an invalid date of birth, leave some questions blank, and see your validation at work.
 
-**Note.** You can attach multiple validation functions to a single page or question. Validate functions run in the order in which you add them, stopping with the first validate function which returns an error.
+## Multiple validate functions
+
+You can attach multiple validation functions by setting `validate` to a list of functions. Validate functions run in the order in which you add them, stopping with the first validate function which returns an error. Try adding `require` to the date of birth question by changing `validate=V.date_format()` to `validate=[V.require(), V.date_format()]`.
+
+Run your app and leave the date of birth empty. The error message will be, `'Please respond to this question.'`. Enter an invalid date of birth. The error message will be `'Format your date of birth as mm/dd/yyyy.'`.
 
 ## Summary
 

@@ -48,13 +48,13 @@ Activate your virtual environment.
 Activate from git bash:
 
 ```bash
-$ source hemlock-venv/scripts/activate
+$ . hemlock-venv/scripts/activate
 ```
 
 Activate from WSL:
 
 ```bash
-$ source hemlock-venv/bin/activate
+$ . hemlock-venv/bin/activate
 ```
 
 Next, install the required python packages to run this project locally:
@@ -125,8 +125,6 @@ p.preview()
 This opens a preview of your page in your browser.
 
 Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:
-
-<!-- not working on windows native -->
 
 ```python
 [os.remove(tmpfile) for tmpfile in app.tmpfiles]
@@ -239,6 +237,8 @@ This opens a preview of your page in your browser.
 Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:
 
 ```python
+import os
+
 [os.remove(tmpfile) for tmpfile in app.tmpfiles]
 ```
 

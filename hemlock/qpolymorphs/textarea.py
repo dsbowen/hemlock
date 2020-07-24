@@ -1,26 +1,13 @@
 """# Textarea"""
 
 from ..app import db, settings
+from ..functions.debug import send_keys
 from ..models import Question
 from .input_group import InputGroup
 
 from flask import render_template
 
-def debug_func(driver, question):
-    """
-    Default debug function for textarea questions. See
-    [`hemlock.functions.debug.random_keys`](debug_functions.md).
-
-    Parameters
-    ----------
-    driver : selenium.webdriver.chrome.webdriver.WebDriver
-
-    question : hemlock.Textarea
-    """
-    from ..functions.debug import random_keys
-    return random_keys(driver, question)
-
-settings['Textarea'] = {'debug': debug_func, 'rows': 3}
+settings['Textarea'] = {'debug': send_keys, 'rows': 3}
 
 
 class Textarea(InputGroup, Question):

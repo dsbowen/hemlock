@@ -8,19 +8,23 @@ By the end of this part of the tutorial, you'll be able to set up navigation bet
 
 Navigate functions move participants through different branches of the survey. For example, participants in the control group might follow one branch, while participants in the treatment group follow another.
 
-In our case, we'll use a navigate function to bring participants from the demographics branch of our survey to a branch in which participants will an ultimatum game with each other.
+In our case, we'll use a navigate function to bring participants from the demographics branch of our survey to an 'utlimatum game' branch. In this branch, participants will an ultimatum game with each other.
 
 ## Basic syntax
 
 Open your jupter notebook and run the following:
 
 ```python
-from hemlock import Branch, Navigate, Page, Participant
+from hemlock import Branch, Navigate as N, Page, Participant
 
 def start():
-    return Navigate.end(Branch(Page(), Page()))
+    return Branch(
+        Page(), 
+        Page(), 
+        navigate=N.end()
+    )
 
-@Navigate.register
+@N.register
 def end(start_branch):
     return Branch(Page(terminal=True))
 
@@ -39,9 +43,11 @@ Out:
  T = terminal page
 ```
 
-Unlike validate, submit, and compile functions, there are no prebuilt navigate functions. We register a custom navigate function with the `@Navigate.register` decorator. The navigate function takes an 'origin' branch or page as its first argument (in this case, the branch returned by `start`). Navigate functions return a `Branch` object.
+You can add navigate functions to a branch or page by setting its `navigate` attribute or passing a `navigate` argument to its constructor. Navigate functions bring participants to a new branch when they have completed the branch or page to which the navigate function belongs.
 
-After registering `end` as a navigate function, `Navigate.end` adds the navigate function to a branch or page, then returns the branch or page to which it was added. Once the participant reaches the end of the branch returned by `start`, they are brought to the branch returned by `end`.
+### Code explanation
+
+Unlike validate, submit, and compile functions, there are no prebuilt navigate functions. We register a custom navigate function with the `@N.register` decorator. The navigate function takes the start branch (the branch returned by `start`) as its first argument. In general, navigate functions take an 'origin' branch or page as their first argument. Navigate functions return a `Branch` object.
 
 `part.view_nav()` prints the participant's 'branch stack'. Right now the participant is on the branch created by `start`. Let's make our test participant navigate forward and view the navigation again:
 
@@ -78,7 +84,7 @@ Out:
 
 What happened? Our participant reached the end of the `start` branch (branch 1) and navigated to the `end` branch (branch 2). It's currently on page 3, which is the last (terminal) page of the survey.
 
-**Note.** You won't call `view_nav` or `forward` in the survey; hemlock takes care of the navigation for you. These are just useful for debugging in jupyter.
+**Note.** You won't call `view_nav` or `forward` in the survey; hemlock takes care of the navigation automtically for you. These are just useful for debugging in jupyter.
 
 ## Branching off pages
 
@@ -125,7 +131,37 @@ As before, run `part.view_nav()` and `part.forward()` a few times. This is what 
 
 What happened? We started on the first page of the `start` branch (branch 1, page 1). Then, we branched off of page 1 to the `middle` branch (branch 2, page 3). At the end of the `middle` branch, we picked up where we left off on the `start` branch (branch 1, page 2).
 
-**Note.** Going back is just as easy. Simply use `my_page.back=True`. To play with this in the notebook, use `my_participant.back()` instead of `my_participant.forward()`.
+## Navigating back
+
+You'll often want to allow participants to navigate to a previous page. To do this, simply set a page's `back` attribute to `True`, or pass `back=True` to a page's constructor. 
+
+You can also navigate backward in the notebook. Run this line a few times:
+
+```python
+part.back().view_nav()
+```
+
+Out:
+
+```
+ <Branch 1>
+ <Page 1> 
+     <Branch 2>
+     <Page 3> C 
+ <Page 2> T
+
+ C = current page 
+ T = terminal page
+```
+
+```
+ <Branch 1>
+ <Page 1> C 
+ <Page 2> T
+
+ C = current page 
+ T = terminal page
+```
 
 ## Navigation in our app
 
@@ -134,29 +170,32 @@ Now that we've seen how to add navigate functions in our notebook, let's add it 
 In `survey.py`:
 
 ```python
-from hemlock import Branch, Check, Compile, Embedded, Input, Label, Navigate, Page, Range, Select, Submit, Validate, route
-from hemlock.tools import join
-
-from datetime import datetime
-
-@route('/survey')
-def start():
-    demographics_page = Page(
-        # DEMOGRAPHICS PAGE HERE
-    )
-    return Navigate.ultimatum_game(Branch(
-        demographics_page,
-        Page(Compile.confirm(Label(), demographics_page), back=True)
-    ))
+from hemlock import Branch, Check, Compile as C, Embedded, Input, Label, Navigate as N, Page, Range, Select, Submit as S, Validate as V, route
 
 ...
 
-@Navigate.register
+@route('/survey')
+def start():
+    ...
+    return Branch(
+        demographics_page,
+        Page(
+            Label(compile=C.confirm(demographics_page)),
+            back=True
+        ),
+        navigate=N.ultimatum_game()
+    )
+
+...
+
+@N.register
 def ultimatum_game(start_branch):
-    return Branch(Page(
-        Label('<p>You are about to play an ultimatum game...</p>'), 
-        terminal=True
-    ))
+    return Branch(
+        Page(
+            Label('<p>You are about to play an ultimatum game...</p>'),
+            terminal=True
+        )
+    )
 ```
 
 Run the app again and navigate past the demographics page. You'll find yourself on our new ultimatum game branch.

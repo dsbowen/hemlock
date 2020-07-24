@@ -45,7 +45,7 @@ def correct_choices(question, *values):
     1
     ```
     """
-    question.data = int(correct_choices_(question, *correct))
+    question.data = int(correct_choices_(question, *values))
 
 @Submit.register
 def data_type(question, new_type, *args, **kwargs):

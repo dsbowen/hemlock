@@ -1,7 +1,8 @@
 """# Input"""
 
 from ..app import db, settings
-from ..models import InputBase, Question
+from ..functions.debug import send_datetime, send_keys
+from ..models import Debug, InputBase, Question
 from .input_group import InputGroup
 
 from datetime_selenium import get_datetime
@@ -14,7 +15,8 @@ html_datetime_types = (
     'week',
 )
 
-def debug_func(driver, question):
+@Debug.register
+def random_input(driver, question):
     """
     Default debug function for input questions. This function sends a random 
     string or number if the input takes text, or a random `datetime.datetime` 
@@ -26,13 +28,12 @@ def debug_func(driver, question):
 
     question : hemlock.Input
     """
-    from ..functions.debug import send_datetime, send_keys
     if question.input_type in html_datetime_types:
         send_datetime(driver, question)
     else:
         send_keys(driver, question)
 
-settings['Input'] = {'input_type': 'text', 'debug': debug_func}
+settings['Input'] = {'input_type': 'text', 'debug': random_input}
 
 
 class Input(InputGroup, InputBase, Question):
