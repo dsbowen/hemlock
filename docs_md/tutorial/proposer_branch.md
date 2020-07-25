@@ -188,7 +188,8 @@ def proposer_branch(ultimatum_game_branch):
         proposal_input = gen_proposal_input(round_+1)
         branch.pages.append(Page(proposal_input))
         branch.pages.append(Page(
-            Label(compile=C.proposer_outcome(proposal_input))
+            Label(compile=C.proposer_outcome(proposal_input)),
+            cache_compile=True
         ))
     branch.pages.append(Page(
         Label('<p>Thank you for completing the hemlock tutorial!</p>'),
@@ -198,6 +199,8 @@ def proposer_branch(ultimatum_game_branch):
 ```
 
 This navigate function simply adds two pages to the proposer branch for each of `N_ROUNDS`. The first page asks the proposer to propose a split. The second page displays the outcome of the round.
+
+Notice that passed `cache_compile=True` to the second page. This caches the result of the compile functions; removing them so that they won't run again if the participant refreshed the page. Why do we want to do this? Suppose we set up our study so that participants are playing for real money. We don't want participants refreshing their screen over and over again to see if they can get a better outcome.
 
 ### Generating the proposal input and outcome label
 

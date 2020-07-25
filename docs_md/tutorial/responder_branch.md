@@ -30,7 +30,8 @@ def responder_branch(ultimatum_game_branch=None):
         response_input = gen_response_input(round_+1)
         branch.pages.append(Page(response_input))
         branch.pages.append(Page(
-            Label(compile=C.responder_outcome(response_input))
+            Label(compile=C.responder_outcome(response_input)),
+            cache_compile=True
         ))
     branch.pages.append(Page(
         Label('<p>Thank you for completing the hemlock tutorial!</p>'),
@@ -71,7 +72,7 @@ We register a compile function to display the responder outcome.
 ```python
 ...
 
-@Compile.register
+@C.register
 def responder_outcome(outcome_label, responder_input):
     # get the response
     response = responder_input.data

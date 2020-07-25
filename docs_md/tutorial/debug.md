@@ -11,9 +11,9 @@ In the early days of hemlock, I coded a study in which I asked participants to e
 Since then, I've rewritten my submit functions to be more fault tolerant. If you run
 
 ```python
-from hemlock import Input, Submit
+from hemlock import Input, Submit as S
 
-Submit.data_type(Input(data='twenty-seven'), int)._submit().data
+Input(data='twenty-seven', submit=S.data_type(int))._submit().data
 ```
 
 it doesn't break; it simply converts the data to `None`.
@@ -36,54 +36,105 @@ To run hemlock's custom debugging tool locally, you'll need [Google Chrome](http
 Open your jupyter notebook and run the following:
 
 ```python
-from hemlock import Debug, Input, Page
+from hemlock import Debug as D, Input
+
+inpt = Input(debug=D.send_keys('hello world'))
+inpt.debug
+```
+
+Out:
+
+```
+[<Debug 1>]
+```
+
+You can add debug functions to a page or quesiton by settings its `debug` attribute or passing a `debug` argument to its constructor. Debug functions run when we run the debugger (in just a moment).
+
+As its name suggests, the `send_keys` debug function tells the AI participant to send keys to the input.
+
+Let's watch our debug function at work:
+
+```python
+from hemlock import Page
 from hemlock.tools import chromedriver
 
 driver = chromedriver()
-
-p = Page(Debug.send_keys(Input(), 'hello world'))
-p.debug_functions.pop()
+p = Page(inpt)
+p.debug.pop()
 p.preview(driver)._debug(driver)
 ```
 
 First, we use `chromedriver` to open Chromedriver with [selenium python](https://selenium-python.readthedocs.io/).
 
-Next, we create a page, attaching a debug function to an input question on the page. Like the other functions you've seen, `Debug.send_keys(Input(), 'hello world')` attaches a `send_keys` debug function to the `Input()` with an argument `'hello world'` and returns the input question to which it is attached.
+Next, we create a page with our input question.
 
-We then pop the last debug function from the page we created. Why? By default, pages have two debug functions. The first executes its questions' debug methods in random order; as if the participant were randomly jumping between questions on a page. The second debug function randomly clicks a forward or back button (if it exists), or refreshes the page. Popping the debug function prevents the debugger from navigating, which is often a good idea in preview mode.
+We then pop the last debug function from the page we created. Why? By default, pages have two debug functions. The first executes its questions' debug methods in random order; as if the participant were randomly jumping between questions on a page. The second debug function randomly clicks a forward or back button (if it exists), or refreshes the page. Popping the last debug function prevents the debugger from navigating, which allows us to see more clearly what the debugger is doing in preview mode.
 
 Finally, we run the debug function. You'll notice it enters 'hello world' in the input.
 
+After you're done, close the driver:
+
+```python
+driver.close()
+```
+
+**Notes.**
+
+1. You don't need to run `_debug` yourself in the survey; hemlock takes care of this automatically for you.
+2. `send_keys` is just one of many [prebuilt debug functions](../debug_functions.md).
+
 ## Default debug functions
 
-We can attach debug functions to pages or questions. Most questions have a default debug function. For example, input questions have a default debug function which sends random ASCII characters to the input.
+We can attach debug functions to pages or questions. Most questions have a default debug function. For example, input questions have a default debug function which sends random ASCII characters to the input. You can see the default debug function at work by running:
+
+```python
+p = Page(Input())
+p.debug.pop()
+p.preview(driver)._debug(driver)
+```
 
 However, sometimes we need to attach additional debug functions. For example, our study begins by asking participants to enter their date of birth in `mm/dd/yyyy` format. If you wait for the default debug function to randomly enter a string which matches that pattern, you might not end up running your study before Trump releases his tax returns.
 
 Instead, we'll use something like:
 
 ```python
-Page(Debug.send_keys(
-    Input('<p>Enter your date of birth.</p>'), 
-    '10/26/1992', p_exec=.8
-))
+Input(
+    '<p>Enter your date of birth.</p>', 
+    debug=D.send_keys('10/26/1992')
+)
 ```
 
-You can pass `p_exec` as a keyword argument to any debug function. This is the probablity that the debug function will execute. This is useful because we want the debugger to occasionally enter something random into the date of birth input to see if anything breaks.
+Unfortunately, this will not work effectively as a debugger. Sometimes we want the debugger to enter nonsense, and sometimes we want it to enter something sensible. To specify this behavior, we can modify the above:
 
-`send_keys` is just one of many pre-built [debug functions](../debug_functions.md).
+```python
+Input(
+    '<p>Enter your date of birth.</p>', 
+    debug=[D.send_keys(), D.send_keys('10/26/1992', p_exec=.8)]
+)
+```
+
+The first debug function, `send_keys()`, sends random keys to the input. The second debug function `send_keys('10/26/1992')`, sends `'10/26/1992'` to the input. We also pass `p_exec=.8` to the second debug function, which specifies its probability of executing. In English, we're telling the debugger, *enter something random, then, with 80% probability, enter something sensible*.
 
 ## Custom debug functions
 
 We won't need custom debug functions for our survey, but you may need them elsewhere. Creating custom debug function is similar to creating custom compile, validate, etc. functions, with one important difference: while the functions you've seen take their parent as their first argument, debug functions take a selenium webdriver as their first argument and their parent as their second argument:
 
 ```python
-@Debug.register
+@D.register
 def f(driver, parent):
     # debug something
 ```
 
+If you're serious about writing custom debug functions, I recommend checking out the [source code](https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py) for inspiration.
+
 ## Debugging our app
+
+First, import `Debug` at the top of `survey.py`:
+
+```python
+from hemlock import Branch, Check, Compile as C, Debug as D, Embedded, Input, Label, Navigate as N, Page, Range, Select, Submit as S, Validate as V, route
+...
+```
 
 Our app can be debugged largely with default debug functions. The exceptions are, 1) the date of birth input, 2) the comprehension check, 3) proposals and responses.
 
@@ -97,13 +148,10 @@ Modify `survey.py` as follows:
 @route('/survey')
 def start():
     demographics_page = Page(
-        Debug.send_keys(
-            Submit.record_age(Validate.validate_date_format(Input(
-                '<p>Enter your date of birth.</p>',
-                placeholder='mm/dd/yyyy',
-                var='DoB', data_rows=-1
-            ))),
-            '10/26/1992', p_exec=.8
+        Input(
+            '<p>Enter your date of birth.</p>',
+            ...
+            debug=[D.send_keys(), D.send_keys('10/26/1992', p_exec=.8)]
         ),
         ...
 ```
@@ -118,17 +166,12 @@ Because there is no attempt limit for our comprehension check, unless we tell th
 @Compile.register
 def random_proposal(check_page, accept):
     ...
-    # add submit functions to verify that the response was correct
-    check_page.questions[1].submit_functions.clear()
-    Debug.send_keys(
-        Submit.match(check_page.questions[1], str(payoff[0])), 
-        str(payoff[0]), p_exec=.8
-    )
-    check_page.questions[2].submit_functions.clear()
-    Debug.send_keys(
-        Submit.match(check_page.questions[2], str(payoff[1])),
-        str(payoff[1]), p_exec=.8
-    )
+    check_page.questions[1].debug = [
+        D.send_keys(), D.send_keys(str(payoff[0]), p_exec=.8)
+    ]
+    check_page.questions[2].debug = [
+        D.send_keys(), D.send_keys(str(payoff[1]), p_exec=.8)
+    ]
 
 ...
 ```
@@ -141,11 +184,9 @@ It's unlikely the debugger will enter an integer between 0 and the size of the p
 ...
 
 def gen_proposal_input(round_):
-    return Debug.send_keys(
-        Submit.data_type(
-            # REST OF THE FUNCTION HERE
-        ),
-        str(randint(0, POT)), p_exec=.8
+    return Input(
+        ...
+        debug=[D.send_keys(), D.send_keys(str(randint(0, POT)), p_exec=.8)]
     )
 
 ...
@@ -155,11 +196,9 @@ def gen_proposal_input(round_):
 ...
 
 def gen_response_input(round_):
-    return Debug.send_keys(
-        Submit.data_type(
-            # REST OF THE FUNCTION HERE
-        ),
-        str(randint(0, POT)), p_exec=.8
+    return Input(
+        ...
+        debug=[D.send_keys(), D.send_keys(str(randint(0, POT)), p_exec=.8)]
     )
 
 ...
@@ -186,7 +225,7 @@ If you don't want to use hemlock-CLI, you can run the debugger with the python i
 ```bash
 $ python3
 >>> from hemlock.debug import AIParticipant, debug
->>> debug() # or debug(<x>) to run x AI participants
+>>> debug() # or debug(3) to run 3 AI participants
 ```
 
 ## Summary
