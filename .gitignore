@@ -6,6 +6,5 @@ env/gcp-credentials.json
 hemlock-venv/
 data.db
 data.db-journal
-test.ipynb
+blackboard.ipynb
 test.py
-tmp_survey.py
