@@ -18,6 +18,185 @@ Enable a Google Cloud Bucket to access this feature.
 \n  See `hlk gcloud-bucket`
 """
 
+def external_css(**attrs):
+    """
+    Parameters
+    ----------
+    \*\*attrs :
+        Attribute names and values in the `<link/>` tag.
+
+    Returns
+    -------
+    css : str
+        `<link/>` tag.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Page, push_app_context
+    from hemlock.tools import external_css
+
+    app = push_app_context()
+
+    p = Page(extra_css=external_css(href='https://my-css-url'))
+    p.css
+    ```
+
+    Out:
+
+    ```
+    ...
+    <link href="https://my-css-url" rel="stylesheet" type="text/css"/>
+    ```
+    """
+    return _gen_tag(
+        '<link {}/>', {'rel': 'stylesheet', 'type': 'text/css'}, attrs
+    )
+
+def _gen_tag(template, attrs, input_attrs):
+    """
+    Generate a html tag.
+
+    Parameters
+    ----------
+    template : str
+        Tag template.
+
+    attrs : dict
+        Default attributes. Maps attribute names to values.
+
+    input_attrs: dict
+        User input attributes. Overwrites the default attributes.
+
+    Returns
+    -------
+    tag : str
+    """
+    attrs.update(input_attrs)
+    html_attrs = ' '.join([key+'="'+val+'"' for key,val in attrs.items()])
+    return template.format(html_attrs)
+
+def internal_css(style):
+    """
+    Parameters
+    ----------
+    style : dict
+        Maps css selector to an attributes dictionary. The attributes 
+        dictionary maps attribute names to values.
+
+    Returns
+    -------
+    css : str
+        `<style>` tag.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Page, push_app_context
+    from hemlock.tools import internal_css
+
+    app = push_app_context()
+
+    p = Page(extra_css=internal_css({'body': {'background': 'coral'}}))
+    p.css
+    ```
+
+    Out:
+
+    ```
+    ...
+    <style>
+    \    body {background:coral;}
+    </style>
+    ```
+    """
+    def format_style(selector, attrs):
+        attrs = ' '.join([key+':'+val+';' for key, val in attrs.items()])
+        return selector+' {'+attrs+'}'
+
+    css = ' '.join([format_style(key, val) for key, val in style.items()])
+    return '<style>{}</style>'.format(css)
+
+def external_js(**attrs):
+    """
+    Parameters
+    ----------
+    \*\*attrs :
+        Attribute names and values in the `<script>` tag.
+
+    Returns
+    -------
+    js : str
+        `<script>` tag.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Page, push_app_context
+    from hemlock.tools import external_js
+
+    app = push_app_context()
+
+    p = Page(extra_js=external_js(src='https://my-js-url'))
+    p.js
+    ```
+
+    Out:
+
+    ```
+    ...
+    <script src="https://my-js-url"></script>
+    ```
+    """
+    return _gen_tag('<script {}></script>', {}, attrs)
+
+def internal_js(js):
+    """
+    Parameters
+    ----------
+    js : str
+        Javascript code.
+
+    Returns
+    -------
+    js : str
+        Javascript code wrapped in `<script>` tag.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Page, push_app_context
+    from hemlock.tools import internal_js
+
+    app = push_app_context()
+
+    p = Page(
+    \    extra_js=internal_js(
+    \        '''
+    \        $( document ).ready(function() {
+    \            alert('hello, world!');
+    \        });
+    \        '''
+    \    )
+    )
+    p.js
+    ```
+
+    Out:
+
+    ```
+    ...
+    <script>
+    \    $( document ).ready(function() {
+    \        alert('hello, world!');
+    \    });
+    </script>
+    ```
+    """
+    if not js.startswith('<script>'):
+        js = '<script>{}</script>'.format(js)
+    return js
+
 def src_from_bucket(filename):
     """
     Parameters
