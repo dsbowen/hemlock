@@ -39,9 +39,8 @@ class Range(InputBase, Question):
     Notes
     -----
     Ranges have a default javascript which displays the value of the range 
-    slider to participants. This *cannot* be overridden by passing a `js` 
-    argument to the constructor, although javascript can be modified after the 
-    constructor has finished.
+    slider to participants. This will be appended to any `js` and `extra_js`
+    arguments passed to the constructor.
 
     Examples
     --------
@@ -58,7 +57,7 @@ class Range(InputBase, Question):
 
     def __init__(self, label='', template='hemlock/range.html', **kwargs):
         super().__init__(label, template, **kwargs)
-        self.js = render_template('hemlock/range.js', self_=self)
+        self.add_internal_js(render_template('hemlock/range.js', self_=self))
 
     @property
     def max(self):

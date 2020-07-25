@@ -35,10 +35,9 @@ class Textarea(InputGroup, Question):
 
     Notes
     -----
-    Textareas have a default javascript which displays the number of words and
-    characters entered. This *cannot* be overridden by passing a `js` argument
-    to the constructor, although javascript can be modified after the 
-    constructor has finished.
+    Textareas have a default javascript which displays the character and word 
+    count to participants. This will be appended to any `js` and `extra_js`
+    arguments passed to the constructor.
 
     Examples
     --------
@@ -55,7 +54,7 @@ class Textarea(InputGroup, Question):
 
     def __init__(self, page=None, template='hemlock/textarea.html', **kwargs):
         super().__init__(page, template, **kwargs)
-        self.js = render_template('hemlock/textarea.js', self_=self)
+        self.add_internal_js(render_template('hemlock/textarea.js', self_=self))
 
     @property
     def rows(self):
