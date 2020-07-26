@@ -67,7 +67,7 @@ SQLALCHEMY_DATABASE_URI : str
 
 SQLALCHEMY_TRACK_MODIFICATIONS: bool, default=False
 
-REDIS_URL : str, default='redis://'
+REDIS_URL : str, default=None
     Looks for a `REDIS_URL` environment variable.
 
 DownloadBtnManager
@@ -140,7 +140,7 @@ settings = {
             or 'sqlite:///'+os.path.join(os.getcwd(), 'data.db')
         ),
         'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-        'REDIS_URL': os.environ.get('REDIS_URL') or 'redis://',
+        'REDIS_URL': os.environ.get('REDIS_URL'),
     },
     'DownloadBtnManager': {},
     'Manager': {
