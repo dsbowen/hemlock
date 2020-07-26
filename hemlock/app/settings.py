@@ -87,8 +87,8 @@ Talisman
 content_security_policy : dict
     Content security policy for 
     [flask-talisman](https://github.com/GoogleCloudPlatform/flask-talisman).
-    Default allows for third party content from Google API, JQuery, JSDeliver,
-    Bootstrap, and YouTube.
+    Default allows for third party content from Bootstrap, Google API, JQuery, 
+    JSDeliver, SocketIO, and YouTube.
 
 Notes
 -----
@@ -164,16 +164,16 @@ settings = {
             'script-src': [
                 '\'self\'',
                 '\'unsafe-inline\'',
-                'https://code.jquery.com', 
-                'https://cdn.jsdelivr.net', 
-                'https://stackpath.bootstrapcdn.com',
+                'https://code.jquery.com/jquery-3.5.1.slim.js', 
+                'https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js', 
+                'https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js',
                 SOCKET_JS_SRC
             ],
-            'style-src-elem': [
+            'style-src': [
                 '\'self\'',
                 '\'unsafe-inline\'',
-                'https://fonts.googleapis.com',
-                'https://stackpath.bootstrapcdn.com', 
+                'https://fonts.googleapis.com/css',
+                'https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css', 
             ],
         },
     }
