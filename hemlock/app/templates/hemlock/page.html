@@ -1,4 +1,5 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html>
     <head>
         <meta charset="utf-8">
@@ -10,8 +11,8 @@
             {% if q.css is not none %}
                 {{ q.css.render() }}
             {% endif %}
-            {% for opt in q.options if opt.css is not none %}
-                {{ opt.css.render() }}
+            {% for choice in q.choices if choice.css is not none %}
+                {{ choice.css.render() }}
             {% endfor %}
         {% endfor %}
     </head>
@@ -29,8 +30,8 @@
             {% if q.js is not none %}
                 {{ q.js.render() }}
             {% endif %}
-            {% for opt in q.options if opt.js is not none %}
-                {{ opt.js.render() }}
+            {% for choice in q.choices if choice.js is not none %}
+                {{ choice.js.render() }}
             {% endfor %}
         {% endfor %}
     </body>
