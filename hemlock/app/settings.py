@@ -167,6 +167,7 @@ settings = {
                 'https://code.jquery.com', 
                 'https://cdn.jsdelivr.net', 
                 'https://stackpath.bootstrapcdn.com',
+                SOCKET_JS_SRC
             ],
             'style-src-elem': [
                 '\'self\'',

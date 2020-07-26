@@ -54,7 +54,9 @@ class Textarea(InputGroup, Question):
 
     def __init__(self, page=None, template='hemlock/textarea.html', **kwargs):
         super().__init__(page, template, **kwargs)
-        self.add_internal_js(render_template('hemlock/textarea.js', self_=self))
+        self.add_internal_js(
+            render_template('hemlock/textarea.js', self_=self)
+        )
 
     @property
     def rows(self):

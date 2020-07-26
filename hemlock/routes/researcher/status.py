@@ -4,6 +4,7 @@ from ...app import bp
 from ...models import Page
 from ...models.private import DataStore
 from ...qpolymorphs import Label
+from ...tools import external_js
 from .login import researcher_login_required
 from .utils import navbar, render, researcher_page
 
@@ -43,15 +44,14 @@ def status():
 @researcher_page('status')
 def status_page():
     """Return the Participant Status page"""
-    status_p = Page(
+    return Page(
         Label(compile=live_status), 
-        navbar=navbar.render(), back=False, forward=False
+        navbar=navbar.render(), back=False, forward=False,
+        extra_js=[
+            external_js(src=current_app.settings['socket_js_src']),
+            external_js(src=url_for('hemlock.static',filename='js/status.js'))
+        ]
     )
-    status_p.add_external_js(src=current_app.settings['socket_js_src'])
-    status_p.add_external_js(
-        src=url_for('hemlock.static', filename='js/status.js')
-    )
-    return status_p
 
 def live_status(status_label):
     """Set text to reflect participants' live status"""

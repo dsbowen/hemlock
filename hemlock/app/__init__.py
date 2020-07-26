@@ -1,8 +1,10 @@
 """# Application factory and settings"""
 
+import eventlet
+eventlet.monkey_patch(socket=True)
+
 from .settings import settings
 
-import eventlet
 import pandas as pd
 from flask import Flask, Blueprint
 # from flask_apscheduler import APScheduler
@@ -34,7 +36,6 @@ login_manager = LoginManager()
 login_manager.login_view = 'hemlock.index'
 login_manager.login_message = None
 # scheduler = APScheduler()
-eventlet.monkey_patch(socket=True)
 socketio = SocketIO(async_mode='eventlet')
 manager = Manager(db=db, socketio=socketio)
 talisman = Talisman()
@@ -155,4 +156,4 @@ def _init_extensions(app, settings):
     # scheduler.start()
     socketio.init_app(app, message_queue=app.config.get('REDIS_URL'))
     manager.init_app(app, **settings.get('Manager'))
-    talisman.init_app(app, **settings.get('Talisman'))
+    talisman.init_app(app, force_https=False, **settings.get('Talisman'))
