@@ -31,12 +31,13 @@ from ..app import db, settings
 from ..tools import Img
 from .bases import BranchingBase, HTMLMixin
 from .embedded import Timer
+from .worker import _set_worker
 from .functions import Compile, Validate, Submit, Debug
 
 from bs4 import BeautifulSoup, Tag
 from flask import Markup, current_app, render_template, request
+from sqlalchemy import inspect
 from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy.orm import validates
 from sqlalchemy_mutable import MutableType
 from sqlalchemy_mutablesoup import MutableSoupType
 
@@ -259,7 +260,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         default page compile function runs its questions' compile functions 
         in index order.
 
-    compile_worker : hemlock.CompileWorker or None, default=None
+    compile_worker : hemlock.Worker or None, default=None
         Worker which sends the compile functions to a Redis queue.
 
     validate : list of hemlock.Validate
@@ -267,7 +268,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         The default page validate function runs its questions' validate 
         functions in index order.
 
-    validate_worker : hemlock.ValidateWorker or None, default=None
+    validate_worker : hemlock.Worker or None, default=None
         Worker which sends the validate functions to a Redis queue.
 
     submit : list of hemlock.Submit
@@ -275,14 +276,14 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         validated. The default submit function runs its questions' submit 
         functions in index order.
 
-    submit_worker : hemlock.SubmitWorker or None, default=None
+    submit_worker : hemlock.Worker or None, default=None
         Worker which sends the submit functions to a Redis queue.
 
     navigate : hemlock.Navigate or None, default=None
         Navigate function which returns a new branch originating from this 
         page.
 
-    navigate_worker : hemlock.NavigateWorker
+    navigate_worker : hemlock.Worker
         Worker which sends the navigate function to a Redis queue.
 
     debug_functions : list of hemlock.Debug
@@ -361,11 +362,17 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         order_by='Compile.index',
         collection_class=ordering_list('index')
     )
-    compile_worker = db.relationship(
-        'CompileWorker', 
-        backref='page', 
-        uselist=False
+    _compile_worker = db.relationship(
+        'Worker', uselist=False, foreign_keys='Worker._compile_id'
     )
+
+    @property
+    def compile_worker(self):
+        return self._compile_worker
+
+    @compile_worker.setter
+    def compile_worker(self, val):
+        _set_worker(self, val, self._compile, '_compile_worker')
 
     validate = db.relationship(
         'Validate',
@@ -373,11 +380,17 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         order_by='Validate.index',
         collection_class=ordering_list('index')
     )
-    validate_worker = db.relationship(
-        'ValidateWorker',
-        backref='page',
-        uselist=False
+    _validate_worker = db.relationship(
+        'Worker', uselist=False, foreign_keys='Worker._validate_id'
     )
+
+    @property
+    def validate_worker(self):
+        return self._validate_worker
+
+    @validate_worker.setter
+    def validate_worker(self, val):
+        _set_worker(self, val, self._validate, '_validate_worker')
 
     submit = db.relationship(
         'Submit',
@@ -385,22 +398,34 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         order_by='Submit.index',
         collection_class=ordering_list('index')
     )
-    submit_worker = db.relationship(
-        'SubmitWorker',
-        backref='page',
-        uselist=False
+    _submit_worker = db.relationship(
+        'Worker', uselist=False, foreign_keys='Worker._submit_id'
     )
+
+    @property
+    def submit_worker(self):
+        return self._submit_worker
+
+    @submit_worker.setter
+    def submit_worker(self, val):
+        _set_worker(self, val, self._submit, '_submit_worker')
 
     navigate = db.relationship(
         'Navigate', 
         backref='page', 
         uselist=False
     )
-    navigate_worker = db.relationship(
-        'NavigateWorker',
-        backref='page', 
-        uselist=False
+    _navigate_worker = db.relationship(
+        'Worker', uselist=False, foreign_keys='Worker._navigate_page_id'
     )
+
+    @property
+    def navigate_worker(self):
+        return self._navigate_worker
+
+    @navigate_worker.setter
+    def navigate_worker(self, val):
+        _set_worker(self, val, self._navigate, '_navigate_worker')
 
     _debug_functions = db.relationship(
         'Debug',
@@ -670,6 +695,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         -------
         self
         """
+        if inspect(self).detached:
+            # self will be detached if _compile is called from Redis
+            self = Page.query.get(self.id)
         [f(self) for f in self.compile]
         if self.cache_compile:
             self.compile.clear()
@@ -758,6 +786,8 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         message (i.e. error is not None), indicate the response was invalid 
         and return False. Otherwise, return True.
         """
+        if inspect(self).detached:
+            self = Page.query.get(self.id)
         self.error = None
         for f in self.validate:
             error = f(self)
@@ -769,6 +799,8 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         return is_valid
     
     def _submit(self):
+        if inspect(self).detached:
+            self = Page.query.get(self.id)
         [q._record_data() for q in self.questions]
         [f(self) for f in self.submit]
         return self

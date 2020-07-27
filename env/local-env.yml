@@ -1,3 +1,4 @@
 APP_IMPORT: app.app
 URL_ROOT: http://localhost:5000
+REDIS_URL: redis://
 WSL_DISTRIBUTION: Ubuntu

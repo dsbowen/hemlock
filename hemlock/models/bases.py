@@ -4,7 +4,7 @@ from ..app import db
 
 from bs4 import BeautifulSoup
 from flask import current_app, render_template
-from sqlalchemy import Column
+from sqlalchemy import Column, inspect
 from sqlalchemy_function import FunctionRelator
 from sqlalchemy_modelid import ModelIdBase
 from sqlalchemy_mutable import MutableType, MutableModelBase
@@ -58,6 +58,8 @@ class BranchingBase(Base):
         )
 
     def _navigate(self):
+        if inspect(self).detached:
+            self = self.__class__.query.get(self.id)
         self.navigate(self)
         return self
 
