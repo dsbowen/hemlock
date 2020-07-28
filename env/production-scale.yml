@@ -1,6 +1,0 @@
-POSTGRES_PLAN: hobby-basic
-REDIS_PLAN: hobby-dev
-WEB_PROCTYPE: hobby
-WEB_SCALE: 1
-WORKER_PROCTYPE: hobby
-WORKER_SCALE: 0

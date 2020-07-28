@@ -1,3 +1,0 @@
-APP_IMPORT: app.app
-CHROMEDRIVER_PATH: /app/.chromedriver/bin/chromedriver
-URL_ROOT: https://hemlock-tutorial.herokuapp.com

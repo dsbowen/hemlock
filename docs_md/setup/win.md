@@ -38,6 +38,8 @@ $ git config --global user.name <my-github-username>
 $ git config --global user.email <my-github-user-email>
 ```
 
+Finally, you will need a personal access token to initialize hemlock applications with the hemlock command line interface (more on this later). Create a token by following [these instructions](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). When setting permissions (step 7), check 'repo'. Copy your token and store it somewhere accessible.
+
 ## Python3 and pip3
 
 Python is hemlock's primary language. Pip allows you to install python packages, including hemlock itself. In this section, we're going to download and install python3 and pip3.

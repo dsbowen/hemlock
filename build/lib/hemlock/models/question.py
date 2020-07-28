@@ -123,7 +123,7 @@ class Question(HTMLMixin, Data, MutableModelBase):
 
     @debug.setter
     def debug(self, val):
-        if not os.environ.get('NO_DEBUG_FUNCTIONS'):
+        if os.environ.get('DEBUG_FUNCTIONS') != 'False':
             self._debug_functions = val
 
     # Column attributes

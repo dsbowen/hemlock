@@ -98,14 +98,16 @@ class Worker(WorkerMixin, Base, db.Model):
     \    socketio.run(app, debug=True)
     ```
 
-    To run the app locally, you will need to set the `REDIS_URL` environment variable and run a redis queue from your project's root directory.
+    To run the app locally, you will need to set the `REDIS_URL` environment 
+    variable and run a redis queue from your project's root directory.
 
-    **Note.** Windows cannot run redis natively. To run redis on Windows, use [Windows Subsystem for Linux](setup/wsl.md).
+    **Note.** Windows cannot run redis natively. To run redis on Windows, use 
+    [Windows Subsystem for Linux](setup/wsl.md).
 
     If using the hemlock template and hemlock-CLI:
 
-    1. Add `REDIS_URL: redis://` to `env/local-env.yml`.
-    2. Open a second terminal in your project's root directory and enter `hlk rq`.
+    1. Open `env.yaml` and add the line `REDIS_URL: redis://`.
+    2. Open a second terminal in your project's root directory and run the redis queue with `hlk rq`.
     3. Run the app by entering `hlk serve` in your first terminal.
 
     If not using the template or hemlock-CLI:
@@ -122,7 +124,27 @@ class Worker(WorkerMixin, Base, db.Model):
     Progress: 100%
     ```
 
-    Instructions for adding redis in production in progress.
+    To run redis in production on heroku:
+
+    1. Declare a worker process. Open `Procfile` and add the line `worker: rq worker -u $REDIS_URL hemlock-task-queue`.
+    1. Create a redis addon. Add `"heroku-redis:hobby-dev"` to `"addons"` in `app.json`.
+    2. Add a worker to your dyno formation. Add `"worker: {"quantity": 1, "size": "hobby"}` to `"formation"` in `app.json`.
+
+    ```json
+    {
+    \    "addons": [
+    \        "heroku-postgresql:hobby-basic",
+    \        "heroku-redis:hobby-dev"
+    \    ],
+    \    "formation": {
+    \        "web": {"quantity": 1, "size": "hobby"},
+    \        "worker": {"quantity": 1, "size": "hobby"}
+    \    },
+        ...
+    ```
+
+    When scaling for production, I recommend using the premium-1 redis plan, 
+    quantity 10, size standard-1x.
     """
     id = db.Column(db.Integer, primary_key=True)
     _compile_id = db.Column(db.Integer, db.ForeignKey('page.id'))

@@ -88,6 +88,8 @@
                     </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Bells and whistles</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#redis">Redis</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#settings">Settings</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#duplicates">Duplicates</a>
@@ -95,14 +97,6 @@
     <li class="toctree-l2"><a class="reference internal" href="#screenouts">Screenouts</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#validation-off">Validation off</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#google-cloud-buckets">Google cloud buckets</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#installing-3rd-party-packages">Installing 3rd party packages</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#redis">Redis</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#restarting-your-app">Restarting your app</a>
     </li>
     </ul>
                     </li>
@@ -238,8 +232,10 @@
               
                 <h1 id="bells-and-whistles">Bells and whistles</h1>
 <p>You already know most of the important stuff. Here are some tips and tricks to make your life easier.</p>
+<h2 id="redis">Redis</h2>
+<p>One of hemlock's most impressive features is seamless integration with Redis for running complex background processes during surveys. See (../worker.md) for more details.</p>
 <h2 id="settings">Settings</h2>
-<p>We've already used settings to set the password for the researcher dashboard. We can also use settings to change the default values of most attributes of most hemlock objects (see the API documentation for precise details). For example, let's add a back button to every page by default:</p>
+<p>We can use settings to change the default values of most attributes of most hemlock objects (see the API documentation for precise details). For example, let's add a back button to every page by default:</p>
 <pre><code class="python">from hemlock import Page, settings
 
 settings['Page'].update({'back': True})
@@ -269,42 +265,44 @@ settings.update({'screenout_keys': ['IPv4', 'workerId']})
 settings.update({'validate': False})
 </code></pre>
 
-<h2 id="google-cloud-buckets">Google cloud buckets</h2>
-<p>Hook up a Google cloud bucket to your app with:</p>
+<!-- ## Google cloud buckets
+
+Hook up a Google cloud bucket to your app with:
+
+
 <pre><code class="bash">$ hlk gcloud-bucket &lt;my-billing-account&gt;
 </code></pre>
 
-<p>Make sure you have a Google cloud computing account and Google Cloud SDK installed. If using WSL, you can install these with hemlock-CLI:</p>
+
+Make sure you have a Google cloud computing account and Google Cloud SDK installed. If using WSL, you can install these with hemlock-CLI:
+
+
 <pre><code class="bash">$ hlk setup win --cloud-sdk
 </code></pre>
 
-<p>Additionally, install the google cloud storage python API with:</p>
+
+Additionally, install the google cloud storage python API with:
+
+
 <pre><code class="bash">$ pip3 install google-cloud-storage # or hlk install google-cloud-storage (see below)
+``` --&gt;
+
+## Installing 3rd party packages
+
+We ordinarily install 3rd party packages with:
+
+```bash
+$ pip install &lt;requested-package&gt; # or pip3 install &lt;requested-package&gt;
 </code></pre>
 
-<h2 id="installing-3rd-party-packages">Installing 3rd party packages</h2>
-<p>We ordinarily install 3rd party packages with:</p>
-<pre><code class="bash">$ pip install &lt;requested-package&gt; # or pip3 install &lt;requested-package&gt;
-</code></pre>
 
-<p>If you're using heroku, you need to include these in a <code>requirements.txt</code> file. If you're sharing your hemlock project with collaborators, I recommend additionally adding these to a <code>local-requirements.txt</code> file. </p>
-<p>Hemlock-CLI has a shortcut for 1) installing 3rd party packages, 2) adding them to <code>requirements.txt</code>, and 3) adding them to <code>local-requirements.txt</code>:</p>
+If you're using heroku, you need to include these in a `requirements.txt` file. If you're sharing your hemlock project with collaborators, I recommend additionally adding these to a `local-requirements.txt` file. 
+
+Hemlock-CLI has a shortcut for 1) installing 3rd party packages, 2) adding them to `requirements.txt`, and 3) adding them to `local-requirements.txt`:
+
+
 <pre><code class="bash">$ hlk install &lt;requested-package&gt;
 </code></pre>
-
-<h2 id="redis">Redis</h2>
-<p>Hemlock integrates seamlessly with Redis for running complex background processes during surveys. To run redis locally, use:</p>
-<pre><code class="bash">$ hlk rq
-</code></pre>
-
-<p>To spin up a redis server on heroku, set the <code>REDIS_PLAN</code>, <code>WORKER_PROCTYPE</code>, and <code>WORKER_SCALE</code> variables in <code>env/production-scale.yml</code>.</p>
-<p>See the <a href="../workers.md">API docs on workers</a> for more details.</p>
-<h2 id="restarting-your-app">Restarting your app</h2>
-<p>If your app crashes in production and you don't have time to take it offline and debug it, you can reboot your app with:</p>
-<pre><code class="bash">$ hlk restart
-</code></pre>
-
-<p>This won't fix your bug, but it might keep it at bay for a little while.</p>
               
             </div>
           </div>

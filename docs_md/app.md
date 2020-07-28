@@ -46,7 +46,7 @@
 ##hemlock.app.**push_app_context**
 
 <p class="func-header">
-    <i>def</i> hemlock.app.<b>push_app_context</b>(<i></i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L43">[source]</a>
+    <i>def</i> hemlock.app.<b>push_app_context</b>(<i></i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L42">[source]</a>
 </p>
 
 Push an app context for debugging in shell or notebook.
@@ -82,7 +82,7 @@ Out:
 ##hemlock.app.**create_app**
 
 <p class="func-header">
-    <i>def</i> hemlock.app.<b>create_app</b>(<i>settings=settings</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L74">[source]</a>
+    <i>def</i> hemlock.app.<b>create_app</b>(<i>settings=settings</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L73">[source]</a>
 </p>
 
 Create a Hemlock application.
@@ -140,10 +140,6 @@ Below are the default settings for Hemlock applications and extensions.
 <p class="attr">
     List of keys (column names) on which to block duplicate participants. If empty, the app will not screen out duplicates.
 </p>
-<b>password : <i>str, default=''</i></b>
-<p class="attr">
-    Password for accessing the researcher dashboard.
-</p>
 <b>restart_option : <i>bool, default=True</i></b>
 <p class="attr">
     Indicates that participants who attempt to re-navigate to the index page will be given the option to restart the survey. If <code>False</code>, participants to attempt to re-navigate to the index page will be redirected to their current survey page.
@@ -191,7 +187,15 @@ Below are the default settings for Hemlock applications and extensions.
 </tr>
 <tr class="field">
     <th class="field-name"><b>Config:</b></td>
-    <td class="field-body" width="100%"><b>SECRET_KEY : <i>str</i></b>
+    <td class="field-body" width="100%"><b>PASSWORD : <i>str</i></b>
+<p class="attr">
+    Looks for a <code>PASSWORD</code> environment variable.
+</p>
+<b>PASSWORD_HASH : <i>str</i></b>
+<p class="attr">
+    Generated password hash.
+</p>
+<b>SECRET_KEY : <i>str</i></b>
 <p class="attr">
     Looks for a <code>SECRET_KEY</code> environment variable.
 </p>

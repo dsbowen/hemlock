@@ -8,7 +8,7 @@ I've written setup pages for different operating systems (OS) below. You don't n
 
 What you need to get started:
 
-- Git and github
+- Git and github (and a github authentication token)
 - Python3 and pip3
 - Hemlock-CLI
 - Visual studio code
@@ -26,13 +26,13 @@ Check out the setup page for your OS:
 
 #### Initialize a new hemlock project
 
-Run the following:
+Run the following, replacing `<my-github-token>` with your github authentication token:
 
 ```bash
-$ hlk init my-first-project
+$ hlk init my-first-project <my-github-token>
 ```
 
-This will 'clone' the template into a folder `my-first-project` and set up a virtual environment. Then, follow these steps:
+This will 'clone' the template into a folder `my-first-project`, initialize an eponymous github repository for your project, and create a virtual environment.
 
 Change into the project directory and check out the folder structure:
 
@@ -76,7 +76,7 @@ It's good practice to use [virtual environments](https://docs.python.org/3/tutor
 If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable. Open a file which specifies your local environment variables:
 
 ```bash
-$ code env/local-env.yml
+$ code env.yaml
 ```
 
 And add the following line:

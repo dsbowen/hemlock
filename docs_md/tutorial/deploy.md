@@ -4,84 +4,133 @@ In the previous part of the tutorial, you learned how to debug your app with hem
 
 In this part of the tutorial, you'll learn how to deploy your application (i.e. put it on the web).
 
-## Setting a password
-
-If we were to deploy our study as is, anyone would be able to go to our app and download our study data. Setting a password is easy. Add this to the top of `survey.py`:
-
-```python
-from hemlock import settings
-
-settings.update({'password': 'my-password'})
-```
-
-Run your app and go to <http://localhost:5000/download/>. You'll be redirected to a login page where you have to enter a password to access the download page.
-
-## Deployment options
-
-Hemlock uses a [Flask](https://flask.palletsprojects.com/en/1.1.x/) backend, which means you can deploy it just as you would any other Flask app. The [Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) is, imho, the best resource for learning Flask, including deployment.
-
-I remember deployment was the scariest part of this whole process when I was starting out. So, if you're using the hemlock template and hemlock-CLI, I've built in some tools to make this as easy as possible for you.
-
 ## Setup
 
-The easiest way to deploy web apps is with [heroku](https://heroku.com/). Hemlock-cli builds on the [heroku-cli]((https://devcenter.heroku.com/articles/heroku-cli)) for deployment. Find the setup page for your OS for specific instructions:
+The easiest way to deploy web apps is with [heroku](https://heroku.com/). Hemlock-CLI builds on the [heroku-CLI]((https://devcenter.heroku.com/articles/heroku-cli)) for deployment. Find the setup page for your OS for specific instructions:
 
 - [Windows](../setup/win.md)
 - [Windows Subsystem for Linux](../setup/wsl.md)
 - [Mac](../setup/mac.md)
 - [Linux](../setup/linux.md)
 
-## Production-lite
+## Debugging in a staging environment
 
-Before scaling up your app, I recommend previewing it in what I call a 'production-lite' environment using free heroku resources:
+Before we deploy our project 'for real', we're going to deploy to a staging environment using free heroku resources and run our debugger one more time. Why? Because, on extremely rare occasions, the production environment is just different enough from your local environment to break something in unexpected ways. The staging environment is virtually identical to the production environment, so if things go well in staging, we can sleep soundly knowing that our app will run smoothly in production.
 
-```bash
-$ hlk deploy <my-app-name>
-```
+### Deploy your app in staging
 
-Make sure your app name is unique. I do this by adding a few random digits to the end of the app name.
-
-Once this process finishes (~2-3 minutes), you'll be able to see your app at <https://my-app-name.herokuapp.com/>.
-
-Go through your app and check for bugs before you start purchasing time on heroku servers. In addition to going through it manually, you can run the debugger in the production environment with:
+Deploying your application is as easy as:
 
 ```bash
-$ hlk debug --prod
+$ hlk deploy
 ```
+
+You'll probably be prompted for your github username and password. Then, you'll be redirected to a page on the heroku website. If this is your first time deploying an app, heroku will prompt you to connect to your github account.
+
+Once you're on the heroku page, make the following modifications to your application configuration:
+
+1. Enter a name for your application.
+2. Set your `PASSWORD`. This password protects your data.
+3. Set your `URL_ROOT`. For example, if your project is named `my-first-project235`, your `URL_ROOT` would be `https://my-first-project235.herokuapp.com`. This tells the debugger where to look for your app.
+
+Click 'Deploy app' and watch the magic happen. In 2-3 minutes, your survey will be online.
+
+### Running the debugger
+
+In the last part of the tutorial, we ran our debugger in the local environment. Now, we're going to run it in staging. First, let's hook up our project to our online application:
+
+```bash
+$ heroku git:remote -a <my-app-name>
+```
+
+Replacing `<my-app-name>` with your application name. For example, if your application is named `my-first-project235`, you'd enter:
+
+```bash
+$ heroku git:remote -a my-first-project235
+```
+
+Now, run the debugger:
+
+```bash
+$ hlk debug --staging
+```
+
+This is almost exactly what we did in the previous part of the tutorial. The difference is that we added the `--staging` flag, indicating that we're running the debugger in the staging environment.
 
 Where's the webdriver? In production, Chromedriver needs to run in 'headless' mode, meaning you won't be able to see the debugger going through the survey in your browser. You will, however, see it going through pages in the terminal window.
 
-If you later discover a bug, you can update your app with:
+Hopefully the debugger runs smoothly. If it doesn't, fix your code, update your application, and run the debugger again. Update your application with:
 
 ```bash
 $ hlk update
 ```
 
-## Production
-
-When you're satisfied that your app isn't going to crash, scale it up with:
+Once you're satisfied that your app is as error-free as possible, we'll destroy the staging version to 'make room' for the production version:
 
 ```bash
-$ hlk production
+$ heroku apps:destroy
 ```
 
-This will destroy your existing free database (and redis server, if you have one), and you'll be prompted to enter the name of your app to confirm. It then replaces your database with a more powerful one. It'll take a few minutes to create your new database, during which time your app won't work properly. You can check the status of the database with:
+## Deploying your application
+
+We're finally ready to deploy our application *for real*. This is basically the same process as deploying to the staging environment, with a few small changes.
+
+First, open `app.json`:
 
 ```bash
-$ heroku pg
+$ code app.json
 ```
 
-You're now renting a heroku database and 10 web processes. If you don't know what this means, don't worry. As of 07/09/2020, these resources cost just more than half a cent per minute. If you play with your hemlock app for the next 10 minutes, it'll cost $0.07. If you run an MTurk study and leave it up for the next 12 hours, it'll cost $5.
+We're going to modify this to give us more powerful compute resources. At the top of the file, we'll change our addons and formation from:
 
-Importantly, when you're done with your app, destroy it with:
+```json
+{
+    "addons": ["heroku-postgresql:hobby-dev"],
+    "formation": {
+        "web": {"quantity": 1, "size": "free"}
+    },
+    ...
+```
+
+to:
+
+```json
+{
+    "addons": ["heroku-postgresql:standard-0"],
+    "formation": {
+        "web": {"quantity": 10, "size": "standard-1x"}
+    },
+    ...
+```
+
+Let's deploy our app and set our configuration variables like we did before:
 
 ```bash
-$ hlk destroy
+hlk deploy
 ```
 
-## Modifying your resource use
+1. Enter a name for your application.
+2. Set your `PASSWORD`.
+3. Set your `URL_ROOT`.
+4. **New step.** Set `DEBUG_FUNCTIONS` to `False`. This stops your application for creating debug functions. We're not going to run the debugger again at this point, so debug functions will just slow things down.
 
-You can modify the resources you use in production by editing the `env/production-scale.yml` file. See <https://heroku.com/> for details on resource use.
+Your app is now online, ready to send to the world! Don't forget to download your data, and destroy your application when you're finished:
+
+```bash
+$ heroku apps:destroy -a <my-app-name>
+```
+
+## Cost
+
+How much will it cost me to play around with my app in production? Answer: $0.10. Calculation: This formation gives us a standard-0 database ($50/mo) and 10 standard-1x 'dynos' (like servers, $25/mo/dyno * 10 dynos = $250/mo). That's $300/mo total. Heroku prorates by the second, meaning that if you mess around with the app for 15 minutes, you'll be charged $300/mo * 1 mo/30 days * 1 day/24 hours * 1 hour/60 min * 15 min = $0.10. 
+
+How much will it cost me to run a study with these resources? Answer: $5. Do the same math, but assume your study is online for half a day. 
+
+**Side note.** The exact amount of compute power you need depends on the application. This is a rough one-size-fits-all recommendation that will work nicely for most academic studies. You can [read more about heroku resources here](https://www.heroku.com/pricing).
+
+## Alternative deployment options
+
+Hemlock uses a [Flask](https://flask.palletsprojects.com/en/1.1.x/) backend, which means you can deploy it just as you would any other Flask app. The [Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) is, imho, the best resource for learning Flask, including deployment.
 
 ## Summary
 

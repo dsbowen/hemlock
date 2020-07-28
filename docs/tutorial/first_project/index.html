@@ -256,7 +256,7 @@
 <p>I've written setup pages for different operating systems (OS) below. You don't need everything in the setup page right now. First, read this list of things you need. Then, check out the setup page for your OS for download and installation instructions.</p>
 <p>What you need to get started:</p>
 <ul>
-<li>Git and github</li>
+<li>Git and github (and a github authentication token)</li>
 <li>Python3 and pip3</li>
 <li>Hemlock-CLI</li>
 <li>Visual studio code</li>
@@ -272,11 +272,11 @@
 </ul>
 <h2 id="from-the-hemlock-template-recommended">From the hemlock template (recommended)</h2>
 <h4 id="initialize-a-new-hemlock-project">Initialize a new hemlock project</h4>
-<p>Run the following:</p>
-<pre><code class="bash">$ hlk init my-first-project
+<p>Run the following, replacing <code>&lt;my-github-token&gt;</code> with your github authentication token:</p>
+<pre><code class="bash">$ hlk init my-first-project &lt;my-github-token&gt;
 </code></pre>
 
-<p>This will 'clone' the template into a folder <code>my-first-project</code> and set up a virtual environment. Then, follow these steps:</p>
+<p>This will 'clone' the template into a folder <code>my-first-project</code>, initialize an eponymous github repository for your project, and create a virtual environment.</p>
 <p>Change into the project directory and check out the folder structure:</p>
 <pre><code class="bash">$ cd my-first-project
 $ ls
@@ -303,7 +303,7 @@ $ ls
 <p>It's good practice to use <a href="https://docs.python.org/3/tutorial/venv.html">virtual environments</a> and activate them whenever you're working on a project.</p>
 <h4 id="if-using-wsl">If using WSL</h4>
 <p>If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable. Open a file which specifies your local environment variables:</p>
-<pre><code class="bash">$ code env/local-env.yml
+<pre><code class="bash">$ code env.yaml
 </code></pre>
 
 <p>And add the following line:</p>

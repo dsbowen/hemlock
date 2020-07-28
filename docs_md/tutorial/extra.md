@@ -2,9 +2,13 @@
 
 You already know most of the important stuff. Here are some tips and tricks to make your life easier.
 
+## Redis
+
+One of hemlock's most impressive features is seamless integration with Redis for running complex background processes during surveys. See (../worker.md) for more details.
+
 ## Settings
 
-We've already used settings to set the password for the researcher dashboard. We can also use settings to change the default values of most attributes of most hemlock objects (see the API documentation for precise details). For example, let's add a back button to every page by default:
+We can use settings to change the default values of most attributes of most hemlock objects (see the API documentation for precise details). For example, let's add a back button to every page by default:
 
 ```python
 from hemlock import Page, settings
@@ -47,7 +51,7 @@ from hemlock import settings
 settings.update({'validate': False})
 ```
 
-## Google cloud buckets
+<!-- ## Google cloud buckets
 
 Hook up a Google cloud bucket to your app with:
 
@@ -65,7 +69,7 @@ Additionally, install the google cloud storage python API with:
 
 ```bash
 $ pip3 install google-cloud-storage # or hlk install google-cloud-storage (see below)
-```
+``` -->
 
 ## Installing 3rd party packages
 
@@ -82,25 +86,3 @@ Hemlock-CLI has a shortcut for 1) installing 3rd party packages, 2) adding them 
 ```bash
 $ hlk install <requested-package>
 ```
-
-## Redis
-
-Hemlock integrates seamlessly with Redis for running complex background processes during surveys. To run redis locally, use:
-
-```bash
-$ hlk rq
-```
-
-To spin up a redis server on heroku, set the `REDIS_PLAN`, `WORKER_PROCTYPE`, and `WORKER_SCALE` variables in `env/production-scale.yml`.
-
-See the [API docs on workers](../workers.md) for more details.
-
-## Restarting your app
-
-If your app crashes in production and you don't have time to take it offline and debug it, you can reboot your app with:
-
-```bash
-$ hlk restart
-```
-
-This won't fix your bug, but it might keep it at bay for a little while.

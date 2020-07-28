@@ -321,12 +321,14 @@ if __name__ == '__main__':
     socketio.run(app, debug=True)
 </code></pre>
 
-<p>To run the app locally, you will need to set the <code>REDIS_URL</code> environment variable and run a redis queue from your project's root directory.</p>
-<p><strong>Note.</strong> Windows cannot run redis natively. To run redis on Windows, use <a href="../setup/wsl/">Windows Subsystem for Linux</a>.</p>
+<p>To run the app locally, you will need to set the <code>REDIS_URL</code> environment
+variable and run a redis queue from your project's root directory.</p>
+<p><strong>Note.</strong> Windows cannot run redis natively. To run redis on Windows, use
+<a href="../setup/wsl/">Windows Subsystem for Linux</a>.</p>
 <p>If using the hemlock template and hemlock-CLI:</p>
 <ol>
-<li>Add <code>REDIS_URL: redis://</code> to <code>env/local-env.yml</code>.</li>
-<li>Open a second terminal in your project's root directory and enter <code>hlk rq</code>.</li>
+<li>Open <code>env.yaml</code> and add the line <code>REDIS_URL: redis://</code>.</li>
+<li>Open a second terminal in your project's root directory and run the redis queue with <code>hlk rq</code>.</li>
 <li>Run the app by entering <code>hlk serve</code> in your first terminal.</li>
 </ol>
 <p>If not using the template or hemlock-CLI:</p>
@@ -341,7 +343,26 @@ if __name__ == '__main__':
 Progress: 100%
 </code></pre>
 
-<p>Instructions for adding redis in production in progress.</p>
+<p>To run redis in production on heroku:</p>
+<ol>
+<li>Declare a worker process. Open <code>Procfile</code> and add the line <code>worker: rq worker -u $REDIS_URL hemlock-task-queue</code>.</li>
+<li>Create a redis addon. Add <code>"heroku-redis:hobby-dev"</code> to <code>"addons"</code> in <code>app.json</code>.</li>
+<li>Add a worker to your dyno formation. Add <code>"worker: {"quantity": 1, "size": "hobby"}</code> to <code>"formation"</code> in <code>app.json</code>.</li>
+</ol>
+<pre><code class="json">{
+    &quot;addons&quot;: [
+        &quot;heroku-postgresql:hobby-basic&quot;,
+        &quot;heroku-redis:hobby-dev&quot;
+    ],
+    &quot;formation&quot;: {
+        &quot;web&quot;: {&quot;quantity&quot;: 1, &quot;size&quot;: &quot;hobby&quot;},
+        &quot;worker&quot;: {&quot;quantity&quot;: 1, &quot;size&quot;: &quot;hobby&quot;}
+    },
+...
+</code></pre>
+
+<p>When scaling for production, I recommend using the premium-1 redis plan,
+quantity 10, size standard-1x.</p>
               
             </div>
           </div>
