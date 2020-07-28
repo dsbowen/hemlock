@@ -1,8 +1,10 @@
 """# Application factory and settings"""
 
+import eventlet
+eventlet.monkey_patch(socket=True)
+
 from .settings import settings
 
-import eventlet
 import pandas as pd
 from flask import Flask, Blueprint
 # from flask_apscheduler import APScheduler
@@ -12,7 +14,6 @@ from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
 from flask_worker import Manager
-from werkzeug.security import generate_password_hash
 
 import os
 
@@ -34,7 +35,6 @@ login_manager = LoginManager()
 login_manager.login_view = 'hemlock.index'
 login_manager.login_message = None
 # scheduler = APScheduler()
-eventlet.monkey_patch(socket=True)
 socketio = SocketIO(async_mode='eventlet')
 manager = Manager(db=db, socketio=socketio)
 talisman = Talisman()
@@ -110,9 +110,6 @@ def _create_app(settings):
         static_folder=settings.get('static_folder'), 
         template_folder=settings.get('template_folder'),
     )
-    # set password hash
-    password = settings.get('password')
-    settings['password_hash'] = generate_password_hash(password)
     # get screenouts
     screenout_csv = settings.get('screenout_csv')
     if os.path.exists(screenout_csv):

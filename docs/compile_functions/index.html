@@ -138,7 +138,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -280,11 +280,11 @@
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Compile, Page, push_app_context
+<pre><code class="python">from hemlock import Compile as C, Page, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-p = Compile.call_method(Page(error='Error message'), 'clear_error')
+p = Page(error='Error message', compile=C.call_method('clear_error'))
 p.preview()._compile().preview()
 </code></pre>
 
@@ -309,11 +309,11 @@ p.preview()._compile().preview()
 </table>
 
 <h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock import Compile, Page, Check, push_app_context
+<pre><code class="python">from hemlock import Compile as C, Page, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-p = Compile.clear_error(Page(error='Error message'))
+p = Page(error='Error message', compile=C.clear_error())
 p.preview()._compile().preview()
 </code></pre>
 
@@ -338,11 +338,11 @@ p.preview()._compile().preview()
 </table>
 
 <h4 id="examples_2">Examples</h4>
-<pre><code class="python">from hemlock import Compile, Input, Page, push_app_context
+<pre><code class="python">from hemlock import Compile as C, Input, Page, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-p = Compile.clear_response(Page(Input(response='Hello World')))
+p = Page(Input(response='Hello World'), compile=C.clear_response())
 p.preview()._compile().preview()
 </code></pre>
 
@@ -376,13 +376,14 @@ p.preview()._compile().preview()
 <p>If the object is a <code>hemlock.ChoiceQuestion</code>, the default shuffled
 attribute is its <code>choices</code>.</p>
 <h4 id="examples_3">Examples</h4>
-<pre><code class="python">from hemlock import Compile, Label, Page, push_app_context
+<pre><code class="python">from hemlock import Compile as C, Label, Page, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-p = Compile.shuffle(Page(
-    Label('&lt;p&gt;Label {}&lt;/p&gt;'.format(i)) for i in range(4)
-))
+p = Page(
+    *(Label('&lt;p&gt;Label {}&lt;/p&gt;'.format(i)) for i in range(4)),
+    compile=C.shuffle()
+)
 p.preview()._compile().preview()
 </code></pre>
               

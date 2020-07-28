@@ -31,11 +31,13 @@ from ..app import db, settings
 from ..tools import Img
 from .bases import BranchingBase, HTMLMixin
 from .embedded import Timer
+from .worker import _set_worker
+from .functions import Compile, Validate, Submit, Debug
 
 from bs4 import BeautifulSoup, Tag
 from flask import Markup, current_app, render_template, request
+from sqlalchemy import inspect
 from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy.orm import validates
 from sqlalchemy_mutable import MutableType
 from sqlalchemy_mutablesoup import MutableSoupType
 
@@ -51,10 +53,10 @@ BANNER = Img(src='/hemlock/static/img/hemlock_banner.png', align='center')
 BANNER.img['style'] = 'max-width:200px;'
 BANNER.img['alt'] = 'Hemlock banner'
 
-def compile_func(page):
+@Compile.register
+def compile_questions(page):
     """
-    Default page compile function; executes its questions' compile methods in
-    index order.
+    Execute the page's questions' compile methods in index order.
 
     Parameters
     ----------
@@ -62,10 +64,10 @@ def compile_func(page):
     """
     [q._compile() for q in page.questions]
 
-def validate_func(page):
+@Validate.register
+def validate_questions(page):
     """
-    Default page validate function; executes its questions' validate methods
-    in index order.
+    Execute the page's questions' validate methods in index order.
 
     Parameters
     ----------
@@ -73,10 +75,10 @@ def validate_func(page):
     """
     [q._validate() for q in page.questions]
     
-def submit_func(page):
+@Submit.register
+def submit_questions(page):
     """
-    Default page submit function; executes its questions' submit methods in
-    index order.
+    Execute the page's questions' submit methods in index order.
 
     Parameters
     ----------
@@ -84,10 +86,10 @@ def submit_func(page):
     """
     [q._submit() for q in page.questions]
 
-def debug_func(driver, page):
+@Debug.register
+def debug_questions(driver, page):
     """
-    Default page debug function; execute its questions' debug methods in 
-    *random* order.
+    Execute the page's questions' debug methods in  *random* order.
 
     Parameters
     ----------
@@ -99,10 +101,11 @@ def debug_func(driver, page):
     shuffle(order)
     [page.questions[i]._debug(driver) for i in order]
 
+@Debug.register
 def navigate(driver, page, p_forward=.8, p_back=.1, sleep_time=3):
     """
-    This method randomly navigates forward or backward, or refreshes the 
-    page. By default it is executed after the default page debug function.
+    Randomly navigate forward or backward, or refresh the page. By default, it
+    is executed after the default page debug function.
 
     Parameters
     ----------
@@ -147,10 +150,10 @@ settings['Page'] = {
     'forward': True,
     'banner': BANNER.render(),
     'terminal': False,
-    'compile_functions': compile_func,
-    'validate_functions': validate_func,
-    'submit_functions': submit_func,
-    'debug_functions': [debug_func, navigate],
+    'compile': compile_questions,
+    'validate': validate_questions,
+    'submit': submit_questions,
+    'debug': [debug_questions, navigate],
 }
 
 
@@ -252,35 +255,35 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         List of data elements which belong to this page; in order, `self.
         timer`, `self.embedded`, `self.questions`.
 
-    compile_functions : list of hemlock.Compile
+    compile : list of hemlock.Compile
         List of compile functions; run before the page is rendered. The 
         default page compile function runs its questions' compile functions 
         in index order.
 
-    compile_worker : hemlock.CompileWorker or None, default=None
+    compile_worker : hemlock.Worker or None, default=None
         Worker which sends the compile functions to a Redis queue.
 
-    validate_functions : list of hemlock.Validate
+    validate : list of hemlock.Validate
         List of validate functions; run to validate participant responses. 
         The default page validate function runs its questions' validate 
         functions in index order.
 
-    validate_worker : hemlock.ValidateWorker or None, default=None
+    validate_worker : hemlock.Worker or None, default=None
         Worker which sends the validate functions to a Redis queue.
 
-    submit_functions : list of hemlock.Submit
+    submit : list of hemlock.Submit
         List of submit functions; run after participant responses have been 
         validated. The default submit function runs its questions' submit 
         functions in index order.
 
-    submit_worker : hemlock.SubmitWorker or None, default=None
+    submit_worker : hemlock.Worker or None, default=None
         Worker which sends the submit functions to a Redis queue.
 
-    navigate_function : hemlock.Navigate or None, default=None
+    navigate : hemlock.Navigate or None, default=None
         Navigate function which returns a new branch originating from this 
         page.
 
-    navigate_worker : hemlock.NavigateWorker
+    navigate_worker : hemlock.Worker
         Worker which sends the navigate function to a Redis queue.
 
     debug_functions : list of hemlock.Debug
@@ -353,52 +356,76 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         timer = [self.timer] if self.timer else []
         return self.embedded + timer + self.questions
     
-    compile_functions = db.relationship(
+    compile = db.relationship(
         'Compile',
         backref='page',
         order_by='Compile.index',
         collection_class=ordering_list('index')
     )
-    compile_worker = db.relationship(
-        'CompileWorker', 
-        backref='page', 
-        uselist=False
+    _compile_worker = db.relationship(
+        'Worker', uselist=False, foreign_keys='Worker._compile_id'
     )
 
-    validate_functions = db.relationship(
+    @property
+    def compile_worker(self):
+        return self._compile_worker
+
+    @compile_worker.setter
+    def compile_worker(self, val):
+        _set_worker(self, val, self._compile, '_compile_worker')
+
+    validate = db.relationship(
         'Validate',
         backref='page',
         order_by='Validate.index',
         collection_class=ordering_list('index')
     )
-    validate_worker = db.relationship(
-        'ValidateWorker',
-        backref='page',
-        uselist=False
+    _validate_worker = db.relationship(
+        'Worker', uselist=False, foreign_keys='Worker._validate_id'
     )
 
-    submit_functions = db.relationship(
+    @property
+    def validate_worker(self):
+        return self._validate_worker
+
+    @validate_worker.setter
+    def validate_worker(self, val):
+        _set_worker(self, val, self._validate, '_validate_worker')
+
+    submit = db.relationship(
         'Submit',
         backref='page',
         order_by='Submit.index',
         collection_class=ordering_list('index')
     )
-    submit_worker = db.relationship(
-        'SubmitWorker',
-        backref='page',
-        uselist=False
+    _submit_worker = db.relationship(
+        'Worker', uselist=False, foreign_keys='Worker._submit_id'
     )
 
-    navigate_function = db.relationship(
+    @property
+    def submit_worker(self):
+        return self._submit_worker
+
+    @submit_worker.setter
+    def submit_worker(self, val):
+        _set_worker(self, val, self._submit, '_submit_worker')
+
+    navigate = db.relationship(
         'Navigate', 
         backref='page', 
         uselist=False
     )
-    navigate_worker = db.relationship(
-        'NavigateWorker',
-        backref='page', 
-        uselist=False
+    _navigate_worker = db.relationship(
+        'Worker', uselist=False, foreign_keys='Worker._navigate_page_id'
     )
+
+    @property
+    def navigate_worker(self):
+        return self._navigate_worker
+
+    @navigate_worker.setter
+    def navigate_worker(self, val):
+        _set_worker(self, val, self._navigate, '_navigate_worker')
 
     _debug_functions = db.relationship(
         'Debug',
@@ -408,11 +435,11 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     )
 
     @property
-    def debug_functions(self):
+    def debug(self):
         return self._debug_functions
 
-    @debug_functions.setter
-    def debug_functions(self, val):
+    @debug.setter
+    def debug(self, val):
         if not os.environ.get('NO_DEBUG_FUNCTIONS'):
             self._debug_functions = val
     
@@ -668,9 +695,12 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         -------
         self
         """
-        [compile_func(self) for compile_func in self.compile_functions]
+        if inspect(self).detached:
+            # self will be detached if _compile is called from Redis
+            self = Page.query.get(self.id)
+        [f(self) for f in self.compile]
         if self.cache_compile:
-            self.compile_functions.clear()
+            self.compile.clear()
             self.compile_worker = None
         if self.timer is not None:
             self.timer.start()
@@ -756,9 +786,11 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         message (i.e. error is not None), indicate the response was invalid 
         and return False. Otherwise, return True.
         """
+        if inspect(self).detached:
+            self = Page.query.get(self.id)
         self.error = None
-        for validate_func in self.validate_functions:
-            error = validate_func(self)
+        for f in self.validate:
+            error = f(self)
             if error:
                 self.error = error
                 break
@@ -767,10 +799,12 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         return is_valid
     
     def _submit(self):
+        if inspect(self).detached:
+            self = Page.query.get(self.id)
         [q._record_data() for q in self.questions]
-        [submit_func(self) for submit_func in self.submit_functions]
+        [f(self) for f in self.submit]
         return self
 
     def _debug(self, driver):
-        [debug_func(driver, self) for debug_func in self.debug_functions]
+        [f(driver, self) for f in self.debug]
         return self

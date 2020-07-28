@@ -23,11 +23,11 @@ def call_method(obj, method_name, *args, **kwargs):
     Examples
     --------
     ```python
-    from hemlock import Compile, Page, push_app_context
+    from hemlock import Compile as C, Page, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    p = Compile.call_method(Page(error='Error message'), 'clear_error')
+    p = Page(error='Error message', compile=C.call_method('clear_error'))
     p.preview()._compile().preview()
     ```
     """
@@ -46,11 +46,11 @@ def clear_error(obj):
     Examples
     --------
     ```python
-    from hemlock import Compile, Page, Check, push_app_context
+    from hemlock import Compile as C, Page, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    p = Compile.clear_error(Page(error='Error message'))
+    p = Page(error='Error message', compile=C.clear_error())
     p.preview()._compile().preview()
     ```
     """
@@ -69,11 +69,11 @@ def clear_response(obj):
     Examples
     --------
     ```python
-    from hemlock import Compile, Input, Page, push_app_context
+    from hemlock import Compile as C, Input, Page, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    p = Compile.clear_response(Page(Input(response='Hello World')))
+    p = Page(Input(response='Hello World'), compile=C.clear_response())
     p.preview()._compile().preview()
     ```
     """
@@ -103,13 +103,14 @@ def shuffle(obj, *attrs):
     Examples
     --------
     ```python
-    from hemlock import Compile, Label, Page, push_app_context
+    from hemlock import Compile as C, Label, Page, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    p = Compile.shuffle(Page(
-    \    Label('<p>Label {}</p>'.format(i)) for i in range(4)
-    ))
+    p = Page(
+    \    *(Label('<p>Label {}</p>'.format(i)) for i in range(4)),
+    \    compile=C.shuffle()
+    )
     p.preview()._compile().preview()
     ```
     """

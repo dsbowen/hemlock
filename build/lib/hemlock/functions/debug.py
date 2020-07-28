@@ -10,7 +10,7 @@ The following examples open a webdriver. After running the examples, close the
 driver with `driver.close()`.
 
 By default, the last debug function of a page navigates. To remove this, run
-`page.debug_functions.pop()`.
+`page.debug.pop()`.
 """
 
 from ..app import settings
@@ -41,18 +41,14 @@ def forward(driver, page):
     Examples
     --------
     ```python
-    from hemlock import Debug, Page, push_app_context
+    from hemlock import Debug as D, Page, push_app_context
     from hemlock.tools import chromedriver
 
-    push_app_context()
+    app = push_app_context()
 
     driver = chromedriver()
 
-    p = Page()
-    # by default, last debug function navigates
-    # so we want to remove this and replace it with forward
-    p.debug_functions.pop()
-    Debug.forward(p)
+    p = Page(debug=[D.debug_questions(), D.forward()])
     p.preview(driver)._debug(driver)
     ```
     """
@@ -72,18 +68,14 @@ def back(driver, page):
     Examples
     --------
     ```python
-    from hemlock import Debug, Page, push_app_context
+    from hemlock import Debug as D, Page, push_app_context
     from hemlock.tools import chromedriver
 
-    push_app_context()
+    app = push_app_context()
 
     driver = chromedriver()
 
-    p = Page(back=True)
-    # by default, last debug function navigates
-    # so we want to remove this and replace it with forward
-    p.debug_functions.pop()
-    Debug.back(p)
+    p = Page(debug=[D.debug_questions(), D.back()])
     p.preview(driver)._debug(driver)
     ```
     """
@@ -113,14 +105,14 @@ def send_keys(driver, question, *keys, p_num=.5):
     Examples
     --------
     ```python
-    from hemlock import Debug, Input, Page, push_app_context
+    from hemlock import Debug as D, Input, Page, push_app_context
     from hemlock.tools import chromedriver
 
-    push_app_context()
+    app = push_app_context()
 
     driver = chromedriver()
 
-    p = Page(Debug.send_keys(Input(), 'hello world'))
+    p = Page(Input(debug=D.send_keys('hello world')))
     p.preview(driver)._debug(driver)
     ```
     """
@@ -157,14 +149,14 @@ def random_str(driver, question, magnitude=2, p_whitespace=.2):
     Examples
     --------
     ```python
-    from hemlock import Debug, Input, Page, push_app_context
+    from hemlock import Debug as D, Input, Page, push_app_context
     from hemlock.tools import chromedriver
 
-    push_app_context()
+    app = push_app_context()
 
     driver = chromedriver()
 
-    p = Page(Debug.random_str(Input()))
+    p = Page(Input(debug=D.random_str()))
     p.preview(driver)._debug(driver)
     ```
     """
@@ -203,14 +195,14 @@ def random_number(driver, question, *args, **kwargs):
     Examples
     --------
     ```python
-    from hemlock import Debug, Input, Page, push_app_context
+    from hemlock import Debug as D, Input, Page, push_app_context
     from hemlock.tools import chromedriver
 
-    push_app_context()
+    app = push_app_context()
 
     driver = chromedriver()
 
-    p = Page(Debug.random_number(Input()))
+    p = Page(Input(debug=D.random_number()))
     p.preview(driver)._debug(driver)
     ```
     """
@@ -236,16 +228,16 @@ def send_datetime(driver, question, datetime_=None):
     Examples
     --------
     ```python
-    from hemlock import Debug, Input, Page, push_app_context
+    from hemlock import Debug as D, Input, Page, push_app_context
     from hemlock.tools import chromedriver
 
     from datetime import datetime
 
-    push_app_context()
+    app = push_app_context()
 
     driver = chromedriver()
 
-    p = Page(Debug.send_datetime(Input(input_type='date'), datetime.utcnow()))
+    p = Page(Input(input_type='date', debug=D.send_datetime(datetime.utcnow())))
     p.preview(driver)._debug(driver)
     ```
     """
@@ -281,14 +273,14 @@ def drag_range(driver, range_, target=None, tol=0, max_iter=10):
     Examples
     --------
     ```python
-    from hemlock import Debug, Page, Range, push_app_context
+    from hemlock import Debug as D, Page, Range, push_app_context
     from hemlock.tools import chromedriver
 
-    push_app_context()
+    app = push_app_context()
 
     driver = chromedriver()
 
-    p = Page(Debug.drag_range(Range(), 80))
+    p = Page(Range(debug=D.drag_range(80)))
     p.preview(driver)._debug(driver)
     ```
     """
@@ -306,7 +298,7 @@ def drag_range(driver, range_, target=None, tol=0, max_iter=10):
 # Choice question debugger
 
 @Debug.register
-def click_choices(driver, question, *choices):
+def click_choices(driver, question, *values):
     """
     Click on choices or options.
 
@@ -316,39 +308,46 @@ def click_choices(driver, question, *choices):
 
     question : hemlock.ChoiceQuestion
     
-    \*choices : hemlock.Choice
-        Choices on which to click. If no choices are specified, the 
-        debugger will click on random choices.
+    \*values : 
+        Values of the choices on which to click. If no choices are specified, 
+        the debugger will click on random choices.
 
     Examples
     --------
     ```python
-    from hemlock import Check, Debug, Page, push_app_context
+    from hemlock import Check, Debug as D, Page, push_app_context
     from hemlock.tools import chromedriver
 
-    push_app_context()
+    app = push_app_context()
 
     driver = chromedriver()
 
-    check = Check('<p>Check label</p>', ['Yes','No'])
-    p = Page(Debug.click_choices(check, check.choices[0]))
+    p = Page(
+    \    Check(
+    \        '<p>Click "Yes".</p>', 
+    \        ['Yes', 'No'], 
+    \        debug=D.click_choices('Yes')
+    \    )
+    )
     p.preview(driver)._debug(driver)
     ```
     """
     from ..qpolymorphs import Check
-    if not choices:
+    if not values:
         order = list(range(len(question.choices)))
         shuffle(order)
         n_clicks = randint(0, len(question.choices))
-        choices = [question.choices[i] for i in order[0:n_clicks]]
+        values = [question.choices[i].value for i in order[:n_clicks]]
     if question.multiple:
         clear_choices(driver, question)
-    if isinstance(question, Check):
-        # check question
-        [c.label_from_driver(driver).click() for c in choices]
-    else:
-        # select question
-        [c.input_from_driver(driver).click() for c in choices]
+    for value in values:
+        choices = [c for c in question.choices if c.value == value]
+        if isinstance(question, Check):
+            # check question
+            [c.label_from_driver(driver).click() for c in choices]
+        else:
+            # select question
+            [c.input_from_driver(driver).click() for c in choices]
 
 @Debug.register
 def clear_choices(driver, question):
@@ -368,16 +367,21 @@ def clear_choices(driver, question):
     Examples
     --------
     ```python
-    from hemlock import Check, Debug, Page, push_app_context
+    from hemlock import Check, Debug as D, Page, push_app_context
     from hemlock.tools import chromedriver
 
-    push_app_context()
+    app = push_app_context()
 
     driver = chromedriver()
 
-    check = Check('<p>Check label</p>', ['Yes','No'], multiple=True)
-    check.default = list(check.choices)
-    p = Page(Debug.clear_choices(check))
+    p = Page(
+    \    Check(
+    \        '<p>Click "Yes".</p>', 
+    \        ['Yes', 'No'], 
+    \        multiple=True,
+    \        debug=D.clear_choices()
+    \    )
+    )
     p.preview(driver)._debug(driver)
     ```
     """

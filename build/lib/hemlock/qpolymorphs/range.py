@@ -1,30 +1,12 @@
 """# Range slider"""
 
 from ..app import db, settings
+from ..functions.debug import drag_range
 from ..models import InputBase, Question
 
 from flask import render_template
 
-def debug_func(driver, question):
-    """
-    Default debug function for range inputs. See 
-    [`drag_range`](debug_functions.md).
-
-    Parameters
-    ----------
-    driver : selenium.webdriver.chrome.webdriver.WebDriver
-
-    question : hemlock.Range
-    """
-    from ..functions.debug import drag_range
-    return drag_range(driver, question)
-
-settings['Range'] = {
-    'debug_functions': debug_func,
-    'max': 100,
-    'min': 0,
-    'step': 1,
-}
+settings['Range'] = {'debug': drag_range, 'max': 100, 'min': 0, 'step': 1}
 
 
 class Range(InputBase, Question):
@@ -57,9 +39,8 @@ class Range(InputBase, Question):
     Notes
     -----
     Ranges have a default javascript which displays the value of the range 
-    slider to participants. This *cannot* be overridden by passing a `js` 
-    argument to the constructor, although javascript can be modified after the 
-    constructor has finished.
+    slider to participants. This will be appended to any `js` and `extra_js`
+    arguments passed to the constructor.
 
     Examples
     --------
@@ -76,7 +57,7 @@ class Range(InputBase, Question):
 
     def __init__(self, label='', template='hemlock/range.html', **kwargs):
         super().__init__(label, template, **kwargs)
-        self.js = render_template('hemlock/range.js', self_=self)
+        self.add_internal_js(render_template('hemlock/range.js', self_=self))
 
     @property
     def max(self):

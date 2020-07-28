@@ -59,16 +59,14 @@ def download_page():
             multiple=True
         ),
         Input(
-            SURVEY_VIEW_TXT, 
-            validate_functions=valid_part_ids,
-            submit_functions=record_part_ids,
+            SURVEY_VIEW_TXT, validate=valid_part_ids, submit=record_part_ids,
         ),
         Select(
             SURVEY_VIEW_PRESENTATION_TXT,
             [
                 Option('First presentation only', value='first'),
                 Option('All presentations', value='all'),
-            ],
+            ]
         ),
         Select(
             SURVEY_VIEW_FILE_TXT,

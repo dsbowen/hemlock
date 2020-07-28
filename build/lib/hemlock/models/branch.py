@@ -2,6 +2,7 @@
 
 from ..app import db
 from .bases import BranchingBase
+from .worker import _set_worker
 
 from sqlalchemy.ext.orderinglist import ordering_list
 
@@ -53,12 +54,12 @@ class Branch(BranchingBase, db.Model):
         All data elements belonging to this branch, in order of embedded data 
         then page data.
 
-    navigate_function : hemlock.Navigate
+    navigate : hemlock.Navigate
         Navigate function which returns a new branch once the participant has 
         reached the end of this branch (i.e. the end of the page queue 
         associated with this branch).
 
-    navigate_worker : hemlock.NavigateWorker
+    navigate_worker : hemlock.Worker
         Worker which handles complex navigate functions.
 
     Examples
@@ -139,16 +140,22 @@ class Branch(BranchingBase, db.Model):
         [elements.extend(p.data_elements) for p in self.pages]
         return elements
         
-    navigate_function = db.relationship(
+    navigate = db.relationship(
         'Navigate',
         backref='branch', 
         uselist=False
     )
-    navigate_worker = db.relationship(
-        'NavigateWorker',
-        backref='branch', 
-        uselist=False
+    _navigate_worker = db.relationship(
+        'Worker', uselist=False, foreign_keys='Worker._navigate_branch_id'
     )
+
+    @property
+    def navigate_worker(self):
+        return self._navigate_worker
+
+    @navigate_worker.setter
+    def navigate_worker(self, val):
+        _set_worker(self, val, self._navigate, '_navigate_worker')
 
     index = db.Column(db.Integer)
 

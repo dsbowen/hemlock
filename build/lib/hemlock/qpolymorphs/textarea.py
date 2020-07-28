@@ -1,29 +1,13 @@
 """# Textarea"""
 
 from ..app import db, settings
+from ..functions.debug import send_keys
 from ..models import Question
 from .input_group import InputGroup
 
 from flask import render_template
 
-def debug_func(driver, question):
-    """
-    Default debug function for textarea questions. See
-    [`hemlock.functions.debug.random_keys`](debug_functions.md).
-
-    Parameters
-    ----------
-    driver : selenium.webdriver.chrome.webdriver.WebDriver
-
-    question : hemlock.Textarea
-    """
-    from ..functions.debug import random_keys
-    return random_keys(driver, question)
-
-settings['Textarea'] = {
-    'debug_functions': debug_func,
-    'rows': 3,
-}
+settings['Textarea'] = {'debug': send_keys, 'rows': 3}
 
 
 class Textarea(InputGroup, Question):
@@ -51,10 +35,9 @@ class Textarea(InputGroup, Question):
 
     Notes
     -----
-    Textareas have a default javascript which displays the number of words and
-    characters entered. This *cannot* be overridden by passing a `js` argument
-    to the constructor, although javascript can be modified after the 
-    constructor has finished.
+    Textareas have a default javascript which displays the character and word 
+    count to participants. This will be appended to any `js` and `extra_js`
+    arguments passed to the constructor.
 
     Examples
     --------
@@ -71,7 +54,9 @@ class Textarea(InputGroup, Question):
 
     def __init__(self, page=None, template='hemlock/textarea.html', **kwargs):
         super().__init__(page, template, **kwargs)
-        self.js = render_template('hemlock/textarea.js', self_=self)
+        self.add_internal_js(
+            render_template('hemlock/textarea.js', self_=self)
+        )
 
     @property
     def rows(self):

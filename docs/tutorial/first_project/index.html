@@ -168,7 +168,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -285,11 +285,11 @@ $ ls
 <h4 id="set-up-your-virtual-environment">Set up your virtual environment</h4>
 <p>Activate your virtual environment.</p>
 <p>Activate from git bash:</p>
-<pre><code class="bash">$ source hemlock-venv/scripts/activate
+<pre><code class="bash">$ . hemlock-venv/scripts/activate
 </code></pre>
 
 <p>Activate from WSL:</p>
-<pre><code class="bash">$ source hemlock-venv/bin/activate
+<pre><code class="bash">$ . hemlock-venv/bin/activate
 </code></pre>
 
 <p>Next, install the required python packages to run this project locally:</p>
@@ -337,8 +337,6 @@ p.preview()
 
 <p>This opens a preview of your page in your browser.</p>
 <p>Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:</p>
-<!-- not working on windows native -->
-
 <pre><code class="python">[os.remove(tmpfile) for tmpfile in app.tmpfiles]
 </code></pre>
 
@@ -412,7 +410,9 @@ p.preview()
 
 <p>This opens a preview of your page in your browser.</p>
 <p>Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:</p>
-<pre><code class="python">[os.remove(tmpfile) for tmpfile in app.tmpfiles]
+<pre><code class="python">import os
+
+[os.remove(tmpfile) for tmpfile in app.tmpfiles]
 </code></pre>
 
 <h2 id="code-explanation">Code explanation</h2>

@@ -66,8 +66,6 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#a-note-on-equilibrium-concepts-which-is-totally-irrelevant-to-the-hemlock-tutorial">A note on equilibrium concepts which is totally irrelevant to the hemlock tutorial</a>
-    </li>
     </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../first_project/">Your first project</a>
@@ -150,7 +148,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -256,16 +254,20 @@
 <li><strong>Keep going.</strong> As best you can, press on with the tutorial. You don't have to 100% understand what's going on to get things working. You'll also find that things which don't make sense now often 'fall into place' just a short while later.</li>
 <li><strong>Look it up.</strong> I've done my best to write a clear, thorough tutorial. But no tutorial is comprehensive. If you run into something so puzzling that you can't just keep going, look it up! The internet is inundated with great programming resources.</li>
 </ol>
-<h2 id="a-note-on-equilibrium-concepts-which-is-totally-irrelevant-to-the-hemlock-tutorial">A note on equilibrium concepts which is totally irrelevant to the hemlock tutorial</h2>
-<p>This note is irrelevant to the hemlock tutorial; it's mostly to appease the game theorists in the audience.</p>
-<p>We may object to the description of 'fair' versus 'unfair' offers; preferring to discuss equilibrium and non-equilibrium strategies. I'll take a moment to discuss equilibrium strategies and outcomes assuming that a player's utility is monotonically increasing in his/her own payoff and is independent of other players' payoffs.</p>
-<p>In the classical ultimatum game in which the proposer has a continuous action space, there are multiple Nash equilibria, but a unique subgame perfect Nash equilibrium (SPNE). The SPNE strategies are that the proposer offers $0 and the responder will accept any offer, meaning that the SPNE outcome is that the proposer will receive the entire pot and the responder will receive $0.</p>
-<p>Our game modifies the classical ultimatum game in two respects. First, the proposer has a discrete action space. Offers are in increments of $1. This opens up a second SPNE strategy set: the proposer offers $1 and the responder accepts any offer except for $0, meaning that the SPNE outcome is that the proposer will receive the entire pot minus $1 and the responder will receive $1.</p>
-<p>The second and more important modification is that players move simultaneously, rather than sequentially. Rather than receiving an offer then accepting or rejecting it, responders announce a number such that they will accept any offer which gives them at least that amount of money. To predict gameplay, consider trembling hand perfect equilibria (THPE). The THPE strategy sets and outcomes are similar to the SPNE strategy sets and outcomes:</p>
-<ol>
-<li>The proposer offers $0 with probability <script type="math/tex">1-(|A_p|-1)\epsilon</script>, where <script type="math/tex">A_p</script> is the proposer's action set, and offers all other amounts with probability <script type="math/tex">\epsilon</script>. The responder announces $0 with probability <script type="math/tex">1-(|A_r|-1)\epsilon</script>, where <script type="math/tex">A_r</script> is the responder's action set, and announces all other amounts with probability <script type="math/tex">\epsilon</script>. The modal equilibrium outcome is that the proposer receives the entire pot and the responder receives $0.</li>
-<li>The proposer offers $1 with probability <script type="math/tex">1-(|A_p|-1)\epsilon</script>, and offers all other amounts with probability <script type="math/tex">\epsilon</script>. The responder announces $1 with probability <script type="math/tex">1-(|A_r|-1)\epsilon</script>, and all other amounts with probability <script type="math/tex">\epsilon</script>. The modal equilibrium outcome is that the proposer receives the entire pot minus $1 and the responder receives $1.</li>
-</ol>
+<!-- ## For game theorists: a note on equilibrium concepts
+
+This note is irrelevant to the hemlock tutorial; it's mostly to appease the game theorists in the audience.
+
+We may object to the description of 'fair' versus 'unfair' offers; preferring to discuss equilibrium and non-equilibrium strategies. I'll take a moment to discuss equilibrium strategies and outcomes assuming that a player's utility is monotonically increasing in his/her own payoff and is independent of other players' payoffs.
+
+In the classical ultimatum game in which the proposer has a continuous action space, there are multiple Nash equilibria, but a unique subgame perfect Nash equilibrium (SPNE). The SPNE strategies are that the proposer offers $0 and the responder will accept any offer, meaning that the SPNE outcome is that the proposer will receive the entire pot and the responder will receive $0.
+
+Our game modifies the classical ultimatum game in two respects. First, the proposer has a discrete action space. Offers are in increments of $1. This opens up a second SPNE strategy set: the proposer offers $1 and the responder accepts any offer except for $0, meaning that the SPNE outcome is that the proposer will receive the entire pot minus $1 and the responder will receive $1.
+
+The second and more important modification is that players move simultaneously, rather than sequentially. Rather than receiving an offer then accepting or rejecting it, responders announce a number such that they will accept any offer which gives them at least that amount of money. To predict gameplay, consider trembling hand perfect equilibria (THPE). The THPE strategy sets and outcomes are similar to the SPNE strategy sets and outcomes:
+
+1. The proposer offers $0 with probability \(1-(|A_p|-1)\epsilon\), where \(A_p\) is the proposer's action set, and offers all other amounts with probability \(\epsilon\). The responder announces $0 with probability \(1-(|A_r|-1)\epsilon\), where \(A_r\) is the responder's action set, and announces all other amounts with probability \(\epsilon\). The modal equilibrium outcome is that the proposer receives the entire pot and the responder receives $0.
+2. The proposer offers $1 with probability \(1-(|A_p|-1)\epsilon\), and offers all other amounts with probability \(\epsilon\). The responder announces $1 with probability \(1-(|A_r|-1)\epsilon\), and all other amounts with probability \(\epsilon\). The modal equilibrium outcome is that the proposer receives the entire pot minus $1 and the responder receives $1. -->
               
             </div>
           </div>

@@ -136,15 +136,13 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
                 <ul class="current">
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Check</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#hemlockclick_choices">hemlock.click_choices</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#hemlockcheck">hemlock.Check</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a>
@@ -259,31 +257,16 @@
     </tbody>
 </table>
 
-<h2 id="hemlockclick_choices">hemlock.<strong>click_choices</strong></h2>
-<p class="func-header">
-    <i>def</i> hemlock.<b>click_choices</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/check.py#L6">[source]</a>
-</p>
-
-<p>Default debug function. See
-<a href="../debug_functions/"><code>hemlock.functions.debug.click_choices</code></a>.</p>
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-
-    </tbody>
-</table>
-
 <h2 id="hemlockcheck">hemlock.<strong>Check</strong></h2>
 <p class="func-header">
-    <i>class</i> hemlock.<b>Check</b>(<i>label='', choices=[], template='hemlock/check.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/check.py#L22">[source]</a>
+    <i>class</i> hemlock.<b>Check</b>(<i>label='', choices=[], template='hemlock/check.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/check.py#L15">[source]</a>
 </p>
 
 <p>Check questions use radio inputs if only one choice can be selected, or
 checkbox inputs if multiple choices can be selected.</p>
 <p>Inherits from <a href="../question/"><code>hemlock.ChoiceQuestion</code></a>.</p>
-<p>By default, choices are positioned vertically. To position them
-horizontally, set <code>inline</code> to True.</p>
+<p>Its default debug function is
+<a href="../debug_functions/#hemlockfunctionsdebugclick_choices"><code>check_choices</code></a>.</p>
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
     <col class="field-body" />
@@ -342,7 +325,7 @@ Page(Check('&lt;p&gt;Check one.&lt;/p&gt;', ['Yes','No','Maybe'])).preview()
         <a href="../download/" class="btn btn-neutral float-right" title="Download">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../workers/" class="btn btn-neutral" title="Workers"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../worker/" class="btn btn-neutral" title="Worker"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -370,7 +353,7 @@ Page(Check('&lt;p&gt;Check one.&lt;/p&gt;', ['Yes','No','Maybe'])).preview()
           <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../workers/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../worker/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../download/" style="color: #fcfcfc">Next &raquo;</a></span>

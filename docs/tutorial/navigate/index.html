@@ -75,8 +75,14 @@
     <li class="toctree-l2"><a class="reference internal" href="#why-navigate-functions">Why navigate functions?</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#basic-syntax">Basic syntax</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#code-explanation">Code explanation</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#branching-off-pages">Branching off pages</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#navigating-back">Navigating back</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#navigation-in-our-app">Navigation in our app</a>
     </li>
@@ -148,7 +154,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -235,15 +241,19 @@
 <p>By the end of this part of the tutorial, you'll be able to set up navigation between branches.</p>
 <h2 id="why-navigate-functions">Why navigate functions?</h2>
 <p>Navigate functions move participants through different branches of the survey. For example, participants in the control group might follow one branch, while participants in the treatment group follow another.</p>
-<p>In our case, we'll use a navigate function to bring participants from the demographics branch of our survey to a branch in which participants will an ultimatum game with each other.</p>
+<p>In our case, we'll use a navigate function to bring participants from the demographics branch of our survey to an 'utlimatum game' branch. In this branch, participants will an ultimatum game with each other.</p>
 <h2 id="basic-syntax">Basic syntax</h2>
 <p>Open your jupter notebook and run the following:</p>
-<pre><code class="python">from hemlock import Branch, Navigate, Page, Participant
+<pre><code class="python">from hemlock import Branch, Navigate as N, Page, Participant
 
 def start():
-    return Navigate.end(Branch(Page(), Page()))
+    return Branch(
+        Page(), 
+        Page(), 
+        navigate=N.end()
+    )
 
-@Navigate.register
+@N.register
 def end(start_branch):
     return Branch(Page(terminal=True))
 
@@ -260,8 +270,9 @@ part.view_nav()
  T = terminal page
 </code></pre>
 
-<p>Unlike validate, submit, and compile functions, there are no prebuilt navigate functions. We register a custom navigate function with the <code>@Navigate.register</code> decorator. The navigate function takes an 'origin' branch or page as its first argument (in this case, the branch returned by <code>start</code>). Navigate functions return a <code>Branch</code> object.</p>
-<p>After registering <code>end</code> as a navigate function, <code>Navigate.end</code> adds the navigate function to a branch or page, then returns the branch or page to which it was added. Once the participant reaches the end of the branch returned by <code>start</code>, they are brought to the branch returned by <code>end</code>.</p>
+<p>You can add navigate functions to a branch or page by setting its <code>navigate</code> attribute or passing a <code>navigate</code> argument to its constructor. Navigate functions bring participants to a new branch when they have completed the branch or page to which the navigate function belongs.</p>
+<h3 id="code-explanation">Code explanation</h3>
+<p>Unlike validate, submit, and compile functions, there are no prebuilt navigate functions. We register a custom navigate function with the <code>@N.register</code> decorator. The navigate function takes the start branch (the branch returned by <code>start</code>) as its first argument. In general, navigate functions take an 'origin' branch or page as their first argument. Navigate functions return a <code>Branch</code> object.</p>
 <p><code>part.view_nav()</code> prints the participant's 'branch stack'. Right now the participant is on the branch created by <code>start</code>. Let's make our test participant navigate forward and view the navigation again:</p>
 <pre><code class="python">part.forward().view_nav()
 </code></pre>
@@ -288,14 +299,14 @@ part.view_nav()
 </code></pre>
 
 <p>What happened? Our participant reached the end of the <code>start</code> branch (branch 1) and navigated to the <code>end</code> branch (branch 2). It's currently on page 3, which is the last (terminal) page of the survey.</p>
-<p><strong>Note.</strong> You won't call <code>view_nav</code> or <code>forward</code> in the survey; hemlock takes care of the navigation for you. These are just useful for debugging in jupyter.</p>
+<p><strong>Note.</strong> You won't call <code>view_nav</code> or <code>forward</code> in the survey; hemlock takes care of the navigation automtically for you. These are just useful for debugging in jupyter.</p>
 <h2 id="branching-off-pages">Branching off pages</h2>
 <p>Branching off of branches allows us to navigate to a new branch at the end of our current branch. But occasionally, we'll want to navigate to a new branch from the middle of our current branch. To do this, we'll branch off of a page.</p>
 <p>This time, instead of attaching the navigate function to the branch, we'll attach it to the first page of the branch:</p>
-<pre><code class="python">from hemlock import Branch, Navigate, Page, Participant
+<pre><code class="python">from hemlock import Branch, Navigate as N, Page, Participant
 
 def start():
-    return Branch(Navigate.middle(Page()), Page(terminal=True))
+    return Branch(Page(navigate=N.middle()), Page(terminal=True))
 
 @Navigate.register
 def middle(start_branch):
@@ -325,33 +336,60 @@ part = Participant.gen_test_participant(start)
 </code></pre>
 
 <p>What happened? We started on the first page of the <code>start</code> branch (branch 1, page 1). Then, we branched off of page 1 to the <code>middle</code> branch (branch 2, page 3). At the end of the <code>middle</code> branch, we picked up where we left off on the <code>start</code> branch (branch 1, page 2).</p>
-<p><strong>Note.</strong> Going back is just as easy. Simply use <code>my_page.back=True</code>. To play with this in the notebook, use <code>my_participant.back()</code> instead of <code>my_participant.forward()</code>.</p>
+<h2 id="navigating-back">Navigating back</h2>
+<p>You'll often want to allow participants to navigate to a previous page. To do this, simply set a page's <code>back</code> attribute to <code>True</code>, or pass <code>back=True</code> to a page's constructor. </p>
+<p>You can also navigate backward in the notebook. Run this line a few times:</p>
+<pre><code class="python">part.back().view_nav()
+</code></pre>
+
+<p>Out:</p>
+<pre><code> &lt;Branch 1&gt;
+ &lt;Page 1&gt; 
+     &lt;Branch 2&gt;
+     &lt;Page 3&gt; C 
+ &lt;Page 2&gt; T
+
+ C = current page 
+ T = terminal page
+</code></pre>
+
+<pre><code> &lt;Branch 1&gt;
+ &lt;Page 1&gt; C 
+ &lt;Page 2&gt; T
+
+ C = current page 
+ T = terminal page
+</code></pre>
+
 <h2 id="navigation-in-our-app">Navigation in our app</h2>
 <p>Now that we've seen how to add navigate functions in our notebook, let's add it to our app.</p>
 <p>In <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, Check, Compile, Embedded, Input, Label, Navigate, Page, Range, Select, Submit, Validate, route
-from hemlock.tools import join
-
-from datetime import datetime
-
-@route('/survey')
-def start():
-    demographics_page = Page(
-        # DEMOGRAPHICS PAGE HERE
-    )
-    return Navigate.ultimatum_game(Branch(
-        demographics_page,
-        Page(Compile.confirm(Label(), demographics_page), back=True)
-    ))
+<pre><code class="python">from hemlock import Branch, Check, Compile as C, Embedded, Input, Label, Navigate as N, Page, Range, Select, Submit as S, Validate as V, route
 
 ...
 
-@Navigate.register
+@route('/survey')
+def start():
+    ...
+    return Branch(
+        demographics_page,
+        Page(
+            Label(compile=C.confirm(demographics_page)),
+            back=True
+        ),
+        navigate=N.ultimatum_game()
+    )
+
+...
+
+@N.register
 def ultimatum_game(start_branch):
-    return Branch(Page(
-        Label('&lt;p&gt;You are about to play an ultimatum game...&lt;/p&gt;'), 
-        terminal=True
-    ))
+    return Branch(
+        Page(
+            Label('&lt;p&gt;You are about to play an ultimatum game...&lt;/p&gt;'),
+            terminal=True
+        )
+    )
 </code></pre>
 
 <p>Run the app again and navigate past the demographics page. You'll find yourself on our new ultimatum game branch.</p>

@@ -146,7 +146,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -261,7 +261,7 @@
 
 <h2 id="hemlockbranch">hemlock.<strong>Branch</strong></h2>
 <p class="func-header">
-    <i>class</i> hemlock.<b>Branch</b>(<i>*pages, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L9">[source]</a>
+    <i>class</i> hemlock.<b>Branch</b>(<i>*pages, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L10">[source]</a>
 </p>
 
 <p>Branches are stacked in a participant's branch stack. A branch contains a
@@ -323,11 +323,11 @@ queue of pages which it displays to its participant.</p>
 <p class="attr">
     All data elements belonging to this branch, in order of embedded data then page data.
 </p>
-<b>navigate_function : <i>hemlock.Navigate</i></b>
+<b>navigate : <i>hemlock.Navigate</i></b>
 <p class="attr">
     Navigate function which returns a new branch once the participant has reached the end of this branch (i.e. the end of the page queue associated with this branch).
 </p>
-<b>navigate_worker : <i>hemlock.NavigateWorker</i></b>
+<b>navigate_worker : <i>hemlock.Worker</i></b>
 <p class="attr">
     Worker which handles complex navigate functions.
 </p></td>
@@ -350,7 +350,7 @@ Branch(
 <p>This will open all of the branch's pages in separate tabs.</p>
 <h4 id="methods">Methods</h4>
 <p class="func-header">
-    <i></i> <b>preview</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L159">[source]</a>
+    <i></i> <b>preview</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L166">[source]</a>
 </p>
 
 <p>Preview the page queue in the a browser window.</p>
@@ -376,7 +376,7 @@ Branch(
 </table>
 
 <p class="func-header">
-    <i></i> <b>view_nav</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L176">[source]</a>
+    <i></i> <b>view_nav</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L183">[source]</a>
 </p>
 
 <p>Print this branch's page queue for debugging purposes.</p>

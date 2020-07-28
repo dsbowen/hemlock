@@ -1,5 +1,8 @@
+<!DOCTYPE html>
+
 <html>
     <head>
+        <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         {% if page.css is not none %}
             {{ page.css.render() }}
@@ -8,20 +11,8 @@
             {% if q.css is not none %}
                 {{ q.css.render() }}
             {% endif %}
-            {% for opt in q.options if opt.css is not none %}
-                {{ opt.css.render() }}
-            {% endfor %}
-        {% endfor %}
-
-        {% if page.js is not none %}
-            {{ page.js.render() }}
-        {% endif %}
-        {% for q in page.questions %}
-            {% if q.js is not none %}
-                {{ q.js.render() }}
-            {% endif %}
-            {% for opt in q.options if opt.js is not none %}
-                {{ opt.js.render() }}
+            {% for choice in q.choices if choice.css is not none %}
+                {{ choice.css.render() }}
             {% endfor %}
         {% endfor %}
     </head>
@@ -31,5 +22,17 @@
         {% endif %}
 
         {{ page.body.render() }}
+
+        {% if page.js is not none %}
+            {{ page.js.render() }}
+        {% endif %}
+        {% for q in page.questions %}
+            {% if q.js is not none %}
+                {{ q.js.render() }}
+            {% endif %}
+            {% for choice in q.choices if choice.js is not none %}
+                {{ choice.js.render() }}
+            {% endfor %}
+        {% endfor %}
     </body>
 </html>

@@ -59,16 +59,16 @@ class Question(HTMLMixin, Data, MutableModelBase):
     page : hemlock.Page or None
         The page to which this question belongs.
 
-    compile_functions : list of hemlock.Compile, default=[]
+    compile : list of hemlock.Compile, default=[]
         List of compile functions; run before the question is rendered.
 
-    validate_functions : list of hemlock.Validate, default=[]
+    validate : list of hemlock.Validate, default=[]
         List of validate functions; run to validate the participant's response.
 
-    submit_functions : list of hemlock.Submit, default=[]
+    submit : list of hemlock.Submit, default=[]
         List of submit functions; run after the participant's responses have been validated for all questions on a page.
 
-    debug_functions : list of hemlock.Debug, default=[]
+    debug : list of hemlock.Debug, default=[]
         List of debug functions; run during debugging. The default debug function is unique to the question type.
     """
     id = db.Column(db.Integer, db.ForeignKey('data.id'), primary_key=True)
@@ -89,21 +89,21 @@ class Question(HTMLMixin, Data, MutableModelBase):
 
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
 
-    compile_functions = db.relationship(
+    compile = db.relationship(
         'Compile',
         backref='question',
         order_by='Compile.index',
         collection_class=ordering_list('index')
     )
 
-    validate_functions = db.relationship(
+    validate = db.relationship(
         'Validate', 
         backref='question', 
         order_by='Validate.index',
         collection_class=ordering_list('index')
     )
     
-    submit_functions = db.relationship(
+    submit = db.relationship(
         'Submit',
         backref='question',
         order_by='Submit.index',
@@ -118,11 +118,11 @@ class Question(HTMLMixin, Data, MutableModelBase):
     )
 
     @property
-    def debug_functions(self):
+    def debug(self):
         return self._debug_functions
 
-    @debug_functions.setter
-    def debug_functions(self, val):
+    @debug.setter
+    def debug(self, val):
         if not os.environ.get('NO_DEBUG_FUNCTIONS'):
             self._debug_functions = val
 
@@ -187,7 +187,7 @@ class Question(HTMLMixin, Data, MutableModelBase):
 
     # methods executed during study
     def _compile(self):
-        [compile_func(self) for compile_func in self.compile_functions]
+        [f(self) for f in self.compile]
         return self
 
     def _render(self, body=None):
@@ -204,8 +204,8 @@ class Question(HTMLMixin, Data, MutableModelBase):
         message (i.e. error is not None), indicate the response was invalid 
         and return False. Otherwise, return True.
         """
-        for validate_func in self.validate_functions:
-            error = validate_func(self)
+        for f in self.validate:
+            error = f(self)
             if error:
                 self.error = error
                 return False
@@ -217,11 +217,11 @@ class Question(HTMLMixin, Data, MutableModelBase):
         return self
     
     def _submit(self):
-        [submit_func(self) for submit_func in self.submit_functions]
+        [f(self) for f in self.submit]
         return self
 
     def _debug(self, driver):
-        [debug_func(driver, self) for debug_func in self.debug_functions]
+        [f(driver, self) for f in self.debug]
         return self
 
 

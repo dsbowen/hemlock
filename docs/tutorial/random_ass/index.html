@@ -144,7 +144,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -254,33 +254,37 @@ assigner.next()
 
 <h2 id="random-assignment-in-our-app">Random assignment in our app</h2>
 <p>In <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, Check, Compile, Embedded, Input, Label, Navigate, Page, Range, Select, Submit, Validate, route
+<pre><code class="python">...
 from hemlock.tools import Assigner, comprehension_check, join
 
 from datetime import datetime
 from random import randint
 
+# the number of rounds participants play
 N_ROUNDS = 5
+# the amount of money split
 POT = 20
 
-assigner = Assigner({'Proposer': (0,1)})
+assigner = Assigner({'Proposer': (0, 1)})
 
 ...
 
-@Navigate.register
-def ultimatum_game(start_branch):
-    branch = comprehension_check(
-        # COMPREHENSION CHECK HERE
-    )
+@N.register
+def ultimatum_game(start_branch=None):
     proposer = assigner.next()['Proposer']
-    branch.pages.append(Page(
-        Label('''
-            &lt;p&gt;You are about to play an ultimatum game as a &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;
-        '''.format('proposer' if proposer else 'responder')
-        ), 
-        terminal=True
-    ))
-    return branch
+    return Branch(
+        *comprehension_check(
+            # COMPREHENSION CHECK ARGUMENTS HERE
+        ),
+        Page(
+            Label(
+                '''
+                &lt;p&gt;You are about to play an ultimatum game as a &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;
+                '''.format('proposer' if proposer else 'responder')
+            ),
+            terminal=True
+        )
+    )
 </code></pre>
 
 <p>Run your app and pass the comprehenion check to see which condition you've been assigned to.</p>

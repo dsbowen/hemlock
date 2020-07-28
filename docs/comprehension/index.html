@@ -136,7 +136,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -261,10 +261,9 @@
 
 <h2 id="hemlocktoolscomprehension_check">hemlock.tools.<strong>comprehension_check</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>comprehension_check</b>(<i>branch, instructions, checks, attempts=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/comprehension.py#L8">[source]</a>
+    <i>def</i> hemlock.tools.<b>comprehension_check</b>(<i>instructions, checks, attempts=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/comprehension.py#L8">[source]</a>
 </p>
 
-<p>Add a comprehension check to a branch.</p>
 <p>A comprehension check consists of 'instruction' pages followed by 'check'
 pages. The data of all questions in a check page must evaluate to <code>True</code>
 to pass the check. When a participant fails a check, he is brought back to
@@ -279,11 +278,7 @@ the instructions, he is brought directly to check B, skipping check A.</p>
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>branch : <i>hemlock.Branch</i></b>
-<p class="attr">
-    Branch to which the comprehension check is attached.
-</p>
-<b>instructions : <i>hemlock.Page or list of hemlock.Page</i></b>
+    <td class="field-body" width="100%"><b>instructions : <i>hemlock.Page or list of hemlock.Page</i></b>
 <p class="attr">
     Instruction page(s).
 </p>
@@ -298,9 +293,9 @@ the instructions, he is brought directly to check B, skipping check A.</p>
 </tr>
 <tr class="field">
     <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>branch : <i>hemlock.Branch</i></b>
+    <td class="field-body" width="100%"><b>pages : <i>list of hemlock.Page</i></b>
 <p class="attr">
-    The original branch, with added comprehension check.
+    List of instructions pages + check pages.
 </p></td>
 </tr>
     </tbody>
@@ -311,21 +306,28 @@ the instructions, he is brought directly to check B, skipping check A.</p>
 must be the last submit function of each check page.</p>
 <h4 id="examples">Examples</h4>
 <p>We have two files in our root directory. In <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, Page, Label, Input, Submit, route
+<pre><code class="python">from hemlock import Branch, Page, Label, Input, Submit as S, route
 from hemlock.tools import comprehension_check
-
-INSTRUCTIONS = '&lt;p&gt;Here are some instructions.&lt;/p&gt;'
-CHECK = '&lt;p&gt;Enter &quot;hello world&quot; or you... shall not... PASS!&lt;/p&gt;'
 
 @route('/survey')
 def start():
-    branch = comprehension_check(
-        Branch(),
-        instructions=Page(Label(INSTRUCTIONS)),
-        checks=Page(Submit.match(Input(CHECK), 'hello world'))
+    return Branch(
+        *comprehension_check(
+            instructions=Page(
+                Label('&lt;p&gt;Here are some instructions.&lt;/p&gt;')
+            ),
+            checks=Page(
+                Input(
+                    '&lt;p&gt;Enter &quot;hello world&quot; or you... shall not... PASS!&lt;/p&gt;',
+                    submit=S.match('hello world')
+                )
+            )
+        ),
+        Page(
+            Label('&lt;p&gt;You passed the comprehension check!&lt;/p&gt;'),
+            terminal=True
+        )
     )
-    branch.pages.append(Page(Label('&lt;p&gt;You passed the test!&lt;/p&gt;')))
-    return branch
 </code></pre>
 
 <p>In <code>app.py</code>:</p>

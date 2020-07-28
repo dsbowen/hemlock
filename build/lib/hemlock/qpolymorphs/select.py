@@ -1,20 +1,14 @@
 """# Select (dropdown)"""
 
 from ..app import db, settings
+from ..functions.debug import click_choices
 from ..models import ChoiceQuestion
 from .input_group import InputGroup
-
-def click_choices(driver, question):
-    """
-    Default select debug function. See [click choices](debug_functions.md).
-    """
-    from ..functions.debug import click_choices as click_choices_
-    click_choices_(driver, question)
 
 settings['Select'] = {
     'align': 'left',
     'inline': False,
-    'debug_functions': click_choices,
+    'debug': click_choices,
     'multiple': False,
     'size': None,
 }

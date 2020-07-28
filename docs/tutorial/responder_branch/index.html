@@ -146,7 +146,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -236,25 +236,26 @@
 <p>First, let's add a navigate function to the end of our ultimatum game branch to bring us to the responder branch:</p>
 <pre><code class="python">...
 
-@Navigate.register
-def ultimatum_game(start_branch):
-    ...
-    if proposer:
-        return Navigate.proposer_branch(branch)
-    else:
-        return Navigate.responder_branch(branch)
+@N.register
+def ultimatum_game(start_branch=None):
+    proposer = assigner.next()['Proposer']
+    return Branch(
+        # ULTIMATUM GAME PAGES HERE
+        navigate=N.proposer_branch() if proposer else N.responder_branch()
+    )
 
 ...
 
-@Navigate.register
+@N.register
 def responder_branch(ultimatum_game_branch=None):
     branch = Branch()
     for round_ in range(N_ROUNDS):
         response_input = gen_response_input(round_+1)
         branch.pages.append(Page(response_input))
-        branch.pages.append(Page(Compile.responder_outcome(
-            Label(), response_input
-        )))
+        branch.pages.append(Page(
+            Label(compile=C.responder_outcome(response_input)),
+            cache_compile=True
+        ))
     branch.pages.append(Page(
         Label('&lt;p&gt;Thank you for completing the hemlock tutorial!&lt;/p&gt;'),
         terminal=True        
@@ -268,22 +269,16 @@ def responder_branch(ultimatum_game_branch=None):
 <pre><code class="python">...
 
 def gen_response_input(round_):
-    return Submit.data_type(
-        Validate.range_val(
-            Input(
-                '''
-                &lt;p&gt;&lt;b&gt;Round {} of {}&lt;/b&gt;&lt;/p&gt;
-                &lt;p&gt;The proposer has ${} to split between him/herself and you.
-                Complete this sentence:&lt;/p&gt;
-                &lt;p&gt;I will accept any proposal which gives me at least&lt;/p&gt;
-                '''.format(round_, N_ROUNDS, POT),
-                prepend='$',
-                append='.00',
-                var='Response'
-            ),
-            min_=0, max_=POT
-        ),
-        int
+    return Input(
+        '''
+        &lt;p&gt;&lt;b&gt;Round {} of {}&lt;/b&gt;&lt;/p&gt;
+        &lt;p&gt;The proposer has ${} to split between him/herself and you. Complete
+        this sentence:&lt;/p&gt;
+        &lt;p&gt;I will accept any proposal which gives me at least&lt;/p&gt;
+        '''.format(round_, N_ROUNDS, POT),
+        prepend='$', append='.00', var='Response',
+        validate=V.range_val(0, POT),
+        submit=S.data_type(int)
     )
 </code></pre>
 
@@ -292,7 +287,7 @@ def gen_response_input(round_):
 <p>We register a compile function to display the responder outcome.</p>
 <pre><code class="python">...
 
-@Compile.register
+@C.register
 def responder_outcome(outcome_label, responder_input):
     # get the response
     response = responder_input.data

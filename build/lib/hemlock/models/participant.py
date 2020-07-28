@@ -269,9 +269,9 @@ class Participant(UserMixin, Base, db.Model):
         part : hemlock.Participant
         """
         part = Participant(meta={})
+        login_user(part)
         if gen_root:
             part._init_tree(gen_root)
-        login_user(part)
         return part
 
     def get_data(self):

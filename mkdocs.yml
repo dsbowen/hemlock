@@ -45,7 +45,7 @@ nav:
     - Page: page.md
     - Participant: participant.md
     - Question: question.md
-    - Workers: workers.md
+    - Worker: worker.md
   - Question polymorphs:
     - Check: check.md
     - Download: download.md

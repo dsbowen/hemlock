@@ -180,7 +180,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -314,7 +314,7 @@ registration.</p>
 
 <h4 id="methods">Methods</h4>
 <p class="func-header">
-    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L36">[source]</a>
+    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L34">[source]</a>
 </p>
 
 <p>This decorator registers a function.</p>
@@ -355,23 +355,23 @@ to a participant.</p>
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Compile, Input, Label, Page, push_app_context
+<pre><code class="python">from hemlock import Compile as C, Input, Label, Page, push_app_context
 
 app = push_app_context()
 
-@Compile.register
+@C.register
 def greet(greet_q, name_q):
     greet_q.label = '&lt;p&gt;Hello {}!&lt;/p&gt;'.format(name_q.response)
 
 name_q = Input(&quot;&lt;p&gt;What's your name?&lt;/p&gt;&quot;)
-p = Page(Compile.greet(Label(), name_q))
+p = Page(Label(compile=C.greet(name_q)))
 name_q.response = 'World'
 p._compile().preview()
 </code></pre>
 
 <h2 id="hemlockdebug">hemlock.<strong>Debug</strong></h2>
 <p class="func-header">
-    <i>class</i> hemlock.<b>Debug</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L98">[source]</a>
+    <i>class</i> hemlock.<b>Debug</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L88">[source]</a>
 </p>
 
 <p>Run to help debug the survey.</p>
@@ -402,26 +402,27 @@ p._compile().preview()
 </table>
 
 <h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock import Debug, Input, Page, push_app_context
+<pre><code class="python">from hemlock import Debug as D, Input, Page, push_app_context
 from hemlock.tools import chromedriver
 
 app = push_app_context()
 
 driver = chromedriver()
 
-@Debug.register
+@D.register
 def greet(driver, greet_q):
     inpt = greet_q.input_from_driver(driver)
     inpt.clear()
     inpt.send_keys('Hello World!')
 
-p = Page(Debug.greet(Input('&lt;p&gt;Enter a greeting.&lt;/p&gt;')))
+p = Page(Input('&lt;p&gt;Enter a greeting.&lt;/p&gt;', debug=D.greet()))
+p.debug.pop(-1) # so the page won't navigate
 p.preview(driver)._debug(driver)
 </code></pre>
 
 <h4 id="methods_1">Methods</h4>
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L147">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L138">[source]</a>
 </p>
 
 <p>Execute the debug function with probability <code>self.p_exec</code>.</p>
@@ -433,29 +434,9 @@ p.preview(driver)._debug(driver)
     </tbody>
 </table>
 
-<p class="func-header">
-    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L154">[source]</a>
-</p>
-
-<p>Similar to the Function Registrar's register function, but does not
-add functions if the <code>NO_DEBUG_FUNCTIONS</code> environment variable is set.</p>
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>func : <i>callable</i></b>
-<p class="attr">
-    The function to register.
-</p></td>
-</tr>
-    </tbody>
-</table>
-
 <h2 id="hemlockvalidate">hemlock.<strong>Validate</strong></h2>
 <p class="func-header">
-    <i>class</i> hemlock.<b>Validate</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L180">[source]</a>
+    <i>class</i> hemlock.<b>Validate</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L146">[source]</a>
 </p>
 
 <p>Validates a participant's response.</p>
@@ -486,16 +467,17 @@ add functions if the <code>NO_DEBUG_FUNCTIONS</code> environment variable is set
 </table>
 
 <h4 id="examples_2">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
 @Validate.register
-def my_validate_func(inpt):
-    if inpt.response != 'hello world':
-        return '&lt;p&gt;You entered &quot;{}&quot;, not &quot;hello world&quot;&lt;/p&gt;'.format(inpt.response)
+def match(inpt, pattern):
+    if inpt.response != pattern:
+        return '&lt;p&gt;You entered &quot;{}&quot;, not &quot;{}&quot;&lt;/p&gt;'.format(inpt.response, pattern)
 
-inpt = Validate.my_validate_func(Input('&lt;p&gt;Enter &quot;hello world&quot;&lt;/p&gt;'))
+pattern = 'hello world'
+inpt = Input(validate=V.match(pattern))
 inpt.response = 'goodbye moon'
 inpt._validate()
 inpt.error
@@ -507,7 +489,7 @@ inpt.error
 
 <h4 id="methods_2">Methods</h4>
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L235">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L202">[source]</a>
 </p>
 
 <table class="docutils field-list field-table" frame="void" rules="none">
@@ -546,19 +528,18 @@ inpt.error
 </table>
 
 <h4 id="examples_3">Examples</h4>
-<pre><code class="python">from hemlock import Input, Submit, push_app_context
+<pre><code class="python">from hemlock import Input, Submit as S, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-@Submit.register
+@S.register
 def get_initials(name_q):
     names = name_q.response.split()
     name_q.data = '.'.join([name[0] for name in names]) + '.'
 
-inpt = Submit.get_initials(Input(&quot;&lt;p&gt;What's your name?&lt;/p&gt;&quot;))
+inpt = Input(&quot;&lt;p&gt;What's your name?&lt;/p&gt;&quot;, submit=S.get_initials())
 inpt.response = 'Andrew Yang'
-inpt._submit()
-inpt.data
+inpt._submit().data
 </code></pre>
 
 <p>Out:</p>
@@ -586,12 +567,12 @@ inpt.data
 </table>
 
 <h4 id="examples_4">Examples</h4>
-<pre><code class="python">from hemlock import Branch, Navigate, Page, Participant, push_app_context
+<pre><code class="python">from hemlock import Branch, Navigate as N, Page, Participant, push_app_context
 
 def start():
-    return Navigate.end(Branch(Page()))
+    return Branch(Page(), navigate=N.end())
 
-@Navigate.register
+@N.register
 def end(start_branch):
     return Branch(Page(terminal=True))
 
@@ -625,7 +606,7 @@ T = terminal page
 
 <h4 id="methods_3">Methods</h4>
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L351">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L317">[source]</a>
 </p>
 
 <p>Create a new branch and 'link' it to the tree. Linking in the new

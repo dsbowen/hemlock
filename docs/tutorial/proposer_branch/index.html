@@ -156,7 +156,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -243,27 +243,21 @@
 <p>In this part of the tutorial, you'll implement the proposer branch of the ultimatum game.</p>
 <h2 id="the-proposal-input">The proposal input</h2>
 <p>First, we'll write a function to generate an input question where the proposer will input the proposed split. Enter the following in your jupyter notebook:</p>
-<pre><code class="python">from hemlock import Input, Label, Page, Submit, Validate
+<pre><code class="python">from hemlock import Input, Label, Page, Submit as S, Validate as V
 
 N_ROUNDS = 5
 POT = 20
 
 def gen_proposal_input(round_):
-    return Submit.data_type(
-        Validate.range_val(
-            Input(
-                '''
-                &lt;p&gt;&lt;b&gt;Round {} of {}&lt;/b&gt;&lt;/p&gt;
-                &lt;p&gt;You have ${} to split between you and the responder. How 
-                much money would you like to offer to the responder?&lt;/p&gt;
-                '''.format(round_, N_ROUNDS, POT),
-                prepend='$',
-                append='.00',
-                var='Proposal'
-            ),
-            min_=0, max_=POT
-        ),
-        int
+    return Input(
+        '''
+        &lt;p&gt;&lt;b&gt;Round {} of {}&lt;/b&gt;&lt;/p&gt;
+        &lt;p&gt;You have ${} to split between you and the responder. How 
+        much money would you like to offer to the responder?&lt;/p&gt;
+        '''.format(round_, N_ROUNDS, POT),
+        prepend='$', append='.00', var='Proposal',
+        validate=V.range_val(0, POT),
+        submit=S.data_type(int)
     )
 
 path = Page(gen_proposal_input(1)).preview()
@@ -271,7 +265,7 @@ path = Page(gen_proposal_input(1)).preview()
 
 <p>This function generates an input which asks the proposer how much money they would like to offer to the responder. We record the data in a variable named <code>'Proposal'</code>.</p>
 <p>We add range validation so that the proposer inputs an integer between 0 and the size of the pot. We also add a submit function which converts the data type to an integer.</p>
-<p><strong>Note.</strong> For input questions, the data are recorded as strings. We want to reference this question's data as an integer, so we use <code>Submit.data_type(Input(), int)</code> to convert it when the page is submitted.</p>
+<p><strong>Note.</strong> For input questions, the data are recorded as strings. We want to reference this question's data as an integer, so we use <code>S.data_type(int)</code> to convert it when the page is submitted.</p>
 <h2 id="finding-a-responder">Finding a responder</h2>
 <p>We can use the <a href="https://docs.sqlalchemy.org/en/13/orm/query.html">SQLAlchemy Query API</a> to pair the proposer with a random responder this round. </p>
 <p>In our notebook, we'll create an input question with the variable name <code>'Response'</code>. We'll then use the Query API to get all input questions with that variable name and select the data from one of them at random:</p>
@@ -291,11 +285,11 @@ random.choice(response_inputs).data
 <p>As expected, this matches the data from our response input.</p>
 <h2 id="displaying-the-proposer-outcome">Displaying the proposer outcome</h2>
 <p>Now we want to display the outcome of the round to the proposer. This calls for a compile function:</p>
-<pre><code class="python">from hemlock import Compile, Embedded
+<pre><code class="python">from hemlock import Compile as C, Embedded
 
 from random import randint
 
-@Compile.register
+@C.register
 def proposer_outcome(outcome_label, proposal_input):
     # get the proposal
     proposal = POT-proposal_input.data, proposal_input.data
@@ -334,10 +328,12 @@ def proposer_outcome(outcome_label, proposal_input):
         *proposal, response, 'accepted' if accept else 'rejected', payoff[0]
     )
 
-proposal_outcome_page = Page(Compile.proposer_outcome(
-    Label(), Input(data=10)
-))
-path = proposal_outcome_page._compile().preview()
+proposal_outcome_page = Page(
+    Label(
+        compile=C.proposer_outcome(Input(data=10))
+    )
+)
+proposal_outcome_page._compile().preview()
 </code></pre>
 
 <p>Let's go through this step by step.</p>
@@ -361,30 +357,28 @@ path = proposal_outcome_page._compile().preview()
 <p>We'll begin by modifying the ultimatum game branch to navigate to the proposer branch if the participant was assigned to be a proposer. In <code>survey.py</code>:</p>
 <pre><code class="python">...
 
-@Navigate.register
-def ultimatum_game(start_branch):
-    ...
+@N.register
+def ultimatum_game(start_branch=None):
     proposer = assigner.next()['Proposer']
-    branch.pages.append(Page(
-        Label('''
-            &lt;p&gt;You are about to play an ultimatum game as a &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;
-        '''.format('proposer' if proposer else 'responder')
+    return Branch(
+        # COMPREHENSION CHECK HERE
+        Page(
+            Label(
+                '''
+                &lt;p&gt;You are about to play an ultimatum game as a &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;
+                '''.format('proposer' if proposer else 'responder')
+            )
+            # DELETE terminal=True
         ),
-        # REMOVE terminal=True
-    ))
-    if proposer:
-        return Navigate.proposer_branch(branch)
-    else:
-        # WE'LL IMPLEMENT THE RESPONDER BRANCH IN THE NEXT PART OF THE TUTORIAL
-        return branch
+        navigate=N.proposer_branch()
+    )
 
 ...
 </code></pre>
 
 <h3 id="the-proposer-branch-navigate-function">The proposer branch navigate function</h3>
 <p>Next we'll add our proposer navigate function to the bottom of <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, Check, Compile, Embedded, Input, Label, Navigate, Page, Range, Select, Submit, Validate, route
-from hemlock.tools import Assigner, comprehension_check, join
+<pre><code class="python">...
 
 import random # ADD THIS IMPORT AT THE TOP OF THE FILE
 from datetime import datetime
@@ -392,15 +386,16 @@ from random import randint
 
 ...
 
-@Navigate.register
-def proposer_branch(ultimatum_game_branch=None):
+@N.register
+def proposer_branch(ultimatum_game_branch):
     branch = Branch()
     for round_ in range(N_ROUNDS):
         proposal_input = gen_proposal_input(round_+1)
         branch.pages.append(Page(proposal_input))
-        branch.pages.append(Page(Compile.proposer_outcome(
-            Label(), proposal_input
-        )))
+        branch.pages.append(Page(
+            Label(compile=C.proposer_outcome(proposal_input)),
+            cache_compile=True
+        ))
     branch.pages.append(Page(
         Label('&lt;p&gt;Thank you for completing the hemlock tutorial!&lt;/p&gt;'),
         terminal=True      
@@ -409,6 +404,7 @@ def proposer_branch(ultimatum_game_branch=None):
 </code></pre>
 
 <p>This navigate function simply adds two pages to the proposer branch for each of <code>N_ROUNDS</code>. The first page asks the proposer to propose a split. The second page displays the outcome of the round.</p>
+<p>Notice that passed <code>cache_compile=True</code> to the second page. This caches the result of the compile functions; removing them so that they won't run again if the participant refreshed the page. Why do we want to do this? Suppose we set up our study so that participants are playing for real money. We don't want participants refreshing their screen over and over again to see if they can get a better outcome.</p>
 <h3 id="generating-the-proposal-input-and-outcome-label">Generating the proposal input and outcome label</h3>
 <p>Finally, we'll add the <code>gen_proposal_input</code> and <code>proposer_outcome</code> functions we wrote in our notebook:</p>
 <pre><code class="python">...
@@ -416,7 +412,7 @@ def proposer_branch(ultimatum_game_branch=None):
 def gen_proposal_input(round_):
     # AS IN THE NOTEBOOK
 
-@Compile.register
+@C.register
 def proposer_outcome(outcome_label, proposal_input):
     # AS IN THE NOTEBOOK
 </code></pre>

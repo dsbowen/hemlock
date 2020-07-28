@@ -152,7 +152,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -242,47 +242,47 @@
 <p>Submit functions run after a participant submits a page and their responses are validated. We're going to attach a submit function to our date of birth input question to record our participants' age as embedded data.</p>
 <h2 id="basic-syntax">Basic syntax</h2>
 <p>Open your jupyter notebook and run the following:</p>
-<pre><code class="python">from hemlock import Input, Submit
+<pre><code class="python">from hemlock import Input, Submit as S
 
-inpt = Submit.match(Input('&lt;p&gt;Enter &quot;hello world&quot;&lt;/p&gt;'), 'hello world')
-inpt
-</code></pre>
-
-<p>Out:</p>
-<pre><code>&lt;Input 1&gt;
-</code></pre>
-
-<p><code>Submit.match</code> adds a submit function to a question, then returns the question. In this case, the submit function changes its question's data to 1 if the data matches a pattern, <code>'hello world'</code>, and 0 if it does not. Submit functions are available in the question's <code>submit_functions</code> attribute:</p>
-<pre><code class="python">inpt.submit_functions
+inpt = Input('&lt;p&gt;Enter &quot;hello world&quot;&lt;/p&gt;', submit=S.match('hello world'))
+inpt.submit
 </code></pre>
 
 <p>Out:</p>
 <pre><code>[&lt;Submit 1&gt;]
 </code></pre>
 
-<p>Let's set the input question's reponse and watch our submit function work:</p>
+<p>You can add submit functions to a page or question by settings its <code>submit</code> attribute or passing a <code>submit</code> argument to its constructor. Submit functions run when a participant successfully submits a page.</p>
+<p>The <code>match</code> submit function changes a question's data to 1 if the data matches a regex pattern, in this case <code>'hello world'</code>, and 0 if it does not.</p>
+<p>Let's set the input question's data and watch our submit function work:</p>
 <pre><code class="python">inpt.data = 'hello world'
-inpt._submit()
-print(inpt.data)
-
-inpt.data = 'something other than hello world'
-inpt._submit()
-print(inpt.data)
+inpt._submit().data
 </code></pre>
 
 <p>Out:</p>
 <pre><code>1
-0
 </code></pre>
 
-<p><code>match</code> is just one of many <a href="../../submit_functions/">prebuilt submit functions</a>.</p>
+<pre><code class="python">inpt.data = 'something other than hello world'
+inpt._submit().data
+</code></pre>
+
+<p>Out:</p>
+<pre><code>0
+</code></pre>
+
+<p><strong>Notes.</strong></p>
+<ol>
+<li>You don't need to run <code>_submit</code> yourself in the survey; hemlock takes care of this automatically for you.</li>
+<li><code>match</code> is just one of many <a href="../../submit_functions/">prebuilt submit functions</a>.</li>
+</ol>
 <h2 id="custom-submission">Custom submission</h2>
-<p>We're going to use a custom submit function to record our participants' age.</p>
+<p>We're going to use a custom submit function to record our participants' age. Let's see how to do this in our notebook.</p>
 <pre><code class="python">from hemlock import Embedded, Page
 
 from datetime import datetime
 
-@Submit.register
+@S.register
 def record_age(inpt):
     # calculate age in years
     date_of_birth = datetime.strptime(inpt.data, '%m/%d/%Y')
@@ -290,7 +290,9 @@ def record_age(inpt):
     # record age as embedded data
     inpt.page.embedded = [Embedded('Age', age, data_rows=-1)]
 
-page = Page(Submit.record_age(Input('&lt;p&gt;Enter your date of birth.&lt;/p&gt;')))
+page = Page(
+    Input('&lt;p&gt;Enter your date of birth.&lt;/p&gt;', submit=S.record_age()
+)
 inpt = page.questions[0]
 inpt.data = '10/26/1992'
 inpt._submit()
@@ -298,15 +300,15 @@ page.embedded[0].data
 </code></pre>
 
 <p>Out:</p>
-<pre><code>27.698836413415467
+<pre><code>27.742642026009584
 </code></pre>
 
 <h3 id="code-explanation">Code explanation</h3>
-<p>We register a new submit function with the <code>@Submit.register</code> decorator. The submit function takes the input question as its argument. It converts the input's data to a <code>datetime</code> object, computes the participant's age, and records it as embedded data.</p>
+<p>We register a new submit function with the <code>@S.register</code> decorator. The submit function takes the input question as its argument. In general, submit functions take their parent as their first argument. <code>record_age</code> converts the input's data to a <code>datetime</code> object, computes the participant's age, and records it as embedded data.</p>
 <h2 id="submission-in-our-app">Submission in our app</h2>
 <p>Now that we've seen how to add submit functions in our notebook, let's add it to our app.</p>
 <p>In <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, Check, Embedded, Input, Label, Page, Range, Select, Submit, Validate, route
+<pre><code class="python">from hemlock import Branch, Check, Embedded, Input, Label, Page, Range, Select, Submit as S, Validate as V, route
 
 from datetime import datetime
 
@@ -314,11 +316,13 @@ from datetime import datetime
 def start():
     return Branch(
         Page(
-            Submit.record_age(Validate.validate_date_format(Input(
+            Input(
                 '&lt;p&gt;Enter your date of birth.&lt;/p&gt;',
                 placeholder='mm/dd/yyyy',
-                var='DoB', data_rows=-1
-            ))),
+                var='DoB', data_rows=-1,
+                validate=[V.require(), V.date_format()],
+                submit=S.record_age()
+            ),
             # REST OF THE DEMOGRAPHICS PAGE HERE
         ),
         Page(
@@ -329,7 +333,7 @@ def start():
 
 ...
 
-@Submit.register
+@S.register
 def record_age(inpt):
     # calculate age in years
     date_of_birth = datetime.strptime(inpt.data, '%m/%d/%Y')

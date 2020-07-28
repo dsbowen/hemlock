@@ -136,7 +136,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -159,8 +159,6 @@
                     </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Textarea</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#hemlockdebug_func">hemlock.debug_func</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#hemlocktextarea">hemlock.Textarea</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a>
@@ -263,34 +261,9 @@
     </tbody>
 </table>
 
-<h2 id="hemlockdebug_func">hemlock.<strong>debug_func</strong></h2>
-<p class="func-header">
-    <i>def</i> hemlock.<b>debug_func</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L9">[source]</a>
-</p>
-
-<p>Default debug function for textarea questions. See
-<a href="../debug_functions/"><code>hemlock.functions.debug.random_keys</code></a>.</p>
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
-<p class="attr">
-
-</p>
-<b>question : <i>hemlock.Textarea</i></b>
-<p class="attr">
-
-</p></td>
-</tr>
-    </tbody>
-</table>
-
 <h2 id="hemlocktextarea">hemlock.<strong>Textarea</strong></h2>
 <p class="func-header">
-    <i>class</i> hemlock.<b>Textarea</b>(<i>page=None, template='hemlock/textarea.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L29">[source]</a>
+    <i>class</i> hemlock.<b>Textarea</b>(<i>page=None, template='hemlock/textarea.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L13">[source]</a>
 </p>
 
 <p>Textareas provide large text boxes for free responses.</p>
@@ -326,10 +299,9 @@
 </table>
 
 <h4 id="notes">Notes</h4>
-<p>Textareas have a default javascript which displays the number of words and
-characters entered. This <em>cannot</em> be overridden by passing a <code>js</code> argument
-to the constructor, although javascript can be modified after the
-constructor has finished.</p>
+<p>Textareas have a default javascript which displays the character and word
+count to participants. This will be appended to any <code>js</code> and <code>extra_js</code>
+arguments passed to the constructor.</p>
 <h4 id="examples">Examples</h4>
 <pre><code class="python">from hemlock import Page, Textarea, push_app_context
 
@@ -340,7 +312,7 @@ Page(Textarea('&lt;p&gt;This is a textarea.&lt;/p&gt;')).preview()
 
 <h4 id="methods">Methods</h4>
 <p class="func-header">
-    <i></i> <b>textarea_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L98">[source]</a>
+    <i></i> <b>textarea_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L83">[source]</a>
 </p>
 
 <p>Get textarea from the webdriver for debugging.</p>

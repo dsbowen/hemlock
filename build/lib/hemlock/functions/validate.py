@@ -31,11 +31,11 @@ def response_type(question, resp_type):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.response_type(Input(response='hello world'), float)
+    inpt = Input(response='hello world', validate=V.response_type(float))
     inpt._validate()
     inpt.error
     ```
@@ -70,11 +70,11 @@ def require(question):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.require(Input(response=None))
+    inpt = Input(response=None, validate=V.require())
     inpt._validate()
     inpt.error
     ```
@@ -110,11 +110,11 @@ def is_in(question, valid_set, resp_type=None):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.is_in(Input(response='earth'), ('wind', 'fire'))
+    inpt = Input(response='earth', validate=V.is_in(('wind', 'fire')))
     inpt._validate()
     inpt.error
     ```
@@ -151,12 +151,13 @@ def is_not_in(question, invalid_set, resp_type=None):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.is_not_in(
-    \    Input(response='earth'), ('earth','wind','fire')
+    inpt = Input(
+    \    response='earth', 
+    \    validate=V.is_not_in(('earth', 'wind', 'fire'))
     )
     inpt._validate()
     inpt.error
@@ -194,11 +195,11 @@ def max_val(question, max_, resp_type=None):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.max_val(Input(response='101'), 100)
+    inpt = Input(response='101', validate=V.max_val(100))
     inpt._validate()
     inpt.error
     ```
@@ -232,11 +233,11 @@ def min_val(question, min_, resp_type=None):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.min_val(Input(response='-1'), 0)
+    inpt = Input(response='-1', validate=V.min_val(0))
     inpt._validate()
     inpt.error
     ```
@@ -302,11 +303,11 @@ def range_val(question, min_, max_, resp_type=None):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.range_val(Input(response='101'), 0, 100)
+    inpt = Input(response='101', validate=V.range_val(0, 100))
     inpt._validate()
     inpt.error
     ```
@@ -348,11 +349,11 @@ def exact_len(question, len_):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.exact_len(Input(response='hello world'), 5)
+    inpt = Input(response='hello world', validate=V.exact_len(5))
     inpt._validate()
     inpt.error
     ```
@@ -397,11 +398,11 @@ def max_len(question, max_):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.max_val(Input(response='hello world'), 5)
+    inpt = Input(response='hello world', validate=V.max_len(5))
     inpt._validate()
     inpt.error
     ```
@@ -440,11 +441,11 @@ def min_len(question, min_):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.min_len(Input(response='hello world'), 15)
+    inpt = Input(response='hello world', validate=V.min_len(15))
     inpt._validate()
     inpt.error
     ```
@@ -489,11 +490,11 @@ def range_len(question, min_, max_):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.range_len(Input(response='hello world'), 5, 10)
+    inpt = Input(response='hello world', validate=V.range_len(5, 10))
     inpt._validate()
     inpt.error
     ```
@@ -534,11 +535,11 @@ def exact_words(question, nwords):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.exact_words(Input(response='hello world'), 1)
+    inpt = Input(response='hello world', validate=V.exact_words(1))
     inpt._validate()
     inpt.error
     ```
@@ -574,11 +575,11 @@ def max_words(question, max_):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.max_words(Input(response='hello world'), 1)
+    inpt = Input(response='hello world', validate=V.max_words(1))
     inpt._validate()
     inpt.error
     ```
@@ -612,11 +613,11 @@ def min_words(question, min_):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.min_words(Input(response='hello world'), 3)
+    inpt = Input(response='hello world', validate=V.min_words(3))
     inpt._validate()
     inpt.error
     ```
@@ -656,11 +657,11 @@ def range_words(question, min_, max_):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.range_words(Input(response='hello world'), 3, 5)
+    inpt = Input(response='hello world', validate=V.range_words(3, 5))
     inpt._validate()
     inpt.error
     ```
@@ -703,11 +704,11 @@ def exact_decimals(question, ndec):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.exact_decimals(Input(response='1'), 2)
+    inpt = Input(response='1', validate=V.exact_decimals(2))
     inpt._validate()
     inpt.error
     ```
@@ -741,11 +742,11 @@ def max_decimals(question, max_):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.max_decimals(Input(response='1.123'), 2)
+    inpt = Input(response='1.123', validate=V.max_decimals(2))
     inpt._validate()
     inpt.error
     ```
@@ -779,11 +780,11 @@ def min_decimals(question, min_):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.min_decimals(Input(response='1'), 2)
+    inpt = Input(response='1', validate=V.min_decimals(2))
     inpt._validate()
     inpt.error
     ```
@@ -820,11 +821,11 @@ def range_decimals(question, min_, max_):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.range_decimals(Input(response='1.123'), 0, 2)
+    inpt = Input(response='1.123', validate=V.range_decimals(0, 2))
     inpt._validate()
     inpt.error
     ```
@@ -873,11 +874,11 @@ def match(question, pattern):
     Examples
     --------
     ```python
-    from hemlock import Input, Validate, push_app_context
+    from hemlock import Input, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    inpt = Validate.match(Input(response='hello world'), 'goodbye *')
+    inpt = Input(response='hello world', validate=V.match('goodbye *'))
     inpt._validate()
     inpt.error
     ```
@@ -894,7 +895,7 @@ def match(question, pattern):
 # Choice validation
 
 @Validate.register
-def correct_choices(question, correct):
+def correct_choices(question, *values):
     """
     Validate that selected choice(s) is correct.
     
@@ -902,18 +903,21 @@ def correct_choices(question, correct):
     ----------
     question : hemlock.Question
 
-    correct : list of hemlock.Choice
-        Correct choices.
+    \*values : 
+        Values of the correct choices.
 
     Examples
     --------
     ```python
-    from hemlock import Check, Validate, push_app_context
+    from hemlock import Check, Validate as V, push_app_context
 
-    push_app_context()
+    app = push_app_context()
 
-    check = Check(choices=['correct','incorrect','also incorrect'])
-    Validate.correct_choices(check, [check.choices[0]])
+    check = Check(
+    \    '<p>Select the correct choice.</p>',
+    \    ['correct', 'incorrect', 'also incorrect'],
+    \    validate=V.correct_choices('correct'),
+    )
     check.response = check.choices[1]
     check._validate()
     check.error
@@ -925,7 +929,7 @@ def correct_choices(question, correct):
     Please select the correct choice.
     ```
     """
-    if not correct_choices_(question, correct):
+    if not correct_choices_(question, *correct):
         if question.multiple:
             return '<p>Please select the correct choice(s).</p>'
         if len(correct) == 1:

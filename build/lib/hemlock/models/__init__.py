@@ -8,4 +8,4 @@ from .functions import Compile, Debug, Validate, Submit, Navigate
 from .page import Page
 from .participant import Participant
 from .question import Question, ChoiceQuestion
-from .workers import Worker, CompileWorker, ValidateWorker, SubmitWorker, NavigateWorker
+from .worker import Worker

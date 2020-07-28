@@ -158,7 +158,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -254,48 +254,49 @@
 <li>We set a limit on the number of attempts participants have to pass each check.</li>
 </ol>
 <p>For example, suppose there are two checks, A and B. The participant passes check A but fails check B. He is brought back to the first page of the instructions. After rereading the instructions, he is brought directly to check B, skipping check A.</p>
-<p>(Think about what it would take to do this in Qualtrics).</p>
+<p>(Think about what it would take to do this in Qualtrics, or program this from scratch).</p>
 <h2 id="basic-syntax">Basic syntax</h2>
 <p>Although we usually start with jupyter, the logic of comprehension checks is best illustrated by running an app. Open <code>app.py</code> and replace <code>import survey</code> with <code>import tmp_survey</code>. Now make a new file, <code>tmp_survey.py</code>, and enter the following:</p>
-<pre><code class="python">from hemlock import Branch, Check, Choice, Compile, Page, Input, Label, Submit, route
+<pre><code class="python">from hemlock import Branch, Check, Compile as C, Page, Label, Submit as S, route
 from hemlock.tools import comprehension_check
 
 @route('/survey')
 def start():
-    correct = Choice('correct')
-    branch = comprehension_check(
-        Branch(),
-        instructions=Page(Label('&lt;p&gt;Here are some instructions.&lt;/p&gt;')),
-        checks=Compile.clear_response(Page(
-            Compile.shuffle(Submit.correct_choices(
+    return Branch(
+        *comprehension_check(
+            instructions=Page(
+                Label('&lt;p&gt;Here are some instructions.&lt;/p&gt;')
+            ),
+            checks=Page(
                 Check(
-                    '&lt;p&gt;Click the correct choice.&lt;/p&gt;',
-                    [correct, 'incorrect', 'also incorrect']
-                ), 
-                correct=[correct]
-            ))
-        )),
-        attempts=3
+                    '&lt;p&gt;Select the correct choice.&lt;/p&gt;',
+                    ['Correct', 'Incorrect', 'Also incorrect'],
+                    compile=[C.clear_response(), C.shuffle()],
+                    submit=S.correct_choices('Correct')
+                )
+            ),
+            attempts=3
+        ),
+        Page(
+            Label('&lt;p&gt;You passed the comprehension check!&lt;/p&gt;'),
+            terminal=True
+        )
     )
-    branch.pages.append(
-        Page(Label('&lt;p&gt;The End!&lt;/p&gt;'), terminal=True)
-    )
-    return branch
 </code></pre>
 
 <p>Run the app and play with the comprehension check. Notice that when you don't click the correct choice, the survey brings you back to the instructions page.</p>
 <h3 id="code-explanation">Code explanation</h3>
 <p>First, we import our standard hemlock objects and the <code>comprehension_check</code> tool.</p>
-<p>At the top of our <code>start</code> function, we create a <code>Choice</code> object, which is the answer to the check question. <code>Choice</code> objects belong to <code>Check</code> questions.</p>
-<p>We then create a branch using the comprehension check tool. <code>comprehension_check</code> takes a branch as its first argument, followed by an instructions page (or a list of instructions pages), followed by a check page (or a list or check pages). The <code>comprehension_check</code> method returns the branch to which it added the comprehension check.</p>
+<p>As usual, we return a branch from our navigate function. We begin the branch with a comprehension check. The comprehension check takes a list of instructions pages (or a single instructions page), a list of check pages (or a single check page), and the number of allotted attempts. The <code>comprehension_check</code> tool returns a list of instructions + check pages. </p>
+<p>The branch constructor expects pages, not a list of pages, to be passed in as arguments. The asterisk in <code>*comprehension_check(...)</code> means <em>'unlist' the list of instructions + check pages as you pass them into the branch constructor</em>.</p>
 <p>The check page contains a <code>Check</code> question. Note that 'check' has different meanings here. A 'check page' in a comprehension check means <em>a page where you test the participant's understanding of the instructions</em>. A 'check question' means <em>a question where you can check one or more choices</em>.</p>
-<p>By default, the check page will record the participant's responses, and the check question will display the choices in their original order. These are both problems for testing comprehension. We don't want participants to simply click choices one after another until the hit the right one. To fix this, we add one compile function to the page to clear the responses, and another to the check question to re-shuffle the choices.</p>
+<p>By default, the check question will record the participant's response and display the choices in their original order. These are both problems for testing comprehension. We don't want participants to simply click choices in order until the hit the right one. To fix this, we add two compile functions; one to clear the response, and one to shuffle the choices.</p>
 <p>A participant passes a check page when all of its questions' data evaluate to <code>True</code>. So, we'll add a submit function to the check question which converts its data to 1 if the participant selected the correct choice and 0 otherwise (<code>1</code> and <code>0</code> evaluate to <code>True</code> and <code>False</code> in most programming languages).</p>
 <p>Finally, we set <code>attempts=3</code> to give the participant 3 attempts to pass the check. If a participant fails the check 3 times, they'll simply continue the survey. We can require participants to pass the check by not passing an <code>attempts</code> parameter.</p>
 <h2 id="ultimatum-game-comprehension-check">Ultimatum game comprehension check</h2>
 <p>We're going to use a comprehension check to explain the ultimatum game to our participants and test their understanding of it. First, open <code>app.py</code> and change <code>import tmp_survey</code> back to <code>import survey</code>.</p>
 <h3 id="instructions">Instructions</h3>
-<p>Open jupyter and let's preview the instructions page:</p>
+<p>Open your notebook and let's preview the instructions page:</p>
 <pre><code class="python">from hemlock import Page, Label
 
 # the number of rounds participants play
@@ -303,52 +304,54 @@ N_ROUNDS = 5
 # the amount of money split
 POT = 20
 
-Page(Label('''
-&lt;p&gt;You are about to play an ultimatum game. The game involves two
-players: a &lt;b&gt;proposer&lt;/b&gt; and a &lt;b&gt;responder&lt;/b&gt;. The proposer has 
-${} to split between him/herself and the responder. The responder 
-names an amount of money such that he/she accepts any proposed 
-split which gives him/her at least this amount, and rejects any 
-proposed split which gives him/her less than this amount.&lt;/p&gt;
+Page(
+    Label(
+        '''
+        &lt;p&gt;You are about to play an ultimatum game. The game involves two
+        players: a &lt;b&gt;proposer&lt;/b&gt; and a &lt;b&gt;responder&lt;/b&gt;. The proposer has 
+        ${} to split between him/herself and the responder. The responder 
+        names an amount of money such that he/she accepts any proposed 
+        split which gives him/her at least this amount, and rejects any 
+        proposed split which gives him/her less than this amount.&lt;/p&gt;
 
-&lt;p&gt;&lt;b&gt;If the split is accepted, the proposer and responder split the 
-money according to the proposal. If the split is rejected, both 
-players receive $0.&lt;/b&gt;&lt;/p&gt;
+        &lt;p&gt;&lt;b&gt;If the split is accepted, the proposer and responder split the 
+        money according to the proposal. If the split is rejected, both 
+        players receive $0.&lt;/b&gt;&lt;/p&gt;
 
-&lt;p&gt;You will play {} rounds of this game. Each round, you will be 
-paired with another randomly selected participant. &lt;b&gt;You will rarely, 
-if ever, play two rounds with the same player.&lt;/b&gt;
+        &lt;p&gt;You will play {} rounds of this game. Each round, you will be 
+        paired with another randomly selected participant. &lt;b&gt;You will rarely, 
+        if ever, play two rounds with the same player.&lt;/b&gt;
 
-&lt;p&gt;We will test your understanding of these instructions on the 
-next page.&lt;/p&gt;
-'''.format(POT, N_ROUNDS))).preview()
+        &lt;p&gt;We will test your understanding of these instructions on the 
+        next page.&lt;/p&gt;
+        '''.format(POT, N_ROUNDS)
+    )
+).preview()
 </code></pre>
 
 <h3 id="checks">Checks</h3>
 <p>For the check pages, we're going to give participants a hypothetical proposal and response and ask them how much money the proposer and responder receive. We'll do this twice; once where the proposal is accepted, the other where it is rejected.</p>
 <p>Additionally, we want to avoid biasing participants' responses by giving them all the same hypothetical proposal-response pairs. So, we'll write a function to randomly generate proposals.</p>
 <p>Enter the following in your notebook:</p>
-<pre><code class="python">from hemlock import Compile, Input
+<pre><code class="python">from hemlock import Compile as C, Input
 
 def gen_check_page(accept):
-    return Compile.clear_response(Compile.random_proposal(
-        Page(
-            Label(),
-            Input(
-                '&lt;p&gt;How much money does the proposer receive?&lt;/p&gt;',
-                prepend='$',
-                append='.00'
-            ),
-            Input(
-                '&lt;p&gt;How much money does the responder receive?&lt;/p&gt;',
-                prepend='$',
-                append='.00'
-            )
+    return Page(
+        Label(),
+        Input(
+            '&lt;p&gt;How much money does the proposer receive?&lt;/p&gt;',
+            prepend='$',
+            append='.00'
         ),
-        accept=accept
-    ))
+        Input(
+            '&lt;p&gt;How much money does the responder receive?&lt;/p&gt;',
+            prepend='$',
+            append='.00'
+        ),
+        compile=[C.clear_response(), C.random_proposal(accept)]
+    )
 
-@Compile.register
+@C.register
 def random_proposal(check_page, accept):
     # WE'LL WRITE THIS FUNCTION IN A MOMENT
     pass
@@ -357,14 +360,14 @@ path = gen_check_page(accept=True).preview()
 </code></pre>
 
 <p>The <code>gen_check_page</code> function generates a check page. The <code>Label</code> with which the page starts is going to be populated by a randomly generated proposal-response pair which we'll create with the compile function <code>random_proposal</code>. Both <code>gen_check_page</code> and <code>random_proposal</code> take an <code>accept</code> argument which indicates whether the proposal will be accepted or rejected.</p>
-<p>Now, fill in the <code>random_proposal</code> function:</p>
-<pre><code class="python">from hemlock import Compile, Input, Submit
+<p>Now, fill in the <code>random_proposal</code> function in the same notebook cell:</p>
+<pre><code class="python">from hemlock import Compile as C, Input, Submit as S
 
 from random import randint
 
 ...
 
-@Compile.register
+@C.register
 def random_proposal(check_page, accept):
     # randomly generate a proposed split and response
     n = randint(1, POT-1)
@@ -383,13 +386,10 @@ def random_proposal(check_page, accept):
     me at least ${}.&quot;&lt;/p&gt;
     '''.format(*proposal, response)
     # add submit functions to verify that the response was correct
-    check_page.questions[1].submit_functions.clear()
-    Submit.match(check_page.questions[1], str(payoff[0]))
-    check_page.questions[2].submit_functions.clear()
-    Submit.match(check_page.questions[2], str(payoff[1]))
+    check_page.questions[1].submit = S.match(str(payoff[0]))
+    check_page.questions[2].submit = S.match(str(payoff[1]))
 
-check_page = gen_check_page(accept=True)
-path = check_page._compile().preview()
+gen_check_page(accept=True)._compile().preview()
 </code></pre>
 
 <p><code>random_proposal</code> begins by generating a random proposal. We then generate a random response which will accept the proposal if <code>accept</code> is <code>True</code> and reject the proposal if <code>accept</code> is <code>False</code>.</p>
@@ -398,37 +398,40 @@ path = check_page._compile().preview()
 <p>Finally, we add submit functions to the check page's input questions to verify that the participant's responses match the payoffs.</p>
 <h2 id="adding-a-comprehension-check-to-our-app">Adding a comprehension check to our app</h2>
 <p>Let's put this all together in <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, Check, Compile, Embedded, Input, Label, Navigate, Page, Range, Select, Submit, Validate, route
+<pre><code class="python">...
 from hemlock.tools import comprehension_check, join
 
 from datetime import datetime
 from random import randint
 
+# the number of rounds participants play
 N_ROUNDS = 5
+# the amount of money split
 POT = 20
 
 ...
 
-@Navigate.register
-def ultimatum_game(start_branch):
-    branch = comprehension_check(
-        Branch(),
-        Page(
-            # CONTENT OF INSTRUCTIONS PAGE HERE
+@N.register
+def ultimatum_game(start_branch=None):
+    return Branch(
+        *comprehension_check(
+            instructions=Page(
+                # CONTENT OF INSTRUCTIONS PAGE HERE
+            ),
+            checks=[gen_check_page(accept=True), gen_check_page(accept=False)]
         ),
-        [gen_check_page(accept=True), gen_check_page(accept=False)],
+        Page(
+            Label('&lt;p&gt;You passed the check!&lt;/p&gt;'),
+            terminal=True
+        )
     )
-    branch.pages.append(Page(
-        Label('&lt;p&gt;You passed the check!&lt;/p&gt;'), terminal=True)
-    )
-    return branch
 
 def gen_check_page(accept):
-    # GEN_CHECK_PAGE FUNCTION HERE
+    # GEN CHECK PAGE FUNCTION HERE
 
-@Compile.register
+@C.register
 def random_proposal(check_page, accept):
-    # RANDOM PROPOSSAL FUNCTION HERE
+    # RANDOM PROPOSAL FUNCTION HERE
 </code></pre>
 
 <p>Run your app and see your comprehension check at work!</p>

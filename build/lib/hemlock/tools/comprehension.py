@@ -5,10 +5,8 @@ Your response was incorrect.<br/>
 Please reread the instructions before continuing.
 """
 
-def comprehension_check(branch, instructions, checks, attempts=None):
+def comprehension_check(instructions, checks, attempts=None):
     """
-    Add a comprehension check to a branch.
-
     A comprehension check consists of 'instruction' pages followed by 'check' 
     pages. The data of all questions in a check page must evaluate to `True` 
     to pass the check. When a participant fails a check, he is brought back to 
@@ -21,9 +19,6 @@ def comprehension_check(branch, instructions, checks, attempts=None):
 
     Parameters
     ----------
-    branch : hemlock.Branch
-        Branch to which the comprehension check is attached.
-
     instructions : hemlock.Page or list of hemlock.Page
         Instruction page(s).
 
@@ -38,8 +33,8 @@ def comprehension_check(branch, instructions, checks, attempts=None):
 
     Returns
     -------
-    branch : hemlock.Branch
-        The original branch, with added comprehension check.
+    pages : list of hemlock.Page
+        List of instructions pages + check pages.
 
     Notes
     -----
@@ -51,21 +46,28 @@ def comprehension_check(branch, instructions, checks, attempts=None):
     We have two files in our root directory. In `survey.py`:
 
     ```python
-    from hemlock import Branch, Page, Label, Input, Submit, route
+    from hemlock import Branch, Page, Label, Input, Submit as S, route
     from hemlock.tools import comprehension_check
-
-    INSTRUCTIONS = '<p>Here are some instructions.</p>'
-    CHECK = '<p>Enter "hello world" or you... shall not... PASS!</p>'
 
     @route('/survey')
     def start():
-    \    branch = comprehension_check(
-    \        Branch(),
-    \        instructions=Page(Label(INSTRUCTIONS)),
-    \        checks=Page(Submit.match(Input(CHECK), 'hello world'))
+    \    return Branch(
+    \        *comprehension_check(
+    \            instructions=Page(
+    \                Label('<p>Here are some instructions.</p>')
+    \            ),
+    \            checks=Page(
+    \                Input(
+    \                    '<p>Enter "hello world" or you... shall not... PASS!</p>',
+    \                    submit=S.match('hello world')
+    \                )
+    \            )
+    \        ),
+    \        Page(
+    \            Label('<p>You passed the comprehension check!</p>'),
+    \            terminal=True
+    \        )
     \    )
-    \    branch.pages.append(Page(Label('<p>You passed the test!</p>')))
-    \    return branch
     ```
 
     In `app.py`:
@@ -93,22 +95,20 @@ def comprehension_check(branch, instructions, checks, attempts=None):
     assert instructions and checks, (
         '`instructions` and `checks` must be non-empty lists of hemlock.Pages'
     )
-    from hemlock.app import db
-    from hemlock.models import Submit
+    from ..models import Submit
     if not isinstance(instructions, list):
         instructions = [instructions]
     if not isinstance(checks, list):
         checks = [checks]
-    branch.pages += instructions + checks
     for check in checks:
         check.back_to = instructions[0]
-        check.submit_functions.append(Submit(
-            _verify_data,
-            instructions[-1],
-            curr_attempt=1,
+        check.submit.append(Submit(
+            _verify_data, 
+            instructions[-1], 
+            curr_attempt=1, 
             attempts=attempts
         ))
-    return branch
+    return instructions + checks
 
 def _verify_data(check, last_instr_page, curr_attempt, attempts):
     """
@@ -136,4 +136,4 @@ def _verify_data(check, last_instr_page, curr_attempt, attempts):
         return
     check.back_to.error = ERROR_MSG
     check.direction_from = 'back'
-    check.submit_functions[-1].kwargs['curr_attempt'] = curr_attempt + 1
+    check.submit[-1].kwargs['curr_attempt'] = curr_attempt + 1

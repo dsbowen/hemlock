@@ -27,14 +27,12 @@ def login():
 @researcher_page('login')
 def login_page():
     """Create login page"""
-    login_p = Page(
+    return Page(
         Input(PASSWORD_PROMPT, input_type='password'), 
         back=False, 
-        forward='Login'
+        forward='Login',
+        validate=check_password
     )
-    login_p.body.select_one('#forward-btn')['class'] += ' w-100'
-    login_p.validate_functions = check_password
-    return login_p
 
 def check_password(login_page):
     """Check the input password against researcher password"""
@@ -43,12 +41,12 @@ def check_password(login_page):
 
 def password_correct():
     """Indicate that the session password is correct"""
-    if not current_app.settings['password']:
+    if not current_app.config.get('PASSWORD'):
         return True
     if 'password' not in session:
         return False
     return check_password_hash(
-        current_app.settings['password_hash'], session['password']
+        current_app.config.get('PASSWORD_HASH'), session['password']
     )
 
 def login_successful():

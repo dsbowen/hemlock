@@ -266,7 +266,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -407,11 +407,11 @@ the repsonse is invalid.</p>
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.response_type(Input(response='hello world'), float)
+inpt = Input(response='hello world', validate=V.response_type(float))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -441,11 +441,11 @@ inpt.error
 </table>
 
 <h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.require(Input(response=None))
+inpt = Input(response=None, validate=V.require())
 inpt._validate()
 inpt.error
 </code></pre>
@@ -483,11 +483,11 @@ inpt.error
 </table>
 
 <h4 id="examples_2">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.is_in(Input(response='earth'), ('wind', 'fire'))
+inpt = Input(response='earth', validate=V.is_in(('wind', 'fire')))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -526,12 +526,13 @@ responses.</p>
 </table>
 
 <h4 id="examples_3">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.is_not_in(
-    Input(response='earth'), ('earth','wind','fire')
+inpt = Input(
+    response='earth',
+    validate=V.is_not_in(('earth', 'wind', 'fire'))
 )
 inpt._validate()
 inpt.error
@@ -543,7 +544,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidatemax_val">hemlock.functions.validate.<strong>max_val</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>max_val</b>(<i>question, max_, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L179">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>max_val</b>(<i>question, max_, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L180">[source]</a>
 </p>
 
 <p>Validate that the response does not exceed a maximum value.</p>
@@ -570,11 +571,11 @@ inpt.error
 </table>
 
 <h4 id="examples_4">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.max_val(Input(response='101'), 100)
+inpt = Input(response='101', validate=V.max_val(100))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -585,7 +586,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidatemin_val">hemlock.functions.validate.<strong>min_val</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>min_val</b>(<i>question, min_, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L217">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>min_val</b>(<i>question, min_, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L218">[source]</a>
 </p>
 
 <p>Validate that the response does not deceed a minumum value.</p>
@@ -612,11 +613,11 @@ inpt.error
 </table>
 
 <h4 id="examples_5">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.min_val(Input(response='-1'), 0)
+inpt = Input(response='-1', validate=V.min_val(0))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -627,7 +628,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidaterange_val">hemlock.functions.validate.<strong>range_val</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>range_val</b>(<i>question, min_, max_, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L283">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>range_val</b>(<i>question, min_, max_, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L284">[source]</a>
 </p>
 
 <p>Validate that the response is in a given range.</p>
@@ -658,11 +659,11 @@ inpt.error
 </table>
 
 <h4 id="examples_6">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.range_val(Input(response='101'), 0, 100)
+inpt = Input(response='101', validate=V.range_val(0, 100))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -673,7 +674,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidateexact_len">hemlock.functions.validate.<strong>exact_len</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>exact_len</b>(<i>question, len_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L334">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>exact_len</b>(<i>question, len_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L335">[source]</a>
 </p>
 
 <p>Validates the exact length of the repsonse. For a string response, this is
@@ -698,11 +699,11 @@ choices selected.</p>
 </table>
 
 <h4 id="examples_7">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.exact_len(Input(response='hello world'), 5)
+inpt = Input(response='hello world', validate=V.exact_len(5))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -713,7 +714,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidatemax_len">hemlock.functions.validate.<strong>max_len</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>max_len</b>(<i>question, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L378">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>max_len</b>(<i>question, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L379">[source]</a>
 </p>
 
 <p>Validates the maximum length of the response. For a string response, this
@@ -741,11 +742,11 @@ choices selected.</p>
 <p>A response of <code>None</code> is assumed to satisfy the max length validation. Use
 <code>Validate.require</code> to require a response that is not <code>None</code>.</p>
 <h4 id="examples_8">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.max_val(Input(response='hello world'), 5)
+inpt = Input(response='hello world', validate=V.max_len(5))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -756,7 +757,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidatemin_len">hemlock.functions.validate.<strong>min_len</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>min_len</b>(<i>question, min_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L426">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>min_len</b>(<i>question, min_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L427">[source]</a>
 </p>
 
 <p>Valiadates the minimum length of the response. For a string response, this
@@ -781,11 +782,11 @@ choices selected.</p>
 </table>
 
 <h4 id="examples_9">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.min_len(Input(response='hello world'), 15)
+inpt = Input(response='hello world', validate=V.min_len(15))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -796,7 +797,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidaterange_len">hemlock.functions.validate.<strong>range_len</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>range_len</b>(<i>question, min_, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L472">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>range_len</b>(<i>question, min_, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L473">[source]</a>
 </p>
 
 <p>Validates the range of the response length. For a string response, this is
@@ -825,11 +826,11 @@ choices selected.</p>
 </table>
 
 <h4 id="examples_10">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.range_len(Input(response='hello world'), 5, 10)
+inpt = Input(response='hello world', validate=V.range_len(5, 10))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -840,7 +841,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidateexact_words">hemlock.functions.validate.<strong>exact_words</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>exact_words</b>(<i>question, nwords</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L522">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>exact_words</b>(<i>question, nwords</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L523">[source]</a>
 </p>
 
 <p>Validate the exact number of words in the response.</p>
@@ -863,11 +864,11 @@ inpt.error
 </table>
 
 <h4 id="examples_11">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.exact_words(Input(response='hello world'), 1)
+inpt = Input(response='hello world', validate=V.exact_words(1))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -878,7 +879,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidatemax_words">hemlock.functions.validate.<strong>max_words</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>max_words</b>(<i>question, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L562">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>max_words</b>(<i>question, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L563">[source]</a>
 </p>
 
 <p>Validates the maximum number of words in the response.</p>
@@ -901,11 +902,11 @@ inpt.error
 </table>
 
 <h4 id="examples_12">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.max_words(Input(response='hello world'), 1)
+inpt = Input(response='hello world', validate=V.max_words(1))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -916,7 +917,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidatemin_words">hemlock.functions.validate.<strong>min_words</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>min_words</b>(<i>question, min_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L600">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>min_words</b>(<i>question, min_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L601">[source]</a>
 </p>
 
 <p>Validates the minimum number of words in the repsonse.</p>
@@ -939,11 +940,11 @@ inpt.error
 </table>
 
 <h4 id="examples_13">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.min_words(Input(response='hello world'), 3)
+inpt = Input(response='hello world', validate=V.min_words(3))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -954,7 +955,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidaterange_words">hemlock.functions.validate.<strong>range_words</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>range_words</b>(<i>question, min_, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L641">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>range_words</b>(<i>question, min_, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L642">[source]</a>
 </p>
 
 <p>Validates the number of words falls in a given range.</p>
@@ -981,11 +982,11 @@ inpt.error
 </table>
 
 <h4 id="examples_14">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.range_words(Input(response='hello world'), 3, 5)
+inpt = Input(response='hello world', validate=V.range_words(3, 5))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -996,7 +997,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidateexact_decimals">hemlock.functions.validate.<strong>exact_decimals</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>exact_decimals</b>(<i>question, ndec</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L691">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>exact_decimals</b>(<i>question, ndec</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L692">[source]</a>
 </p>
 
 <p>Validates the exact number of decimals.</p>
@@ -1019,11 +1020,11 @@ inpt.error
 </table>
 
 <h4 id="examples_15">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.exact_decimals(Input(response='1'), 2)
+inpt = Input(response='1', validate=V.exact_decimals(2))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -1034,7 +1035,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidatemax_decimals">hemlock.functions.validate.<strong>max_decimals</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>max_decimals</b>(<i>question, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L729">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>max_decimals</b>(<i>question, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L730">[source]</a>
 </p>
 
 <p>Validates the maximum number of decimals.</p>
@@ -1057,11 +1058,11 @@ inpt.error
 </table>
 
 <h4 id="examples_16">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.max_decimals(Input(response='1.123'), 2)
+inpt = Input(response='1.123', validate=V.max_decimals(2))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -1072,7 +1073,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidatemin_decimals">hemlock.functions.validate.<strong>min_decimals</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>min_decimals</b>(<i>question, min_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L767">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>min_decimals</b>(<i>question, min_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L768">[source]</a>
 </p>
 
 <p>Validates the minumum number of decimals.</p>
@@ -1095,11 +1096,11 @@ inpt.error
 </table>
 
 <h4 id="examples_17">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.min_decimals(Input(response='1'), 2)
+inpt = Input(response='1', validate=V.min_decimals(2))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -1110,7 +1111,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidaterange_decimals">hemlock.functions.validate.<strong>range_decimals</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>range_decimals</b>(<i>question, min_, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L805">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>range_decimals</b>(<i>question, min_, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L806">[source]</a>
 </p>
 
 <p>Validates the number of decimals are in a given range.</p>
@@ -1137,11 +1138,11 @@ inpt.error
 </table>
 
 <h4 id="examples_18">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.range_decimals(Input(response='1.123'), 0, 2)
+inpt = Input(response='1.123', validate=V.range_decimals(0, 2))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -1152,7 +1153,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidatematch">hemlock.functions.validate.<strong>match</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>match</b>(<i>question, pattern</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L861">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>match</b>(<i>question, pattern</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L862">[source]</a>
 </p>
 
 <p>Validate that the response matches the regex pattern.</p>
@@ -1175,11 +1176,11 @@ inpt.error
 </table>
 
 <h4 id="examples_19">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate, push_app_context
+<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-inpt = Validate.match(Input(response='hello world'), 'goodbye *')
+inpt = Input(response='hello world', validate=V.match('goodbye *'))
 inpt._validate()
 inpt.error
 </code></pre>
@@ -1190,7 +1191,7 @@ inpt.error
 
 <h2 id="hemlockfunctionsvalidatecorrect_choices">hemlock.functions.validate.<strong>correct_choices</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>correct_choices</b>(<i>question, correct</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L896">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>correct_choices</b>(<i>question, *values</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L897">[source]</a>
 </p>
 
 <p>Validate that selected choice(s) is correct.</p>
@@ -1204,21 +1205,24 @@ inpt.error
 <p class="attr">
 
 </p>
-<b>correct : <i>list of hemlock.Choice</i></b>
+<b>*values : <i></i></b>
 <p class="attr">
-    Correct choices.
+    Values of the correct choices.
 </p></td>
 </tr>
     </tbody>
 </table>
 
 <h4 id="examples_20">Examples</h4>
-<pre><code class="python">from hemlock import Check, Validate, push_app_context
+<pre><code class="python">from hemlock import Check, Validate as V, push_app_context
 
-push_app_context()
+app = push_app_context()
 
-check = Check(choices=['correct','incorrect','also incorrect'])
-Validate.correct_choices(check, [check.choices[0]])
+check = Check(
+    '&lt;p&gt;Select the correct choice.&lt;/p&gt;',
+    ['correct', 'incorrect', 'also incorrect'],
+    validate=V.correct_choices('correct'),
+)
 check.response = check.choices[1]
 check._validate()
 check.error

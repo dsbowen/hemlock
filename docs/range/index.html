@@ -136,7 +136,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../question/">Question</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../workers/">Workers</a>
+                    <li class="toctree-l1"><a class="reference internal" href="../worker/">Worker</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
@@ -155,8 +155,6 @@
                     </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Range</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#hemlockdebug_func">hemlock.debug_func</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#hemlockrange">hemlock.Range</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a>
@@ -261,34 +259,9 @@
     </tbody>
 </table>
 
-<h2 id="hemlockdebug_func">hemlock.<strong>debug_func</strong></h2>
-<p class="func-header">
-    <i>def</i> hemlock.<b>debug_func</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L8">[source]</a>
-</p>
-
-<p>Default debug function for range inputs. See
-<a href="../debug_functions/"><code>drag_range</code></a>.</p>
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
-<p class="attr">
-
-</p>
-<b>question : <i>hemlock.Range</i></b>
-<p class="attr">
-
-</p></td>
-</tr>
-    </tbody>
-</table>
-
 <h2 id="hemlockrange">hemlock.<strong>Range</strong></h2>
 <p class="func-header">
-    <i>class</i> hemlock.<b>Range</b>(<i>label='', template='hemlock/range.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L30">[source]</a>
+    <i>class</i> hemlock.<b>Range</b>(<i>label='', template='hemlock/range.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L12">[source]</a>
 </p>
 
 <p>Range sliders can be dragged between minimum and maximum values in step
@@ -330,9 +303,8 @@ increments.</p>
 
 <h4 id="notes">Notes</h4>
 <p>Ranges have a default javascript which displays the value of the range
-slider to participants. This <em>cannot</em> be overridden by passing a <code>js</code>
-argument to the constructor, although javascript can be modified after the
-constructor has finished.</p>
+slider to participants. This will be appended to any <code>js</code> and <code>extra_js</code>
+arguments passed to the constructor.</p>
 <h4 id="examples">Examples</h4>
 <pre><code class="python">from hemlock import Range, Page, push_app_context
 

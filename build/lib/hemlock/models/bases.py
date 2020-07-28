@@ -4,7 +4,7 @@ from ..app import db
 
 from bs4 import BeautifulSoup
 from flask import current_app, render_template
-from sqlalchemy import Column
+from sqlalchemy import Column, inspect
 from sqlalchemy_function import FunctionRelator
 from sqlalchemy_modelid import ModelIdBase
 from sqlalchemy_mutable import MutableType, MutableModelBase
@@ -53,12 +53,14 @@ class BranchingBase(Base):
         the next branch is not already in the branch_stack.
         """
         return (
-            self.navigate_function is not None 
+            self.navigate is not None 
             and self.next_branch not in self.part.branch_stack
         )
 
     def _navigate(self):
-        self.navigate_function(self)
+        if inspect(self).detached:
+            self = self.__class__.query.get(self.id)
+        self.navigate(self)
         return self
 
 
@@ -140,57 +142,104 @@ class HTMLMixin(Base):
     template : str, default depends on object
         Jinja template which is rendered to produce `self.body`.
 
+    extra_css : str or bs4.BeautifulSoup or list, default=''
+        Extra stylesheets to append to the default css.
+
+    extra_js : str or bs4.BeautifulSoup or list, default=''
+        Extra scripts to append to the default javascript.
+
     Attributes
     ----------
     body : sqlalchemy_mutablesoup.MutableSoupType
         The main html of the object.
 
-    css : sqlalchemy_mutablesoup.MutableSoupType, default=None
+    css : sqlalchemy_mutablesoup.MutableSoupType, default=''
         CSS the object contributes to the page.
 
-    js : sqlalchemy_mutablesoup.MutableSoupType, default=None
+    js : sqlalchemy_mutablesoup.MutableSoupType, default=''
         Javascript the object contributes to the page.
     """
     body = db.Column(MutableSoupType)
-    css = db.Column(MutableSoupType)
-    js = db.Column(MutableSoupType)
+    css = db.Column(MutableSoupType, default='')
+    js = db.Column(MutableSoupType, default='')
 
-    def __init__(self, template=None, **kwargs):
+    def __init__(self, template=None, extra_css='', extra_js='', **kwargs):
         db.session.add(self)
         db.session.flush([self])
         if template is not None:
             self.body = render_template(template, self_=self)
+        if 'css' in kwargs:
+            kwargs['css'] = self._join_soup(kwargs['css'])
+        if 'js' in kwargs:
+            kwargs['js'] = self._join_soup(kwargs['js'])
         super().__init__(**kwargs)
+        self.css.append(self._join_soup(extra_css))
+        self.css.changed()
+        self.js.append(self._join_soup(extra_js))
+        self.js.changed()
+
+    def _join_soup(self, items):
+        """
+        Parameters
+        ----------
+        items : str or bs4.BeautifulSoup or list
+            Items to join in a BeautifulSoup object.
+
+        Returns
+        -------
+        soup : bs4.BeautifulSoup
+        """
+        items = [items] if isinstance(items, str) else items
+        soup = BeautifulSoup('', 'html.parser')
+        soup.extend([
+            BeautifulSoup(i, 'html.parser') if isinstance(i, str) else i
+            for i in items
+        ])
+        return soup
 
     def add_external_css(self, **attrs):
         """
-        Add external css to `self.css`. The external css is a `<link>` tag
-        with the specified attributes. In particular, specify the `href`
-        attribute.
-
         Parameters
         ----------
         \*\*attrs :
-            Attribute names and values in the `<link>` tag.
+            Attribute names and values in the `<link/>` tag.
 
         Returns
         -------
         self : hemlock.HTMLMiixn
+
+        Notes
+        -----
+        See (statics.md#hemlocktoolsexternal_css).
         """
-        self._update_col(
-            col=self.css,
-            template='<link {}/>',
-            attrs={'rel': 'stylesheet', 'type': 'text/css'},
-            input_attrs=attrs
-        )
+        from ..tools import external_css
+        self.css.append(BeautifulSoup(external_css(**attrs), 'html.parser'))
+        self.css.changed()
+        return self
+
+    def add_internal_css(self, style):
+        """
+        Parameters
+        ----------
+        style : dict
+            Maps css selector to an attributes dictionary. The attributes 
+            dictionary maps attribute names to values.
+
+        Returns
+        -------
+        self : hemlock.HTMLMixin
+
+        Notes
+        -----
+        See (statics.md#hemlocktoolsinternal_css).
+        """
+        from ..tools import internal_css
+        self.css.append(BeautifulSoup(internal_css(style), 'html.parser'))
+        self.css.changed()
         return self
 
     def add_external_js(self, **attrs):
         """
-        Add external javascript to `self.js`. The external js is a `<script>`
-        tag with the specified attributes. In particular, specify the `src`
-        attribute.
-
         Parameters
         ----------
         \*\*attrs : 
@@ -199,62 +248,18 @@ class HTMLMixin(Base):
         Returns
         -------
         self : hemlock.HTMLMixin
+
+        Notes
+        -----
+        See (statics.md#hemlocktoolsexternal_js).
         """
-        self._update_col(
-            col=self.js,
-            template='<script {}></script>',
-            attrs={},
-            input_attrs=attrs
-        )
+        from ..tools import external_js
+        self.js.append(BeautifulSoup(external_js(**attrs), 'html.parser'))
+        self.js.changed()
         return self
-
-    def _update_col(self, col, template, attrs, input_attrs):
-        """Update a `Column` (self.css or self.js)
-
-        This method beings by translating the default attributes, `attrs`, 
-        and the user input attributes, `input_attrs` into HTML format. It 
-        then inserts the formatted attributes into an HTML `template`. 
-        Finally, it updates the column, `col`.
-        """
-        attrs.update(input_attrs)
-        html_attrs = ' '.join([key+'="'+val+'"' for key,val in attrs.items()])
-        html = template.format(html_attrs)
-        col.append(BeautifulSoup(html, 'html.parser'))
-        col.changed()
-    
-    def add_internal_css(self, style):
-        """
-        Add internal css to `self.css`. The internal css is a `<style>` tag
-        with the specified css selector : style dictionary.
-
-        Parameters
-        ----------
-        style : dict
-            Maps css selector to a style dictionary. The style dictionary maps
-            attribute names to values.
-
-        Returns
-        -------
-        self : hemlock.HTMLMixin
-        """
-        css = ' '.join(
-            [self._format_style(key, val) for key, val in style.items()]
-        )
-        html = '<style>{}</style>'.format(css)
-        self.css.append(BeautifulSoup(html, 'html.parser'))
-        self.css.changed()
-        return self
-            
-    def _format_style(self, selector, attrs):
-        """`attrs` maps attribute names to values"""
-        attrs = ' '.join([key+':'+val+';' for key, val in attrs.items()])
-        return selector+' {'+attrs+'}'
 
     def add_internal_js(self, js):
         """
-        Add internal javascript to `self.js`. The interal js is a `<script>`
-        tag with the specified `js` code.
-
         Parameters
         ----------
         js : str
@@ -263,10 +268,13 @@ class HTMLMixin(Base):
         Returns
         -------
         self : hemlock.HTMLMixin
+
+        Notes
+        -----
+        See (statics.md#hemlocktoolsinternal_js).
         """
-        if not js.startswith('<script>'):
-            js = '<script>{}</script>'.format(js)
-        self.js.append(BeautifulSoup(js, 'html.parser'))
+        from ..tools import internal_js
+        self.js.append(BeautifulSoup(internal_js(js), 'html.parser'))
         self.js.changed()
         return self
 
