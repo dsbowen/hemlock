@@ -1,7 +1,7 @@
 """Hemlock application file"""
 
 # import survey
-import tmp_survey2
+import tmp_survey
 
 from hemlock import create_app
 

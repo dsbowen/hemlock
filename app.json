@@ -1,0 +1,32 @@
+{
+    "addons": [
+        "heroku-postgresql:hobby-dev"
+    ],
+    "formation": {
+        "web": {
+            "quantity": 1,
+            "size": "free"
+        }
+    },
+    "env": {
+        "APP_IMPORT": {
+            "description": "Location of your application instance; module:app_instance",
+            "value": "app.app"
+        },
+        "CHROMEDRIVER_PATH": {
+            "description": "Location of your chromedriver binary",
+            "value": "/app/.chromedriver/bin/chromedriver"
+        }
+    },
+    "buildpacks": [
+        {
+            "url": "heroku/python"
+        },
+        {
+            "url": "https://github.com/heroku/heroku-buildpack-chromedriver"
+        },
+        {
+            "url": "https://github.com/heroku/heroku-buildpack-google-chrome"
+        }
+    ]
+}
