@@ -41,7 +41,7 @@ class FunctionRegistrar(FunctionMixin, Base):
         func : callable
             The function to register.
         """
-        if not (cls == Debug and os.environ.get('NO_DEBUG_FUNCTIONS')):
+        if cls != Debug or os.environ.get('DEBUG_FUNCTIONS') != 'False':
             def add_function(*args, **kwargs):
                     return cls(func, *args, **kwargs)
                     
