@@ -1,25 +1,25 @@
 {
-    "website": "https://hemlock-tutorial.herokuapp.com",
+    "name": "hemlock-tutorial",
     "addons": ["heroku-postgresql:hobby-dev"],
     "formation": {
         "web": {"quantity": 1, "size": "free"}
     },
     "env": {
         "APP_IMPORT": {
-            "description": "Location of your application instance; module:app_instance",
+            "description": "Location of your application instance; module:app_instance.",
             "value": "app.app"
         },
         "CHROMEDRIVER_PATH": {
-            "description": "Location of your chromedriver binary",
+            "description": "Location of your chromedriver binary.",
             "value": "/app/.chromedriver/bin/chromedriver"
         },
         "SECRET_KEY": {
-            "description": "Secret key for verifying the integretiy of signed cookies",
+            "description": "Secret key for verifying the integretiy of signed cookies.",
             "generator": "secret"
         },
         "URL_ROOT": {
-            "description": "URL of your application",
-            "value": "https://hemlock-tutorial.herokuapp.com"
+            "description": "Replace 'my-hemlock-app' with the application name.",
+            "value": "https://my-hemlock-app.herokuapp.com"
         }
     },
     "buildpacks": [
