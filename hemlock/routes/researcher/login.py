@@ -41,12 +41,12 @@ def check_password(login_page):
 
 def password_correct():
     """Indicate that the session password is correct"""
-    if not current_app.settings['password']:
+    if not current_app.config.get('PASSWORD'):
         return True
     if 'password' not in session:
         return False
     return check_password_hash(
-        current_app.settings['password_hash'], session['password']
+        current_app.config.get('PASSWORD_HASH'), session['password']
     )
 
 def login_successful():

@@ -93,10 +93,10 @@ Branching off of branches allows us to navigate to a new branch at the end of ou
 This time, instead of attaching the navigate function to the branch, we'll attach it to the first page of the branch:
 
 ```python
-from hemlock import Branch, Navigate, Page, Participant
+from hemlock import Branch, Navigate as N, Page, Participant
 
 def start():
-    return Branch(Navigate.middle(Page()), Page(terminal=True))
+    return Branch(Page(navigate=N.middle()), Page(terminal=True))
 
 @Navigate.register
 def middle(start_branch):

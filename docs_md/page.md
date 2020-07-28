@@ -57,14 +57,13 @@ originating from this page.
 
 
 
-##hemlock.**compile_func**
+##hemlock.**compile_questions**
 
 <p class="func-header">
-    <i>def</i> hemlock.<b>compile_func</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L54">[source]</a>
+    <i>def</i> hemlock.<b>compile_questions</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L56">[source]</a>
 </p>
 
-Default page compile function; executes its questions' compile methods in
-index order.
+Execute the page's questions' compile methods in index order.
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -82,14 +81,13 @@ index order.
 
 
 
-##hemlock.**validate_func**
+##hemlock.**validate_questions**
 
 <p class="func-header">
-    <i>def</i> hemlock.<b>validate_func</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L65">[source]</a>
+    <i>def</i> hemlock.<b>validate_questions</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L67">[source]</a>
 </p>
 
-Default page validate function; executes its questions' validate methods
-in index order.
+Execute the page's questions' validate methods in index order.
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -107,14 +105,13 @@ in index order.
 
 
 
-##hemlock.**submit_func**
+##hemlock.**submit_questions**
 
 <p class="func-header">
-    <i>def</i> hemlock.<b>submit_func</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L76">[source]</a>
+    <i>def</i> hemlock.<b>submit_questions</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L78">[source]</a>
 </p>
 
-Default page submit function; executes its questions' submit methods in
-index order.
+Execute the page's questions' submit methods in index order.
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -132,14 +129,13 @@ index order.
 
 
 
-##hemlock.**debug_func**
+##hemlock.**debug_questions**
 
 <p class="func-header">
-    <i>def</i> hemlock.<b>debug_func</b>(<i>driver, page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L87">[source]</a>
+    <i>def</i> hemlock.<b>debug_questions</b>(<i>driver, page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L89">[source]</a>
 </p>
 
-Default page debug function; execute its questions' debug methods in
-*random* order.
+Execute the page's questions' debug methods in  *random* order.
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -164,11 +160,11 @@ Default page debug function; execute its questions' debug methods in
 ##hemlock.**navigate**
 
 <p class="func-header">
-    <i>def</i> hemlock.<b>navigate</b>(<i>driver, page, p_forward=0.8, p_back=0.1, sleep_time=3</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L102">[source]</a>
+    <i>def</i> hemlock.<b>navigate</b>(<i>driver, page, p_forward=0.8, p_back=0.1, sleep_time=3</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L104">[source]</a>
 </p>
 
-This method randomly navigates forward or backward, or refreshes the
-page. By default it is executed after the default page debug function.
+Randomly navigate forward or backward, or refresh the page. By default, it
+is executed after the default page debug function.
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -207,7 +203,7 @@ The probability of refreshing the page is `1-p_forward-p_back`.
 ##hemlock.**Page**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Page</b>(<i>*questions, template='hemlock/page-body.html', timer_var =None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L157">[source]</a>
+    <i>class</i> hemlock.<b>Page</b>(<i>*questions, template='hemlock/page-body.html', timer_var =None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L160">[source]</a>
 </p>
 
 Pages are queued in a branch. A page contains a list of questions which it
@@ -327,7 +323,7 @@ It inherits from [`hemlock.model.HTMLMixin`](bases.md).
 <p class="attr">
     List of compile functions; run before the page is rendered. The default page compile function runs its questions' compile functions in index order.
 </p>
-<b>compile_worker : <i>hemlock.CompileWorker or None, default=None</i></b>
+<b>compile_worker : <i>hemlock.Worker or None, default=None</i></b>
 <p class="attr">
     Worker which sends the compile functions to a Redis queue.
 </p>
@@ -335,7 +331,7 @@ It inherits from [`hemlock.model.HTMLMixin`](bases.md).
 <p class="attr">
     List of validate functions; run to validate participant responses. The default page validate function runs its questions' validate functions in index order.
 </p>
-<b>validate_worker : <i>hemlock.ValidateWorker or None, default=None</i></b>
+<b>validate_worker : <i>hemlock.Worker or None, default=None</i></b>
 <p class="attr">
     Worker which sends the validate functions to a Redis queue.
 </p>
@@ -343,7 +339,7 @@ It inherits from [`hemlock.model.HTMLMixin`](bases.md).
 <p class="attr">
     List of submit functions; run after participant responses have been validated. The default submit function runs its questions' submit functions in index order.
 </p>
-<b>submit_worker : <i>hemlock.SubmitWorker or None, default=None</i></b>
+<b>submit_worker : <i>hemlock.Worker or None, default=None</i></b>
 <p class="attr">
     Worker which sends the submit functions to a Redis queue.
 </p>
@@ -351,7 +347,7 @@ It inherits from [`hemlock.model.HTMLMixin`](bases.md).
 <p class="attr">
     Navigate function which returns a new branch originating from this page.
 </p>
-<b>navigate_worker : <i>hemlock.NavigateWorker</i></b>
+<b>navigate_worker : <i>hemlock.Worker</i></b>
 <p class="attr">
     Worker which sends the navigate function to a Redis queue.
 </p>
@@ -378,7 +374,7 @@ Page(Label('<p>Hello World</p>')).preview()
 
 
 <p class="func-header">
-    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L506">[source]</a>
+    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L533">[source]</a>
 </p>
 
 Clear the error message from this page and all of its questions.
@@ -402,7 +398,7 @@ Clear the error message from this page and all of its questions.
 
 
 <p class="func-header">
-    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L518">[source]</a>
+    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L545">[source]</a>
 </p>
 
 Clear the response from all of this page's questions.
@@ -426,7 +422,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>first_page</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L529">[source]</a>
+    <i></i> <b>first_page</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L556">[source]</a>
 </p>
 
 
@@ -450,7 +446,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>is_valid</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L544">[source]</a>
+    <i></i> <b>is_valid</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L571">[source]</a>
 </p>
 
 
@@ -474,7 +470,7 @@ Clear the response from all of this page's questions.
 
 
 <p class="func-header">
-    <i></i> <b>preview</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L555">[source]</a>
+    <i></i> <b>preview</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L582">[source]</a>
 </p>
 
 Preview the page in a browser window.
@@ -514,7 +510,7 @@ This method does not run the compile functions.
 
 
 <p class="func-header">
-    <i></i> <b>view_nav</b>(<i>self, indent=0</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L633">[source]</a>
+    <i></i> <b>view_nav</b>(<i>self, indent=0</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L660">[source]</a>
 </p>
 
 Print the navigation starting at this page for debugging purposes.

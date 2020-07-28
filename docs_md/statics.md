@@ -33,10 +33,216 @@ Tool for generating statics (embedded images and videos).
 
 
 
+##hemlock.tools.**external_css**
+
+<p class="func-header">
+    <i>def</i> hemlock.tools.<b>external_css</b>(<i>**attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L21">[source]</a>
+</p>
+
+
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>**attrs : <i></i></b>
+<p class="attr">
+    Attribute names and values in the <code>&lt;link/&gt;</code> tag.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>css : <i>str</i></b>
+<p class="attr">
+    <code>&lt;link/&gt;</code> tag.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+####Examples
+
+```python
+from hemlock import Page, push_app_context
+from hemlock.tools import external_css
+
+app = push_app_context()
+
+p = Page(extra_css=external_css(href='https://my-css-url'))
+p.css
+```
+
+Out:
+
+```
+...
+<link href="https://my-css-url" rel="stylesheet" type="text/css"/>
+```
+
+##hemlock.tools.**internal_css**
+
+<p class="func-header">
+    <i>def</i> hemlock.tools.<b>internal_css</b>(<i>style</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L79">[source]</a>
+</p>
+
+
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>style : <i>dict</i></b>
+<p class="attr">
+    Maps css selector to an attributes dictionary. The attributes dictionary maps attribute names to values.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>css : <i>str</i></b>
+<p class="attr">
+    <code>&lt;style&gt;</code> tag.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+####Examples
+
+```python
+from hemlock import Page, push_app_context
+from hemlock.tools import internal_css
+
+app = push_app_context()
+
+p = Page(extra_css=internal_css({'body': {'background': 'coral'}}))
+p.css
+```
+
+Out:
+
+```
+...
+<style>
+    body {background:coral;}
+</style>
+```
+
+##hemlock.tools.**external_js**
+
+<p class="func-header">
+    <i>def</i> hemlock.tools.<b>external_js</b>(<i>**attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L120">[source]</a>
+</p>
+
+
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>**attrs : <i></i></b>
+<p class="attr">
+    Attribute names and values in the <code>&lt;script&gt;</code> tag.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>js : <i>str</i></b>
+<p class="attr">
+    <code>&lt;script&gt;</code> tag.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+####Examples
+
+```python
+from hemlock import Page, push_app_context
+from hemlock.tools import external_js
+
+app = push_app_context()
+
+p = Page(extra_js=external_js(src='https://my-js-url'))
+p.js
+```
+
+Out:
+
+```
+...
+<script src="https://my-js-url"></script>
+```
+
+##hemlock.tools.**internal_js**
+
+<p class="func-header">
+    <i>def</i> hemlock.tools.<b>internal_js</b>(<i>js</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L153">[source]</a>
+</p>
+
+
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>js : <i>str</i></b>
+<p class="attr">
+    Javascript code.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>js : <i>str</i></b>
+<p class="attr">
+    Javascript code wrapped in <code>&lt;script&gt;</code> tag.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+####Examples
+
+```python
+from hemlock import Page, push_app_context
+from hemlock.tools import internal_js
+
+app = push_app_context()
+
+p = Page(
+    extra_js=internal_js(
+        '''
+        $( document ).ready(function() {
+            alert('hello, world!');
+        });
+        '''
+    )
+)
+p.js
+```
+
+Out:
+
+```
+...
+<script>
+    $( document ).ready(function() {
+        alert('hello, world!');
+    });
+</script>
+```
+
 ##hemlock.tools.**src_from_bucket**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>src_from_bucket</b>(<i>filename</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L21">[source]</a>
+    <i>def</i> hemlock.tools.<b>src_from_bucket</b>(<i>filename</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L200">[source]</a>
 </p>
 
 
@@ -94,7 +300,7 @@ Page(Label(img)).preview()
 ##hemlock.tools.**url_from_bucket**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>url_from_bucket</b>(<i>filename, expiration=1800, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L67">[source]</a>
+    <i>def</i> hemlock.tools.<b>url_from_bucket</b>(<i>filename, expiration=1800, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L246">[source]</a>
 </p>
 
 
@@ -182,7 +388,7 @@ download button to download the file from your Google bucket.
 ##hemlock.tools.**Static**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Static</b>(<i>template, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L143">[source]</a>
+    <i>class</i> hemlock.tools.<b>Static</b>(<i>template, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L322">[source]</a>
 </p>
 
 Base for static objects (images and videos).
@@ -223,7 +429,7 @@ Base for static objects (images and videos).
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self, tag_selector=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L171">[source]</a>
+    <i></i> <b>render</b>(<i>self, tag_selector=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L350">[source]</a>
 </p>
 
 
@@ -254,7 +460,7 @@ Base for static objects (images and videos).
 ##hemlock.tools.**Img**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Img</b>(<i>template=os.path.join(DIR, 'img.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L208">[source]</a>
+    <i>class</i> hemlock.tools.<b>Img</b>(<i>template=os.path.join(DIR, 'img.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L387">[source]</a>
 </p>
 
 Static image.
@@ -316,7 +522,7 @@ Page(Label(img)).preview()
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L297">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L476">[source]</a>
 </p>
 
 
@@ -340,7 +546,7 @@ Page(Label(img)).preview()
 ##hemlock.tools.**Vid**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Vid</b>(<i>template=os.path.join(DIR, 'vid.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L314">[source]</a>
+    <i>class</i> hemlock.tools.<b>Vid</b>(<i>template=os.path.join(DIR, 'vid.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L493">[source]</a>
 </p>
 
 Static video.
@@ -387,7 +593,7 @@ Page(Label(vid.render())).preview()
 
 
 <p class="func-header">
-    <i></i> <b>from_youtube</b>(<i>src</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L359">[source]</a>
+    <i></i> <b>from_youtube</b>(<i>src</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L538">[source]</a>
 </p>
 
 Capture the YouTube video id and create an embedded src.
@@ -418,7 +624,7 @@ Capture the YouTube video id and create an embedded src.
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L383">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L562">[source]</a>
 </p>
 
 

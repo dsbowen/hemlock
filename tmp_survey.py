@@ -1,4 +1,4 @@
-from hemlock import Branch, Check, Compile as C, Debug as D, Embedded, Input, Label, Navigate as N, Page, Range, Select, Submit as S, Validate as V, route, settings
+from hemlock import Branch, Check, Compile as C, Debug as D, Embedded, Input, Label, Navigate as N, Page, Range, Select, Submit as S, Validate as V, route
 from hemlock.tools import Assigner, comprehension_check, join
 
 import random
@@ -10,7 +10,6 @@ N_ROUNDS = 5
 # the amount of money split
 POT = 20
 
-settings.update({'password': 'my-password'})
 assigner = Assigner({'Proposer': (0, 1)})
 
 @route('/survey')

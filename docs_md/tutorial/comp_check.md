@@ -79,23 +79,6 @@ We're going to use a comprehension check to explain the ultimatum game to our pa
 Open your notebook and let's preview the instructions page:
 
 ```python
-A good tool makes simple things easy and complex things possible.
-
-If you don't know which solution is better, start with the one that's simpler.
-
-import os
-try:
-    from yaml import load, CLoader as Loader
-except:
-    from yaml import load, Loader
-
-data = load(open('env/local-env.yml'), Loader=Loader)
-os.environ.update({key: str(val) for key, val in data.items()})
-
-from hemlock import push_app_context
-
-app = push_app_context()
-
 from hemlock import Page, Label
 
 # the number of rounds participants play

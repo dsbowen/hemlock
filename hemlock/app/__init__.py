@@ -14,7 +14,6 @@ from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
 from flask_worker import Manager
-from werkzeug.security import generate_password_hash
 
 import os
 
@@ -111,9 +110,6 @@ def _create_app(settings):
         static_folder=settings.get('static_folder'), 
         template_folder=settings.get('template_folder'),
     )
-    # set password hash
-    password = settings.get('password')
-    settings['password_hash'] = generate_password_hash(password)
     # get screenouts
     screenout_csv = settings.get('screenout_csv')
     if os.path.exists(screenout_csv):

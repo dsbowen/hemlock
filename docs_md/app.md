@@ -46,7 +46,7 @@
 ##hemlock.app.**push_app_context**
 
 <p class="func-header">
-    <i>def</i> hemlock.app.<b>push_app_context</b>(<i></i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L42">[source]</a>
+    <i>def</i> hemlock.app.<b>push_app_context</b>(<i></i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L43">[source]</a>
 </p>
 
 Push an app context for debugging in shell or notebook.
@@ -82,7 +82,7 @@ Out:
 ##hemlock.app.**create_app**
 
 <p class="func-header">
-    <i>def</i> hemlock.app.<b>create_app</b>(<i>settings=settings</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L73">[source]</a>
+    <i>def</i> hemlock.app.<b>create_app</b>(<i>settings=settings</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L74">[source]</a>
 </p>
 
 Create a Hemlock application.
@@ -203,7 +203,7 @@ Below are the default settings for Hemlock applications and extensions.
 <p class="attr">
     
 </p>
-<b>REDIS_URL : <i></i></b>
+<b>REDIS_URL : <i>str, default=None</i></b>
 <p class="attr">
     Looks for a <code>REDIS_URL</code> environment variable.
 </p></td>
@@ -227,7 +227,7 @@ Below are the default settings for Hemlock applications and extensions.
     <th class="field-name"><b>Talisman:</b></td>
     <td class="field-body" width="100%"><b>content_security_policy : <i>dict</i></b>
 <p class="attr">
-    Content security policy for <a href="https://github.com/GoogleCloudPlatform/flask-talisman">flask-talisman</a>. Default allows for third party content from Google API, JQuery, JSDeliver, Bootstrap, and YouTube.
+    Content security policy for <a href="https://github.com/GoogleCloudPlatform/flask-talisman">flask-talisman</a>. Default allows for third party content from Bootstrap, Cloudflare, Google API, JQuery, JSDeliver, SocketIO, and YouTube.
 </p></td>
 </tr>
     </tbody>

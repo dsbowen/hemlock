@@ -31,10 +31,10 @@
 
 
 
-##hemlock.**debug_func**
+##hemlock.**random_input**
 
 <p class="func-header">
-    <i>def</i> hemlock.<b>debug_func</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/input.py#L17">[source]</a>
+    <i>def</i> hemlock.<b>random_input</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/input.py#L18">[source]</a>
 </p>
 
 Default debug function for input questions. This function sends a random
@@ -64,7 +64,7 @@ object if the input takes dates or times.
 ##hemlock.**Input**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Input</b>(<i>label='', template='hemlock/input.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/input.py#L38">[source]</a>
+    <i>class</i> hemlock.<b>Input</b>(<i>label='', template='hemlock/input.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/input.py#L39">[source]</a>
 </p>
 
 Inputs take text input by default, or other types of html inputs.

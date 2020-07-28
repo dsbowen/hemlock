@@ -46,7 +46,7 @@ model_filenames = [
     'page',
     'participant',
     'question',
-    'workers',
+    'worker',
 ]
 
 for filename in model_filenames:

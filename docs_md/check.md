@@ -31,29 +31,10 @@
 
 
 
-##hemlock.**click_choices**
-
-<p class="func-header">
-    <i>def</i> hemlock.<b>click_choices</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/check.py#L6">[source]</a>
-</p>
-
-Default debug function. See
-[`hemlock.functions.debug.click_choices`](debug_functions.md).
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        
-    </tbody>
-</table>
-
-
-
 ##hemlock.**Check**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Check</b>(<i>label='', choices=[], template='hemlock/check.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/check.py#L22">[source]</a>
+    <i>class</i> hemlock.<b>Check</b>(<i>label='', choices=[], template='hemlock/check.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/check.py#L15">[source]</a>
 </p>
 
 Check questions use radio inputs if only one choice can be selected, or
@@ -61,8 +42,8 @@ checkbox inputs if multiple choices can be selected.
 
 Inherits from [`hemlock.ChoiceQuestion`](question.md).
 
-By default, choices are positioned vertically. To position them
-horizontally, set `inline` to True.
+Its default debug function is
+[`check_choices`](debug_functions.md#hemlockfunctionsdebugclick_choices).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />

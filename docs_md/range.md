@@ -31,39 +31,10 @@
 
 
 
-##hemlock.**debug_func**
-
-<p class="func-header">
-    <i>def</i> hemlock.<b>debug_func</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L8">[source]</a>
-</p>
-
-Default debug function for range inputs. See
-[`drag_range`](debug_functions.md).
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
-<p class="attr">
-    
-</p>
-<b>question : <i>hemlock.Range</i></b>
-<p class="attr">
-    
-</p></td>
-</tr>
-    </tbody>
-</table>
-
-
-
 ##hemlock.**Range**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Range</b>(<i>label='', template='hemlock/range.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L25">[source]</a>
+    <i>class</i> hemlock.<b>Range</b>(<i>label='', template='hemlock/range.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L12">[source]</a>
 </p>
 
 Range sliders can be dragged between minimum and maximum values in step
@@ -108,9 +79,8 @@ Inherits from [`hemlock.InputBase`](bases.md) and
 ####Notes
 
 Ranges have a default javascript which displays the value of the range
-slider to participants. This *cannot* be overridden by passing a `js`
-argument to the constructor, although javascript can be modified after the
-constructor has finished.
+slider to participants. This will be appended to any `js` and `extra_js`
+arguments passed to the constructor.
 
 ####Examples
 

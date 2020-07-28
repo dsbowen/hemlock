@@ -34,10 +34,8 @@
 ##hemlock.tools.**comprehension_check**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>comprehension_check</b>(<i>branch, instructions, checks, attempts=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/comprehension.py#L8">[source]</a>
+    <i>def</i> hemlock.tools.<b>comprehension_check</b>(<i>instructions, checks, attempts=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/comprehension.py#L8">[source]</a>
 </p>
-
-Add a comprehension check to a branch.
 
 A comprehension check consists of 'instruction' pages followed by 'check'
 pages. The data of all questions in a check page must evaluate to `True`
@@ -55,11 +53,7 @@ the instructions, he is brought directly to check B, skipping check A.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>branch : <i>hemlock.Branch</i></b>
-<p class="attr">
-    Branch to which the comprehension check is attached.
-</p>
-<b>instructions : <i>hemlock.Page or list of hemlock.Page</i></b>
+    <td class="field-body" width="100%"><b>instructions : <i>hemlock.Page or list of hemlock.Page</i></b>
 <p class="attr">
     Instruction page(s).
 </p>
@@ -74,9 +68,9 @@ the instructions, he is brought directly to check B, skipping check A.
 </tr>
 <tr class="field">
     <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>branch : <i>hemlock.Branch</i></b>
+    <td class="field-body" width="100%"><b>pages : <i>list of hemlock.Page</i></b>
 <p class="attr">
-    The original branch, with added comprehension check.
+    List of instructions pages + check pages.
 </p></td>
 </tr>
     </tbody>
@@ -92,21 +86,28 @@ must be the last submit function of each check page.
 We have two files in our root directory. In `survey.py`:
 
 ```python
-from hemlock import Branch, Page, Label, Input, Submit, route
+from hemlock import Branch, Page, Label, Input, Submit as S, route
 from hemlock.tools import comprehension_check
-
-INSTRUCTIONS = '<p>Here are some instructions.</p>'
-CHECK = '<p>Enter "hello world" or you... shall not... PASS!</p>'
 
 @route('/survey')
 def start():
-    branch = comprehension_check(
-        Branch(),
-        instructions=Page(Label(INSTRUCTIONS)),
-        checks=Page(Submit.match(Input(CHECK), 'hello world'))
+    return Branch(
+        *comprehension_check(
+            instructions=Page(
+                Label('<p>Here are some instructions.</p>')
+            ),
+            checks=Page(
+                Input(
+                    '<p>Enter "hello world" or you... shall not... PASS!</p>',
+                    submit=S.match('hello world')
+                )
+            )
+        ),
+        Page(
+            Label('<p>You passed the comprehension check!</p>'),
+            terminal=True
+        )
     )
-    branch.pages.append(Page(Label('<p>You passed the test!</p>')))
-    return branch
 ```
 
 In `app.py`:

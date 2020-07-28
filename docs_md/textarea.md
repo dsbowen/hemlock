@@ -31,39 +31,10 @@
 
 
 
-##hemlock.**debug_func**
-
-<p class="func-header">
-    <i>def</i> hemlock.<b>debug_func</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L9">[source]</a>
-</p>
-
-Default debug function for textarea questions. See
-[`hemlock.functions.debug.random_keys`](debug_functions.md).
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
-<p class="attr">
-    
-</p>
-<b>question : <i>hemlock.Textarea</i></b>
-<p class="attr">
-    
-</p></td>
-</tr>
-    </tbody>
-</table>
-
-
-
 ##hemlock.**Textarea**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Textarea</b>(<i>page=None, template='hemlock/textarea.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L26">[source]</a>
+    <i>class</i> hemlock.<b>Textarea</b>(<i>page=None, template='hemlock/textarea.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L13">[source]</a>
 </p>
 
 Textareas provide large text boxes for free responses.
@@ -102,10 +73,9 @@ Inherits from [`hemlock.qpolymorphs.InputGroup`](input_group.md) and
 
 ####Notes
 
-Textareas have a default javascript which displays the number of words and
-characters entered. This *cannot* be overridden by passing a `js` argument
-to the constructor, although javascript can be modified after the
-constructor has finished.
+Textareas have a default javascript which displays the character and word
+count to participants. This will be appended to any `js` and `extra_js`
+arguments passed to the constructor.
 
 ####Examples
 
@@ -122,7 +92,7 @@ Page(Textarea('<p>This is a textarea.</p>')).preview()
 
 
 <p class="func-header">
-    <i></i> <b>textarea_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L95">[source]</a>
+    <i></i> <b>textarea_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L83">[source]</a>
 </p>
 
 Get textarea from the webdriver for debugging.

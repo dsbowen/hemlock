@@ -13,9 +13,6 @@ duplicate_keys : list, default=[]
     List of keys (column names) on which to block duplicate participants. If
     empty, the app will not screen out duplicates.
 
-password : str, default=''
-    Password for accessing the researcher dashboard.
-
 restart_option : bool, default=True
     Indicates that participants who attempt to re-navigate to the index page 
     will be given the option to restart the survey. If `False`, participants 
@@ -58,6 +55,12 @@ validate : bool, default=True
 
 Config
 ------
+PASSWORD : str
+    Looks for a `PASSWORD` environment variable.
+
+PASSWORD_HASH : str
+    Generated password hash.
+
 SECRET_KEY : str
     Looks for a `SECRET_KEY` environment variable.
 
@@ -102,7 +105,12 @@ See <https://dsbowen.github.io/flask-worker/manager/> for more detail on
 Manager settings.
 """
 
+from werkzeug.security import generate_password_hash
+
 import os
+
+PASSWORD = os.environ.get('PASSWORD', '')
+PASSWORD_HASH = generate_password_hash(PASSWORD)
 
 RESTART_TXT = """
 <p>Click << to return to your in progress survey. Click >> to restart the survey.</p>
@@ -121,7 +129,6 @@ TIME_EXPIRED_TXT = 'You have exceeded your time limit for this survey'
 settings = {
     'clean_data': None,
     'duplicate_keys': [],
-    'password': '',
     'restart_option': True,
     'restart_text': RESTART_TXT,
     'screenout_csv': 'screenout.csv',
@@ -134,10 +141,11 @@ settings = {
     'time_limit': None,
     'validate': True,
     'Config': {
-        'SECRET_KEY': os.environ.get('SECRET_KEY') or 'secret-key',
-        'SQLALCHEMY_DATABASE_URI': (
-            os.environ.get('DATABASE_URL')
-            or 'sqlite:///'+os.path.join(os.getcwd(), 'data.db')
+        'PASSWORD': PASSWORD,
+        'PASSWORD_HASH': PASSWORD_HASH,
+        'SECRET_KEY': os.environ.get('SECRET_KEY', 'secret-key'),
+        'SQLALCHEMY_DATABASE_URI': os.environ.get(
+            'DATABASE_URL', 'sqlite:///'+os.path.join(os.getcwd(), 'data.db')
         ),
         'SQLALCHEMY_TRACK_MODIFICATIONS': False,
         'REDIS_URL': os.environ.get('REDIS_URL'),

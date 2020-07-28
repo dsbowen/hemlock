@@ -110,7 +110,7 @@ Data elements 'pack' their data and return it to their participant, who in turn 
 ##hemlock.**HTMLMixin**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>HTMLMixin</b>(<i>template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L134">[source]</a>
+    <i>class</i> hemlock.<b>HTMLMixin</b>(<i>template=None, extra_css='', extra_js='', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L136">[source]</a>
 </p>
 
 Mixin for models which contribute html to a page.
@@ -124,6 +124,14 @@ Mixin for models which contribute html to a page.
     <td class="field-body" width="100%"><b>template : <i>str, default depends on object</i></b>
 <p class="attr">
     Jinja template which is rendered to produce <code>self.body</code>.
+</p>
+<b>extra_css : <i>str or bs4.BeautifulSoup or list, default=''</i></b>
+<p class="attr">
+    Extra stylesheets to append to the default css.
+</p>
+<b>extra_js : <i>str or bs4.BeautifulSoup or list, default=''</i></b>
+<p class="attr">
+    Extra scripts to append to the default javascript.
 </p></td>
 </tr>
 <tr class="field">
@@ -132,11 +140,11 @@ Mixin for models which contribute html to a page.
 <p class="attr">
     The main html of the object.
 </p>
-<b>css : <i>sqlalchemy_mutablesoup.MutableSoupType, default=None</i></b>
+<b>css : <i>sqlalchemy_mutablesoup.MutableSoupType, default=''</i></b>
 <p class="attr">
     CSS the object contributes to the page.
 </p>
-<b>js : <i>sqlalchemy_mutablesoup.MutableSoupType, default=None</i></b>
+<b>js : <i>sqlalchemy_mutablesoup.MutableSoupType, default=''</i></b>
 <p class="attr">
     Javascript the object contributes to the page.
 </p></td>
@@ -151,12 +159,10 @@ Mixin for models which contribute html to a page.
 
 
 <p class="func-header">
-    <i></i> <b>add_external_css</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L165">[source]</a>
+    <i></i> <b>add_external_css</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L200">[source]</a>
 </p>
 
-Add external css to `self.css`. The external css is a `<link>` tag
-with the specified attributes. In particular, specify the `href`
-attribute.
+
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -166,7 +172,7 @@ attribute.
     <th class="field-name"><b>Parameters:</b></td>
     <td class="field-body" width="100%"><b>**attrs : <i></i></b>
 <p class="attr">
-    Attribute names and values in the <code>&lt;link&gt;</code> tag.
+    Attribute names and values in the <code>&lt;link/&gt;</code> tag.
 </p></td>
 </tr>
 <tr class="field">
@@ -179,17 +185,50 @@ attribute.
     </tbody>
 </table>
 
+####Notes
 
+See (statics.md#hemlocktoolsexternal_css).
 
 
 
 <p class="func-header">
-    <i></i> <b>add_external_js</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L188">[source]</a>
+    <i></i> <b>add_internal_css</b>(<i>self, style</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L220">[source]</a>
 </p>
 
-Add external javascript to `self.js`. The external js is a `<script>`
-tag with the specified attributes. In particular, specify the `src`
-attribute.
+
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>style : <i>dict</i></b>
+<p class="attr">
+    Maps css selector to an attributes dictionary. The attributes dictionary maps attribute names to values.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>self : <i>hemlock.HTMLMixin</i></b>
+<p class="attr">
+    
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+####Notes
+
+See (statics.md#hemlocktoolsinternal_css).
+
+
+
+<p class="func-header">
+    <i></i> <b>add_external_js</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L241">[source]</a>
+</p>
+
+
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -212,48 +251,17 @@ attribute.
     </tbody>
 </table>
 
+####Notes
 
-
-
-
-<p class="func-header">
-    <i></i> <b>add_internal_css</b>(<i>self, style</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L225">[source]</a>
-</p>
-
-Add internal css to `self.css`. The internal css is a `<style>` tag
-with the specified css selector : style dictionary.
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>style : <i>dict</i></b>
-<p class="attr">
-    Maps css selector to a style dictionary. The style dictionary maps attribute names to values.
-</p></td>
-</tr>
-<tr class="field">
-    <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>self : <i>hemlock.HTMLMixin</i></b>
-<p class="attr">
-    
-</p></td>
-</tr>
-    </tbody>
-</table>
-
-
+See (statics.md#hemlocktoolsexternal_js).
 
 
 
 <p class="func-header">
-    <i></i> <b>add_internal_js</b>(<i>self, js</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L253">[source]</a>
+    <i></i> <b>add_internal_js</b>(<i>self, js</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L261">[source]</a>
 </p>
 
-Add internal javascript to `self.js`. The interal js is a `<script>`
-tag with the specified `js` code.
+
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -276,7 +284,9 @@ tag with the specified `js` code.
     </tbody>
 </table>
 
+####Notes
 
+See (statics.md#hemlocktoolsinternal_js).
 
 ##hemlock.**InputBase**
 
@@ -305,7 +315,7 @@ Base for models which contain `<input>` tags.
 
 
 <p class="func-header">
-    <i></i> <b>input_from_driver</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L287">[source]</a>
+    <i></i> <b>input_from_driver</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L295">[source]</a>
 </p>
 
 
@@ -336,7 +346,7 @@ Base for models which contain `<input>` tags.
 
 
 <p class="func-header">
-    <i></i> <b>label_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L301">[source]</a>
+    <i></i> <b>label_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L309">[source]</a>
 </p>
 
 
