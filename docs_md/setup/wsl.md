@@ -97,6 +97,8 @@ $ git config --global user.name <my-github-username>
 $ git config --global user.email <my-github-user-email>
 ```
 
+Finally, you will need a personal access token to initialize hemlock applications with the hemlock command line interface (more on this later). Create a token by following [these instructions](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). When setting permissions (step 7), check 'repo'. Copy your token and store it somewhere accessible. For example, I store my token in a file named `github_token.txt`.
+
 ## Visual studio code
 
 I recommend visual studio code for editing python files. [Download VS code here](https://code.visualstudio.com/).

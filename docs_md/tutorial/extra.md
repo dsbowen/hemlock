@@ -4,7 +4,7 @@ You already know most of the important stuff. Here are some tips and tricks to m
 
 ## Redis
 
-One of hemlock's most impressive features is seamless integration with Redis for running complex background processes during surveys. See (../worker.md) for more details.
+One of hemlock's most impressive features is seamless integration with Redis for running complex background processes during surveys. [Read more here](../worker.md).
 
 ## Settings
 

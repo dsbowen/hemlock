@@ -2,7 +2,7 @@
 
 In the previous part of the tutorial, you learned how to debug your app with hemlock's custom debugging tool.
 
-In this part of the tutorial, you'll learn how to deploy your application (i.e. put it on the web).
+In this part of the tutorial, you'll learn how to deploy your application (a.k.a. put it into production or put it on the web).
 
 ## Setup
 
@@ -15,9 +15,9 @@ The easiest way to deploy web apps is with [heroku](https://heroku.com/). Hemloc
 
 ## Debugging in a staging environment
 
-Before we deploy our project 'for real', we're going to deploy to a staging environment using free heroku resources and run our debugger one more time. Why? Because, on extremely rare occasions, the production environment is just different enough from your local environment to break something in unexpected ways. The staging environment is virtually identical to the production environment, so if things go well in staging, we can sleep soundly knowing that our app will run smoothly in production.
+Before we deploy our project 'for real', we're going to deploy to a staging environment using free heroku resources and run our debugger one more time. Why? Because the production environment is subtly different from your local environment, which can cause problems in very rare cases. The staging environment is virtually identical to the production environment, so if things go well in staging, our app should run smoothly in production.
 
-### Deploy your app in staging
+### Deploying your app in staging
 
 Deploying your application is as easy as:
 
@@ -25,12 +25,12 @@ Deploying your application is as easy as:
 $ hlk deploy
 ```
 
-You'll probably be prompted for your github username and password. Then, you'll be redirected to a page on the heroku website. If this is your first time deploying an app, heroku will prompt you to connect to your github account.
+You'll be redirected to a page on the heroku website. If this is your first time deploying an app, heroku will prompt you to connect to your github account.
 
 Once you're on the heroku page, make the following modifications to your application configuration:
 
 1. Enter a name for your application.
-2. Set your `PASSWORD`. This password protects your data.
+2. Set your `PASSWORD`. You will need to enter this password to log in to the researcher dashboard to access your data.
 3. Set your `URL_ROOT`. For example, if your project is named `my-first-project235`, your `URL_ROOT` would be `https://my-first-project235.herokuapp.com`. This tells the debugger where to look for your app.
 
 Click 'Deploy app' and watch the magic happen. In 2-3 minutes, your survey will be online.
@@ -106,13 +106,15 @@ to:
 Let's deploy our app and set our configuration variables like we did before:
 
 ```bash
-hlk deploy
+$ hlk deploy
 ```
 
 1. Enter a name for your application.
 2. Set your `PASSWORD`.
 3. Set your `URL_ROOT`.
-4. **New step.** Set `DEBUG_FUNCTIONS` to `False`. This stops your application for creating debug functions. We're not going to run the debugger again at this point, so debug functions will just slow things down.
+4. **New step.** Set `DEBUG_FUNCTIONS` to `False`. This stops your application from creating debug functions. We're not going to run the debugger again at this point, so debug functions will just slow things down.
+
+Like before, click 'Deploy app' at the bottom of the page.
 
 Your app is now online, ready to send to the world! Don't forget to download your data, and destroy your application when you're finished:
 
@@ -126,7 +128,7 @@ How much will it cost me to play around with my app in production? Answer: $0.10
 
 How much will it cost me to run a study with these resources? Answer: $5. Do the same math, but assume your study is online for half a day. 
 
-**Side note.** The exact amount of compute power you need depends on the application. This is a rough one-size-fits-all recommendation that will work nicely for most academic studies. You can [read more about heroku resources here](https://www.heroku.com/pricing).
+**Side note.** The exact amount of compute power you need depends on the application. My recommendation for a standard-0 database and 10 standard-1x web dynos is a rough recommendation that will work well for most academic studies. [Read more about heroku resources here](https://www.heroku.com/pricing).
 
 ## Alternative deployment options
 
