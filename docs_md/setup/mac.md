@@ -12,17 +12,27 @@ $ <my-bash-command>
 
 **Note 1.** You don't type `$`; it simply indicates the beginning of a bash command.
 
-**Note 2.** For this tutorial, always make sure to change to your home directory after you open your terminal.
+**Note 2.** For this tutorial, always make sure to change to your home directory after you open your terminal. Do this by entering:
+
+```bash
+$ cd
+```
 
 ## Python3 and pip3
 
 Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-CLI.
 
+**Read everything until STOP before downloading or installing anything.**
+
 You can [download the latest version of python here](https://www.python.org/downloads/). 
 
-However, I recommend an earlier version, python3.6. [Download python3.6 here](https://www.python.org/ftp/python/3.6.8/python-3.6.8-macosx10.9.pkg). Why? Because heroku, my recommended method of app deployment, uses python3.6, meaning that if you develop in python3.7+ and deploy in python3.6, you may encounter compatibility issues.
+However, I recommend an earlier version, python3.6. [Download python3.6 here](https://www.python.org/ftp/python/3.6.8/python-3.6.8-macosx10.9.pkg). 
 
-**Make sure to click *Add Python to PATH* on the first page of the installer.**
+Why do I recommend 3.6 instead of the latest version of python? Because heroku, my recommended method of app deployment, uses python3.6, meaning that if you develop in python3.7+ and deploy in python3.6, you may encounter compatibility issues.
+
+**When you start the python installer, you'll see an *Add Python to PATH* option on the first page. Make sure to select this option.**
+
+**STOP.**
 
 Close and re-open your terminal window. Verify your python installation.
 
@@ -46,13 +56,13 @@ pip xx.x.x ...
 
 ## Hemlock-CLI
 
-Hemlock's command line interface, hemlock-CLI, defines many useful commands for initializing, editing, and deploying hemlock projects. Download with:
+Hemlock's command line interface, hemlock-CLI, defines many useful commands for initializing, editing, and deploying hemlock projects. Install with:
 
 ```bash
-$ pip install hemlock-cli
+$ pip install -U hemlock-cli
 ```
 
-Verify your hemlockCLI installation:
+Verify your hemlock-CLI installation:
 
 ```bash
 $ hlk --version
@@ -77,7 +87,7 @@ Verify your git installation:
 $ git --version
 ```
 
-Finally, you will need a personal access token to initialize hemlock applications with the hemlock command line interface (more on this later). Create a token by following [these instructions](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). When setting permissions (step 7), check 'repo'. Copy your token and store it somewhere accessible. For example, I store my token in a file named `github_token.txt`.
+Finally, you will need a personal access token to initialize hemlock projects with hemlock-CLI. Create a token by following [these instructions](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). When setting permissions (step 7), check 'repo'. Copy your token and store it somewhere accessible. For example, I store my token in a file named `github_token.txt`.
 
 Now that you have github, you may prefer to work in a git bash terminal, rather than the native mac terminal. Right click anywhere on your desktop and select 'Git Bash Here`. You should see a terminal window appear.
 
@@ -97,7 +107,7 @@ $ code --version
 [Jupyter](https://jupyter.org/) allows you to quickly iterate on project designs. Install with pip:
 
 ```bash
-$ pip install notebook
+$ pip install -U notebook
 ```
 
 Close and re-open your terminal. Verify your jupyter installation:

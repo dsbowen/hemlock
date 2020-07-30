@@ -2,7 +2,7 @@
 
 These instructions were written for Windows 10.
 
-Why WSL? The main reason I use WSL is that Windows OS doesn't have a fork (only a spoon), which means you'll need WSL if you want to run Redis. You can find [download instructions for WSL here](https://docs.microsoft.com/en-us/windows/wsl/install-win10). Either WSL 1 or 2 should work.
+Why WSL? The main reason I use WSL is that Windows OS doesn't have a fork (only a spoon), which means you'll need WSL if you want to run Redis. You can find [download instructions for WSL here](https://docs.microsoft.com/en-us/windows/wsl/install-win10). Either WSL 1 or 2 should work. I personally use the Ubuntu distribution.
 
 After you've installed WSL, open a terminal window (WIN + R, then enter e.g. 'ubuntu2004'. You may be prompted to create a username and password.
 
@@ -67,7 +67,7 @@ Many hemlock-CLI commands assume you can pip install with `pip3`.
 Hemlock's command line interface, hemlock-CLI, defines many useful commands for initializing, editing, and deploying hemlock projects. Download with:
 
 ```bash
-$ pip install hemlock-cli
+$ pip install -U hemlock-cli
 ```
 
 Verify your hemlock-CLI installation:
@@ -117,7 +117,7 @@ $ code --version
 [Jupyter](https://jupyter.org/) allows you to quickly iterate on project designs. Install with pip:
 
 ```bash
-$ pip install notebook
+$ pip install -U notebook
 ```
 
 Close and re-open your terminal. Verify your jupyter installation:

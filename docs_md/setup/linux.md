@@ -49,7 +49,7 @@ Many hemlock-CLI commands assume you can pip install with `pip3`.
 Hemlock's command line interface, hemlock-CLI, defines many useful commands for initializing, editing, and deploying hemlock projects. Download with:
 
 ```bash
-$ pip install hemlock-cli
+$ pip install -U hemlock-cli
 ```
 
 Verify your hemlock-CLI installation:
@@ -97,7 +97,7 @@ $ code --version
 [Jupyter](https://jupyter.org/) allows you to quickly iterate on project designs. Install with pip:
 
 ```bash
-$ pip install notebook
+$ pip install -U notebook
 ```
 
 Close and re-open your terminal. Verify your jupyter installation:

@@ -246,7 +246,7 @@
               
                 <h1 id="windows-subsystem-for-linux-wsl-setup">Windows Subsystem for Linux (WSL) setup</h1>
 <p>These instructions were written for Windows 10.</p>
-<p>Why WSL? The main reason I use WSL is that Windows OS doesn't have a fork (only a spoon), which means you'll need WSL if you want to run Redis. You can find <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">download instructions for WSL here</a>. Either WSL 1 or 2 should work.</p>
+<p>Why WSL? The main reason I use WSL is that Windows OS doesn't have a fork (only a spoon), which means you'll need WSL if you want to run Redis. You can find <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">download instructions for WSL here</a>. Either WSL 1 or 2 should work. I personally use the Ubuntu distribution.</p>
 <p>After you've installed WSL, open a terminal window (WIN + R, then enter e.g. 'ubuntu2004'. You may be prompted to create a username and password.</p>
 <h2 id="python3-and-pip3">Python3 and pip3</h2>
 <p>Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-CLI.</p>
@@ -286,7 +286,7 @@ pip x.x.x from /usr/lib/python3/dist-packages (python 3.x)
 <p>Many hemlock-CLI commands assume you can pip install with <code>pip3</code>.</p>
 <h2 id="hemlock-cli">Hemlock-CLI</h2>
 <p>Hemlock's command line interface, hemlock-CLI, defines many useful commands for initializing, editing, and deploying hemlock projects. Download with:</p>
-<pre><code class="bash">$ pip install hemlock-cli
+<pre><code class="bash">$ pip install -U hemlock-cli
 </code></pre>
 
 <p>Verify your hemlock-CLI installation:</p>
@@ -318,7 +318,7 @@ $ git config --global user.email &lt;my-github-user-email&gt;
 
 <h2 id="jupyter">Jupyter</h2>
 <p><a href="https://jupyter.org/">Jupyter</a> allows you to quickly iterate on project designs. Install with pip:</p>
-<pre><code class="bash">$ pip install notebook
+<pre><code class="bash">$ pip install -U notebook
 </code></pre>
 
 <p>Close and re-open your terminal. Verify your jupyter installation:</p>
