@@ -287,13 +287,14 @@
 $ ls
 </code></pre>
 
+<p><strong>Note.</strong> You will only have to initialize a new hemlock project once per project.</p>
 <h4 id="set-up-your-virtual-environment">Set up your virtual environment</h4>
 <p>Activate your virtual environment.</p>
-<p>Activate from git bash:</p>
+<p>Activate from git bash on Windows:</p>
 <pre><code class="bash">$ . hemlock-venv/scripts/activate
 </code></pre>
 
-<p>Activate from WSL:</p>
+<p>Activate from WSL or Mac:</p>
 <pre><code class="bash">$ . hemlock-venv/bin/activate
 </code></pre>
 
@@ -306,6 +307,7 @@ $ ls
 </code></pre>
 
 <p>It's good practice to use <a href="https://docs.python.org/3/tutorial/venv.html">virtual environments</a> and activate them whenever you're working on a project.</p>
+<p><strong>Note.</strong> You will only have to pip install the requirements and add hemlock-venv to jupyter once per project. However, you will have to activate your virtual environment every time you open a new terminal to work on this project. That is, suppose you close and re-open your terminal. You will have to change directory into your project folder and re-activate the virtual environment.</p>
 <h4 id="if-using-wsl">If using WSL</h4>
 <p>If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable. Open a file which specifies your local environment variables:</p>
 <pre><code class="bash">$ code env.yaml
@@ -377,6 +379,7 @@ $ cd my-first-project
 <pre><code class="bash">$ python3 -m ipykernel install --user --name=hemlock-venv
 </code></pre>
 
+<p><strong>Note.</strong> You will only have to pip install hemlock and ipykernel and add hemlock-venv to jupyter once per project. However, you will have to activate your virtual environment every time you open a new terminal to work on this project. That is, suppose you close and re-open your terminal. You will have to change directory into your project folder and re-activate the virtual environment.</p>
 <h4 id="if-using-wsl_1">If using WSL</h4>
 <p>If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable.</p>
 <pre><code class="bash">$ export WSL_DISTRIBUTION=Ubuntu-20.04 # or other WSL distribution

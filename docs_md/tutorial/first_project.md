@@ -49,17 +49,19 @@ $ cd my-first-project
 $ ls
 ```
 
+**Note.** You will only have to initialize a new hemlock project once per project.
+
 #### Set up your virtual environment
 
 Activate your virtual environment.
 
-Activate from git bash:
+Activate from git bash on Windows:
 
 ```bash
 $ . hemlock-venv/scripts/activate
 ```
 
-Activate from WSL:
+Activate from WSL or Mac:
 
 ```bash
 $ . hemlock-venv/bin/activate
@@ -78,6 +80,8 @@ $ python3 -m ipykernel install --user --name=hemlock-venv
 ```
 
 It's good practice to use [virtual environments](https://docs.python.org/3/tutorial/venv.html) and activate them whenever you're working on a project.
+
+**Note.** You will only have to pip install the requirements and add hemlock-venv to jupyter once per project. However, you will have to activate your virtual environment every time you open a new terminal to work on this project. That is, suppose you close and re-open your terminal. You will have to change directory into your project folder and re-activate the virtual environment.
 
 #### If using WSL
 
@@ -186,6 +190,8 @@ Add your virtual environment to jupyter:
 ```bash
 $ python3 -m ipykernel install --user --name=hemlock-venv
 ```
+
+**Note.** You will only have to pip install hemlock and ipykernel and add hemlock-venv to jupyter once per project. However, you will have to activate your virtual environment every time you open a new terminal to work on this project. That is, suppose you close and re-open your terminal. You will have to change directory into your project folder and re-activate the virtual environment.
 
 #### If using WSL
 
