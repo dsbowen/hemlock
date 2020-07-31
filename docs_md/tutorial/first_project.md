@@ -26,11 +26,19 @@ Check out the setup page for your OS:
 
 #### Initialize a new hemlock project
 
-Run the following, replacing `<my-github-token>` with your github authentication token:
+Run the following, replacing `<my-github-username>` with your github username and`<my-github-token>` with your github authentication token:
 
 ```bash
-$ hlk init my-first-project <my-github-token>
+$ hlk init my-first-project <my-github-username> <my-github-token>
 ```
+
+For example, I would enter:
+
+```bash
+$ hlk init my-first-project dsbowen bts4rxpmw2x6tsy2qel1y7p5hwmhd7wxopmk5vsp
+```
+
+(This isn't my real authentication token!)
 
 This will 'clone' the template into a folder `my-first-project`, initialize an eponymous github repository for your project, and create a virtual environment.
 

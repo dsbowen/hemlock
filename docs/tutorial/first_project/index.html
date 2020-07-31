@@ -272,10 +272,15 @@
 </ul>
 <h2 id="from-the-hemlock-template-recommended">From the hemlock template (recommended)</h2>
 <h4 id="initialize-a-new-hemlock-project">Initialize a new hemlock project</h4>
-<p>Run the following, replacing <code>&lt;my-github-token&gt;</code> with your github authentication token:</p>
-<pre><code class="bash">$ hlk init my-first-project &lt;my-github-token&gt;
+<p>Run the following, replacing <code>&lt;my-github-username&gt;</code> with your github username and<code>&lt;my-github-token&gt;</code> with your github authentication token:</p>
+<pre><code class="bash">$ hlk init my-first-project &lt;my-github-username&gt; &lt;my-github-token&gt;
 </code></pre>
 
+<p>For example, I would enter:</p>
+<pre><code class="bash">$ hlk init my-first-project dsbowen bts4rxpmw2x6tsy2qel1y7p5hwmhd7wxopmk5vsp
+</code></pre>
+
+<p>(This isn't my real authentication token!)</p>
 <p>This will 'clone' the template into a folder <code>my-first-project</code>, initialize an eponymous github repository for your project, and create a virtual environment.</p>
 <p>Change into the project directory and check out the folder structure:</p>
 <pre><code class="bash">$ cd my-first-project
