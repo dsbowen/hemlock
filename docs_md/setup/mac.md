@@ -66,30 +66,45 @@ Verify your hemlock-CLI installation:
 
 ```bash
 $ hlk --version
-hlk x.x.x
+hlk 0.0.13
 ```
 
 ## Git and github
 
-[Git](https://git-scm.com/) is a version control system, and [github](https://github.com/) hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.
+<a href="https://git-scm.com/" target="_blank">Git</a> is a version control system, and <a href="https://github.com/" target="_blank">github</a> hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.
 
-You can install git using hemlock-CLI:
-
-```bash
-$ hlk setup mac --git
-```
-
-You will be prompted to create a github account.
-
-Verify your git installation:
+Macs typically have git pre-installed, which you can verify:
 
 ```bash
 $ git --version
+git version 2.27.0.mac.1
 ```
 
-Finally, you will need a personal access token to initialize hemlock projects with hemlock-CLI. Create a token by following [these instructions](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). When setting permissions (step 7), check 'repo'. Copy your token and store it somewhere accessible. For example, I store my token in a file named `github_token.txt`.
+If you don't have git, follow the [download and installation instructions here](https://git-scm.com/download/mac).
 
-Now that you have github, you may prefer to work in a git bash terminal, rather than the native mac terminal. Right click anywhere on your desktop and select 'Git Bash Here`. You should see a terminal window appear.
+Then, create a [github account here](https://github.com). Configure your github command line interface:
+
+```bash
+$ git config --global user.name <my-github-username>
+$ git config --global user.email <my-github-user-email>
+```
+
+For example, I would enter:
+
+```bash
+$ git config --global user.name dsbowen
+$ git config --global user.email dsbowen@wharton.upenn.edu
+```
+
+Finally, you will need a personal access token to initialize hemlock applications with the hemlock command line interface.
+
+**Read everything until STOP before creating your github token.**
+
+1. Create a github token by following <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token" target="_blank">these instructions</a>.
+2. When setting permissions (step 7), check 'repo'.
+3. Copy your token and store it somewhere accessible. For example, I store my token in a file named `github_token.txt`.
+
+**STOP.**
 
 ## Visual studio code
 
@@ -104,7 +119,7 @@ $ code --version
 
 ## Jupyter
 
-[Jupyter](https://jupyter.org/) allows you to quickly iterate on project designs. Install with pip:
+<a href="https://jupyter.org/" target="_blank">Jupyter</a> allows you to quickly iterate on project designs. Install jupyter notebook with pip:
 
 ```bash
 $ pip install -U notebook
@@ -114,16 +129,24 @@ Close and re-open your terminal. Verify your jupyter installation:
 
 ```bash
 $ jupyter --version
-jupyter core     : x.x.x
-jupyter-notebook : x.x.x
-...
+jupyter core     : 4.6.3
+jupyter-notebook : 6.0.3
+qtconsole        : not installed
+ipython          : 7.16.1
+ipykernel        : 5.3.2
+jupyter client   : 6.1.5
+jupyter lab      : not installed
+nbconvert        : 5.6.1
+ipywidgets       : not installed
+nbformat         : 5.0.7
+traitlets        : 4.3.3
 ```
 
 ## Google chrome
 
-Hemlock is developed and tested primarily on chrome. [Download chrome here](https://www.google.com/chrome/).
+Hemlock is developed and tested primarily on chrome. <a href="https://www.google.com/chrome/" target="_blank">Download chrome here</a>.
 
-Verify that you can open it using the `webbrowser` command:
+Verify that you can open it as follows:
 
 ```bash
 $ python3
@@ -137,9 +160,11 @@ You should see chrome open to the hemlock docs.
 
 **Note.** `>>>` is where you enter python commands in the python interpreter.
 
+If you came here from the tutorial, you're now ready to return to it and get started with your first hemlock project. [Click here to go back to the First Project section of the tutorial](../tutorial/first_project.md).
+
 ## Chromedriver
 
-Hemlock's custom debugging tool and survey view functions use [chromedriver](https://chromedriver.chromium.org/downloads). To use these features locally, you'll need to download chromedriver:
+Hemlock's custom debugging tool and survey view functions use <a href="https://chromedriver.chromium.org/downloads" target="_blank">chromedriver</a>. To use these features locally, you'll need to download chromedriver:
 
 ```bash
 $ hlk setup mac --chromedriver
@@ -156,8 +181,8 @@ $ which chromedriver
 
 As of 07/14/2020, `hlk setup mac --chromedriver` installs chromedriver for chrome 83. While chrome updates automatically, chromedriver does not. This means that you will encounter compatibility issues when chrome updates to version 84+. To fix this:
 
-1. [Download the latest chromedriver here](https://chromedriver.chromium.org/downloads).
-2. Put the chrome executable in `/users/<my-mac-username>/webdrivers/`.
+1. <a href="https://chromedriver.chromium.org/downloads" target="_blank">Download the latest chromedriver here</a>.
+2. Put the chrome binary, `chromedriver`, in `/users/<my-mac-username>/webdrivers/`. For example, I would put my chromedriver binary in `/users/dsbowen/webdrivers/`.
 
 Chromedriver should still be in your path, which you can verify:
 
@@ -166,9 +191,11 @@ $ which chromedriver
 /users/<my-mac-username>/webdrivers/chromedriver
 ```
 
+If you came here from the Debug section of the tutorial, you're now ready to return to it and run the debugger. [Click here to go back to the Debug section of the tutorial](../tutorial/debug.md).
+
 ## Heroku
 
-Heroku is an easy and inexpensive service for deploying web applications, including hemlock applications.
+Heroku is an easy and inexpensive service for deploying web applications (i.e. putting them online), including hemlock applications. <a href="https://signup.heroku.com/" target="_blank">Sign up for heroku here</a>.
 
 You can install heroku-CLI using hemlock-CLI:
 
@@ -180,5 +207,7 @@ Verify your heroku-CLI installation:
 
 ```bash
 $ heroku --version
-heroku/x.xx.x mac-x64 node-vxx.xx.x
+heroku/x.xx.x mac node-vxx.xx.x
 ```
+
+[Click here to return to the Deploy section of the tutorial](../tutorial/deploy.md).

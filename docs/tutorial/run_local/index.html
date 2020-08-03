@@ -62,11 +62,9 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#why-run-locally">Why run locally?</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#running-the-application">Running the application</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#modifications-if-not-using-hemlock-cli-or-the-hemlock-template">Modifications if not using hemlock-CLI or the hemlock template</a>
+    <li class="toctree-l2"><a class="reference internal" href="#open-a-second-terminal-window">Open a second terminal window</a>
     </li>
-        </ul>
+    <li class="toctree-l2"><a class="reference internal" href="#run-your-application">Run your application</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#code-explanation">Code explanation</a>
     </li>
@@ -240,8 +238,24 @@
 <p><strong>Note.</strong> Running an app 'locally' means that you can play with it on your own computer, but it won't be available on the internet. We'll cover deployment later.</p>
 <h2 id="why-run-locally">Why run locally?</h2>
 <p>In the previous part of the tutorial, we created and previewed a page in a jupyter notebook. Hemlock + jupyter notebook is great for trying out ideas and iterating quickly, like working on a blackboard. However, it won't create a fully responsive application (survey). For that, we're going to need to run our app locally.</p>
-<h2 id="running-the-application">Running the application</h2>
-<p>You should have jupyter running in a terminal window from the previous part of the tutorial. Leave it running and open a second terminal window. In general, I recommend having one terminal open for jupyter, and a second for editing python files and running your app.</p>
+<h2 id="open-a-second-terminal-window">Open a second terminal window</h2>
+<p>You should have jupyter running in a terminal window from the previous part of the tutorial. You'll need to restart the kernel (in the navigation bar at the top of <code>blackboard.ipynb</code> click Kernel &gt;&gt; Restart &amp; Clear Output) before running your app.</p>
+<p><strong>Note.</strong> You will always need to restart your jupyter notebook kernel before running your application to avoid a database error.</p>
+<p>Open a second terminal window. In general, I recommend having one terminal open for jupyter, and a second for editing python files and running your app. In the second terminal window, change to your project folder:</p>
+<pre><code class="bash">$ cd
+$ cd my-first-project
+</code></pre>
+
+<p>In the second terminal window, activate your virtual environment. Remember to re-activate your virtual environment every time your open a new terminal window to work on a project.</p>
+<p>Activate from git bash on Windows:</p>
+<pre><code class="bash">$ . hemlock-venv/scripts/activate
+</code></pre>
+
+<p>Activate from Mac or WSL:</p>
+<pre><code class="bash">$ . hemlock-venv/bin/activate
+</code></pre>
+
+<h2 id="run-your-application">Run your application</h2>
 <p>Create a python file called <code>survey.py</code> in the root directory of your project. If you're working with Visual Studio Code, enter the following in your terminal:</p>
 <pre><code class="bash">$ code survey.py
 </code></pre>
@@ -261,26 +275,15 @@ def start():
 
 <p>To preview your survey, go to your (second) terminal window and enter:</p>
 <pre><code class="bash">$ hlk serve
+Prepare to get served.
+
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 183-643-336
+(2841) wsgi starting up on http://127.0.0.1:5000
 </code></pre>
 
 <p>Then navigate to <a href="http://localhost:5000/">http://localhost:5000/</a> in your browser.</p>
-<h4 id="modifications-if-not-using-hemlock-cli-or-the-hemlock-template">Modifications if not using hemlock-CLI or the hemlock template</h4>
-<p>The hemlock template comes with an <code>app.py</code> file which creates the application instance. Create <code>app.py</code> in your root directory with the following code:</p>
-<pre><code class="python">import survey
-
-from hemlock import create_app
-
-app = create_app()
-
-if __name__ == '__main__':
-    from hemlock.app import socketio
-    socketio.run(app, debug=True)
-</code></pre>
-
-<p>Instead of running with <code>hlk serve</code>, use:</p>
-<pre><code class="bash">$ python3 app.py
-</code></pre>
-
 <h2 id="code-explanation">Code explanation</h2>
 <p>After our imports, we use the <code>@route('/survey')</code> decorator to register our first 'navigate' function. This essentially tells our application, 'start here'.</p>
 <p>Navigate functions direct the 'survey flow'. All navigate functions return <code>Branch</code> objects. A branch contains a list of pages which it displays to participants. We set a branch's pages by passing them as arguments to the constructor, or by setting a branch's <code>pages</code> attribute, meaning that the following are equivalent:</p>
@@ -297,6 +300,7 @@ b.pages = [Page(Label('&lt;p&gt;Label 0&lt;/p&gt;')), Page(Label('&lt;p&gt;Label
 <ol>
 <li>Iterate quickly on the next part of your survey in jupyter.</li>
 <li>When you're happy with the design, update your survey files (e.g. <code>survey.py</code>).</li>
+<li>Restart your kernel (Kernel &gt;&gt; Restart &amp; Clear Output).</li>
 <li>Run the app locally with <code>hlk serve</code> (or <code>python3 app.py</code>).</li>
 <li>When you're happy with how the app runs, close the app (click on your terminal and hit Ctrl + C).</li>
 <li>Repeat.</li>
@@ -304,7 +308,7 @@ b.pages = [Page(Label('&lt;p&gt;Label 0&lt;/p&gt;')), Page(Label('&lt;p&gt;Label
 <p>As the name <code>blackboard.ipynb</code> suggests, I treat jupyter like a blackboard. Once I'm happy with a design and it's running in my app, I like to start the next design on a fresh blackboard:</p>
 <ol>
 <li>Delete every cell in the notebook (except the first, where we push the application context, and the last, where we remove temporary files).</li>
-<li>Restart the kernel (Kernel &gt;&gt; Restart).</li>
+<li>Restart the kernel (Kernel &gt;&gt; Restart) if you haven't already.</li>
 <li>Run the first cell to re-push the application context.</li>
 </ol>
 <p>You may also want to clear the database after running your app:</p>
@@ -314,6 +318,28 @@ b.pages = [Page(Label('&lt;p&gt;Label 0&lt;/p&gt;')), Page(Label('&lt;p&gt;Label
 <h2 id="summary">Summary</h2>
 <p>In this part of the tutorial, you learned how to initialize a hemlock application and run it locally.</p>
 <p>In the next part of the tutorial, you'll learn how to use question polymorphs to add a demographics questionnaire to your survey.</p>
+<!-- #### Modifications if not using hemlock-CLI or the hemlock template
+
+The hemlock template comes with an `app.py` file which creates the application instance. Create `app.py` in your root directory with the following code:
+
+
+<pre><code class="python">import survey
+
+from hemlock import create_app
+
+app = create_app()
+
+if __name__ == '__main__':
+    from hemlock.app import socketio
+    socketio.run(app, debug=True)
+</code></pre>
+
+
+Instead of running with `hlk serve`, use:
+
+```bash
+$ python3 app.py
+``` -->
               
             </div>
           </div>

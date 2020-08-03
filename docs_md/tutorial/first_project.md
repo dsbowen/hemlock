@@ -22,9 +22,7 @@ Check out the setup page for your OS:
 - [Mac](../setup/mac.md)
 - [Linux](../setup/linux.md)
 
-## From the hemlock template (recommended)
-
-#### Initialize a new hemlock project
+## Initialize a new hemlock project
 
 Run the following, replacing `<my-github-username>` with your github username and`<my-github-token>` with your github authentication token:
 
@@ -49,9 +47,9 @@ $ cd my-first-project
 $ ls
 ```
 
-**Note.** You will only have to initialize a new hemlock project once per project.
+**Note.** You will only have to run `hlk init` once per project.
 
-#### Set up your virtual environment
+## Set up your virtual environment
 
 Activate your virtual environment.
 
@@ -61,7 +59,7 @@ Activate from git bash on Windows:
 $ . hemlock-venv/scripts/activate
 ```
 
-Activate from WSL or Mac:
+Activate from Mac or WSL:
 
 ```bash
 $ . hemlock-venv/bin/activate
@@ -79,7 +77,7 @@ Add your virtual environment to jupyter:
 $ python3 -m ipykernel install --user --name=hemlock-venv
 ```
 
-It's good practice to use [virtual environments](https://docs.python.org/3/tutorial/venv.html) and activate them whenever you're working on a project.
+It's good practice to use <a href="https://docs.python.org/3/tutorial/venv.html" target="_blank">virtual environments</a> and activate them whenever you're working on a project.
 
 **Note.** You will only have to pip install the requirements and add hemlock-venv to jupyter once per project. However, you will have to activate your virtual environment every time you open a new terminal to work on this project. That is, suppose you close and re-open your terminal. You will have to change directory into your project folder and re-activate the virtual environment.
 
@@ -109,7 +107,7 @@ This will open a file explorer. At the top of the file explorer, you'll see:
 
 We're looking for `<my-wsl-distribution>`.
 
-#### Preview a page in jupyter notebook
+## Preview a page in jupyter notebook
 
 Jupyter notebook is a great tool for iterating quickly on project designs. I recommend using it for most of your work. Open the jupyter dashboard with:
 
@@ -142,7 +140,32 @@ Previewing works by creating temporary preview files. When you're done previewin
 [os.remove(tmpfile) for tmpfile in app.tmpfiles]
 ```
 
-## Alternatively, from scratch
+## Code explanation
+
+The first line simply imports `Page` and `Label` objects.
+
+The next line, `p = Page(Label('<p>Hello, World!</p>'))`, creates a `Page` instance. A `Page` contains a list of 'questions' which it displays to participants. We can set a page's questions by passing them as arguments to the `Page` constructor. Alternatively, we can set a page's questions by setting the page's `questions` attribute, meaning that the following are equivalent:
+
+```python
+p = Page(Label('<p>Label 0</p>'), Label('<p>Label 1</p>'))
+```
+
+```python
+p = Page()
+p.questions = [Label('<p>Label 0</p>'), Label('<p>Label 1</p>')]
+```
+
+The `Page`'s question is a `Label`, although this is in some sense a misnomer because label objects only contains text. The first argument to `Label` is a string, written in html, which the label object displays on its page.
+
+**Note.** If you don't like writing html, you can easily find Word to html converters online.
+
+## Summary
+
+In this part of the tutorial, you learned how to initialize a new hemlock project and create and preview a page.
+
+In the next part of the tutorial, you'll learn how to run a hemlock application locally.
+
+<!-- ## Alternatively, from scratch
 
 #### Initialize a new hemlock project
 
@@ -161,10 +184,10 @@ Create your virtual environment and activate it:
 $ python3 -m venv hemlock-venv
 ```
 
-Activate from git bash:
+Activate from git bash on Windows:
 
 ```bash
-$ source hemlock-venv/scripts/activate
+$ . hemlock-venv/scripts/activate
 ```
 
 Activate from Windows command prompt:
@@ -173,10 +196,10 @@ Activate from Windows command prompt:
 $ hemlock-venv\scripts\activate.bat
 ```
 
-Activate from WSL:
+Activate from Mac or WSL:
 
 ```bash
-$ source hemlock-venv/bin/activate
+$ . hemlock-venv/bin/activate
 ```
 
 Next, install hemlock and ipykernel:
@@ -254,29 +277,4 @@ Previewing works by creating temporary preview files. When you're done previewin
 import os
 
 [os.remove(tmpfile) for tmpfile in app.tmpfiles]
-```
-
-## Code explanation
-
-The first line simply imports `Page` and `Label` objects.
-
-The next line, `p = Page(Label('<p>Hello, World!</p>'))`, creates a `Page` instance. A `Page` contains a list of 'questions' which it displays to participants. We can set a page's questions by passing them as arguments to the `Page` constructor. Alternatively, we can set a page's questions by setting the page's `questions` attribute, meaning that the following are equivalent:
-
-```python
-p = Page(Label('<p>Label 0</p>'), Label('<p>Label 1</p>'))
-```
-
-```python
-p = Page()
-p.questions = [Label('<p>Label 0</p>'), Label('<p>Label 1</p>')]
-```
-
-The `Page`'s question is a `Label`, although this is in some sense a misnomer because label objects only contains text. The first argument to `Label` is a string, written in html, which the label object displays on its page.
-
-**Note.** If you don't like writing html, you can easily find Word to html converters online.
-
-## Summary
-
-In this part of the tutorial, you learned how to initialize a new hemlock project and create and preview a page.
-
-In the next part of the tutorial, you'll learn how to run a hemlock application locally.
+``` -->

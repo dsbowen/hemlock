@@ -13,7 +13,7 @@ $ python3 --version
 Python 3.x.x
 ```
 
-If you don't have python3, [download it here](https://www.python.org/downloads/). I recommend python3.6. Why? Because heroku, my recommended method of app deployment, uses python3.6, meaning that if you develop in python3.7+ and deploy in python3.6, you may encounter compatibility issues. Make sure python3 is in your path.
+If you don't have python3, <a href="https://www.python.org/downloads/" target="_blank">download it here</a>. I recommend python3.6. Why? Because heroku, my recommended method of app deployment, uses python3.6, meaning that if you develop in python3.7+ and deploy in python3.6, you may encounter compatibility issues. Make sure python3 is in your path.
 
 Upgrade pip:
 
@@ -61,29 +61,37 @@ hlk x.x.x
 
 ## Git and github
 
-[Git](https://git-scm.com/) is a version control system, and [github](https://github.com/) hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.
+<a href="https://git-scm.com/" target="_blank">Git</a> is a version control system, and <a href="https://github.com/" target="_blank">github</a> hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.
 
-[Find installation instructions for git here](https://git-scm.com/download/linux).
+<a href="https://git-scm.com/download/linux">Find installation instructions for git here</a>.
 
 Verify your git installation:
 
 ```bash
 $ git --version
-git version x.xx.x.windows.1
+git version x.xx.x.linux.1
 ```
 
-Then, create a [github account here](https://github.com). Configure your github command line interface:
+Then, create a <a href="https://github.com" target="_blank">github account here</a>. Configure your github command line interface:
 
 ```bash
 $ git config --global user.name <my-github-username>
 $ git config --global user.email <my-github-user-email>
 ```
 
-Finally, you will need a personal access token to initialize hemlock applications with the hemlock command line interface (more on this later). Create a token by following [these instructions](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). When setting permissions (step 7), check 'repo'. Copy your token and store it somewhere accessible. For example, I store my token in a file named `github_token.txt`.
+Finally, you will need a personal access token to initialize hemlock applications with the hemlock command line interface.
+
+**Read everything until STOP before creating your github token.**
+
+1. Create a github token by following <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token" target="_blank">these instructions</a>.
+2. When setting permissions (step 7), check 'repo'.
+3. Copy your token and store it somewhere accessible. For example, I store my token in a file named `github_token.txt`.
+
+**STOP.**
 
 ## Visual studio code
 
-I recommend visual studio code for editing python files. [Download VS code here](https://code.visualstudio.com/).
+I recommend visual studio code for editing python files. <a href="https://code.visualstudio.com/" target="_blank">Download VS code here</a>.
 
 Close and re-open your terminal. Verify your VS code installation:
 
@@ -94,7 +102,7 @@ $ code --version
 
 ## Jupyter
 
-[Jupyter](https://jupyter.org/) allows you to quickly iterate on project designs. Install with pip:
+<a href="https://jupyter.org/" target="_blank">Jupyter</a> allows you to quickly iterate on project designs. Install jupyter notebook with pip:
 
 ```bash
 $ pip install -U notebook
@@ -111,9 +119,9 @@ jupyter-notebook : x.x.x
 
 ## Google chrome
 
-Hemlock is developed and tested primarily on chrome. [Download chrome here](https://www.google.com/chrome/).
+Hemlock is developed and tested primarily on chrome. <a href="https://www.google.com/chrome/" target="_blank">Download chrome here</a>.
 
-Verify that you can open it using the `webbrowser` command:
+Verify that you can open it as follows:
 
 ```bash
 $ python3
@@ -125,9 +133,11 @@ True
 
 You should see chrome open to the hemlock docs.
 
+If you came here from the tutorial, you're now ready to return to it and get started with your first hemlock project. [Click here to go back to the First Project section of the tutorial](../tutorial/first_project.md).
+
 ## Chromedriver
 
-Hemlock's custom debugging tool and survey view functions use [chromedriver](https://chromedriver.chromium.org/downloads). To use these features locally, you'll need to download chromedriver:
+Hemlock's custom debugging tool and survey view functions use <a href="https://chromedriver.chromium.org/downloads" target="_blank">chromedriver</a>. To use these features locally, you'll need to download chromedriver:
 
 ```bash
 $ hlk setup linux --chromedriver
@@ -144,8 +154,8 @@ $ which chromedriver
 
 As of 07/14/2020, `hlk setup linux --chromedriver` installs chromedriver for chrome 83. While chrome updates automatically, chromedriver does not. This means that you will encounter compatibility issues when chrome updates to version 84+. To fix this:
 
-1. [Download the latest chromedriver here](https://chromedriver.chromium.org/downloads).
-2. Put the chrome executable in `/home/<my-linux-username>/webdrivers/`.
+1. <a href="https://chromedriver.chromium.org/downloads" target="_blank">Download the latest chromedriver here</a>.
+2. Put the chrome binary in `/home/<my-linux-username>/webdrivers/`.
 
 Chromedriver should still be in your path, which you can verify:
 
@@ -154,9 +164,11 @@ $ which chromedriver
 /home/<my-linux-username>/webdrivers/chromedriver
 ```
 
+If you came here from the Debug section of the tutorial, you're now ready to return to it and run the debugger. [Click here to go back to the Debug section of the tutorial](../tutorial/debug.md).
+
 ## Heroku
 
-Heroku is an easy and inexpensive service for deploying web applications, including hemlock applications.
+Heroku is an easy and inexpensive service for deploying web applications (i.e. putting them online), including hemlock applications. <a href="https://signup.heroku.com/" target="_blank">Sign up for heroku here</a>.
 
 You can install heroku-CLI using hemlock-CLI:
 

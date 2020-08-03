@@ -4,9 +4,9 @@ These instructions were written for Windows 10.
 
 ## Git and github
 
-Git is a version control system, and github hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.
+<a href="https://git-scm.com/" target="_blank">Git</a> is a version control system, and <a href="https://github.com/" target="_blank">github</a> hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.
 
-You can find [git download and installation instructions here](https://git-scm.com/download/win).
+You can find <a href="https://git-scm.com/download/win">git download and installation instructions here</a>.
 
 We'll use the git bash terminal for this tutorial. Right click anywhere on your desktop and select 'Git Bash Here`. You should see a terminal window appear. Enter the following into your terminal:
 
@@ -14,7 +14,7 @@ We'll use the git bash terminal for this tutorial. Right click anywhere on your 
 $ cd
 ```
 
-This moves you to your home directory. It's not important that you understand exactly what this means, but if you're dying to find out, [read this](https://towardsdatascience.com/basics-of-bash-for-beginners-92e53a4c117a).
+This moves you to your home directory. It's not important that you understand exactly what this means, but if you're dying to find out, <a href="https://towardsdatascience.com/basics-of-bash-for-beginners-92e53a4c117a" target="_blank">read this</a>.
 
 **Note 1.** You don't type `$`; it simply indicates the beginning of a bash command.
 
@@ -31,14 +31,29 @@ git version 2.27.0.windows.1
 
 **Note 2.** It's okay if you have a slightly different version of git. For example, your second line may read `git version 2.28.0.windows.1`.
 
-Then, create a [github account here](https://github.com). Configure your github command line interface:
+Then, create a <a href="https://github.com" target="_blank">github account here</a>. Configure your github command line interface:
 
 ```bash
 $ git config --global user.name <my-github-username>
 $ git config --global user.email <my-github-user-email>
 ```
 
-Finally, you will need a personal access token to initialize hemlock applications with the hemlock command line interface (more on this later). Create a token by following [these instructions](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). When setting permissions (step 7), check 'repo'. Copy your token and store it somewhere accessible. For example, I store my token in a file named `github_token.txt`.
+For example, I would enter:
+
+```bash
+$ git config --global user.name dsbowen
+$ git config --global user.email dsbowen@wharton.upenn.edu
+```
+
+Finally, you will need a personal access token to initialize hemlock applications with the hemlock command line interface (more on this later).
+
+**Read everything until STOP before creating your github token.**
+
+1. Create a github token by following <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token" target="_blank">these instructions</a>.
+2. When setting permissions (step 7), check 'repo'.
+3. Copy your token and store it somewhere accessible. For example, I store my token in a file named `github_token.txt`.
+
+**STOP.**
 
 ## Python3 and pip3
 
@@ -46,7 +61,7 @@ Python is hemlock's primary language. Pip allows you to install python packages,
 
 **Read everything until STOP before downloading or installing anything.**
 
-You can [download the latest version of python here](https://www.python.org/downloads/). 
+You can <a href="https://www.python.org/downloads/" target="_blank">download the latest version of python here</a>. 
 
 However, I recommend an earlier version, python3.6. [Download python3.6 here](https://www.python.org/ftp/python/3.6.8/python-3.6.8.exe). Then, click on the file you just downloaded to install it. 
 
@@ -126,22 +141,22 @@ $ cd
 
 ## Hemlock-CLI
 
-Hemlock's command line interface, hemlock-CLI, defines many useful commands for initializing, editing, and deploying hemlock projects. Download with:
+Hemlock's command line interface, hemlock-CLI, defines many useful commands for initializing, editing, and deploying hemlock projects. Install with:
 
 ```bash
-$ pip install hemlock-cli
+$ pip install -U hemlock-cli
 ```
 
 Verify your hemlock-CLI installation:
 
 ```bash
 $ hlk --version
-hlk 0.0.10
+hlk 0.0.13
 ```
 
 ## Visual studio code
 
-I recommend visual studio code for editing python files. You can find [download and installation instructions for VS code here](https://code.visualstudio.com/).
+I recommend visual studio code for editing python files. You can find <a href="https://code.visualstudio.com/" target="_blank">download and installation instructions for VS code here</a>.
 
 Close and re-open your terminal. Verify your VS code installation:
 
@@ -153,10 +168,10 @@ $ code --version
 
 ## Jupyter
 
-[Jupyter](https://jupyter.org/) allows you to quickly iterate on project designs. Install jupyter notebook with pip:
+<a href="https://jupyter.org/" target="_blank">Jupyter</a> allows you to quickly iterate on project designs. Install jupyter notebook with pip:
 
 ```bash
-$ pip install notebook
+$ pip install -U notebook
 ```
 
 Close and re-open your terminal. Verify your jupyter installation:
@@ -178,9 +193,9 @@ traitlets        : 4.3.3
 
 ## Google chrome
 
-Hemlock is developed and tested primarily on chrome. [Download chrome here](https://www.google.com/chrome/).
+Hemlock is developed and tested primarily on chrome. <a href="https://www.google.com/chrome/" target="_blank">Download chrome here</a>.
 
-Verify that you can open it using the `webbrowser` command:
+Verify that you can open it as follows:
 
 ```bash
 $ python3
@@ -194,9 +209,11 @@ You should see chrome open to the hemlock docs.
 
 **Note.** `>>>` is where you enter python commands. This is called the 'python interpreter'.
 
+If you came here from the tutorial, you're now ready to return to it and get started with your first hemlock project. [Click here to go back to the First Project section of the tutorial](../tutorial/first_project.md).
+
 ## Chromedriver
 
-Hemlock's custom debugging tool and survey view functions use [chromedriver](https://chromedriver.chromium.org/downloads). To use these features locally, you'll need to download chromedriver:
+Hemlock's custom debugging tool and survey view functions use <a href="https://chromedriver.chromium.org/downloads" target="_blank">chromedriver</a>. To use these features locally, you'll need to download chromedriver:
 
 ```bash
 $ hlk setup win --chromedriver
@@ -220,8 +237,8 @@ It's okay if your chromedriver executable is in a different location.
 
 As of 07/14/2020, `hlk setup win --chromedriver` installs chromedriver for chrome 83. While chrome updates automatically, chromedriver does not. This means that you will encounter compatibility issues when chrome updates to version 84+. To fix this:
 
-1. [Download the latest chromedriver here](https://chromedriver.chromium.org/downloads).
-2. Put the chrome executable in `C:\users\<my-windows-username>\webdrivers\`. For example, I would put my chromedriver executable in `C:\users\dbspe\webdrivers\`.
+1. <a href="https://chromedriver.chromium.org/downloads" target="_blank">Download the latest chromedriver here</a>.
+2. Put the chromedriver executable, `chromedriver.exe`, in `C:\users\<my-windows-username>\webdrivers\`. For example, I would put my chromedriver executable in `C:\users\dbspe\webdrivers\`.
 
 Chromedriver should still be in your path, which you can verify:
 
@@ -230,9 +247,13 @@ $ which chromedriver.exe
 <my-chromedriver-location>/chromedriver.exe
 ```
 
+If you came here from the Debug section of the tutorial, you're now ready to return to it and run the debugger. [Click here to go back to the Debug section of the tutorial](../tutorial/debug.md).
+
 ## Heroku
 
-Heroku is an easy and inexpensive service for deploying web applications (i.e. putting them online), including hemlock applications. You can find [download and installation instructions for the heroku command line interface (heroku-CLI) here](https://devcenter.heroku.com/articles/heroku-cli).
+Heroku is an easy and inexpensive service for deploying web applications (i.e. putting them online), including hemlock applications. <a href="https://signup.heroku.com/" target="_blank">Sign up for heroku here</a>.
+
+Then, download and install the heroku command line interface (heroku-CLI) following <a href="https://devcenter.heroku.com/articles/heroku-cli" target="_blank">these instructions</a>.
 
 Close and re-open your terminal. Verify your heroku-CLI installation:
 
@@ -246,3 +267,5 @@ Log into heroku:
 ```bash
 $ heroku login
 ```
+
+[Click here to return to the Deploy section of the tutorial](../tutorial/deploy.md).
