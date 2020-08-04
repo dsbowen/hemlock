@@ -4,6 +4,8 @@ In the previous part of the tutorial, you learned how to randomly assign partici
 
 In this part of the tutorial, you'll implement the proposer branch of the ultimatum game.
 
+Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.9/blackboard.ipynb" target="_blank">`blackboard.ipynb`</a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.9/survey.py" target="_blank">`survey.py`</a> files should look like at the end of this part of the tutorial.
+
 ## The proposal input
 
 First, we'll write a function to generate an input question where the proposer will input the proposed split. Enter the following in your jupyter notebook:
@@ -26,7 +28,7 @@ def gen_proposal_input(round_):
         submit=S.data_type(int)
     )
 
-path = Page(gen_proposal_input(1)).preview()
+Page(gen_proposal_input(1)).preview()
 ```
 
 This function generates an input which asks the proposer how much money they would like to offer to the responder. We record the data in a variable named `'Proposal'`.

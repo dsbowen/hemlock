@@ -2,6 +2,8 @@
 
 By the end of this part of the tutorial, you'll be able to initialize a new hemlock project and create and preview hemlock survey pages.
 
+Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.0/blackboard.ipynb" target="_blank">`blackboard.ipynb`</a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.0/survey.py" target="_blank">`survey.py`</a> files should look like at the end of this part of the tutorial.
+
 ## Getting started
 
 I've written setup pages for different operating systems (OS) below. You don't need everything in the setup page right now. First, read this list of things you need. Then, check out the setup page for your OS for download and installation instructions.

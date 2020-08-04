@@ -4,6 +4,8 @@ In the previous part of the tutorial, you implemented a confirmation page using 
 
 By the end of this part of the tutorial, you'll be able to set up navigation between branches.
 
+Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.6/blackboard.ipynb" target="_blank">`blackboard.ipynb`</a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.6/survey.py" target="_blank">`survey.py`</a> files should look like at the end of this part of the tutorial.
+
 ## Why navigate functions?
 
 Navigate functions move participants through different branches of the survey. For example, participants in the control group might follow one branch, while participants in the treatment group follow another.
@@ -93,12 +95,10 @@ Branching off of branches allows us to navigate to a new branch at the end of ou
 This time, instead of attaching the navigate function to the branch, we'll attach it to the first page of the branch:
 
 ```python
-from hemlock import Branch, Navigate as N, Page, Participant
-
 def start():
     return Branch(Page(navigate=N.middle()), Page(terminal=True))
 
-@Navigate.register
+@N.register
 def middle(start_branch):
     return Branch(Page())
 
@@ -181,7 +181,7 @@ def start():
         demographics_page,
         Page(
             Label(compile=C.confirm(demographics_page)),
-            back=True
+            back=True # DELETE terminal=True
         ),
         navigate=N.ultimatum_game()
     )

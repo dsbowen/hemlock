@@ -4,6 +4,8 @@ In the previous part of the tutorial, you learned how to run functions to handle
 
 In this part of the tutorial, you'll implement a confirmation page using compile functions.
 
+Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.5/blackboard.ipynb" target="_blank">`blackboard.ipynb`</a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.5/survey.py" target="_blank">`survey.py`</a> files should look like at the end of this part of the tutorial.
+
 ## Why compile functions?
 
 Compile functions run just before a page's html is compiled. This allows us to make our survey responsive to participants.

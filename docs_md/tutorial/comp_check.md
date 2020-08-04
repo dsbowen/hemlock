@@ -4,6 +4,8 @@ In the previous part of the tutorial, you reviewed page logic.
 
 By the end of this part of the tutorial, you'll be able to set up comprehension checks.
 
+Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.7/blackboard.ipynb" target="_blank">`blackboard.ipynb`</a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.7/survey.py" target="_blank">`survey.py`</a> files should look like at the end of this part of the tutorial.
+
 ## Why comprehension checks?
 
 We often give our participants instructions. To make sure they understand the instructions, we give them comprehension checks.
@@ -143,7 +145,7 @@ def random_proposal(check_page, accept):
     # WE'LL WRITE THIS FUNCTION IN A MOMENT
     pass
 
-path = gen_check_page(accept=True).preview()
+gen_check_page(accept=True).preview()
 ```
 
 The `gen_check_page` function generates a check page. The `Label` with which the page starts is going to be populated by a randomly generated proposal-response pair which we'll create with the compile function `random_proposal`. Both `gen_check_page` and `random_proposal` take an `accept` argument which indicates whether the proposal will be accepted or rejected.

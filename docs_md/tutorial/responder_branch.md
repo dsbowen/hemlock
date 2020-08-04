@@ -6,6 +6,8 @@ In this part of the tutorial, you'll implement the responder branch.
 
 Because the responder branch is similar to the proposer branch, we'll skip the notebook and work straight in `survey.py`. I'll point out the differences as we go along.
 
+Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.10/survey.py" target="_blank">`survey.py`</a> file should look like at the end of this part of the tutorial.
+
 ## Adding the responder branch to our survey
 
 First, let's add a navigate function to the end of our ultimatum game branch to bring us to the responder branch:

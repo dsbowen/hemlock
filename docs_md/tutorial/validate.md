@@ -4,6 +4,8 @@ In the previous part of the tutorial, you learned how to store and download data
 
 By the end of this part of the tutorial, you'll be able to validate participant responses.
 
+Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.3/blackboard.ipynb" target="_blank">`blackboard.ipynb`</a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.3/survey.py" target="_blank">`survey.py`</a> files should look like at the end of this part of the tutorial.
+
 ## Why validation?
 
 I often run studies where I elicit numerical estimates. Early on, I noticed that a small but annoying faction of participants, rather than entering actual numbers (e.g. 50), answered the question in full sentences:

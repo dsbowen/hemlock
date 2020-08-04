@@ -4,6 +4,8 @@ In the previous part of the tutorial, you learned how to initialize a hemlock ap
 
 By the end of this part of the tutorial, you'll be able to add a variety of question polymorphs to your survey pages.
 
+Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.1/blackboard.ipynb" target="_blank">`blackboard.ipynb`</a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.1/survey.py" target="_blank">`survey.py`</a> files should look like at the end of this part of the tutorial.
+
 ## Creating a demographics page
 
 We'll use jupyter notebook as a blackboard to iterate on our demographics page design. After pushing the application context, we'll create the following page:

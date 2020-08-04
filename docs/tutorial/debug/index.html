@@ -104,7 +104,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#running-the-debugger">Running the debugger</a>
+    <li class="toctree-l2"><a class="reference internal" href="#run-the-debugger">Run the debugger</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a>
     </li>
@@ -247,6 +247,7 @@
                 <h1 id="debugging">Debugging</h1>
 <p>In the previous part of the tutorial, you implemented the responder branch.</p>
 <p>By the end of this part of the tutorial, you'll be able to use hemlock's debugging tool to make sure your app is running smoothly.</p>
+<p>Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.11/blackboard.ipynb" target="_blank"><code>blackboard.ipynb</code></a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.11/survey.py" target="_blank"><code>survey.py</code></a> files should look like at the end of this part of the tutorial.</p>
 <h2 id="why-a-custom-debugging-tool">Why a custom debugging tool?</h2>
 <p>In the early days of hemlock, I coded a study in which I asked participants to estimate the ages of people in photographs. I used a submit function to change their data from strings to integers. Everything was running smoothly until one mischievous participant entered 'twenty-seven', breaking my survey and sending me home in a fit of rage.</p>
 <p>Since then, I've rewritten my submit functions to be more fault tolerant. If you run</p>
@@ -261,10 +262,10 @@ Input(data='twenty-seven', submit=S.data_type(int))._submit().data
 <h2 id="setup">Setup</h2>
 <p>To run hemlock's custom debugging tool locally, you'll need <a href="https://www.google.com/chrome/">Google Chrome</a> and <a href="https://chromedriver.chromium.org/downloads">Chromedriver</a>. Check out the setup page for your OS for specific instructions:</p>
 <ul>
-<li><a href="../../setup/win/">Windows</a></li>
-<li><a href="../../setup/wsl/">Windows Subsystem for Linux</a></li>
-<li><a href="../../setup/mac/">Mac</a></li>
-<li><a href="../../setup/linux/">Linux</a></li>
+<li><a href="../../setup/win/#chromedriver">Windows</a></li>
+<li><a href="../../setup/wsl/#chromedriver">Windows Subsystem for Linux</a></li>
+<li><a href="../../setup/mac/#chromedriver">Mac</a></li>
+<li><a href="../../setup/linux/#chromedriver">Linux</a></li>
 </ul>
 <h2 id="basic-syntax">Basic syntax</h2>
 <p>Open your jupyter notebook and run the following:</p>
@@ -397,9 +398,22 @@ def gen_response_input(round_):
 ...
 </code></pre>
 
-<h2 id="running-the-debugger">Running the debugger</h2>
+<h2 id="run-the-debugger">Run the debugger</h2>
 <p>Now that our debugger won't get stuck in any infinite loops, it's time to run it.</p>
-<p>Open two terminal windows. In one, run the hemlock app as usual. In the other, you can run the debugger with hemlock-CLI as follows:</p>
+<p>Open another terminal window. As always, change to your project directory and activate your virtual environment:</p>
+<pre><code class="bash">$ cd
+$ cd my-first-project
+</code></pre>
+
+<p>Activate from git bash on Windows:</p>
+<pre><code class="bash">$ . hemlock-venv/scripts/activate
+</code></pre>
+
+<p>Activate from Mac or WSL:</p>
+<pre><code class="bash">$ . hemlock-venv/bin/activate
+</code></pre>
+
+<p>You should have 3 terminals open: one for jupyter, one for editing <code>survey.py</code> and running <code>hlk serve</code>, and now a third for running the debugger. In one of the terminal windows, run the hemlock app as usual (<code>hlk serve</code>). In the third terminal, run the debugger with hemlock-CLI:</p>
 <pre><code class="bash">$ hlk debug
 </code></pre>
 
@@ -407,11 +421,13 @@ def gen_response_input(round_):
 <pre><code class="bash">$ hlk debug -n 3
 </code></pre>
 
-<p>If you don't want to use hemlock-CLI, you can run the debugger with the python interpreter:</p>
-<pre><code class="bash">$ python3
-&gt;&gt;&gt; from hemlock.debug import AIParticipant, debug
-&gt;&gt;&gt; debug() # or debug(3) to run 3 AI participants
-</code></pre>
+<!-- If you don't want to use hemlock-CLI, you can run the debugger with the python interpreter:
+
+```bash
+$ python3
+>>> from hemlock.debug import AIParticipant, debug
+>>> debug() # or debug(3) to run 3 AI participants
+``` -->
 
 <h2 id="summary">Summary</h2>
 <p>In this part of the tutorial, you learned how to debug your app with hemlock's custom debugging tool.</p>

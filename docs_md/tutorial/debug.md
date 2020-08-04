@@ -4,6 +4,8 @@ In the previous part of the tutorial, you implemented the responder branch.
 
 By the end of this part of the tutorial, you'll be able to use hemlock's debugging tool to make sure your app is running smoothly.
 
+Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.11/blackboard.ipynb" target="_blank">`blackboard.ipynb`</a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.11/survey.py" target="_blank">`survey.py`</a> files should look like at the end of this part of the tutorial.
+
 ## Why a custom debugging tool?
 
 In the early days of hemlock, I coded a study in which I asked participants to estimate the ages of people in photographs. I used a submit function to change their data from strings to integers. Everything was running smoothly until one mischievous participant entered 'twenty-seven', breaking my survey and sending me home in a fit of rage.
@@ -26,10 +28,10 @@ To mitigate this problem, I wrote a custom debugging tool for hemlock. The tool 
 
 To run hemlock's custom debugging tool locally, you'll need [Google Chrome](https://www.google.com/chrome/) and [Chromedriver](https://chromedriver.chromium.org/downloads). Check out the setup page for your OS for specific instructions:
 
-- [Windows](../setup/win.md)
-- [Windows Subsystem for Linux](../setup/wsl.md)
-- [Mac](../setup/mac.md)
-- [Linux](../setup/linux.md)
+- [Windows](../setup/win.md#chromedriver)
+- [Windows Subsystem for Linux](../setup/wsl.md#chromedriver)
+- [Mac](../setup/mac.md#chromedriver)
+- [Linux](../setup/linux.md#chromedriver)
 
 ## Basic syntax
 
@@ -204,11 +206,30 @@ def gen_response_input(round_):
 ...
 ```
 
-## Running the debugger
+## Run the debugger
 
 Now that our debugger won't get stuck in any infinite loops, it's time to run it.
 
-Open two terminal windows. In one, run the hemlock app as usual. In the other, you can run the debugger with hemlock-CLI as follows:
+Open another terminal window. As always, change to your project directory and activate your virtual environment:
+
+```bash
+$ cd
+$ cd my-first-project
+```
+
+Activate from git bash on Windows:
+
+```bash
+$ . hemlock-venv/scripts/activate
+```
+
+Activate from Mac or WSL:
+
+```bash
+$ . hemlock-venv/bin/activate
+```
+
+You should have 3 terminals open: one for jupyter, one for editing `survey.py` and running `hlk serve`, and now a third for running the debugger. In one of the terminal windows, run the hemlock app as usual (`hlk serve`). In the third terminal, run the debugger with hemlock-CLI:
 
 ```bash
 $ hlk debug
@@ -220,13 +241,13 @@ To run several AI participants through the survey, e.g. 3, use:
 $ hlk debug -n 3
 ```
 
-If you don't want to use hemlock-CLI, you can run the debugger with the python interpreter:
+<!-- If you don't want to use hemlock-CLI, you can run the debugger with the python interpreter:
 
 ```bash
 $ python3
 >>> from hemlock.debug import AIParticipant, debug
 >>> debug() # or debug(3) to run 3 AI participants
-```
+``` -->
 
 ## Summary
 

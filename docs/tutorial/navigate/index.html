@@ -239,6 +239,7 @@
                 <h1 id="navigate">Navigate</h1>
 <p>In the previous part of the tutorial, you implemented a confirmation page using compile functions.</p>
 <p>By the end of this part of the tutorial, you'll be able to set up navigation between branches.</p>
+<p>Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.6/blackboard.ipynb" target="_blank"><code>blackboard.ipynb</code></a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.6/survey.py" target="_blank"><code>survey.py</code></a> files should look like at the end of this part of the tutorial.</p>
 <h2 id="why-navigate-functions">Why navigate functions?</h2>
 <p>Navigate functions move participants through different branches of the survey. For example, participants in the control group might follow one branch, while participants in the treatment group follow another.</p>
 <p>In our case, we'll use a navigate function to bring participants from the demographics branch of our survey to an 'utlimatum game' branch. In this branch, participants will an ultimatum game with each other.</p>
@@ -303,12 +304,10 @@ part.view_nav()
 <h2 id="branching-off-pages">Branching off pages</h2>
 <p>Branching off of branches allows us to navigate to a new branch at the end of our current branch. But occasionally, we'll want to navigate to a new branch from the middle of our current branch. To do this, we'll branch off of a page.</p>
 <p>This time, instead of attaching the navigate function to the branch, we'll attach it to the first page of the branch:</p>
-<pre><code class="python">from hemlock import Branch, Navigate as N, Page, Participant
-
-def start():
+<pre><code class="python">def start():
     return Branch(Page(navigate=N.middle()), Page(terminal=True))
 
-@Navigate.register
+@N.register
 def middle(start_branch):
     return Branch(Page())
 
@@ -375,7 +374,7 @@ def start():
         demographics_page,
         Page(
             Label(compile=C.confirm(demographics_page)),
-            back=True
+            back=True # DELETE terminal=True
         ),
         navigate=N.ultimatum_game()
     )

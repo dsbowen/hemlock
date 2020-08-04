@@ -4,6 +4,8 @@ In the previous part of the tutorial, you learned how to create a demographics q
 
 By the end of this part of the tutorial, you'll be able to store and download data.
 
+Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.2/blackboard.ipynb" target="_blank">`blackboard.ipynb`</a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.2/survey.py" target="_blank">`survey.py`</a> files should look like at the end of this part of the tutorial.
+
 ## Previewing data from a single participant
 
 Each participant contributes data to a data frame which you can download. We'll start by looking at the data belonging to a 'test participant'.

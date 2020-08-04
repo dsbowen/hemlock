@@ -4,6 +4,8 @@ In the previous part of the tutorial, you leanred how to add comprehension check
 
 By the end of this part of the tutorial, you'll be able to randomly assign your participants to conditions.
 
+Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.8/blackboard.ipynb" target="_blank">`blackboard.ipynb`</a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.8/survey.py" target="_blank">`survey.py`</a> files should look like at the end of this part of the tutorial.
+
 ## Basic syntax
 
 Open your jupyter notebook and run the following:

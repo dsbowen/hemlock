@@ -4,6 +4,8 @@ In the previous part of the tutorial, you learned how to validate participant re
 
 By the end of this part of the tutorial, you'll be able to run functions to handle form submission.
 
+Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.4/blackboard.ipynb" target="_blank">`blackboard.ipynb`</a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.4/survey.py" target="_blank">`survey.py`</a> files should look like at the end of this part of the tutorial.
+
 ## Why submit functions?
 
 Our demographics page asks participants to enter their date of birth. In addition to date of birth, we also want to record the participant's age.
@@ -78,7 +80,7 @@ def record_age(inpt):
     inpt.page.embedded = [Embedded('Age', age, data_rows=-1)]
 
 page = Page(
-    Input('<p>Enter your date of birth.</p>', submit=S.record_age()
+    Input('<p>Enter your date of birth.</p>', submit=S.record_age())
 )
 inpt = page.questions[0]
 inpt.data = '10/26/1992'
