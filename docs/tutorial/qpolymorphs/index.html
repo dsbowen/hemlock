@@ -280,7 +280,7 @@ p = Page(
 )
 </code></pre>
 
-<p>As usual, use <code>p.preview()</code> to preview the page and <code>[os.remove(tmpfile) for tmpfile in app.tmpfiles]</code> when you're done.</p>
+<p>As usual, use <code>p.preview()</code> to preview the page and <code>[os.remove(f) for f in app.tmpfiles if os.path.exists(f)]</code> when you're done.</p>
 <h2 id="code-explanation">Code explanation</h2>
 <p>Here we add several 'question polymorphs' (i.e. types of questions) to our page. </p>
 <p>The first is an input. We add <code>placeholder='mm/dd/yyyy'</code>, telling participants the expected format of their date of birth.</p>
