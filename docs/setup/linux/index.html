@@ -336,11 +336,10 @@ True
 <p>You should see chrome open to the hemlock docs.</p>
 <p>If you came here from the tutorial, you're now ready to return to it and get started with your first hemlock project. <a href="../../tutorial/first_project/">Click here to go back to the First Project section of the tutorial</a>.</p>
 <h2 id="chromedriver">Chromedriver</h2>
-<p>Hemlock's custom debugging tool and survey view functions use <a href="https://chromedriver.chromium.org/downloads" target="_blank">chromedriver</a>. To use these features locally, you'll need to download chromedriver:</p>
+<p>Hemlock's custom debugging tool and survey view functions use <a href="https://chromedriver.chromium.org/downloads" target="_blank">chromedriver</a>. To use these features locally, you'll need to download chromedriver (this command assumes you have <code>curl</code> installed; <a href="https://www.tecmint.com/install-curl-in-linux/" target="_blank">see here to install <code>curl</code></a>):</p>
 <pre><code class="bash">$ hlk setup linux --chromedriver
 </code></pre>
 
-<p><strong>Note.</strong> The above command will print an error message if you do not have <code>curl</code> installed. See <a href="https://www.tecmint.com/install-curl-in-linux/" target="_blank"> for instructions on installing <code>curl</code> for your linux distribution.</p>
 <p>Close and re-open your terminal. Verify your chromedriver installation:</p>
 <pre><code class="bash">$ which chromedriver
 /home/&lt;my-linux-username&gt;/webdrivers/chromedriver

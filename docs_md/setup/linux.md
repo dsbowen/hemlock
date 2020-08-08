@@ -137,13 +137,11 @@ If you came here from the tutorial, you're now ready to return to it and get sta
 
 ## Chromedriver
 
-Hemlock's custom debugging tool and survey view functions use <a href="https://chromedriver.chromium.org/downloads" target="_blank">chromedriver</a>. To use these features locally, you'll need to download chromedriver:
+Hemlock's custom debugging tool and survey view functions use <a href="https://chromedriver.chromium.org/downloads" target="_blank">chromedriver</a>. To use these features locally, you'll need to download chromedriver (this command assumes you have `curl` installed; <a href="https://www.tecmint.com/install-curl-in-linux/" target="_blank">see here to install `curl`</a>):
 
 ```bash
 $ hlk setup linux --chromedriver
 ```
-
-**Note.** The above command will print an error message if you do not have `curl` installed. See <a href="https://www.tecmint.com/install-curl-in-linux/" target="_blank"> for instructions on installing `curl` for your linux distribution.
 
 Close and re-open your terminal. Verify your chromedriver installation:
 
