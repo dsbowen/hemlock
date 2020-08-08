@@ -56,7 +56,7 @@ Verify your hemlock-CLI installation:
 
 ```bash
 $ hlk --version
-hlk x.x.x
+hlk, version x.x.xx
 ```
 
 ## Git and github
@@ -143,6 +143,8 @@ Hemlock's custom debugging tool and survey view functions use <a href="https://c
 $ hlk setup linux --chromedriver
 ```
 
+**Note.** The above command will print an error message if you do not have `curl` installed. See <a href="https://www.tecmint.com/install-curl-in-linux/" target="_blank"> for instructions on installing `curl` for your linux distribution.
+
 Close and re-open your terminal. Verify your chromedriver installation:
 
 ```bash
@@ -180,5 +182,12 @@ Verify your heroku-CLI installation:
 
 ```bash
 $ heroku --version
+heroku/x.xx.x linux-x64 node-vxx.xx.x
+```
+
+**Note.** On some linux distributions, you may need to verify your heroku-CLI installation with `sudo`:
+
+```bash
+$ sudo heroku --version
 heroku/x.xx.x linux-x64 node-vxx.xx.x
 ```

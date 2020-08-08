@@ -33,7 +33,7 @@ Activate from git bash on Windows:
 $ . hemlock-venv/scripts/activate
 ```
 
-Activate from Mac or WSL:
+Activate from Mac, Linux, or WSL:
 
 ```bash
 $ . hemlock-venv/bin/activate

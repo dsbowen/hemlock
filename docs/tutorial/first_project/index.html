@@ -280,7 +280,7 @@ $ ls
 <pre><code class="bash">$ . hemlock-venv/scripts/activate
 </code></pre>
 
-<p>Activate from Mac or WSL:</p>
+<p>Activate from Mac, Linux, or WSL:</p>
 <pre><code class="bash">$ . hemlock-venv/bin/activate
 </code></pre>
 
@@ -288,7 +288,11 @@ $ ls
 <pre><code class="bash">$ pip install -r local-requirements.txt
 </code></pre>
 
-<p>Add your virtual environment to jupyter:</p>
+<p><strong>You may see an error message</strong> starting with <em>Cannot uninstall PyYAML</em>. This means that all of your packages were successfully installed except for <code>pyyaml</code>. To fix this, run:</p>
+<pre><code class="bash">$ pip install --ignore-installed pyyaml
+</code></pre>
+
+<p>Once you've installed the required packages, add your virtual environment to jupyter:</p>
 <pre><code class="bash">$ python3 -m ipykernel install --user --name=hemlock-venv
 </code></pre>
 
@@ -320,7 +324,7 @@ $ ls
 <p>Jupyter will attempt to open the dashboard automatically in your browser. If this fails, the terminal window will show you links to the dashboard that you can manually copy and paste into your browser.</p>
 <p>Open the file named <code>blackboard.ipynb</code>.</p>
 <p>Change the kernel to <code>hemlock-venv</code>. At the top of the notebook click Kernel &gt;&gt; Change kernel &gt;&gt; hemlock-venv.</p>
-<p>Run the first cell (Shift + Enter on windows) to set up the environment and application context. It's not important right now to understand exactly what it does.</p>
+<p>Run the first cell (Shift + Enter) to set up the environment and application context. It's not important right now to understand exactly what it does.</p>
 <p>Now, create your first hemlock page. In a new code cell below the first one, enter the following:</p>
 <pre><code class="python">from hemlock import Page, Label
 
@@ -330,7 +334,7 @@ p.preview()
 
 <p>This opens a preview of your page in your browser.</p>
 <p>Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:</p>
-<pre><code class="python">[os.remove(tmpfile) for tmpfile in app.tmpfiles]
+<pre><code class="python">[os.remove(f) for f in app.tmpfiles if os.path.exists(f)]
 </code></pre>
 
 <h2 id="code-explanation">Code explanation</h2>

@@ -280,7 +280,7 @@ pip xx.x.x ...
 
 <p>Verify your hemlock-CLI installation:</p>
 <pre><code class="bash">$ hlk --version
-hlk x.x.x
+hlk, version x.x.xx
 </code></pre>
 
 <h2 id="git-and-github">Git and github</h2>
@@ -340,6 +340,7 @@ True
 <pre><code class="bash">$ hlk setup linux --chromedriver
 </code></pre>
 
+<p><strong>Note.</strong> The above command will print an error message if you do not have <code>curl</code> installed. See <a href="https://www.tecmint.com/install-curl-in-linux/" target="_blank"> for instructions on installing <code>curl</code> for your linux distribution.</p>
 <p>Close and re-open your terminal. Verify your chromedriver installation:</p>
 <pre><code class="bash">$ which chromedriver
 /home/&lt;my-linux-username&gt;/webdrivers/chromedriver
@@ -365,6 +366,11 @@ True
 
 <p>Verify your heroku-CLI installation:</p>
 <pre><code class="bash">$ heroku --version
+heroku/x.xx.x linux-x64 node-vxx.xx.x
+</code></pre>
+
+<p><strong>Note.</strong> On some linux distributions, you may need to verify your heroku-CLI installation with <code>sudo</code>:</p>
+<pre><code class="bash">$ sudo heroku --version
 heroku/x.xx.x linux-x64 node-vxx.xx.x
 </code></pre>
               

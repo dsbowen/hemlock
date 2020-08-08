@@ -74,7 +74,7 @@ Verify your hemlock-CLI installation:
 
 ```bash
 $ hlk --version
-hlk x.x.x
+hlk, version x.x.xx
 ```
 
 ## Git and github

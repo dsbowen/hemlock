@@ -61,7 +61,7 @@ Activate from git bash on Windows:
 $ . hemlock-venv/scripts/activate
 ```
 
-Activate from Mac or WSL:
+Activate from Mac, Linux, or WSL:
 
 ```bash
 $ . hemlock-venv/bin/activate
@@ -73,7 +73,13 @@ Next, install the required python packages to run this project locally:
 $ pip install -r local-requirements.txt
 ```
 
-Add your virtual environment to jupyter:
+**You may see an error message** starting with *Cannot uninstall PyYAML*. This means that all of your packages were successfully installed except for `pyyaml`. To fix this, run:
+
+```bash
+$ pip install --ignore-installed pyyaml
+```
+
+Once you've installed the required packages, add your virtual environment to jupyter:
 
 ```bash
 $ python3 -m ipykernel install --user --name=hemlock-venv
@@ -123,7 +129,7 @@ Open the file named `blackboard.ipynb`.
 
 Change the kernel to `hemlock-venv`. At the top of the notebook click Kernel >> Change kernel >> hemlock-venv.
 
-Run the first cell (Shift + Enter on windows) to set up the environment and application context. It's not important right now to understand exactly what it does.
+Run the first cell (Shift + Enter) to set up the environment and application context. It's not important right now to understand exactly what it does.
 
 Now, create your first hemlock page. In a new code cell below the first one, enter the following:
 
@@ -139,7 +145,7 @@ This opens a preview of your page in your browser.
 Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:
 
 ```python
-[os.remove(tmpfile) for tmpfile in app.tmpfiles]
+[os.remove(f) for f in app.tmpfiles if os.path.exists(f)]
 ```
 
 ## Code explanation
