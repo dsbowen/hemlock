@@ -5,6 +5,8 @@ repo_url: https://github.com/dsbowen/hemlock
 edit_uri: edit/master/docs_md
 nav:
   - Home: index.md
+  - Contact: contact.md
+  - Checklist: checklist.md
   - Tutorial:
     - Introduction: tutorial/intro.md
     - Your first project: tutorial/first_project.md

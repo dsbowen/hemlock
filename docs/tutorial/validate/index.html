@@ -52,6 +52,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../contact/">Contact</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../checklist/">Checklist</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Tutorial</span></p>
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
@@ -256,7 +264,7 @@ inpt.validate
 <pre><code>[&lt;Validate 1&gt;]
 </code></pre>
 
-<p>You can add validate functions to a page or question by setting its <code>validate</code> attribute or passing a <code>validate</code> argument to its constructor Validate functions run when a participant attempts to submit a page. If the participant's response is valid, the function returns <code>None</code>, allowing the participant to continue the survey. If the participant's response is invalid, the function returns an error message.</p>
+<p>You can add validate functions to a page or question by setting its <code>validate</code> attribute or passing a <code>validate</code> argument to its constructor. Validate functions run when a participant attempts to submit a page. If the participant's response is valid, the function returns <code>None</code>, allowing the participant to continue the survey. If the participant's response is invalid, the function returns an error message.</p>
 <p>As its name indicates, the validate function requires the participant to respond to the input question. By default, the input question has no response. It also has no error message. We can see this as follows:</p>
 <pre><code class="python">(
     'The input has no response or error message', 

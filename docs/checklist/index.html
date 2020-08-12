@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Utilities - Hemlock</title>
+  <title>Checklist - Hemlock</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -19,8 +19,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Utilities";
-    var mkdocs_page_input_path = "utils.md";
+    var mkdocs_page_name = "Checklist";
+    var mkdocs_page_input_path = "checklist.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -56,8 +56,26 @@
                     <li class="toctree-l1"><a class="reference internal" href="../contact/">Contact</a>
                     </li>
                 </ul>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../checklist/">Checklist</a>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Checklist</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#initialize-a-project">Initialize a project</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#additional-steps-if-using-git-bash-on-windows">Additional steps if using git bash on Windows</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#additional-steps-if-using-wsl">Additional steps if using WSL</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#iterate-quickly-on-the-blackboard">Iterate quickly on the blackboard</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#run-locally">Run locally</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#debug">Debug</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#deploy">Deploy</a>
+    </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Tutorial</span></p>
@@ -169,7 +187,7 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Tools</span></p>
-                <ul class="current">
+                <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../comprehension/">Comprehension check</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../lang/">Language</a>
@@ -180,25 +198,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../statics/">Statics</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Utilities</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolschromedriver">hemlock.tools.chromedriver</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolsget_data">hemlock.tools.get_data</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#examples_1">Examples</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolsurl_for">hemlock.tools.url_for</a>
-    </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
                     </li>
                 </ul>
                 <ul>
@@ -225,15 +225,11 @@
     <li><a href="..">Docs</a> &raquo;</li>
     
       
-        
-          <li>Tools &raquo;</li>
-        
-      
     
-    <li>Utilities</li>
+    <li>Checklist</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/utils.md"
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/checklist.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -244,147 +240,82 @@
           <div role="main">
             <div class="section">
               
-                <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
-
-<p><link rel="stylesheet" href="https://assets.readthedocs.org/static/css/readthedocs-doc-embed.css" type="text/css" /></p>
-<style>
-    a.src-href {
-        float: right;
-    }
-    p.attr {
-        margin-top: 0.5em;
-        margin-left: 1em;
-    }
-    p.func-header {
-        background-color: gainsboro;
-        border-radius: 0.1em;
-        padding: 0.5em;
-        padding-left: 1em;
-    }
-    table.field-table {
-        border-radius: 0.1em
-    }
-</style>
-
-<h1 id="utilities">Utilities</h1>
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-
-    </tbody>
-</table>
-
-<h2 id="hemlocktoolschromedriver">hemlock.tools.<strong>chromedriver</strong></h2>
-<p class="func-header">
-    <i>def</i> hemlock.tools.<b>chromedriver</b>(<i>headless=False</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L9">[source]</a>
-</p>
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>headless : <i>bool, default=False</i></b>
-<p class="attr">
-    Indicates whether to run Chrome in headless mode.
-</p></td>
-</tr>
-<tr class="field">
-    <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
-<p class="attr">
-
-</p></td>
-</tr>
-    </tbody>
-</table>
-
-<h4 id="notes">Notes</h4>
-<p>Chromedriver must be headless in production. When the application is in
-production, this method sets <code>headless</code> to <code>True</code> regardless of the
-parameter you pass.</p>
-<h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock.tools import chromedriver
-
-driver = chromedriver()
+                <h1 id="checklist">Checklist</h1>
+<p>This is a checklist of the steps involved in initializing, editing, and deploying a hemlock project.</p>
+<p>This will make sense after you <a href="../tutorial/intro/">go through the tutorial</a>.</p>
+<h2 id="initialize-a-project">Initialize a project</h2>
+<pre><code class="bash">$ hlk init &lt;my-project-name&gt; &lt;my-github-username&gt; &lt;my-github-token&gt;
+$ cd &lt;my-project-name&gt;
 </code></pre>
 
-<h2 id="hemlocktoolsget_data">hemlock.tools.<strong>get_data</strong></h2>
-<p class="func-header">
-    <i>def</i> hemlock.tools.<b>get_data</b>(<i>dataframe='data'</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L47">[source]</a>
-</p>
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>dataframe : <i>str, default='data'</i></b>
-<p class="attr">
-    Name of the dataframe to get; <code>'data'</code> or <code>'meta'</code>.
-</p></td>
-</tr>
-<tr class="field">
-    <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>data : <i>dict</i></b>
-<p class="attr">
-    Maps variable names to list of entries. May not include data from participants who are in progress.
-</p></td>
-</tr>
-    </tbody>
-</table>
-
-<h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock import Branch, Page, Participant, push_app_context
-from hemlock.tools import get_data
-
-def start():
-    return Branch(Page())
-
-push_app_context()
-
-Participant.gen_test_participant(start).completed = True
-get_data()
+<h4 id="additional-steps-if-using-git-bash-on-windows">Additional steps if using git bash on Windows</h4>
+<pre><code class="bash">$ . hemlock-venv/scripts/activate
+$ pip install -r local-requirements.txt
 </code></pre>
 
-<p>Out:</p>
-<pre><code>{'ID': [1],
-'EndTime': [datetime.datetime(2020, 7, 6, 17, 11, 0, 245032)],
-'StartTime': [datetime.datetime(2020, 7, 6, 17, 11, 0, 245032)],
-'Status': ['Completed']}
+<h4 id="additional-steps-if-using-wsl">Additional steps if using WSL</h4>
+<p>Open <code>env.yaml</code> and add the following line:</p>
+<pre><code class="yaml">WSL_DISTRIBUTION: Ubuntu-20.04 # or other WSL distribution
 </code></pre>
 
-<h2 id="hemlocktoolsurl_for">hemlock.tools.<strong>url_for</strong></h2>
-<p class="func-header">
-    <i>def</i> hemlock.tools.<b>url_for</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L87">[source]</a>
-</p>
+<h2 id="iterate-quickly-on-the-blackboard">Iterate quickly on the blackboard</h2>
+<pre><code class="bash">$ jupyter notebook
+</code></pre>
 
-<p>Attempt to return <code>flask.url_for(*args, **kwargs)</code>. However, this method
-does not exit the program when getting a url outside a request context;
-e.g. when debugging in a shell or notebook.</p>
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>*args, **kwargs : <i></i></b>
-<p class="attr">
-    Arguments and keyword arguments will be passed to <code>flask.url_for</code>.
-</p></td>
-</tr>
-<tr class="field">
-    <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>url : <i>str</i></b>
-<p class="attr">
-    Output of <code>flask.url_for</code> if possible; otherwise <code>'URL_UNAVAILABLE'</code>.
-</p></td>
-</tr>
-    </tbody>
-</table>
+<p>Open <code>blackboard.ipynb</code>. Change the kernel: Kernel &gt;&gt; Change kernel &gt;&gt; my-project-name.</p>
+<h2 id="run-locally">Run locally</h2>
+<p>Open a second terminal window. Activate your virtual environment:</p>
+<pre><code class="bash">$ . hemlock-venv/scripts/activate # for git bash on Windows
+$ . hemlock-venv/bin/activate # for WSL, Mac, Linux
+</code></pre>
+
+<p>Edit survey files:</p>
+<pre><code class="bash">$ code survey.py
+</code></pre>
+
+<p>Run locally:</p>
+<pre><code class="bash">$ hlk serve
+</code></pre>
+
+<h2 id="debug">Debug</h2>
+<p>In a third terminal window:</p>
+<pre><code class="bash">$ . hemlock-venv/scripts/activate # for git bash on Windows
+$ . hemlock-venv/bin/activate # for WSL, Mac, Linux
+$ hlk debug
+</code></pre>
+
+<h2 id="deploy">Deploy</h2>
+<p>Deploy to and debug in staging:</p>
+<pre><code class="bash">$ hlk deploy # make sure to set the PASSWORD and URL_ROOT environment variables
+$ heroku git:remote -a &lt;my-app-name&gt;
+$ hlk debug --staging
+</code></pre>
+
+<p>Destroy the staging app:</p>
+<pre><code class="bash">$ heroku apps:destroy
+</code></pre>
+
+<p>Change <code>app.json</code> from:</p>
+<pre><code class="json">{
+    &quot;addons&quot;: [&quot;heroku-postgresql:hobby-dev&quot;],
+    &quot;formation&quot;: {
+        &quot;web&quot;: {&quot;quantity&quot;: 1, &quot;size&quot;: &quot;free&quot;}
+    },
+    ...
+</code></pre>
+
+<p>to:</p>
+<pre><code class="json">{
+    &quot;addons&quot;: [&quot;heroku-postgresql:standard-0&quot;],
+    &quot;formation&quot;: {
+        &quot;web&quot;: {&quot;quantity&quot;: 10, &quot;size&quot;: &quot;standard-1x&quot;}
+    },
+    ...
+</code></pre>
+
+<p>Deploy in production:</p>
+<pre><code class="bash">hlk deploy # set PASSWORD, URL_ROOT, and DEBUG_FUNCTIONS
+</code></pre>
               
             </div>
           </div>
@@ -392,10 +323,10 @@ e.g. when debugging in a shell or notebook.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../security/" class="btn btn-neutral float-right" title="Security">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../tutorial/intro/" class="btn btn-neutral float-right" title="Introduction">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../statics/" class="btn btn-neutral" title="Statics"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../contact/" class="btn btn-neutral" title="Contact"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -423,10 +354,10 @@ e.g. when debugging in a shell or notebook.</p>
           <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../statics/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../contact/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../security/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../tutorial/intro/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

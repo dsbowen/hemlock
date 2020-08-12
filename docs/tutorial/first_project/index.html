@@ -52,6 +52,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../contact/">Contact</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../checklist/">Checklist</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Tutorial</span></p>
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
@@ -61,9 +69,9 @@
     <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#initialize-a-new-hemlock-project">Initialize a new hemlock project</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#set-up-your-virtual-environment">Set up your virtual environment</a>
         <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#if-using-git-bash-on-windows">If using git bash on Windows</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#if-using-wsl">If using WSL</a>
     </li>
         </ul>
@@ -267,37 +275,24 @@
 </code></pre>
 
 <p>(This isn't my real authentication token!)</p>
-<p>This will 'clone' the template into a folder <code>my-first-project</code>, initialize an eponymous github repository for your project, and create a virtual environment.</p>
+<p>This will 'clone' the template into a folder <code>my-first-project</code>, initialize an eponymous github repository for your project, and set up a virtual environment.</p>
 <p>Change into the project directory and check out the folder structure:</p>
 <pre><code class="bash">$ cd my-first-project
 $ ls
 </code></pre>
 
 <p><strong>Note.</strong> You will only have to run <code>hlk init</code> once per project.</p>
-<h2 id="set-up-your-virtual-environment">Set up your virtual environment</h2>
-<p>Activate your virtual environment.</p>
-<p>Activate from git bash on Windows:</p>
-<pre><code class="bash">$ . hemlock-venv/scripts/activate
-</code></pre>
-
-<p>Activate from Mac, Linux, or WSL:</p>
-<pre><code class="bash">$ . hemlock-venv/bin/activate
-</code></pre>
-
-<p>Next, install the required python packages to run this project locally:</p>
-<pre><code class="bash">$ pip install -r local-requirements.txt
-</code></pre>
-
-<p><strong>You may see an error message</strong> starting with <em>Cannot uninstall PyYAML</em>. This means that all of your packages were successfully installed except for <code>pyyaml</code>. To fix this, run:</p>
+<p><strong>You may see an error message</strong> starting with <em>Cannot uninstall PyYAML</em>. To fix this, run:</p>
 <pre><code class="bash">$ pip install --ignore-installed pyyaml
 </code></pre>
 
-<p>Once you've installed the required packages, add your virtual environment to jupyter:</p>
-<pre><code class="bash">$ python3 -m ipykernel install --user --name=hemlock-venv
+<h4 id="if-using-git-bash-on-windows">If using git bash on Windows</h4>
+<p>If using git bash on Windows, you'll need to activate your virtual environment and install the project requirements:</p>
+<pre><code class="bash">$ cd my-first-project
+$ . hemlock-venv/scripts/activate
+$ pip install -r local-requirements.txt
 </code></pre>
 
-<p>It's good practice to use <a href="https://docs.python.org/3/tutorial/venv.html" target="_blank">virtual environments</a> and activate them whenever you're working on a project.</p>
-<p><strong>Note.</strong> You will only have to pip install the requirements and add hemlock-venv to jupyter once per project. However, you will have to activate your virtual environment every time you open a new terminal to work on this project. That is, suppose you close and re-open your terminal. You will have to change directory into your project folder and re-activate the virtual environment.</p>
 <h4 id="if-using-wsl">If using WSL</h4>
 <p>If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable. Open a file which specifies your local environment variables:</p>
 <pre><code class="bash">$ code env.yaml
@@ -323,7 +318,7 @@ $ ls
 
 <p>Jupyter will attempt to open the dashboard automatically in your browser. If this fails, the terminal window will show you links to the dashboard that you can manually copy and paste into your browser.</p>
 <p>Open the file named <code>blackboard.ipynb</code>.</p>
-<p>Change the kernel to <code>hemlock-venv</code>. At the top of the notebook click Kernel &gt;&gt; Change kernel &gt;&gt; hemlock-venv.</p>
+<p>Change the kernel to <code>my-first-project</code> (in general, your project name). At the top of the notebook click Kernel &gt;&gt; Change kernel &gt;&gt; my-first-project.</p>
 <p>Run the first cell (Shift + Enter) to set up the environment and application context. It's not important right now to understand exactly what it does.</p>
 <p>Now, create your first hemlock page. In a new code cell below the first one, enter the following:</p>
 <pre><code class="python">from hemlock import Page, Label

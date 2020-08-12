@@ -40,7 +40,7 @@ $ hlk init my-first-project dsbowen bts4rxpmw2x6tsy2qel1y7p5hwmhd7wxopmk5vsp
 
 (This isn't my real authentication token!)
 
-This will 'clone' the template into a folder `my-first-project`, initialize an eponymous github repository for your project, and create a virtual environment.
+This will 'clone' the template into a folder `my-first-project`, initialize an eponymous github repository for your project, and set up a virtual environment.
 
 Change into the project directory and check out the folder structure:
 
@@ -51,43 +51,21 @@ $ ls
 
 **Note.** You will only have to run `hlk init` once per project.
 
-## Set up your virtual environment
-
-Activate your virtual environment.
-
-Activate from git bash on Windows:
-
-```bash
-$ . hemlock-venv/scripts/activate
-```
-
-Activate from Mac, Linux, or WSL:
-
-```bash
-$ . hemlock-venv/bin/activate
-```
-
-Next, install the required python packages to run this project locally:
-
-```bash
-$ pip install -r local-requirements.txt
-```
-
-**You may see an error message** starting with *Cannot uninstall PyYAML*. This means that all of your packages were successfully installed except for `pyyaml`. To fix this, run:
+**You may see an error message** starting with *Cannot uninstall PyYAML*. To fix this, run:
 
 ```bash
 $ pip install --ignore-installed pyyaml
 ```
 
-Once you've installed the required packages, add your virtual environment to jupyter:
+#### If using git bash on Windows
+
+If using git bash on Windows, you'll need to activate your virtual environment and install the project requirements:
 
 ```bash
-$ python3 -m ipykernel install --user --name=hemlock-venv
+$ cd my-first-project
+$ . hemlock-venv/scripts/activate
+$ pip install -r local-requirements.txt
 ```
-
-It's good practice to use <a href="https://docs.python.org/3/tutorial/venv.html" target="_blank">virtual environments</a> and activate them whenever you're working on a project.
-
-**Note.** You will only have to pip install the requirements and add hemlock-venv to jupyter once per project. However, you will have to activate your virtual environment every time you open a new terminal to work on this project. That is, suppose you close and re-open your terminal. You will have to change directory into your project folder and re-activate the virtual environment.
 
 #### If using WSL
 
@@ -127,7 +105,7 @@ Jupyter will attempt to open the dashboard automatically in your browser. If thi
 
 Open the file named `blackboard.ipynb`.
 
-Change the kernel to `hemlock-venv`. At the top of the notebook click Kernel >> Change kernel >> hemlock-venv.
+Change the kernel to `my-first-project` (in general, your project name). At the top of the notebook click Kernel >> Change kernel >> my-first-project.
 
 Run the first cell (Shift + Enter) to set up the environment and application context. It's not important right now to understand exactly what it does.
 

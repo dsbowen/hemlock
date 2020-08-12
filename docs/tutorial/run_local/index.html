@@ -52,6 +52,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../contact/">Contact</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../checklist/">Checklist</a>
+                    </li>
+                </ul>
                 <p class="caption"><span class="caption-text">Tutorial</span></p>
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../intro/">Introduction</a>
@@ -238,16 +246,14 @@
 <p><strong>Note.</strong> Running an app 'locally' means that you can play with it on your own computer, but it won't be available on the internet. We'll cover deployment later.</p>
 <p>Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.0/blackboard.ipynb" target="_blank"><code>blackboard.ipynb</code></a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.0/survey.py" target="_blank"><code>survey.py</code></a> files should look like at the end of this part of the tutorial.</p>
 <h2 id="why-run-locally">Why run locally?</h2>
-<p>In the previous part of the tutorial, we created and previewed a page in a jupyter notebook. Hemlock + jupyter notebook is great for trying out ideas and iterating quickly, like working on a blackboard. However, it won't create a fully responsive application (survey). For that, we're going to need to run our app locally.</p>
+<p>In the previous part of the tutorial, we created and previewed a page in a jupyter notebook. Hemlock + jupyter notebook is great for trying out ideas and iterating quickly, like working on a blackboard. However, it won't create a fully responsive application. The application itself derives from <code>survey.py</code>. To preview our survey as a fully responsive web application, we need to run our app locally.</p>
 <h2 id="open-a-second-terminal-window">Open a second terminal window</h2>
-<p>You should have jupyter running in a terminal window from the previous part of the tutorial. You'll need to restart the kernel (in the navigation bar at the top of <code>blackboard.ipynb</code> click Kernel &gt;&gt; Restart &amp; Clear Output) before running your app.</p>
-<p><strong>Note.</strong> You will always need to restart your jupyter notebook kernel before running your application to avoid a database error.</p>
-<p>Open a second terminal window. In general, I recommend having one terminal open for jupyter, and a second for editing python files and running your app. In the second terminal window, change to your project folder:</p>
+<p>You should have jupyter running in a terminal window from the previous part of the tutorial. Open a second terminal window. In general, I recommend having one terminal open for jupyter, and a second for editing python files and running your app. In the second terminal window, change to your project folder:</p>
 <pre><code class="bash">$ cd
 $ cd my-first-project
 </code></pre>
 
-<p>In the second terminal window, activate your virtual environment. Remember to re-activate your virtual environment every time your open a new terminal window to work on a project.</p>
+<p><code>hlk init</code> created a virtual environment for your hemlock project. Activate your virtual environment in your second terminal window:</p>
 <p>Activate from git bash on Windows:</p>
 <pre><code class="bash">$ . hemlock-venv/scripts/activate
 </code></pre>
@@ -256,6 +262,7 @@ $ cd my-first-project
 <pre><code class="bash">$ . hemlock-venv/bin/activate
 </code></pre>
 
+<p><strong>Note on virtual environments.</strong> In general, you should activate your <a href="https://docs.python.org/3/tutorial/venv.html" target="_blank">virtual environment</a> every time you open a terminal to work on your project. Why use a virtual environment? While your code may work for the latest version of a package today, the next package update may use a different syntax, meaning you'd have to revise all of your code. Virtual environments solve this problem by 'freezing' the current version of your packages in the project to which they belong.</p>
 <h2 id="run-your-application">Run your application</h2>
 <p>Create a python file called <code>survey.py</code> in the root directory of your project. If you're working with Visual Studio Code, enter the following in your terminal:</p>
 <pre><code class="bash">$ code survey.py
@@ -301,7 +308,6 @@ b.pages = [Page(Label('&lt;p&gt;Label 0&lt;/p&gt;')), Page(Label('&lt;p&gt;Label
 <ol>
 <li>Iterate quickly on the next part of your survey in jupyter.</li>
 <li>When you're happy with the design, update your survey files (e.g. <code>survey.py</code>).</li>
-<li>Restart your kernel (Kernel &gt;&gt; Restart &amp; Clear Output).</li>
 <li>Run the app locally with <code>hlk serve</code> (or <code>python3 app.py</code>).</li>
 <li>When you're happy with how the app runs, close the app (click on your terminal and hit Ctrl + C).</li>
 <li>Repeat.</li>
@@ -309,7 +315,7 @@ b.pages = [Page(Label('&lt;p&gt;Label 0&lt;/p&gt;')), Page(Label('&lt;p&gt;Label
 <p>As the name <code>blackboard.ipynb</code> suggests, I treat jupyter like a blackboard. Once I'm happy with a design and it's running in my app, I like to start the next design on a fresh blackboard:</p>
 <ol>
 <li>Delete every cell in the notebook (except the first, where we push the application context, and the last, where we remove temporary files).</li>
-<li>Restart the kernel (Kernel &gt;&gt; Restart) if you haven't already.</li>
+<li>Restart the kernel (Kernel &gt;&gt; Restart).</li>
 <li>Run the first cell to re-push the application context.</li>
 </ol>
 <p>You may also want to clear the database after running your app:</p>

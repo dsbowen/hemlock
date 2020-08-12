@@ -31,7 +31,7 @@ Out:
 [<Validate 1>]
 ```
 
-You can add validate functions to a page or question by setting its `validate` attribute or passing a `validate` argument to its constructor Validate functions run when a participant attempts to submit a page. If the participant's response is valid, the function returns `None`, allowing the participant to continue the survey. If the participant's response is invalid, the function returns an error message.
+You can add validate functions to a page or question by setting its `validate` attribute or passing a `validate` argument to its constructor. Validate functions run when a participant attempts to submit a page. If the participant's response is valid, the function returns `None`, allowing the participant to continue the survey. If the participant's response is invalid, the function returns an error message.
 
 As its name indicates, the validate function requires the participant to respond to the input question. By default, the input question has no response. It also has no error message. We can see this as follows:
 

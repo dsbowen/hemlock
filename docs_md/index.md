@@ -4,6 +4,16 @@ Hemlock aspires to be the most powerful and flexible way to create online studie
 
 If the installation and quickstart instructions don't make sense to you, check out the [tutorial](tutorial/intro.md).
 
+## Contact
+
+If you're a marketing, political advertising, or other for-profit company, see my [contact page](contact.md#for-profit-and-political-research) for details on hiring me as a consultant and purchasing a commercial license.
+
+If you're an academic or non-profit researcher interested in using hemlock, **for a limited time I am offering to make studies for you free of charge**. See my [contact page](contact.md#non-profit-and-academic-research) for contact details and collaboration policy.
+
+## Why hemlock?
+
+If you're an academic researcher interested in using hemlock, but aren't sure if it's worth your time to learn it, [read this](manifesto.md).
+
 ## Installation
 
 ```

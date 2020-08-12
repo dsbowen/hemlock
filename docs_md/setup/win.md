@@ -151,7 +151,7 @@ Verify your hemlock-CLI installation:
 
 ```bash
 $ hlk --version
-hlk, version 0.0.13
+hlk, version x.x.xx
 ```
 
 ## Visual studio code

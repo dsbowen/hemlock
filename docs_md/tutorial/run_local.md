@@ -10,22 +10,18 @@ Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial
 
 ## Why run locally?
 
-In the previous part of the tutorial, we created and previewed a page in a jupyter notebook. Hemlock + jupyter notebook is great for trying out ideas and iterating quickly, like working on a blackboard. However, it won't create a fully responsive application (survey). For that, we're going to need to run our app locally.
+In the previous part of the tutorial, we created and previewed a page in a jupyter notebook. Hemlock + jupyter notebook is great for trying out ideas and iterating quickly, like working on a blackboard. However, it won't create a fully responsive application. The application itself derives from `survey.py`. To preview our survey as a fully responsive web application, we need to run our app locally.
 
 ## Open a second terminal window
 
-You should have jupyter running in a terminal window from the previous part of the tutorial. You'll need to restart the kernel (in the navigation bar at the top of `blackboard.ipynb` click Kernel >> Restart & Clear Output) before running your app.
-
-**Note.** You will always need to restart your jupyter notebook kernel before running your application to avoid a database error.
-
-Open a second terminal window. In general, I recommend having one terminal open for jupyter, and a second for editing python files and running your app. In the second terminal window, change to your project folder:
+You should have jupyter running in a terminal window from the previous part of the tutorial. Open a second terminal window. In general, I recommend having one terminal open for jupyter, and a second for editing python files and running your app. In the second terminal window, change to your project folder:
 
 ```bash
 $ cd
 $ cd my-first-project
 ```
 
-In the second terminal window, activate your virtual environment. Remember to re-activate your virtual environment every time your open a new terminal window to work on a project.
+`hlk init` created a virtual environment for your hemlock project. Activate your virtual environment in your second terminal window:
 
 Activate from git bash on Windows:
 
@@ -38,6 +34,8 @@ Activate from Mac, Linux, or WSL:
 ```bash
 $ . hemlock-venv/bin/activate
 ```
+
+**Note on virtual environments.** In general, you should activate your <a href="https://docs.python.org/3/tutorial/venv.html" target="_blank">virtual environment</a> every time you open a terminal to work on your project. Why use a virtual environment? While your code may work for the latest version of a package today, the next package update may use a different syntax, meaning you'd have to revise all of your code. Virtual environments solve this problem by 'freezing' the current version of your packages in the project to which they belong.
 
 ## Run your application
 
@@ -99,15 +97,14 @@ In the previous part of the tutorial, we designed a page in jupyter notebook. In
 
 1. Iterate quickly on the next part of your survey in jupyter.
 2. When you're happy with the design, update your survey files (e.g. `survey.py`).
-3. Restart your kernel (Kernel >> Restart & Clear Output).
-4. Run the app locally with `hlk serve` (or `python3 app.py`).
-5. When you're happy with how the app runs, close the app (click on your terminal and hit Ctrl + C).
-6. Repeat.
+3. Run the app locally with `hlk serve` (or `python3 app.py`).
+4. When you're happy with how the app runs, close the app (click on your terminal and hit Ctrl + C).
+5. Repeat.
 
 As the name `blackboard.ipynb` suggests, I treat jupyter like a blackboard. Once I'm happy with a design and it's running in my app, I like to start the next design on a fresh blackboard:
 
 1. Delete every cell in the notebook (except the first, where we push the application context, and the last, where we remove temporary files).
-2. Restart the kernel (Kernel >> Restart) if you haven't already.
+2. Restart the kernel (Kernel >> Restart).
 3. Run the first cell to re-push the application context.
 
 You may also want to clear the database after running your app:

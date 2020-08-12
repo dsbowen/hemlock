@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Utilities - Hemlock</title>
+  <title>Manifesto - Hemlock</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -19,8 +19,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Utilities";
-    var mkdocs_page_input_path = "utils.md";
+    var mkdocs_page_name = "Manifesto";
+    var mkdocs_page_input_path = "manifesto.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -169,7 +169,7 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Tools</span></p>
-                <ul class="current">
+                <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../comprehension/">Comprehension check</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../lang/">Language</a>
@@ -180,25 +180,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../statics/">Statics</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Utilities</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolschromedriver">hemlock.tools.chromedriver</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolsget_data">hemlock.tools.get_data</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#examples_1">Examples</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolsurl_for">hemlock.tools.url_for</a>
-    </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../utils/">Utilities</a>
                     </li>
                 </ul>
                 <ul>
@@ -225,15 +207,11 @@
     <li><a href="..">Docs</a> &raquo;</li>
     
       
-        
-          <li>Tools &raquo;</li>
-        
-      
     
-    <li>Utilities</li>
+    <li>Manifesto</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/utils.md"
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/manifesto.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -244,160 +222,63 @@
           <div role="main">
             <div class="section">
               
-                <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+                <!-- 
+The 3 day challenge
+Philosophy: simple things easy; complex things possible
+Graph: simple, intermediate, complex
+    Most research today is intermediate: Andreas example
+Learning curve graph
+Graph: Arc of technical progress in science
+    Freud to R
+    Low-hanging fruit is scarce
+    The parable of Paul
+Objections:
+    Better things to do with your time
+    If I can do it in Qualtrics, I should do it in Qualtrics
+        Example of the html tables
+    You can insert your own javascript in Qualtrics
+Welcome to the 21st century
+ -->
 
-<p><link rel="stylesheet" href="https://assets.readthedocs.org/static/css/readthedocs-doc-embed.css" type="text/css" /></p>
-<style>
-    a.src-href {
-        float: right;
-    }
-    p.attr {
-        margin-top: 0.5em;
-        margin-left: 1em;
-    }
-    p.func-header {
-        background-color: gainsboro;
-        border-radius: 0.1em;
-        padding: 0.5em;
-        padding-left: 1em;
-    }
-    table.field-table {
-        border-radius: 0.1em
-    }
-</style>
+<h1 id="why-hemlock">Why Hemlock?</h1>
+<h2 id="the-3-day-challenge">The 3 day challenge</h2>
+<p>It's March 2019, and I'm sitting at my computer furiously hacking away at the next great Hemlock feature. Next door, I can hear one of my fellow PhD candidates on the phone with Qualtrics support, trying to figure out how to add this one simple feature to her survey. She's spent all day yesterday by herself, and all morning today with a Qualtrics tech, trying to figure this out.</p>
+<p>My ears perk up. I walk over and knock on her door and ask her what she wants her survey to do. In 10 minutes, I code her survey exactly as specified and send her a link. She's excited.</p>
+<p><em>How did you do that?</em> she asks. I invite her over to my computer and open up my python file. Her face drops. <em>Ugh, I have to learn how to code??</em> she says, audibly, then turns around and re-dials Qualtrics support.</p>
+<p>Coding is scary. I get it. As an undergrad, I had to take computer science 101 three times because I failed out of it twice. (And I never did get that comp sci major). But after wasting hundreds of hours wrestling with Qualtrics in the first year of my PhD, I decided learn how to code because coding gives you more power and flexibility than a GUI ever will.</p>
+<p>Because I get how scary coding can be when you're starting out, I've done everything I can think of to make Hemlock as easy as possible for you. But it's not going to be a walk in the park. You have to learn basic python, and you have to learn the Hemlock package. Expect to struggle. Hemlock isn't a product for your convenience; it's a tool for your craft.</p>
+<p>If you're an intermediate-level programmer (e.g. comfortable with R, new to python), expect 3 full days to get up to speed. 3 days sounds like a lot. But if you can invest that time right now, Hemlock will save you hundreds of hours over the course of your career, and allow you to shatter boundaries in your field.</p>
+<h2 id="hemlock-saves-you-time">Hemlock saves you time</h2>
+<p>A few weeks ago, my colleague from Cornell and I are shooting the breeze. He tells me his collaborator made a study that required some relatively simple (but still too complicated for Qualtrics) loop logic. So, the collaborator spent a full 40-hour work week copying and pasting blocks and adding convoluted branching logic in the Qualtrics GUI and QSF.</p>
+<p>I like a good challenge, so I tell my colleague to simply describe the study to me verbally start a timer. 1 hour and 13 minutes later, I email him a link to the Hemlock version.</p>
+<p>Let's imagine an alternative universe where my colleague's collaborator decides to use Hemlock instead of Qualtrics. Let's say it takes him 4 full days (32 hours) to learn basic python and the Hemlock package. And let's say, because he's new to Hemlock, that it takes him 4 times as long as it took me to make his study (5 hours). In this alternative universe, the collaborator learns python and Hemlock, makes his study, and still has 3 hours left over to kick back and sip mojitos.</p>
+<p>Here's a rough back-of-the-envelope calculation. Suppose, conservatively, you spend an average of 1 day a week making studies in Qualtrics for 5 years - e.g. as a PhD student - for a total of 2,000 hours. Now suppose you learn Hemlock, which (again, conservatively) speeds up the process by an average of 25%. That's a time savings of 500 hours.</p>
+<p>I'm guessing you're a researcher at a selective university, which means you're among the luckiest and brightest people in the world. Your time is valuable, and what you do matters. Copying and pasting blocks in a GUI that looks like it was downloaded from a dusted-off floppy disk is an unacceptable waste of your time and effort.</p>
+<h2 id="hemlock-allows-you-to-shatter-boundaries">Hemlock allows you to shatter boundaries</h2>
+<h2 id="the-arc-of-technical-progress">The arc of technical progress</h2>
+<h2 id="there-is-no-more-low-hanging-fruit">There is no more low-hanging fruit</h2>
+<p>Let me address an ostensible contraditiction: </p>
+<h2 id="common-objections">Common objections</h2>
+<h4 id="if-i-can-do-it-it-qualtrics-i-will-do-it-in-qualtrics">If I <em>can</em> do it it Qualtrics, I <em>will</em> do it in Qualtrics</h4>
+<!-- It's time for the big unveiling. I've been working on Hemlock for the last 6 months - largely from a remote village in Guatemala - and I'm finally ready to demo my shiny, beautiful new software. I send out an invite to the whole department and book the conference room for not one but two time slots to accommodate my audience.
 
-<h1 id="utilities">Utilities</h1>
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
+I put on my best shirt, throw open the door at precisely 12 noon and... the conference room is empty. No problem; I'm sure there'll be an extra large crowd for the second time slot. I take my lunch, tuck my shirt back in, throw open the door at precisely 1PM and... my three favorite colleagues are eagerly awaiting my demo. Score. -->
 
-    </tbody>
-</table>
-
-<h2 id="hemlocktoolschromedriver">hemlock.tools.<strong>chromedriver</strong></h2>
-<p class="func-header">
-    <i>def</i> hemlock.tools.<b>chromedriver</b>(<i>headless=False</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L9">[source]</a>
-</p>
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>headless : <i>bool, default=False</i></b>
-<p class="attr">
-    Indicates whether to run Chrome in headless mode.
-</p></td>
-</tr>
-<tr class="field">
-    <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>driver : <i>selenium.webdriver.chrome.webdriver.WebDriver</i></b>
-<p class="attr">
-
-</p></td>
-</tr>
-    </tbody>
-</table>
-
-<h4 id="notes">Notes</h4>
-<p>Chromedriver must be headless in production. When the application is in
-production, this method sets <code>headless</code> to <code>True</code> regardless of the
-parameter you pass.</p>
-<h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock.tools import chromedriver
-
-driver = chromedriver()
+<p>I'm giving a Hemlock demo in my department when one of my colleagues asks, <em>Can you give me an example of when I would want to use Hemlock instead of Qualtrics?</em>. </p>
+<p>No problem. Prof. Bob Axelrod from Michigan is running forecasting studies in which participants predict AI players' actions in a game theoretic setting. He's got the python code written to simulate the AI players. The players play a game, and after each of 40 rounds, the participant predicts what the players will do next. But it's not integrated into the survey. So, he displays the game in a terminal window, which looks something like this:</p>
+<pre><code>Player 1: ['Defect', 'Defect', 'Cooperate', 'Cooperate', 'Defect', 'Cooperate', 'Cooperate', 'Defect', 'Cooperate', 'Defect'] Player 2: ['Cooperate', 'Cooperate', 'Defect', 'Defect', 'Cooperate', 'Defect', 'Cooperate', 'Cooperate', 'Cooperate', 'Cooperate']
 </code></pre>
 
-<h2 id="hemlocktoolsget_data">hemlock.tools.<strong>get_data</strong></h2>
-<p class="func-header">
-    <i>def</i> hemlock.tools.<b>get_data</b>(<i>dataframe='data'</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L47">[source]</a>
-</p>
-
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>dataframe : <i>str, default='data'</i></b>
-<p class="attr">
-    Name of the dataframe to get; <code>'data'</code> or <code>'meta'</code>.
-</p></td>
-</tr>
-<tr class="field">
-    <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>data : <i>dict</i></b>
-<p class="attr">
-    Maps variable names to list of entries. May not include data from participants who are in progress.
-</p></td>
-</tr>
-    </tbody>
-</table>
-
-<h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock import Branch, Page, Participant, push_app_context
-from hemlock.tools import get_data
-
-def start():
-    return Branch(Page())
-
-push_app_context()
-
-Participant.gen_test_participant(start).completed = True
-get_data()
-</code></pre>
-
-<p>Out:</p>
-<pre><code>{'ID': [1],
-'EndTime': [datetime.datetime(2020, 7, 6, 17, 11, 0, 245032)],
-'StartTime': [datetime.datetime(2020, 7, 6, 17, 11, 0, 245032)],
-'Status': ['Completed']}
-</code></pre>
-
-<h2 id="hemlocktoolsurl_for">hemlock.tools.<strong>url_for</strong></h2>
-<p class="func-header">
-    <i>def</i> hemlock.tools.<b>url_for</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L87">[source]</a>
-</p>
-
-<p>Attempt to return <code>flask.url_for(*args, **kwargs)</code>. However, this method
-does not exit the program when getting a url outside a request context;
-e.g. when debugging in a shell or notebook.</p>
-<table class="docutils field-list field-table" frame="void" rules="none">
-    <col class="field-name" />
-    <col class="field-body" />
-    <tbody valign="top">
-        <tr class="field">
-    <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>*args, **kwargs : <i></i></b>
-<p class="attr">
-    Arguments and keyword arguments will be passed to <code>flask.url_for</code>.
-</p></td>
-</tr>
-<tr class="field">
-    <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>url : <i>str</i></b>
-<p class="attr">
-    Output of <code>flask.url_for</code> if possible; otherwise <code>'URL_UNAVAILABLE'</code>.
-</p></td>
-</tr>
-    </tbody>
-</table>
+<p>Participants have to go back and forth between entering things into the terminal window and entering things in Qualtrics to keep the python simulation synchronized with Qualtrics. (And, by the way, because participants have to use a terminal window, you can't distribute the study online).</p>
+<p>But now imagine you're using Hemlock. You've already got the python code to run the simulation, so all you need is one line of code to put the results a table. Problem solved!</p>
+<p><em>Okay, but you could still do something like this in Qualtrics,</em> my colleagues say. <em>For one thing, you could run (let's say) 20 different games, write code to translate each round of each game into an HTML table, and copy and paste each table into Qualtrics. Another idea: you could write python code to write out QSF code.</em></p>
+<p>Let's take these suggestions one at a time. First, my colleague suggests running 20 games, 40 rounds each (that's 800 tables), copying and pasting them one by one into a corresponding 800 Qualtrics pages, then writing the branching logic to randomly assign participants to observe one of the 20 games. And what happens when you want to run a variation of this study? Copy and paste another 800 HTML tables?</p>
+<p>Second, my colleague suggests writing python code to write QSF code. But then, why not just use Hemlock and write python code? That's like saying you should first write your paper in Norwegian and then translate it into English instead of just writing it in English to begin with.</p>
+<p>This reaction is an example of a common objection: <em>If I</em> can <em>do it in Qualtrics, I</em> will <em>do it in Qualtrics.</em> Sure, maybe it's not literally impossible to do your research in Qualtrics. But is it <em>easier</em> to do your research in Qualtrics? Put differently, which scares you more: spending 3 days learning python and Hemlock, or copying and pasting dozens of blocks and hundreds of HTML tables for study after study in paper after paper for your entire career?</p>
               
             </div>
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../security/" class="btn btn-neutral float-right" title="Security">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
-        <a href="../statics/" class="btn btn-neutral" title="Statics"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>
@@ -423,10 +304,6 @@ e.g. when debugging in a shell or notebook.</p>
           <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../statics/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
-        <span style="margin-left: 15px"><a href="../security/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

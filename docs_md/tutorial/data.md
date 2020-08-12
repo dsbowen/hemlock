@@ -8,7 +8,7 @@ Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial
 
 ## Previewing data from a single participant
 
-Each participant contributes data to a data frame which you can download. We'll start by looking at the data belonging to a 'test participant'.
+Each hemlock project has a downloadable data frame containing the data for all participants. We'll start by looking at the data belonging to a 'test participant'.
 
 Run the following in your jupyter notebook:
 
