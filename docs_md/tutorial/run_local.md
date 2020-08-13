@@ -21,7 +21,7 @@ $ cd
 $ cd my-first-project
 ```
 
-`hlk init` created a virtual environment for your hemlock project. Activate your virtual environment in your second terminal window:
+<!-- `hlk init` created a virtual environment for your hemlock project. Activate your virtual environment in your second terminal window:
 
 Activate from git bash on Windows:
 
@@ -35,7 +35,7 @@ Activate from Mac, Linux, or WSL:
 $ . hemlock-venv/bin/activate
 ```
 
-**Note on virtual environments.** In general, you should activate your <a href="https://docs.python.org/3/tutorial/venv.html" target="_blank">virtual environment</a> every time you open a terminal to work on your project. Why use a virtual environment? While your code may work for the latest version of a package today, the next package update may use a different syntax, meaning you'd have to revise all of your code. Virtual environments solve this problem by 'freezing' the current version of your packages in the project to which they belong.
+**Note on virtual environments.** In general, you should activate your <a href="https://docs.python.org/3/tutorial/venv.html" target="_blank">virtual environment</a> every time you open a terminal to work on your project. Why use a virtual environment? While your code may work for the latest version of a package today, the next package update may use a different syntax, meaning you'd have to revise all of your code. Virtual environments solve this problem by 'freezing' the current version of your packages in the project to which they belong. -->
 
 ## Run your application
 

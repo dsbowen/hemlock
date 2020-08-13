@@ -210,14 +210,14 @@ def gen_response_input(round_):
 
 Now that our debugger won't get stuck in any infinite loops, it's time to run it.
 
-Open another terminal window. As always, change to your project directory and activate your virtual environment:
+Open another terminal window. As always, change to your project directory:
 
 ```bash
 $ cd
 $ cd my-first-project
 ```
 
-Activate from git bash on Windows:
+<!-- Activate from git bash on Windows:
 
 ```bash
 $ . hemlock-venv/scripts/activate
@@ -227,9 +227,9 @@ Activate from Mac or WSL:
 
 ```bash
 $ . hemlock-venv/bin/activate
-```
+``` -->
 
-You should have 3 terminals open: one for jupyter, one for editing `survey.py` and running `hlk serve`, and now a third for running the debugger. In one of the terminal windows, run the hemlock app as usual (`hlk serve`). In the third terminal, run the debugger with hemlock-CLI:
+You should have 3 terminals open: one for jupyter, one for editing `survey.py` and running `hlk serve`, and now a third for running the debugger. In one of the terminal windows, run the hemlock app as usual (`hlk serve`). In the third terminal, run the debugger:
 
 ```bash
 $ hlk debug

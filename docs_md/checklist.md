@@ -4,7 +4,7 @@ This is a checklist of the steps involved in initializing, editing, and deployin
 
 This will make sense after you [go through the tutorial](tutorial/intro.md).
 
-## Initialize a project
+## Initialize
 
 ```bash
 $ hlk init <my-project-name> <my-github-username> <my-github-token>
@@ -26,21 +26,12 @@ Open `env.yaml` and add the following line:
 WSL_DISTRIBUTION: Ubuntu-20.04 # or other WSL distribution
 ```
 
-## Iterate quickly on the blackboard
+## Edit
+
+Iterate quickly on the blackboard:
 
 ```bash
-$ jupyter notebook
-```
-
-Open `blackboard.ipynb`. Change the kernel: Kernel >> Change kernel >> my-project-name.
-
-## Run locally
-
-Open a second terminal window. Activate your virtual environment:
-
-```bash
-$ . hemlock-venv/scripts/activate # for git bash on Windows
-$ . hemlock-venv/bin/activate # for WSL, Mac, Linux
+$ jupyter notebook # open blackboard.ipynb, Kernel >> Change kernel >> <my-project-name>
 ```
 
 Edit survey files:
@@ -55,13 +46,9 @@ Run locally:
 $ hlk serve
 ```
 
-## Debug
-
-In a third terminal window:
+Debug:
 
 ```bash
-$ . hemlock-venv/scripts/activate # for git bash on Windows
-$ . hemlock-venv/bin/activate # for WSL, Mac, Linux
 $ hlk debug
 ```
 

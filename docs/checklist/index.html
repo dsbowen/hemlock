@@ -59,7 +59,7 @@
                 <ul class="current">
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Checklist</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#initialize-a-project">Initialize a project</a>
+    <li class="toctree-l2"><a class="reference internal" href="#initialize">Initialize</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#additional-steps-if-using-git-bash-on-windows">Additional steps if using git bash on Windows</a>
     </li>
@@ -67,11 +67,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#iterate-quickly-on-the-blackboard">Iterate quickly on the blackboard</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#run-locally">Run locally</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#debug">Debug</a>
+    <li class="toctree-l2"><a class="reference internal" href="#edit">Edit</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#deploy">Deploy</a>
     </li>
@@ -243,7 +239,7 @@
                 <h1 id="checklist">Checklist</h1>
 <p>This is a checklist of the steps involved in initializing, editing, and deploying a hemlock project.</p>
 <p>This will make sense after you <a href="../tutorial/intro/">go through the tutorial</a>.</p>
-<h2 id="initialize-a-project">Initialize a project</h2>
+<h2 id="initialize">Initialize</h2>
 <pre><code class="bash">$ hlk init &lt;my-project-name&gt; &lt;my-github-username&gt; &lt;my-github-token&gt;
 $ cd &lt;my-project-name&gt;
 </code></pre>
@@ -258,15 +254,9 @@ $ pip install -r local-requirements.txt
 <pre><code class="yaml">WSL_DISTRIBUTION: Ubuntu-20.04 # or other WSL distribution
 </code></pre>
 
-<h2 id="iterate-quickly-on-the-blackboard">Iterate quickly on the blackboard</h2>
-<pre><code class="bash">$ jupyter notebook
-</code></pre>
-
-<p>Open <code>blackboard.ipynb</code>. Change the kernel: Kernel &gt;&gt; Change kernel &gt;&gt; my-project-name.</p>
-<h2 id="run-locally">Run locally</h2>
-<p>Open a second terminal window. Activate your virtual environment:</p>
-<pre><code class="bash">$ . hemlock-venv/scripts/activate # for git bash on Windows
-$ . hemlock-venv/bin/activate # for WSL, Mac, Linux
+<h2 id="edit">Edit</h2>
+<p>Iterate quickly on the blackboard:</p>
+<pre><code class="bash">$ jupyter notebook # open blackboard.ipynb, Kernel &gt;&gt; Change kernel &gt;&gt; &lt;my-project-name&gt;
 </code></pre>
 
 <p>Edit survey files:</p>
@@ -277,11 +267,8 @@ $ . hemlock-venv/bin/activate # for WSL, Mac, Linux
 <pre><code class="bash">$ hlk serve
 </code></pre>
 
-<h2 id="debug">Debug</h2>
-<p>In a third terminal window:</p>
-<pre><code class="bash">$ . hemlock-venv/scripts/activate # for git bash on Windows
-$ . hemlock-venv/bin/activate # for WSL, Mac, Linux
-$ hlk debug
+<p>Debug:</p>
+<pre><code class="bash">$ hlk debug
 </code></pre>
 
 <h2 id="deploy">Deploy</h2>

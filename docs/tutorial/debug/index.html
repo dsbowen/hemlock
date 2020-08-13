@@ -408,26 +408,36 @@ def gen_response_input(round_):
 
 <h2 id="run-the-debugger">Run the debugger</h2>
 <p>Now that our debugger won't get stuck in any infinite loops, it's time to run it.</p>
-<p>Open another terminal window. As always, change to your project directory and activate your virtual environment:</p>
+<p>Open another terminal window. As always, change to your project directory:</p>
 <pre><code class="bash">$ cd
 $ cd my-first-project
 </code></pre>
 
-<p>Activate from git bash on Windows:</p>
+<!-- Activate from git bash on Windows:
+
 <pre><code class="bash">$ . hemlock-venv/scripts/activate
 </code></pre>
 
-<p>Activate from Mac or WSL:</p>
+
+Activate from Mac or WSL:
+
+
 <pre><code class="bash">$ . hemlock-venv/bin/activate
+``` --&gt;
+
+You should have 3 terminals open: one for jupyter, one for editing `survey.py` and running `hlk serve`, and now a third for running the debugger. In one of the terminal windows, run the hemlock app as usual (`hlk serve`). In the third terminal, run the debugger:
+
+```bash
+$ hlk debug
 </code></pre>
 
-<p>You should have 3 terminals open: one for jupyter, one for editing <code>survey.py</code> and running <code>hlk serve</code>, and now a third for running the debugger. In one of the terminal windows, run the hemlock app as usual (<code>hlk serve</code>). In the third terminal, run the debugger with hemlock-CLI:</p>
-<pre><code class="bash">$ hlk debug
-</code></pre>
 
-<p>To run several AI participants through the survey, e.g. 3, use:</p>
+To run several AI participants through the survey, e.g. 3, use:
+
+
 <pre><code class="bash">$ hlk debug -n 3
 </code></pre>
+
 
 <!-- If you don't want to use hemlock-CLI, you can run the debugger with the python interpreter:
 
