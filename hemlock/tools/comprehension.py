@@ -128,7 +128,7 @@ def _verify_data(check, last_instr_page, curr_attempt, attempts):
     attempts : int or None
         Maximum number of attempts.
     """
-    if all(q.data for q in check.questions) or curr_attempt == attempts:
+    if all(q.data for q in check.questions) or curr_attempt >= attempts:
         if check != check.branch.pages[-1]:
             # this check does not have to be repeated
             last_instr_page.forward_to = check.branch.pages[check.index+1]

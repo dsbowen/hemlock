@@ -41,15 +41,39 @@ We add range validation so that the proposer inputs an integer between 0 and the
 
 We can use the [SQLAlchemy Query API](https://docs.sqlalchemy.org/en/13/orm/query.html) to pair the proposer with a random responder this round. 
 
-In our notebook, we'll create an input question with the variable name `'Response'`. We'll then use the Query API to get all input questions with that variable name and select the data from one of them at random:
+First, we create an input with variable name `'Response'` and data `5`:
 
 ```python
 import random
 
 response_input = Input(var='Response', data=5)
+response_input
+```
+
+Out:
+
+```
+<Input 3>
+```
+
+Next, we get all `Input` objects in the database with the variable name `'Response'` whose data is not `None`:
+
+```python
 response_inputs = Input.query.filter(
     Input.var=='Response', Input.data!=None
 ).all()
+response_inputs
+```
+
+Out:
+
+```
+[<Input 3>]
+```
+
+Finally, we choose one of these inputs randomly and get its data:
+
+```python
 random.choice(response_inputs).data
 ```
 
@@ -58,8 +82,6 @@ Out:
 ```
 5
 ```
-
-As expected, this matches the data from our response input.
 
 ## Displaying the proposer outcome
 

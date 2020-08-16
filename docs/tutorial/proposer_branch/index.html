@@ -277,21 +277,36 @@ Page(gen_proposal_input(1)).preview()
 <p><strong>Note.</strong> For input questions, the data are recorded as strings. We want to reference this question's data as an integer, so we use <code>S.data_type(int)</code> to convert it when the page is submitted.</p>
 <h2 id="finding-a-responder">Finding a responder</h2>
 <p>We can use the <a href="https://docs.sqlalchemy.org/en/13/orm/query.html">SQLAlchemy Query API</a> to pair the proposer with a random responder this round. </p>
-<p>In our notebook, we'll create an input question with the variable name <code>'Response'</code>. We'll then use the Query API to get all input questions with that variable name and select the data from one of them at random:</p>
+<p>First, we create an input with variable name <code>'Response'</code> and data <code>5</code>:</p>
 <pre><code class="python">import random
 
 response_input = Input(var='Response', data=5)
-response_inputs = Input.query.filter(
+response_input
+</code></pre>
+
+<p>Out:</p>
+<pre><code>&lt;Input 3&gt;
+</code></pre>
+
+<p>Next, we get all <code>Input</code> objects in the database with the variable name <code>'Response'</code> whose data is not <code>None</code>:</p>
+<pre><code class="python">response_inputs = Input.query.filter(
     Input.var=='Response', Input.data!=None
 ).all()
-random.choice(response_inputs).data
+response_inputs
+</code></pre>
+
+<p>Out:</p>
+<pre><code>[&lt;Input 3&gt;]
+</code></pre>
+
+<p>Finally, we choose one of these inputs randomly and get its data:</p>
+<pre><code class="python">random.choice(response_inputs).data
 </code></pre>
 
 <p>Out:</p>
 <pre><code>5
 </code></pre>
 
-<p>As expected, this matches the data from our response input.</p>
 <h2 id="displaying-the-proposer-outcome">Displaying the proposer outcome</h2>
 <p>Now we want to display the outcome of the round to the proposer. This calls for a compile function:</p>
 <pre><code class="python">from hemlock import Compile as C, Embedded

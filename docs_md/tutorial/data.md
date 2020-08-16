@@ -153,6 +153,8 @@ def start():
             ...
 ```
 
+**Note.** When a participant submits a page, the questions' data are recorded in a `data` attribute. A question's data will be added to the data frame if and only if you set its `var` attribute. However, data will be stored in a question's `data` attribute whether or not the `var` attribute is set.
+
 ## Downloading data
 
 Run your survey locally, fill in the demographics page, and continue to the end of the survey. Your data will be recorded in the database.

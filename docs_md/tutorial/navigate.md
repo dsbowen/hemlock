@@ -10,7 +10,7 @@ Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial
 
 Navigate functions move participants through different branches of the survey. For example, participants in the control group might follow one branch, while participants in the treatment group follow another.
 
-In our case, we'll use a navigate function to bring participants from the demographics branch of our survey to an 'utlimatum game' branch. In this branch, participants will an ultimatum game with each other.
+In our case, we'll use a navigate function to bring participants from the demographics branch of our survey to an 'utlimatum game' branch. In this branch, participants will play an ultimatum game with each other.
 
 ## Basic syntax
 

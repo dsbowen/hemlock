@@ -77,8 +77,10 @@
     <li class="toctree-l2"><a class="reference internal" href="#code-explanation">Code explanation</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#workflow">Workflow</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#troubleshooting">Troubleshooting</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a>
+        </ul>
     </li>
     </ul>
                     </li>
@@ -326,19 +328,30 @@ b.pages = [Page(Label('&lt;p&gt;Label 0&lt;/p&gt;')), Page(Label('&lt;p&gt;Label
 <li>Restart the kernel (Kernel &gt;&gt; Restart).</li>
 <li>Run the first cell to re-push the application context.</li>
 </ol>
-<p>You may also want to clear the database after running your app:</p>
-<pre><code>$ rm data.db # del data.db on windows command prompt
-</code></pre>
+<h4 id="troubleshooting">Troubleshooting</h4>
+<p>During development, you may encounter a database error from which your app can't recover. Even after you've fixed your code, your database will still be broken. If this happens in your jupyter notebook, simply restart your kernel (Kernel &gt;&gt; Restart) and run your code cells again. If this happens while running your app locally:</p>
+<ol>
+<li>Exit with Ctrl + C.</li>
+<li>Remove the database with <code>rm data.db</code>.</li>
+<li>Run your app again with <code>hlk serve</code>.</li>
+</ol>
+<!-- You may also want to clear the database after running your app:
 
-<h2 id="summary">Summary</h2>
-<p>In this part of the tutorial, you learned how to initialize a hemlock application and run it locally.</p>
-<p>In the next part of the tutorial, you'll learn how to use question polymorphs to add a demographics questionnaire to your survey.</p>
-<!-- #### Modifications if not using hemlock-CLI or the hemlock template
+<pre><code>$ rm data.db # del data.db on windows command prompt
+``` --&gt;
+
+## Summary
+
+In this part of the tutorial, you learned how to initialize a hemlock application and run it locally.
+
+In the next part of the tutorial, you'll learn how to use question polymorphs to add a demographics questionnaire to your survey.
+
+&lt;!-- #### Modifications if not using hemlock-CLI or the hemlock template
 
 The hemlock template comes with an `app.py` file which creates the application instance. Create `app.py` in your root directory with the following code:
 
-
-<pre><code class="python">import survey
+```python
+import survey
 
 from hemlock import create_app
 

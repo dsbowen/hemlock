@@ -24,7 +24,7 @@ It's March 2019, and I'm sitting at my computer furiously hacking away at the ne
 
 My ears perk up. I walk over and knock on her door and ask her what she wants her survey to do. In 10 minutes, I code her survey exactly as specified and send her a link. She's excited.
 
-*How did you do that?* she asks. I invite her over to my computer and open up my python file. Her face drops. *Ugh, I have to learn how to code??* she says, audibly, then turns around and re-dials Qualtrics support.
+*How did you do that?* she asks. I invite her over to my computer and open up my python file. Her face drops. *Ugh, I have to learn how to code?* she says, audibly, then turns around and re-dials Qualtrics support.
 
 Coding is scary. I get it. As an undergrad, I had to take computer science 101 three times because I failed out of it twice. (And I never did get that comp sci major). But after wasting hundreds of hours wrestling with Qualtrics in the first year of my PhD, I decided learn how to code because coding gives you more power and flexibility than a GUI ever will.
 

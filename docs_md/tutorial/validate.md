@@ -102,9 +102,42 @@ Format your date of birth as mm/dd/yyyy.
 
 First, we import `datetime`, a native python package for handling dates and times.
 
-Next, we register a new validate function with the `@V.register` decorator. The validate function takes the input question as its argument. In general, validate functions (and, as we will see, their cousins, submit, compile, and navigate functions) take their 'parent' (usually a branch, page, or question) as their first argument.
+Next, we register a new validate function with the `@V.register` decorator. The validate function tries to convert the input question's response to a `datetime` object and returns an error message if this fails.
 
-The validate function tries to convert the input question's response to a `datetime` object and returns an error message if this fails.
+It's worth re-emphasizing that `V.my_function` does *not* return the result of `my_function`. `V.my_function` returns `<Validate x>`, which will call `my_function` later, when the participant attempts to submit the page.
+
+Note that `date_format` takes an input question as its argument. In general, validate functions take their 'parent' (the branch, page, or question to which they belong) as their first argument. The arguments passed to `V.my_function` will be passed to `my_function` *after* the parent. For example:
+
+```python
+@V.register
+def my_function(parent, my_argument):
+    print('My parent is:', parent)
+    print('My argument is:', my_argument)
+    
+inpt = Input(validate=V.my_function('hello world'))
+inpt
+```
+
+Out:
+
+```
+<Input 1>
+```
+
+In:
+
+```python
+inpt._validate()
+```
+
+Out:
+
+```
+My parent is: <Input 1>
+My argument is: hello world
+```
+
+The same pattern holds for the other function models (submit, compile, and navigate functions) we will see in the coming sections.
 
 ## Validation in our app
 

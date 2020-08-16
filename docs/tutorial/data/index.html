@@ -358,6 +358,7 @@ def start():
             ...
 </code></pre>
 
+<p><strong>Note.</strong> When a participant submits a page, the questions' data are recorded in a <code>data</code> attribute. A question's data will be added to the data frame if and only if you set its <code>var</code> attribute. However, data will be stored in a question's <code>data</code> attribute whether or not the <code>var</code> attribute is set.</p>
 <h2 id="downloading-data">Downloading data</h2>
 <p>Run your survey locally, fill in the demographics page, and continue to the end of the survey. Your data will be recorded in the database.</p>
 <p>To download your data, navigate to <a href="http://localhost:5000/download">http://localhost:5000/download</a> in your browser. Select 'Data frame', then click the download button. This will download a zip file containing your data in .csv format. </p>

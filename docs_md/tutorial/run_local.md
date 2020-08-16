@@ -107,11 +107,19 @@ As the name `blackboard.ipynb` suggests, I treat jupyter like a blackboard. Once
 2. Restart the kernel (Kernel >> Restart).
 3. Run the first cell to re-push the application context.
 
-You may also want to clear the database after running your app:
+#### Troubleshooting
+
+During development, you may encounter a database error from which your app can't recover. Even after you've fixed your code, your database will still be broken. If this happens in your jupyter notebook, simply restart your kernel (Kernel >> Restart) and run your code cells again. If this happens while running your app locally:
+
+1. Exit with Ctrl + C.
+2. Remove the database with `rm data.db`.
+3. Run your app again with `hlk serve`.
+
+<!-- You may also want to clear the database after running your app:
 
 ```
 $ rm data.db # del data.db on windows command prompt
-```
+``` -->
 
 ## Summary
 

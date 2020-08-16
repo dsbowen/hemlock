@@ -115,7 +115,7 @@ def match(question, pattern):
     ```
     """
     try:
-        question.data = int(re.match(
+        question.data = int(re.fullmatch(
             pattern, (question.data or '')) is not None
         )
     except:

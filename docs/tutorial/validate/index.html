@@ -318,8 +318,32 @@ inpt.error
 
 <h2 id="code-explanation">Code explanation</h2>
 <p>First, we import <code>datetime</code>, a native python package for handling dates and times.</p>
-<p>Next, we register a new validate function with the <code>@V.register</code> decorator. The validate function takes the input question as its argument. In general, validate functions (and, as we will see, their cousins, submit, compile, and navigate functions) take their 'parent' (usually a branch, page, or question) as their first argument.</p>
-<p>The validate function tries to convert the input question's response to a <code>datetime</code> object and returns an error message if this fails.</p>
+<p>Next, we register a new validate function with the <code>@V.register</code> decorator. The validate function tries to convert the input question's response to a <code>datetime</code> object and returns an error message if this fails.</p>
+<p>It's worth re-emphasizing that <code>V.my_function</code> does <em>not</em> return the result of <code>my_function</code>. <code>V.my_function</code> returns <code>&lt;Validate x&gt;</code>, which will call <code>my_function</code> later, when the participant attempts to submit the page.</p>
+<p>Note that <code>date_format</code> takes an input question as its argument. In general, validate functions take their 'parent' (the branch, page, or question to which they belong) as their first argument. The arguments passed to <code>V.my_function</code> will be passed to <code>my_function</code> <em>after</em> the parent. For example:</p>
+<pre><code class="python">@V.register
+def my_function(parent, my_argument):
+    print('My parent is:', parent)
+    print('My argument is:', my_argument)
+
+inpt = Input(validate=V.my_function('hello world'))
+inpt
+</code></pre>
+
+<p>Out:</p>
+<pre><code>&lt;Input 1&gt;
+</code></pre>
+
+<p>In:</p>
+<pre><code class="python">inpt._validate()
+</code></pre>
+
+<p>Out:</p>
+<pre><code>My parent is: &lt;Input 1&gt;
+My argument is: hello world
+</code></pre>
+
+<p>The same pattern holds for the other function models (submit, compile, and navigate functions) we will see in the coming sections.</p>
 <h2 id="validation-in-our-app">Validation in our app</h2>
 <p>Now that we've seen how to add validation in our notebook, let's add it to our app.</p>
 <p>In <code>survey.py</code>:</p>

@@ -183,9 +183,6 @@ $ heroku --version
 heroku/x.xx.x linux-x64 node-vxx.xx.x
 ```
 
-**Note.** On some linux distributions, you may need to verify your heroku-CLI installation with `sudo`:
+**Note.** See <a href="https://github.com/heroku/legacy-cli/issues/1969" target="_blank">this github issue</a> if you experience a 'EACCES' error. *Do not* simply use `sudo`; this only masks issues you'll encounter later.
 
-```bash
-$ sudo heroku --version
-heroku/x.xx.x linux-x64 node-vxx.xx.x
-```
+[Click here to return to the Deploy section of the tutorial](../tutorial/deploy.md).

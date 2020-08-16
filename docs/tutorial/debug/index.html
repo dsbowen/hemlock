@@ -413,32 +413,17 @@ def gen_response_input(round_):
 $ cd my-first-project
 </code></pre>
 
-<!-- Activate from git bash on Windows:
-
-<pre><code class="bash">$ . hemlock-venv/scripts/activate
+<p>You should have 3 terminals open: one for jupyter, one for editing <code>survey.py</code> and running <code>hlk serve</code>, and now a third for running the debugger. In one of the terminal windows, run the hemlock app as usual (<code>hlk serve</code>). In the third terminal, run the debugger:</p>
+<pre><code class="bash">$ hlk debug
 </code></pre>
 
-
-Activate from Mac or WSL:
-
-
-<pre><code class="bash">$ . hemlock-venv/bin/activate
-``` --&gt;
-
-You should have 3 terminals open: one for jupyter, one for editing `survey.py` and running `hlk serve`, and now a third for running the debugger. In one of the terminal windows, run the hemlock app as usual (`hlk serve`). In the third terminal, run the debugger:
-
-```bash
-$ hlk debug
-</code></pre>
-
-
-To run several AI participants through the survey, e.g. 3, use:
-
-
+<p>To run several AI participants through the survey, e.g. 3, use:</p>
 <pre><code class="bash">$ hlk debug -n 3
 </code></pre>
 
-
+<h2 id="summary">Summary</h2>
+<p>In this part of the tutorial, you learned how to debug your app with hemlock's custom debugging tool.</p>
+<p>In the next part of the tutorial, you'll learn how to deploy your application (i.e. put it on the web).</p>
 <!-- If you don't want to use hemlock-CLI, you can run the debugger with the python interpreter:
 
 ```bash
@@ -446,10 +431,6 @@ $ python3
 >>> from hemlock.debug import AIParticipant, debug
 >>> debug() # or debug(3) to run 3 AI participants
 ``` -->
-
-<h2 id="summary">Summary</h2>
-<p>In this part of the tutorial, you learned how to debug your app with hemlock's custom debugging tool.</p>
-<p>In the next part of the tutorial, you'll learn how to deploy your application (i.e. put it on the web).</p>
               
             </div>
           </div>

@@ -217,18 +217,6 @@ $ cd
 $ cd my-first-project
 ```
 
-<!-- Activate from git bash on Windows:
-
-```bash
-$ . hemlock-venv/scripts/activate
-```
-
-Activate from Mac or WSL:
-
-```bash
-$ . hemlock-venv/bin/activate
-``` -->
-
 You should have 3 terminals open: one for jupyter, one for editing `survey.py` and running `hlk serve`, and now a third for running the debugger. In one of the terminal windows, run the hemlock app as usual (`hlk serve`). In the third terminal, run the debugger:
 
 ```bash
@@ -241,6 +229,12 @@ To run several AI participants through the survey, e.g. 3, use:
 $ hlk debug -n 3
 ```
 
+## Summary
+
+In this part of the tutorial, you learned how to debug your app with hemlock's custom debugging tool.
+
+In the next part of the tutorial, you'll learn how to deploy your application (i.e. put it on the web).
+
 <!-- If you don't want to use hemlock-CLI, you can run the debugger with the python interpreter:
 
 ```bash
@@ -248,9 +242,3 @@ $ python3
 >>> from hemlock.debug import AIParticipant, debug
 >>> debug() # or debug(3) to run 3 AI participants
 ``` -->
-
-## Summary
-
-In this part of the tutorial, you learned how to debug your app with hemlock's custom debugging tool.
-
-In the next part of the tutorial, you'll learn how to deploy your application (i.e. put it on the web).

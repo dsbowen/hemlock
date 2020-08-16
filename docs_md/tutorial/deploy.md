@@ -103,6 +103,8 @@ to:
     ...
 ```
 
+Save `app.json`.
+
 Let's deploy our app and set our configuration variables like we did before:
 
 ```bash
