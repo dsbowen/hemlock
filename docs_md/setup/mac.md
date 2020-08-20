@@ -18,6 +18,16 @@ $ <my-bash-command>
 $ cd
 ```
 
+## Xcode
+
+Mac OS typically requires Xcode Command-line Tools. Install in your terminal:
+
+```bash
+$ xcode-select --install
+```
+
+Or from the <a href="https://apps.apple.com/us/app/xcode/id497799835" target="_blank">Mac app store</a>.
+
 ## Python3 and pip3
 
 Python is hemlock's primary language. Pip allows you to install python packages, including hemlock and its command line interface, hemlock-CLI.

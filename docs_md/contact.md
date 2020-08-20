@@ -26,4 +26,4 @@ In return, I expect that you will:
 
 ## Feature requests and bugs
 
-If you would like to submit a feature fequest, report a bug, or have any other suggestions for improving hemlock, <a href="https://github.com/dsbowen/hemlock/issues/" target="_blank">open an issue on github here</a>.
+If you would like to submit a feature request, report a bug, or have any other suggestions for improving hemlock, <a href="https://github.com/dsbowen/hemlock/issues/" target="_blank">open an issue on github here</a>.
