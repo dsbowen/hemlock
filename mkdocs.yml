@@ -66,6 +66,7 @@ nav:
     - Statics: statics.md
     - Utilities: utils.md
   - Security: security.md
+  - Changelog: changelog.md
 theme: readthedocs
 extra_css:
   - css/extra.css

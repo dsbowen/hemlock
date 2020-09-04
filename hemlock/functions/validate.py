@@ -850,7 +850,7 @@ def _get_decimals(question):
     msg = response_type(question, float)
     if msg:
         return msg, None
-    split = question.response.split('.')
+    split = str(question.response).split('.')
     # number of decimals is 0 when no decimal point is specified.
     decimals = 0 if len(split) == 1 else len(split[-1])
     return None, decimals

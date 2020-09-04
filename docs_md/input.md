@@ -93,6 +93,14 @@ Inherits from [`hemlock.qpolymorphs.InputGroup`](input_group.md),
     <td class="field-body" width="100%"><b>input_type : <i>str, default='text'</i></b>
 <p class="attr">
     Type of html input. See <a href="https://www.w3schools.com/html/html_form_input_types.asp">https://www.w3schools.com/html/html_form_input_types.asp</a>.
+</p>
+<b>placeholder : <i>str or None, default=None</i></b>
+<p class="attr">
+    Html placeholder.
+</p>
+<b>step : <i>float, str, or None, default=None</i></b>
+<p class="attr">
+    Step attribute for number inputs. By default, the step for number inputs is 1. Set to <code>'any'</code> for any step.
 </p></td>
 </tr>
     </tbody>
