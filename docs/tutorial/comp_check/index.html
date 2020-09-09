@@ -209,6 +209,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -266,32 +274,32 @@
 <p>(Think about what it would take to do this in Qualtrics, or program this from scratch).</p>
 <h2 id="basic-syntax">Basic syntax</h2>
 <p>Although we usually start with jupyter, the logic of comprehension checks is best illustrated by running an app. Open <code>app.py</code> and replace <code>import survey</code> with <code>import tmp_survey</code>. Now make a new file, <code>tmp_survey.py</code>, and enter the following:</p>
-<pre><code class="python">from hemlock import Branch, Check, Compile as C, Page, Label, Submit as S, route
-from hemlock.tools import comprehension_check
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Check</span><span class="p">,</span> <span class="n">Compile</span> <span class="k">as</span> <span class="n">C</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Submit</span> <span class="k">as</span> <span class="n">S</span><span class="p">,</span> <span class="n">route</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">comprehension_check</span>
 
-@route('/survey')
-def start():
-    return Branch(
-        *comprehension_check(
-            instructions=Page(
-                Label('&lt;p&gt;Here are some instructions.&lt;/p&gt;')
-            ),
-            checks=Page(
-                Check(
-                    '&lt;p&gt;Select the correct choice.&lt;/p&gt;',
-                    ['Correct', 'Incorrect', 'Also incorrect'],
-                    compile=[C.clear_response(), C.shuffle()],
-                    submit=S.correct_choices('Correct')
-                )
-            ),
-            attempts=3
-        ),
-        Page(
-            Label('&lt;p&gt;You passed the comprehension check!&lt;/p&gt;'),
-            terminal=True
-        )
-    )
-</code></pre>
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/survey&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">comprehension_check</span><span class="p">(</span>
+            <span class="n">instructions</span><span class="o">=</span><span class="n">Page</span><span class="p">(</span>
+                <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Here are some instructions.&lt;/p&gt;&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">checks</span><span class="o">=</span><span class="n">Page</span><span class="p">(</span>
+                <span class="n">Check</span><span class="p">(</span>
+                    <span class="s1">&#39;&lt;p&gt;Select the correct choice.&lt;/p&gt;&#39;</span><span class="p">,</span>
+                    <span class="p">[</span><span class="s1">&#39;Correct&#39;</span><span class="p">,</span> <span class="s1">&#39;Incorrect&#39;</span><span class="p">,</span> <span class="s1">&#39;Also incorrect&#39;</span><span class="p">],</span>
+                    <span class="nb">compile</span><span class="o">=</span><span class="p">[</span><span class="n">C</span><span class="o">.</span><span class="n">clear_response</span><span class="p">(),</span> <span class="n">C</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()],</span>
+                    <span class="n">submit</span><span class="o">=</span><span class="n">S</span><span class="o">.</span><span class="n">correct_choices</span><span class="p">(</span><span class="s1">&#39;Correct&#39;</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">attempts</span><span class="o">=</span><span class="mi">3</span>
+        <span class="p">),</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;You passed the comprehension check!&lt;/p&gt;&#39;</span><span class="p">),</span>
+            <span class="n">terminal</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div>
 
 <p>Run the app and play with the comprehension check. Notice that when you don't click the correct choice, the survey brings you back to the instructions page.</p>
 <h3 id="code-explanation">Code explanation</h3>
@@ -306,100 +314,100 @@ def start():
 <p>We're going to use a comprehension check to explain the ultimatum game to our participants and test their understanding of it. First, open <code>app.py</code> and change <code>import tmp_survey</code> back to <code>import survey</code>.</p>
 <h3 id="instructions">Instructions</h3>
 <p>Open your notebook and let's preview the instructions page:</p>
-<pre><code class="python">from hemlock import Page, Label
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Label</span>
 
-# the number of rounds participants play
-N_ROUNDS = 5
-# the amount of money split
-POT = 20
+<span class="c1"># the number of rounds participants play</span>
+<span class="n">N_ROUNDS</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="c1"># the amount of money split</span>
+<span class="n">POT</span> <span class="o">=</span> <span class="mi">20</span>
 
-Page(
-    Label(
-        '''
-        &lt;p&gt;You are about to play an ultimatum game. The game involves two
-        players: a &lt;b&gt;proposer&lt;/b&gt; and a &lt;b&gt;responder&lt;/b&gt;. The proposer has 
-        ${} to split between him/herself and the responder. The responder 
-        names an amount of money such that he/she accepts any proposed 
-        split which gives him/her at least this amount, and rejects any 
-        proposed split which gives him/her less than this amount.&lt;/p&gt;
+<span class="n">Page</span><span class="p">(</span>
+    <span class="n">Label</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        &lt;p&gt;You are about to play an ultimatum game. The game involves two</span>
+<span class="sd">        players: a &lt;b&gt;proposer&lt;/b&gt; and a &lt;b&gt;responder&lt;/b&gt;. The proposer has </span>
+<span class="sd">        ${} to split between him/herself and the responder. The responder </span>
+<span class="sd">        names an amount of money such that he/she accepts any proposed </span>
+<span class="sd">        split which gives him/her at least this amount, and rejects any </span>
+<span class="sd">        proposed split which gives him/her less than this amount.&lt;/p&gt;</span>
 
-        &lt;p&gt;&lt;b&gt;If the split is accepted, the proposer and responder split the 
-        money according to the proposal. If the split is rejected, both 
-        players receive $0.&lt;/b&gt;&lt;/p&gt;
+<span class="sd">        &lt;p&gt;&lt;b&gt;If the split is accepted, the proposer and responder split the </span>
+<span class="sd">        money according to the proposal. If the split is rejected, both </span>
+<span class="sd">        players receive $0.&lt;/b&gt;&lt;/p&gt;</span>
 
-        &lt;p&gt;You will play {} rounds of this game. Each round, you will be 
-        paired with another randomly selected participant. &lt;b&gt;You will rarely, 
-        if ever, play two rounds with the same player.&lt;/b&gt;
+<span class="sd">        &lt;p&gt;You will play {} rounds of this game. Each round, you will be </span>
+<span class="sd">        paired with another randomly selected participant. &lt;b&gt;You will rarely, </span>
+<span class="sd">        if ever, play two rounds with the same player.&lt;/b&gt;</span>
 
-        &lt;p&gt;We will test your understanding of these instructions on the 
-        next page.&lt;/p&gt;
-        '''.format(POT, N_ROUNDS)
-    )
-).preview()
-</code></pre>
+<span class="sd">        &lt;p&gt;We will test your understanding of these instructions on the </span>
+<span class="sd">        next page.&lt;/p&gt;</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">POT</span><span class="p">,</span> <span class="n">N_ROUNDS</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <h3 id="checks">Checks</h3>
 <p>For the check pages, we're going to give participants a hypothetical proposal and response and ask them how much money the proposer and responder receive. We'll do this twice; once where the proposal is accepted, the other where it is rejected.</p>
 <p>Additionally, we want to avoid biasing participants' responses by giving them all the same hypothetical proposal-response pairs. So, we'll write a function to randomly generate proposals.</p>
 <p>Enter the following in your notebook:</p>
-<pre><code class="python">from hemlock import Compile as C, Input
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Compile</span> <span class="k">as</span> <span class="n">C</span><span class="p">,</span> <span class="n">Input</span>
 
-def gen_check_page(accept):
-    return Page(
-        Label(),
-        Input(
-            '&lt;p&gt;How much money does the proposer receive?&lt;/p&gt;',
-            prepend='$',
-            append='.00'
-        ),
-        Input(
-            '&lt;p&gt;How much money does the responder receive?&lt;/p&gt;',
-            prepend='$',
-            append='.00'
-        ),
-        compile=[C.clear_response(), C.random_proposal(accept)]
-    )
+<span class="k">def</span> <span class="nf">gen_check_page</span><span class="p">(</span><span class="n">accept</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Page</span><span class="p">(</span>
+        <span class="n">Label</span><span class="p">(),</span>
+        <span class="n">Input</span><span class="p">(</span>
+            <span class="s1">&#39;&lt;p&gt;How much money does the proposer receive?&lt;/p&gt;&#39;</span><span class="p">,</span>
+            <span class="n">prepend</span><span class="o">=</span><span class="s1">&#39;$&#39;</span><span class="p">,</span>
+            <span class="n">append</span><span class="o">=</span><span class="s1">&#39;.00&#39;</span>
+        <span class="p">),</span>
+        <span class="n">Input</span><span class="p">(</span>
+            <span class="s1">&#39;&lt;p&gt;How much money does the responder receive?&lt;/p&gt;&#39;</span><span class="p">,</span>
+            <span class="n">prepend</span><span class="o">=</span><span class="s1">&#39;$&#39;</span><span class="p">,</span>
+            <span class="n">append</span><span class="o">=</span><span class="s1">&#39;.00&#39;</span>
+        <span class="p">),</span>
+        <span class="nb">compile</span><span class="o">=</span><span class="p">[</span><span class="n">C</span><span class="o">.</span><span class="n">clear_response</span><span class="p">(),</span> <span class="n">C</span><span class="o">.</span><span class="n">random_proposal</span><span class="p">(</span><span class="n">accept</span><span class="p">)]</span>
+    <span class="p">)</span>
 
-@C.register
-def random_proposal(check_page, accept):
-    # WE'LL WRITE THIS FUNCTION IN A MOMENT
-    pass
+<span class="nd">@C</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">random_proposal</span><span class="p">(</span><span class="n">check_page</span><span class="p">,</span> <span class="n">accept</span><span class="p">):</span>
+    <span class="c1"># WE&#39;LL WRITE THIS FUNCTION IN A MOMENT</span>
+    <span class="k">pass</span>
 
-gen_check_page(accept=True).preview()
-</code></pre>
+<span class="n">gen_check_page</span><span class="p">(</span><span class="n">accept</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <p>The <code>gen_check_page</code> function generates a check page. The <code>Label</code> with which the page starts is going to be populated by a randomly generated proposal-response pair which we'll create with the compile function <code>random_proposal</code>. Both <code>gen_check_page</code> and <code>random_proposal</code> take an <code>accept</code> argument which indicates whether the proposal will be accepted or rejected.</p>
 <p>Now, fill in the <code>random_proposal</code> function in the same notebook cell:</p>
-<pre><code class="python">from hemlock import Compile as C, Input, Submit as S
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Compile</span> <span class="k">as</span> <span class="n">C</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Submit</span> <span class="k">as</span> <span class="n">S</span>
 
-from random import randint
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 
-...
+<span class="o">...</span>
 
-@C.register
-def random_proposal(check_page, accept):
-    # randomly generate a proposed split and response
-    n = randint(1, POT-1)
-    proposal = POT-n, n # proposer receives POT-n, responder receives n
-    response = randint(0, n) if accept else randint(n+1, POT)
-    # compute the payoff
-    payoff = proposal if response&lt;=proposal[1] else (0, 0)
-    # describe the proposal and response in the label
-    check_page.questions[0].label = '''
-    &lt;p&gt;Imagine the proposer proposes the following split:&lt;/p&gt;
-    &lt;ul&gt;
-       &lt;li&gt;Proposer: ${}&lt;/li&gt;
-       &lt;li&gt;Responder: ${}&lt;/li&gt;
-    &lt;/ul&gt;
-    &lt;p&gt;The responder says, &quot;I will accept any proposal which gives 
-    me at least ${}.&quot;&lt;/p&gt;
-    '''.format(*proposal, response)
-    # add submit functions to verify that the response was correct
-    check_page.questions[1].submit = S.match(str(payoff[0]))
-    check_page.questions[2].submit = S.match(str(payoff[1]))
+<span class="nd">@C</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">random_proposal</span><span class="p">(</span><span class="n">check_page</span><span class="p">,</span> <span class="n">accept</span><span class="p">):</span>
+    <span class="c1"># randomly generate a proposed split and response</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">POT</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">proposal</span> <span class="o">=</span> <span class="n">POT</span><span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span> <span class="c1"># proposer receives POT-n, responder receives n</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">accept</span> <span class="k">else</span> <span class="n">randint</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">POT</span><span class="p">)</span>
+    <span class="c1"># compute the payoff</span>
+    <span class="n">payoff</span> <span class="o">=</span> <span class="n">proposal</span> <span class="k">if</span> <span class="n">response</span><span class="o">&lt;=</span><span class="n">proposal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># describe the proposal and response in the label</span>
+    <span class="n">check_page</span><span class="o">.</span><span class="n">questions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    &lt;p&gt;Imagine the proposer proposes the following split:&lt;/p&gt;</span>
+<span class="s1">    &lt;ul&gt;</span>
+<span class="s1">       &lt;li&gt;Proposer: $</span><span class="si">{}</span><span class="s1">&lt;/li&gt;</span>
+<span class="s1">       &lt;li&gt;Responder: $</span><span class="si">{}</span><span class="s1">&lt;/li&gt;</span>
+<span class="s1">    &lt;/ul&gt;</span>
+<span class="s1">    &lt;p&gt;The responder says, &quot;I will accept any proposal which gives </span>
+<span class="s1">    me at least $</span><span class="si">{}</span><span class="s1">.&quot;&lt;/p&gt;</span>
+<span class="s1">    &#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">proposal</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+    <span class="c1"># add submit functions to verify that the response was correct</span>
+    <span class="n">check_page</span><span class="o">.</span><span class="n">questions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">submit</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">payoff</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">check_page</span><span class="o">.</span><span class="n">questions</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">submit</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">payoff</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 
-gen_check_page(accept=True)._compile().preview()
-</code></pre>
+<span class="n">gen_check_page</span><span class="p">(</span><span class="n">accept</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <p><code>random_proposal</code> begins by generating a random proposal. We then generate a random response which will accept the proposal if <code>accept</code> is <code>True</code> and reject the proposal if <code>accept</code> is <code>False</code>.</p>
 <p>The <code>payoff</code> is the proposal if the proposal is accepted and <code>(0,0)</code> if the proposal is rejected.</p>
@@ -407,41 +415,41 @@ gen_check_page(accept=True)._compile().preview()
 <p>Finally, we add submit functions to the check page's input questions to verify that the participant's responses match the payoffs.</p>
 <h2 id="adding-a-comprehension-check-to-our-app">Adding a comprehension check to our app</h2>
 <p>Let's put this all together in <code>survey.py</code>:</p>
-<pre><code class="python">...
-from hemlock.tools import comprehension_check, join
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">comprehension_check</span><span class="p">,</span> <span class="n">join</span>
 
-from datetime import datetime
-from random import randint
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 
-# the number of rounds participants play
-N_ROUNDS = 5
-# the amount of money split
-POT = 20
+<span class="c1"># the number of rounds participants play</span>
+<span class="n">N_ROUNDS</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="c1"># the amount of money split</span>
+<span class="n">POT</span> <span class="o">=</span> <span class="mi">20</span>
 
-...
+<span class="o">...</span>
 
-@N.register
-def ultimatum_game(start_branch):
-    return Branch(
-        *comprehension_check(
-            instructions=Page(
-                # CONTENT OF INSTRUCTIONS PAGE HERE
-            ),
-            checks=[gen_check_page(accept=True), gen_check_page(accept=False)]
-        ),
-        Page(
-            Label('&lt;p&gt;You passed the check!&lt;/p&gt;'),
-            terminal=True
-        )
-    )
+<span class="nd">@N</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">ultimatum_game</span><span class="p">(</span><span class="n">start_branch</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">comprehension_check</span><span class="p">(</span>
+            <span class="n">instructions</span><span class="o">=</span><span class="n">Page</span><span class="p">(</span>
+                <span class="c1"># CONTENT OF INSTRUCTIONS PAGE HERE</span>
+            <span class="p">),</span>
+            <span class="n">checks</span><span class="o">=</span><span class="p">[</span><span class="n">gen_check_page</span><span class="p">(</span><span class="n">accept</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">gen_check_page</span><span class="p">(</span><span class="n">accept</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
+        <span class="p">),</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;You passed the check!&lt;/p&gt;&#39;</span><span class="p">),</span>
+            <span class="n">terminal</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 
-def gen_check_page(accept):
-    # GEN CHECK PAGE FUNCTION HERE
+<span class="k">def</span> <span class="nf">gen_check_page</span><span class="p">(</span><span class="n">accept</span><span class="p">):</span>
+    <span class="c1"># GEN CHECK PAGE FUNCTION HERE</span>
 
-@C.register
-def random_proposal(check_page, accept):
-    # RANDOM PROPOSAL FUNCTION HERE
-</code></pre>
+<span class="nd">@C</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">random_proposal</span><span class="p">(</span><span class="n">check_page</span><span class="p">,</span> <span class="n">accept</span><span class="p">):</span>
+    <span class="c1"># RANDOM PROPOSAL FUNCTION HERE</span>
+</code></pre></div>
 
 <p>Run your app and see your comprehension check at work!</p>
 <h2 id="summary">Summary</h2>

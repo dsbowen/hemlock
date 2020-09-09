@@ -201,6 +201,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -338,39 +346,39 @@ with the appropriate
 <p>Set an environment variable <code>BUCKET</code> to the name of the bucket, and
 <code>GOOGLE_APPLICATION_CREDENTIALS</code> to the name of your
 <a href="https://cloud.google.com/docs/authentication/getting-started">Google application credentials JSON file</a>.</p>
-<pre><code>export BUCKET=&lt;my-bucket&gt; GOOGLE_APPLICATION_CREDENTIALS=&lt;my-credentials.json&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>export BUCKET=&lt;my-bucket&gt; GOOGLE_APPLICATION_CREDENTIALS=&lt;my-credentials.json&gt;
+</code></pre></div>
 
 <p>In <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, File, Page, Label, route
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">File</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">route</span>
 
-@route('/survey')
-def start():
-    return Branch(
-        Page(File(
-            '&lt;p&gt;Upload a .png&lt;/p&gt;',
-            filename='upload',
-            allowed_extensions=['.png']
-        )),
-        Page(Label('&lt;p&gt;The End&lt;/p&gt;'), terminal=True)
-    )
-</code></pre>
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/survey&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span>
+        <span class="n">Page</span><span class="p">(</span><span class="n">File</span><span class="p">(</span>
+            <span class="s1">&#39;&lt;p&gt;Upload a .png&lt;/p&gt;&#39;</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;upload&#39;</span><span class="p">,</span>
+            <span class="n">allowed_extensions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;.png&#39;</span><span class="p">]</span>
+        <span class="p">)),</span>
+        <span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;The End&lt;/p&gt;&#39;</span><span class="p">),</span> <span class="n">terminal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div>
 
 <p>In <code>app.py</code>:</p>
-<pre><code class="python">import survey
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">survey</span>
 
-from hemlock import create_app
+<span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">create_app</span>
 
-app = create_app()
+<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
 
-if __name__ == '__main__':
-    from hemlock.app import socketio
-    socketio.run(app, debug=True)
-</code></pre>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">hemlock.app</span> <span class="kn">import</span> <span class="n">socketio</span>
+    <span class="n">socketio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
 
 <p>Run the app locally with:</p>
-<pre><code>$ python app.py # or python3 app.py
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ python app.py # or python3 app.py
+</code></pre></div>
 
 <p>And open your browser to <a href="http://localhost:5000/">http://localhost:5000/</a>. Upload a .png and click to the next page. You'll find your uploaded file in your Google bucket in <code>participant-1/upload.png</code>.</p>
 <h4 id="methods">Methods</h4>

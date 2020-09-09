@@ -231,6 +231,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -363,19 +371,19 @@ to a participant.</p>
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Compile as C, Input, Label, Page, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Compile</span> <span class="k">as</span> <span class="n">C</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-@C.register
-def greet(greet_q, name_q):
-    greet_q.label = '&lt;p&gt;Hello {}!&lt;/p&gt;'.format(name_q.response)
+<span class="nd">@C</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">greet</span><span class="p">(</span><span class="n">greet_q</span><span class="p">,</span> <span class="n">name_q</span><span class="p">):</span>
+    <span class="n">greet_q</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;&lt;p&gt;Hello </span><span class="si">{}</span><span class="s1">!&lt;/p&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name_q</span><span class="o">.</span><span class="n">response</span><span class="p">)</span>
 
-name_q = Input(&quot;&lt;p&gt;What's your name?&lt;/p&gt;&quot;)
-p = Page(Label(compile=C.greet(name_q)))
-name_q.response = 'World'
-p._compile().preview()
-</code></pre>
+<span class="n">name_q</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;What&#39;s your name?&lt;/p&gt;&quot;</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="nb">compile</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">greet</span><span class="p">(</span><span class="n">name_q</span><span class="p">)))</span>
+<span class="n">name_q</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="s1">&#39;World&#39;</span>
+<span class="n">p</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <h2 id="hemlockdebug">hemlock.<strong>Debug</strong></h2>
 <p class="func-header">
@@ -410,23 +418,23 @@ p._compile().preview()
 </table>
 
 <h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock import Debug as D, Input, Page, push_app_context
-from hemlock.tools import chromedriver
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Debug</span> <span class="k">as</span> <span class="n">D</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">chromedriver</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-driver = chromedriver()
+<span class="n">driver</span> <span class="o">=</span> <span class="n">chromedriver</span><span class="p">()</span>
 
-@D.register
-def greet(driver, greet_q):
-    inpt = greet_q.input_from_driver(driver)
-    inpt.clear()
-    inpt.send_keys('Hello World!')
+<span class="nd">@D</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">greet</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="n">greet_q</span><span class="p">):</span>
+    <span class="n">inpt</span> <span class="o">=</span> <span class="n">greet_q</span><span class="o">.</span><span class="n">input_from_driver</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+    <span class="n">inpt</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="n">inpt</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(</span><span class="s1">&#39;Hello World!&#39;</span><span class="p">)</span>
 
-p = Page(Input('&lt;p&gt;Enter a greeting.&lt;/p&gt;', debug=D.greet()))
-p.debug.pop(-1) # so the page won't navigate
-p.preview(driver)._debug(driver)
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Enter a greeting.&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">D</span><span class="o">.</span><span class="n">greet</span><span class="p">()))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># so the page won&#39;t navigate</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">_debug</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+</code></pre></div>
 
 <h4 id="methods_1">Methods</h4>
 <p class="func-header">
@@ -475,25 +483,25 @@ p.preview(driver)._debug(driver)
 </table>
 
 <h4 id="examples_2">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-@Validate.register
-def match(inpt, pattern):
-    if inpt.response != pattern:
-        return '&lt;p&gt;You entered &quot;{}&quot;, not &quot;{}&quot;&lt;/p&gt;'.format(inpt.response, pattern)
+<span class="nd">@Validate</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="n">inpt</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">inpt</span><span class="o">.</span><span class="n">response</span> <span class="o">!=</span> <span class="n">pattern</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;p&gt;You entered &quot;</span><span class="si">{}</span><span class="s1">&quot;, not &quot;</span><span class="si">{}</span><span class="s1">&quot;&lt;/p&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inpt</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
 
-pattern = 'hello world'
-inpt = Input(validate=V.match(pattern))
-inpt.response = 'goodbye moon'
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;hello world&#39;</span>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="s1">&#39;goodbye moon&#39;</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>You entered &quot;goodbye moon&quot;, not &quot;hello world&quot;
-</code></pre>
+<div class="highlight"><pre><span></span><code>You entered &quot;goodbye moon&quot;, not &quot;hello world&quot;
+</code></pre></div>
 
 <h4 id="methods_2">Methods</h4>
 <p class="func-header">
@@ -536,23 +544,23 @@ inpt.error
 </table>
 
 <h4 id="examples_3">Examples</h4>
-<pre><code class="python">from hemlock import Input, Submit as S, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Submit</span> <span class="k">as</span> <span class="n">S</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-@S.register
-def get_initials(name_q):
-    names = name_q.response.split()
-    name_q.data = '.'.join([name[0] for name in names]) + '.'
+<span class="nd">@S</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">get_initials</span><span class="p">(</span><span class="n">name_q</span><span class="p">):</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">name_q</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">name_q</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span>
 
-inpt = Input(&quot;&lt;p&gt;What's your name?&lt;/p&gt;&quot;, submit=S.get_initials())
-inpt.response = 'Andrew Yang'
-inpt._submit().data
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;What&#39;s your name?&lt;/p&gt;&quot;</span><span class="p">,</span> <span class="n">submit</span><span class="o">=</span><span class="n">S</span><span class="o">.</span><span class="n">get_initials</span><span class="p">())</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="s1">&#39;Andrew Yang&#39;</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_submit</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>A.Y.
-</code></pre>
+<div class="highlight"><pre><span></span><code>A.Y.
+</code></pre></div>
 
 <h2 id="hemlocknavigate">hemlock.<strong>Navigate</strong></h2>
 <p>Creates a new branch to which the participant will navigate.</p>
@@ -575,42 +583,42 @@ inpt._submit().data
 </table>
 
 <h4 id="examples_4">Examples</h4>
-<pre><code class="python">from hemlock import Branch, Navigate as N, Page, Participant, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Navigate</span> <span class="k">as</span> <span class="n">N</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Participant</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-def start():
-    return Branch(Page(), navigate=N.end())
+<span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span><span class="n">Page</span><span class="p">(),</span> <span class="n">navigate</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">end</span><span class="p">())</span>
 
-@N.register
-def end(start_branch):
-    return Branch(Page(terminal=True))
+<span class="nd">@N</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="n">start_branch</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span><span class="n">Page</span><span class="p">(</span><span class="n">terminal</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-part = Participant.gen_test_participant(start)
-part.view_nav()
-</code></pre>
+<span class="n">part</span> <span class="o">=</span> <span class="n">Participant</span><span class="o">.</span><span class="n">gen_test_participant</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+<span class="n">part</span><span class="o">.</span><span class="n">view_nav</span><span class="p">()</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>&lt;Branch 1&gt;
+<div class="highlight"><pre><span></span><code>&lt;Branch 1&gt;
 &lt;Page 1&gt; C
 
 C = current page
 T = terminal page
-</code></pre>
+</code></pre></div>
 
 <p>In:</p>
-<pre><code class="python">part.forward().view_nav()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">part</span><span class="o">.</span><span class="n">forward</span><span class="p">()</span><span class="o">.</span><span class="n">view_nav</span><span class="p">()</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>&lt;Branch 1&gt;
+<div class="highlight"><pre><span></span><code>&lt;Branch 1&gt;
 &lt;Page 1&gt;
     &lt;Branch 2&gt;
     &lt;Page 2&gt; C T
 
 C = current page
 T = terminal page
-</code></pre>
+</code></pre></div>
 
 <h4 id="methods_3">Methods</h4>
 <p class="func-header">

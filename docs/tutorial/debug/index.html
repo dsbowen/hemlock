@@ -213,6 +213,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -259,10 +267,10 @@
 <h2 id="why-a-custom-debugging-tool">Why a custom debugging tool?</h2>
 <p>In the early days of hemlock, I coded a study in which I asked participants to estimate the ages of people in photographs. I used a submit function to change their data from strings to integers. Everything was running smoothly until one mischievous participant entered 'twenty-seven', breaking my survey and sending me home in a fit of rage.</p>
 <p>Since then, I've rewritten my submit functions to be more fault tolerant. If you run</p>
-<pre><code class="python">from hemlock import Input, Submit as S
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Submit</span> <span class="k">as</span> <span class="n">S</span>
 
-Input(data='twenty-seven', submit=S.data_type(int))._submit().data
-</code></pre>
+<span class="n">Input</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;twenty-seven&#39;</span><span class="p">,</span> <span class="n">submit</span><span class="o">=</span><span class="n">S</span><span class="o">.</span><span class="n">data_type</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span><span class="o">.</span><span class="n">_submit</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+</code></pre></div>
 
 <p>it doesn't break; it simply converts the data to <code>None</code>.</p>
 <p>But that wasn't good enough. We often underestimate just how strangely participants will respond to our studies in ways that we can't foresee.</p>
@@ -277,35 +285,35 @@ Input(data='twenty-seven', submit=S.data_type(int))._submit().data
 </ul>
 <h2 id="basic-syntax">Basic syntax</h2>
 <p>Open your jupyter notebook and run the following:</p>
-<pre><code class="python">from hemlock import Debug as D, Input
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Debug</span> <span class="k">as</span> <span class="n">D</span><span class="p">,</span> <span class="n">Input</span>
 
-inpt = Input(debug=D.send_keys('hello world'))
-inpt.debug
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(</span><span class="s1">&#39;hello world&#39;</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">debug</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>[&lt;Debug 1&gt;]
-</code></pre>
+<div class="highlight"><pre><span></span><code>[&lt;Debug 1&gt;]
+</code></pre></div>
 
 <p>You can add debug functions to a page or quesiton by settings its <code>debug</code> attribute or passing a <code>debug</code> argument to its constructor. Debug functions run when we run the debugger (in just a moment).</p>
 <p>As its name suggests, the <code>send_keys</code> debug function tells the AI participant to send keys to the input.</p>
 <p>Let's watch our debug function at work:</p>
-<pre><code class="python">from hemlock import Page
-from hemlock.tools import chromedriver
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">chromedriver</span>
 
-driver = chromedriver()
-p = Page(inpt)
-p.debug.pop()
-p.preview(driver)._debug(driver)
-</code></pre>
+<span class="n">driver</span> <span class="o">=</span> <span class="n">chromedriver</span><span class="p">()</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">inpt</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">_debug</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+</code></pre></div>
 
 <p>First, we use <code>chromedriver</code> to open Chromedriver with <a href="https://selenium-python.readthedocs.io/">selenium python</a>.</p>
 <p>Next, we create a page with our input question.</p>
 <p>We then pop the last debug function from the page we created. Why? By default, pages have two debug functions. The first executes its questions' debug methods in random order; as if the participant were randomly jumping between questions on a page. The second debug function randomly clicks a forward or back button (if it exists), or refreshes the page. Popping the last debug function prevents the debugger from navigating, which allows us to see more clearly what the debugger is doing in preview mode.</p>
 <p>Finally, we run the debug function. You'll notice it enters 'hello world' in the input.</p>
 <p>After you're done, close the driver:</p>
-<pre><code class="python">driver.close()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">driver</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</code></pre></div>
 
 <p><strong>Notes.</strong></p>
 <ol>
@@ -314,112 +322,112 @@ p.preview(driver)._debug(driver)
 </ol>
 <h2 id="default-debug-functions">Default debug functions</h2>
 <p>We can attach debug functions to pages or questions. Most questions have a default debug function. For example, input questions have a default debug function which sends random ASCII characters to the input. You can see the default debug function at work by running:</p>
-<pre><code class="python">p = Page(Input())
-p.debug.pop()
-p.preview(driver)._debug(driver)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Input</span><span class="p">())</span>
+<span class="n">p</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">_debug</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+</code></pre></div>
 
 <p>However, sometimes we need to attach additional debug functions. For example, our study begins by asking participants to enter their date of birth in <code>mm/dd/yyyy</code> format. If you wait for the default debug function to randomly enter a string which matches that pattern, you might not end up running your study before Trump releases his tax returns.</p>
 <p>Instead, we'll use something like:</p>
-<pre><code class="python">Input(
-    '&lt;p&gt;Enter your date of birth.&lt;/p&gt;', 
-    debug=D.send_keys('10/26/1992')
-)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">Input</span><span class="p">(</span>
+    <span class="s1">&#39;&lt;p&gt;Enter your date of birth.&lt;/p&gt;&#39;</span><span class="p">,</span> 
+    <span class="n">debug</span><span class="o">=</span><span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(</span><span class="s1">&#39;10/26/1992&#39;</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
 
 <p>Unfortunately, this will not work effectively as a debugger. Sometimes we want the debugger to enter nonsense, and sometimes we want it to enter something sensible. To specify this behavior, we can modify the above:</p>
-<pre><code class="python">Input(
-    '&lt;p&gt;Enter your date of birth.&lt;/p&gt;', 
-    debug=[D.send_keys(), D.send_keys('10/26/1992', p_exec=.8)]
-)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">Input</span><span class="p">(</span>
+    <span class="s1">&#39;&lt;p&gt;Enter your date of birth.&lt;/p&gt;&#39;</span><span class="p">,</span> 
+    <span class="n">debug</span><span class="o">=</span><span class="p">[</span><span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(),</span> <span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(</span><span class="s1">&#39;10/26/1992&#39;</span><span class="p">,</span> <span class="n">p_exec</span><span class="o">=.</span><span class="mi">8</span><span class="p">)]</span>
+<span class="p">)</span>
+</code></pre></div>
 
 <p>The first debug function, <code>send_keys()</code>, sends random keys to the input. The second debug function <code>send_keys('10/26/1992')</code>, sends <code>'10/26/1992'</code> to the input. We also pass <code>p_exec=.8</code> to the second debug function, which specifies its probability of executing. In English, we're telling the debugger, <em>enter something random, then, with 80% probability, enter something sensible</em>.</p>
 <h2 id="custom-debug-functions">Custom debug functions</h2>
 <p>We won't need custom debug functions for our survey, but you may need them elsewhere. Creating custom debug function is similar to creating custom compile, validate, etc. functions, with one important difference: while the functions you've seen take their parent as their first argument, debug functions take a selenium webdriver as their first argument and their parent as their second argument:</p>
-<pre><code class="python">@D.register
-def f(driver, parent):
-    # debug something
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@D</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+    <span class="c1"># debug something</span>
+</code></pre></div>
 
 <p>If you're serious about writing custom debug functions, I recommend checking out the <a href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py">source code</a> for inspiration.</p>
 <h2 id="debugging-our-app">Debugging our app</h2>
 <p>First, import <code>Debug</code> at the top of <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, Check, Compile as C, Debug as D, Embedded, Input, Label, Navigate as N, Page, Range, Select, Submit as S, Validate as V, route
-...
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Check</span><span class="p">,</span> <span class="n">Compile</span> <span class="k">as</span> <span class="n">C</span><span class="p">,</span> <span class="n">Debug</span> <span class="k">as</span> <span class="n">D</span><span class="p">,</span> <span class="n">Embedded</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Navigate</span> <span class="k">as</span> <span class="n">N</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Range</span><span class="p">,</span> <span class="n">Select</span><span class="p">,</span> <span class="n">Submit</span> <span class="k">as</span> <span class="n">S</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">route</span>
+<span class="o">...</span>
+</code></pre></div>
 
 <p>Our app can be debugged largely with default debug functions. The exceptions are, 1) the date of birth input, 2) the comprehension check, 3) proposals and responses.</p>
 <h3 id="date-of-birth">Date of birth</h3>
 <p>Modify <code>survey.py</code> as follows:</p>
-<pre><code class="python">...
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
 
-@route('/survey')
-def start():
-    demographics_page = Page(
-        Input(
-            '&lt;p&gt;Enter your date of birth.&lt;/p&gt;',
-            ...
-            debug=[D.send_keys(), D.send_keys('10/26/1992', p_exec=.8)]
-        ),
-        ...
-</code></pre>
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/survey&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="n">demographics_page</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span>
+        <span class="n">Input</span><span class="p">(</span>
+            <span class="s1">&#39;&lt;p&gt;Enter your date of birth.&lt;/p&gt;&#39;</span><span class="p">,</span>
+            <span class="o">...</span>
+            <span class="n">debug</span><span class="o">=</span><span class="p">[</span><span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(),</span> <span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(</span><span class="s1">&#39;10/26/1992&#39;</span><span class="p">,</span> <span class="n">p_exec</span><span class="o">=.</span><span class="mi">8</span><span class="p">)]</span>
+        <span class="p">),</span>
+        <span class="o">...</span>
+</code></pre></div>
 
 <h3 id="comprehension-checks">Comprehension checks</h3>
 <p>Because there is no attempt limit for our comprehension check, unless we tell the debugger to enter the correct answers, it's going to keep looping back to the instructions page.</p>
-<pre><code class="python">...
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
 
-@Compile.register
-def random_proposal(check_page, accept):
-    ...
-    check_page.questions[1].debug = [
-        D.send_keys(), D.send_keys(str(payoff[0]), p_exec=.8)
-    ]
-    check_page.questions[2].debug = [
-        D.send_keys(), D.send_keys(str(payoff[1]), p_exec=.8)
-    ]
+<span class="nd">@Compile</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">random_proposal</span><span class="p">(</span><span class="n">check_page</span><span class="p">,</span> <span class="n">accept</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">check_page</span><span class="o">.</span><span class="n">questions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(),</span> <span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">payoff</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">p_exec</span><span class="o">=.</span><span class="mi">8</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">check_page</span><span class="o">.</span><span class="n">questions</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(),</span> <span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">payoff</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">p_exec</span><span class="o">=.</span><span class="mi">8</span><span class="p">)</span>
+    <span class="p">]</span>
 
-...
-</code></pre>
+<span class="o">...</span>
+</code></pre></div>
 
 <h3 id="proposals-and-responses">Proposals and responses</h3>
 <p>It's unlikely the debugger will enter an integer between 0 and the size of the pot, so we'll give our debugger some help:</p>
-<pre><code class="python">...
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
 
-def gen_proposal_input(round_):
-    return Input(
-        ...
-        debug=[D.send_keys(), D.send_keys(str(randint(0, POT)), p_exec=.8)]
-    )
+<span class="k">def</span> <span class="nf">gen_proposal_input</span><span class="p">(</span><span class="n">round_</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Input</span><span class="p">(</span>
+        <span class="o">...</span>
+        <span class="n">debug</span><span class="o">=</span><span class="p">[</span><span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(),</span> <span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">POT</span><span class="p">)),</span> <span class="n">p_exec</span><span class="o">=.</span><span class="mi">8</span><span class="p">)]</span>
+    <span class="p">)</span>
 
-...
-</code></pre>
+<span class="o">...</span>
+</code></pre></div>
 
-<pre><code class="python">...
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
 
-def gen_response_input(round_):
-    return Input(
-        ...
-        debug=[D.send_keys(), D.send_keys(str(randint(0, POT)), p_exec=.8)]
-    )
+<span class="k">def</span> <span class="nf">gen_response_input</span><span class="p">(</span><span class="n">round_</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Input</span><span class="p">(</span>
+        <span class="o">...</span>
+        <span class="n">debug</span><span class="o">=</span><span class="p">[</span><span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(),</span> <span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">POT</span><span class="p">)),</span> <span class="n">p_exec</span><span class="o">=.</span><span class="mi">8</span><span class="p">)]</span>
+    <span class="p">)</span>
 
-...
-</code></pre>
+<span class="o">...</span>
+</code></pre></div>
 
 <h2 id="run-the-debugger">Run the debugger</h2>
 <p>Now that our debugger won't get stuck in any infinite loops, it's time to run it.</p>
 <p>Open another terminal window. As always, change to your project directory:</p>
-<pre><code class="bash">$ cd
-$ cd my-first-project
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span>
+$ <span class="nb">cd</span> my-first-project
+</code></pre></div>
 
 <p>You should have 3 terminals open: one for jupyter, one for editing <code>survey.py</code> and running <code>hlk serve</code>, and now a third for running the debugger. In one of the terminal windows, run the hemlock app as usual (<code>hlk serve</code>). In the third terminal, run the debugger:</p>
-<pre><code class="bash">$ hlk debug
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk debug
+</code></pre></div>
 
 <p>To run several AI participants through the survey, e.g. 3, use:</p>
-<pre><code class="bash">$ hlk debug -n 3
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk debug -n <span class="m">3</span>
+</code></pre></div>
 
 <h2 id="summary">Summary</h2>
 <p>In this part of the tutorial, you learned how to debug your app with hemlock's custom debugging tool.</p>

@@ -113,7 +113,7 @@ def record_part_ids(survey_view_q):
     ----------
     survey_view_q : hemlock.Input
     """
-    part_ids = re.split(r'W+', survey_view_q.response)
+    part_ids = re.split(r'\W+', survey_view_q.response)
     survey_view_q.data = [id for id in part_ids if id]
 
 def handle_download_form(response, btn):

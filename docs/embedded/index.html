@@ -203,6 +203,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -320,27 +328,27 @@ responses.</p>
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Branch, Embedded, Page, Participant, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Embedded</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Participant</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-def start():
-    return Branch(Page())
+<span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span><span class="n">Page</span><span class="p">())</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-part = Participant.gen_test_participant(start)
-part.embedded = [Embedded('Name', 'Socrates', data_rows=-1)]
-part.get_data()
-</code></pre>
+<span class="n">part</span> <span class="o">=</span> <span class="n">Participant</span><span class="o">.</span><span class="n">gen_test_participant</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+<span class="n">part</span><span class="o">.</span><span class="n">embedded</span> <span class="o">=</span> <span class="p">[</span><span class="n">Embedded</span><span class="p">(</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Socrates&#39;</span><span class="p">,</span> <span class="n">data_rows</span><span class="o">=-</span><span class="mi">1</span><span class="p">)]</span>
+<span class="n">part</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>{'ID': [1],
-'EndTime': [datetime.datetime(2020, 7, 4, 17, 57, 23, 854272)],
-'StartTime': [datetime.datetime(2020, 7, 4, 17, 57, 23, 854272)],
-'Status': ['InProgress'],
-'Name': ['Socrates'],
-'NameOrder': [0],
-'NameIndex': [0]}
-</code></pre>
+<div class="highlight"><pre><span></span><code>{&#39;ID&#39;: [1],
+&#39;EndTime&#39;: [datetime.datetime(2020, 7, 4, 17, 57, 23, 854272)],
+&#39;StartTime&#39;: [datetime.datetime(2020, 7, 4, 17, 57, 23, 854272)],
+&#39;Status&#39;: [&#39;InProgress&#39;],
+&#39;Name&#39;: [&#39;Socrates&#39;],
+&#39;NameOrder&#39;: [0],
+&#39;NameIndex&#39;: [0]}
+</code></pre></div>
 
 <h2 id="hemlocktimer">hemlock.<strong>Timer</strong></h2>
 <p class="func-header">
@@ -380,29 +388,29 @@ part.get_data()
 </table>
 
 <h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock import Timer, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Timer</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-import time
+<span class="kn">import</span> <span class="nn">time</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-timer = Timer()
-print(timer.state)
-timer.start()
-print(timer.state)
-time.sleep(1)
-print(timer.data)
-timer.pause()
-time.sleep(1)
-print(timer.data)
-</code></pre>
+<span class="n">timer</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">timer</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+<span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">timer</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">timer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="n">timer</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">timer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>not started
+<div class="highlight"><pre><span></span><code>not started
 running
 1.001034
 1.001381
-</code></pre>
+</code></pre></div>
 
 <h4 id="methods">Methods</h4>
 <p class="func-header">

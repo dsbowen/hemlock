@@ -199,6 +199,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -244,73 +252,66 @@
 <p>One of hemlock's most impressive features is seamless integration with Redis for running complex background processes during surveys. <a href="../../worker/">Read more here</a>.</p>
 <h2 id="settings">Settings</h2>
 <p>We can use settings to change the default values of most attributes of most hemlock objects (see the API documentation for precise details). For example, let's add a back button to every page by default:</p>
-<pre><code class="python">from hemlock import Page, settings
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">settings</span>
 
-settings['Page'].update({'back': True})
-path = Page().preview()
-</code></pre>
+<span class="n">settings</span><span class="p">[</span><span class="s1">&#39;Page&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;back&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">Page</span><span class="p">()</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <h2 id="duplicates">Duplicates</h2>
 <p>We often want to block the same participant from going through our survey multiple times. We do this with the <code>duplicate_keys</code> setting. This blocks visitors who match participants who've already completed the study on certain keys. For example:</p>
-<pre><code class="python">from hemlock import settings
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">settings</span>
 
-settings.update({'duplicate_keys': ['IPv4', 'workerId']})
-</code></pre>
+<span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;duplicate_keys&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;IPv4&#39;</span><span class="p">,</span> <span class="s1">&#39;workerId&#39;</span><span class="p">]})</span>
+</code></pre></div>
 
 <p>This blocks participants who match existing participants on IP address (IPv4) or their MTurk workerId.</p>
 <h2 id="screenouts">Screenouts</h2>
 <p>We may also want to screen out participants, e.g. if they've participated in similar studies we've run in the past.</p>
 <p>We do this by 1) uploading a file called <code>screenouts.csv</code> to the root directory of our hemlock project. The top row of the csv are keys on which we want to screen (much like the duplicate keys we saw above). Then modify the <code>screenout_keys</code> setting:</p>
-<pre><code class="python">from hemlock import settings
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">settings</span>
 
-settings.update({'screenout_keys': ['IPv4', 'workerId']})
-</code></pre>
+<span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;screenout_keys&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;IPv4&#39;</span><span class="p">,</span> <span class="s1">&#39;workerId&#39;</span><span class="p">]})</span>
+</code></pre></div>
 
 <h2 id="validation-off">Validation off</h2>
 <p>During development and testing, we often want to be able to click through a survey quickly, ignoring validation. We can turn all validation off as follows:</p>
-<pre><code class="python">from hemlock import settings
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">settings</span>
 
-settings.update({'validate': False})
-</code></pre>
+<span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;validate&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+</code></pre></div>
 
 <!-- ## Google cloud buckets
 
 Hook up a Google cloud bucket to your app with:
 
-
-<pre><code class="bash">$ hlk gcloud-bucket &lt;my-billing-account&gt;
-</code></pre>
-
+<div class="highlight"><pre><span></span><code>$ hlk gcloud-bucket &lt;my-billing-account&gt;
+</code></pre></div>
 
 Make sure you have a Google cloud computing account and Google Cloud SDK installed. If using WSL, you can install these with hemlock-CLI:
 
-
-<pre><code class="bash">$ hlk setup win --cloud-sdk
-</code></pre>
-
+<div class="highlight"><pre><span></span><code>$ hlk setup win --cloud-sdk
+</code></pre></div>
 
 Additionally, install the google cloud storage python API with:
 
+<div class="highlight"><pre><span></span><code>$ pip3 install google-cloud-storage <span class="c1"># or hlk install google-cloud-storage (see below)</span>
+<span class="sb">```</span> --&gt;
 
-<pre><code class="bash">$ pip3 install google-cloud-storage # or hlk install google-cloud-storage (see below)
-``` --&gt;
-
-## Installing 3rd party packages
+<span class="c1">## Installing 3rd party packages</span>
 
 We ordinarily install 3rd party packages with:
 
-```bash
-$ pip install &lt;requested-package&gt; # or pip3 install &lt;requested-package&gt;
-</code></pre>
-
+<span class="sb">```</span>bash
+$ pip install &lt;requested-package&gt; <span class="c1"># or pip3 install &lt;requested-package&gt;</span>
+</code></pre></div>
 
 If you're using heroku, you need to include these in a `requirements.txt` file. If you're sharing your hemlock project with collaborators, I recommend additionally adding these to a `local-requirements.txt` file. 
 
 Hemlock-CLI has a shortcut for 1) installing 3rd party packages, 2) adding them to `requirements.txt`, and 3) adding them to `local-requirements.txt`:
 
-
-<pre><code class="bash">$ hlk install &lt;requested-package&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk install &lt;requested-package&gt;
+</code></pre></div>
               
             </div>
           </div>

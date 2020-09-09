@@ -207,6 +207,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -306,14 +314,14 @@
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
-</code></pre>
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>&lt;Flask 'hemlock.app'&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>&lt;Flask &#39;hemlock.app&#39;&gt;
+</code></pre></div>
 
 <h2 id="hemlockappcreate_app">hemlock.app.<strong>create_app</strong></h2>
 <p class="func-header">
@@ -344,14 +352,14 @@ app = push_app_context()
 
 <h4 id="examples_1">Examples</h4>
 <p>In this example, we add a back button to every page in our survey.</p>
-<pre><code class="python">from hemlock import Page, create_app, settings
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">create_app</span><span class="p">,</span> <span class="n">settings</span>
 
-settings['Page'].update({'back': True})
+<span class="n">settings</span><span class="p">[</span><span class="s1">&#39;Page&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;back&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
 
-app = create_app()
-app.app_context().push()
-Page().preview()
-</code></pre>
+<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+<span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">()</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+<span class="n">Page</span><span class="p">()</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <h2 id="default-application-settings">Default application settings</h2>
 <p>Below are the default settings for Hemlock applications and extensions.</p>

@@ -197,6 +197,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -314,45 +322,45 @@ the instructions, he is brought directly to check B, skipping check A.</p>
 must be the last submit function of each check page.</p>
 <h4 id="examples">Examples</h4>
 <p>We have two files in our root directory. In <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, Page, Label, Input, Submit as S, route
-from hemlock.tools import comprehension_check
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Submit</span> <span class="k">as</span> <span class="n">S</span><span class="p">,</span> <span class="n">route</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">comprehension_check</span>
 
-@route('/survey')
-def start():
-    return Branch(
-        *comprehension_check(
-            instructions=Page(
-                Label('&lt;p&gt;Here are some instructions.&lt;/p&gt;')
-            ),
-            checks=Page(
-                Input(
-                    '&lt;p&gt;Enter &quot;hello world&quot; or you... shall not... PASS!&lt;/p&gt;',
-                    submit=S.match('hello world')
-                )
-            )
-        ),
-        Page(
-            Label('&lt;p&gt;You passed the comprehension check!&lt;/p&gt;'),
-            terminal=True
-        )
-    )
-</code></pre>
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/survey&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">comprehension_check</span><span class="p">(</span>
+            <span class="n">instructions</span><span class="o">=</span><span class="n">Page</span><span class="p">(</span>
+                <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Here are some instructions.&lt;/p&gt;&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">checks</span><span class="o">=</span><span class="n">Page</span><span class="p">(</span>
+                <span class="n">Input</span><span class="p">(</span>
+                    <span class="s1">&#39;&lt;p&gt;Enter &quot;hello world&quot; or you... shall not... PASS!&lt;/p&gt;&#39;</span><span class="p">,</span>
+                    <span class="n">submit</span><span class="o">=</span><span class="n">S</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;hello world&#39;</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;You passed the comprehension check!&lt;/p&gt;&#39;</span><span class="p">),</span>
+            <span class="n">terminal</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div>
 
 <p>In <code>app.py</code>:</p>
-<pre><code class="python">import survey
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">survey</span>
 
-from hemlock import create_app
+<span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">create_app</span>
 
-app = create_app()
+<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
 
-if __name__ == '__main__':
-    from hemlock.app import socketio
-    socketio.run(app, debug=True)
-</code></pre>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">hemlock.app</span> <span class="kn">import</span> <span class="n">socketio</span>
+    <span class="n">socketio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
 
 <p>Run the app with:</p>
-<pre><code>$ python app.py # or python3 app.py
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ python app.py # or python3 app.py
+</code></pre></div>
 
 <p>Open your browser to <a href="http://localhost:5000/">http://localhost:5000/</a>.</p>
               

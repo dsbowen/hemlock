@@ -209,6 +209,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -308,22 +316,22 @@ selected the correct choice(s).</p>
 <p>If the participant can only select one choice, indicate whether the
 participant selected one of the correct choices.</p>
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Check, Submit as S, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Check</span><span class="p">,</span> <span class="n">Submit</span> <span class="k">as</span> <span class="n">S</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-check = Check(
-    '&lt;p&gt;Select the correct choice.&lt;/p&gt;',
-    ['correct', 'incorrect', 'also incorrect'],
-    submit=S.correct_choices('correct')
-)
-check.response = check.choices[0]
-check._submit().data
-</code></pre>
+<span class="n">check</span> <span class="o">=</span> <span class="n">Check</span><span class="p">(</span>
+    <span class="s1">&#39;&lt;p&gt;Select the correct choice.&lt;/p&gt;&#39;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s1">&#39;correct&#39;</span><span class="p">,</span> <span class="s1">&#39;incorrect&#39;</span><span class="p">,</span> <span class="s1">&#39;also incorrect&#39;</span><span class="p">],</span>
+    <span class="n">submit</span><span class="o">=</span><span class="n">S</span><span class="o">.</span><span class="n">correct_choices</span><span class="p">(</span><span class="s1">&#39;correct&#39;</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">check</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">check</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">check</span><span class="o">.</span><span class="n">_submit</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>1
-</code></pre>
+<div class="highlight"><pre><span></span><code>1
+</code></pre></div>
 
 <h2 id="hemlockfunctionssubmitdata_type">hemlock.functions.submit.<strong>data_type</strong></h2>
 <p class="func-header">
@@ -355,18 +363,18 @@ be converted, it is changed to <code>None</code>.</p>
 </table>
 
 <h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock import Input, Submit as S, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Submit</span> <span class="k">as</span> <span class="n">S</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(data='1', submit=S.data_type(int))
-inpt._submit()
-inpt.data, isinstance(inpt.data, int)
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">submit</span><span class="o">=</span><span class="n">S</span><span class="o">.</span><span class="n">data_type</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_submit</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inpt</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>(1, True)
-</code></pre>
+<div class="highlight"><pre><span></span><code>(1, True)
+</code></pre></div>
 
 <h2 id="hemlockfunctionssubmitmatch">hemlock.functions.submit.<strong>match</strong></h2>
 <p class="func-header">
@@ -394,17 +402,17 @@ pattern.</p>
 </table>
 
 <h4 id="examples_2">Examples</h4>
-<pre><code class="python">from hemlock import Input, Submit as S, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Submit</span> <span class="k">as</span> <span class="n">S</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(data='hello world', submit=S.match('hello *'))
-inpt._submit().data
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">,</span> <span class="n">submit</span><span class="o">=</span><span class="n">S</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;hello *&#39;</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_submit</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>1
-</code></pre>
+<div class="highlight"><pre><span></span><code>1
+</code></pre></div>
               
             </div>
           </div>

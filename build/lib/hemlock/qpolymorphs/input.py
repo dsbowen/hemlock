@@ -56,6 +56,13 @@ class Input(InputGroup, InputBase, Question):
     ----------
     input_type : str, default='text'
         Type of html input. See <https://www.w3schools.com/html/html_form_input_types.asp>.
+
+    placeholder : str or None, default=None
+        Html placeholder.
+
+    step : float, str, or None, default=None
+        Step attribute for number inputs. By default, the step for number 
+        inputs is 1. Set to `'any'` for any step.
     
     Examples
     --------
@@ -90,6 +97,23 @@ class Input(InputGroup, InputBase, Question):
     def placeholder(self, val):
         self.input['placeholder'] = val
         self.body.changed()
+
+    @property
+    def step(self):
+        return self.input.get('step')
+
+    @step.setter
+    def step(self, val):
+        self.input['step'] = val
+        self.body.changed()
+
+    def _validate(self, *args, **kwargs):
+        if self.input_type == 'number':
+            self.response = (
+                float(self.response) if '.' in self.response 
+                else int(self.response)
+            )
+        return super()._validate(*args, **kwargs)
 
     def _submit(self, *args, **kwargs):
         """Convert data to `datetime` object if applicable"""

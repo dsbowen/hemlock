@@ -67,11 +67,15 @@ nav:
     - Utilities: utils.md
   - Security: security.md
   - Changelog: changelog.md
+  - Acknowledgements: acknowledgements.md
 theme: readthedocs
 extra_css:
   - css/extra.css
 extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML
 markdown_extensions:
-    - mdx_math
-    - footnotes
+  - admonition
+  - footnotes
+  - mdx_math
+  - pymdownx.details
+  - pymdownx.superfences

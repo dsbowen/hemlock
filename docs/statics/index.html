@@ -247,6 +247,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -345,19 +353,19 @@
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Page, push_app_context
-from hemlock.tools import external_css
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">external_css</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-p = Page(extra_css=external_css(href='https://my-css-url'))
-p.css
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">extra_css</span><span class="o">=</span><span class="n">external_css</span><span class="p">(</span><span class="n">href</span><span class="o">=</span><span class="s1">&#39;https://my-css-url&#39;</span><span class="p">))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">css</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>...
+<div class="highlight"><pre><span></span><code>...
 &lt;link href=&quot;https://my-css-url&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;/&gt;
-</code></pre>
+</code></pre></div>
 
 <h2 id="hemlocktoolsinternal_css">hemlock.tools.<strong>internal_css</strong></h2>
 <p class="func-header">
@@ -386,21 +394,21 @@ p.css
 </table>
 
 <h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock import Page, push_app_context
-from hemlock.tools import internal_css
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">internal_css</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-p = Page(extra_css=internal_css({'body': {'background': 'coral'}}))
-p.css
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">extra_css</span><span class="o">=</span><span class="n">internal_css</span><span class="p">({</span><span class="s1">&#39;body&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;background&#39;</span><span class="p">:</span> <span class="s1">&#39;coral&#39;</span><span class="p">}}))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">css</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>...
+<div class="highlight"><pre><span></span><code>...
 &lt;style&gt;
     body {background:coral;}
 &lt;/style&gt;
-</code></pre>
+</code></pre></div>
 
 <h2 id="hemlocktoolsexternal_js">hemlock.tools.<strong>external_js</strong></h2>
 <p class="func-header">
@@ -429,19 +437,19 @@ p.css
 </table>
 
 <h4 id="examples_2">Examples</h4>
-<pre><code class="python">from hemlock import Page, push_app_context
-from hemlock.tools import external_js
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">external_js</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-p = Page(extra_js=external_js(src='https://my-js-url'))
-p.js
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">extra_js</span><span class="o">=</span><span class="n">external_js</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">&#39;https://my-js-url&#39;</span><span class="p">))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">js</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>...
+<div class="highlight"><pre><span></span><code>...
 &lt;script src=&quot;https://my-js-url&quot;&gt;&lt;/script&gt;
-</code></pre>
+</code></pre></div>
 
 <h2 id="hemlocktoolsinternal_js">hemlock.tools.<strong>internal_js</strong></h2>
 <p class="func-header">
@@ -470,31 +478,31 @@ p.js
 </table>
 
 <h4 id="examples_3">Examples</h4>
-<pre><code class="python">from hemlock import Page, push_app_context
-from hemlock.tools import internal_js
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">internal_js</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-p = Page(
-    extra_js=internal_js(
-        '''
-        $( document ).ready(function() {
-            alert('hello, world!');
-        });
-        '''
-    )
-)
-p.js
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span>
+    <span class="n">extra_js</span><span class="o">=</span><span class="n">internal_js</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        $( document ).ready(function() {</span>
+<span class="sd">            alert(&#39;hello, world!&#39;);</span>
+<span class="sd">        });</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">js</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>...
+<div class="highlight"><pre><span></span><code>...
 &lt;script&gt;
     $( document ).ready(function() {
-        alert('hello, world!');
+        alert(&#39;hello, world!&#39;);
     });
 &lt;/script&gt;
-</code></pre>
+</code></pre></div>
 
 <h2 id="hemlocktoolssrc_from_bucket">hemlock.tools.<strong>src_from_bucket</strong></h2>
 <p class="func-header">
@@ -528,22 +536,22 @@ p.js
 with the appropriate
 <a href="https://cloud.google.com/storage/docs/cross-origin">CORS permissions</a>.</p>
 <p>Set an environment variable <code>BUCKET</code> to the name of the bucket.</p>
-<pre><code>$ export BUCKET=&lt;my-bucket&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ export BUCKET=&lt;my-bucket&gt;
+</code></pre></div>
 
 <p>Upload a file to the bucket, e.g. <a href="https://xkcd.com/2138/">https://xkcd.com/2138/</a> and name it
 <code>wanna_see_the_code.png</code>.</p>
-<pre><code class="python">from hemlock import Branch, Page, Label, push_app_context
-from hemlock.tools import Img, src_from_bucket
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">Img</span><span class="p">,</span> <span class="n">src_from_bucket</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-img = Img(
-    src=src_from_bucket('wanna_see_the_code.png'),
-    align='center'
-).render()
-Page(Label(img)).preview()
-</code></pre>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Img</span><span class="p">(</span>
+    <span class="n">src</span><span class="o">=</span><span class="n">src_from_bucket</span><span class="p">(</span><span class="s1">&#39;wanna_see_the_code.png&#39;</span><span class="p">),</span>
+    <span class="n">align</span><span class="o">=</span><span class="s1">&#39;center&#39;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+<span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="n">img</span><span class="p">))</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <h2 id="hemlocktoolsurl_from_bucket">hemlock.tools.<strong>url_from_bucket</strong></h2>
 <p class="func-header">
@@ -587,35 +595,35 @@ with the appropriate
 <p>Set an environment variable <code>BUCKET</code> to the name of the bucket, and
 <code>GOOGLE_APPLICATION_CREDENTIALS</code> to the name of your
 <a href="https://cloud.google.com/docs/authentication/getting-started">Google application credentials JSON file</a>.</p>
-<pre><code>$ export BUCKET=&lt;my-bucket&gt; GOOGLE_APPLICATION_CREDENTIALS=&lt;my-credentials.json&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ export BUCKET=&lt;my-bucket&gt; GOOGLE_APPLICATION_CREDENTIALS=&lt;my-credentials.json&gt;
+</code></pre></div>
 
 <p>In <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, Page, Download, route
-from hemlock.tools import url_from_bucket
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Download</span><span class="p">,</span> <span class="n">route</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">url_from_bucket</span>
 
-@route('/survey')
-def start():
-    filename = 'wanna_see_the_code.png'
-    url = url_from_bucket(filename)
-    return Branch(Page(Download(downloads=[(url, filename)])))
-</code></pre>
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/survey&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;wanna_see_the_code.png&#39;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">url_from_bucket</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span><span class="n">Page</span><span class="p">(</span><span class="n">Download</span><span class="p">(</span><span class="n">downloads</span><span class="o">=</span><span class="p">[(</span><span class="n">url</span><span class="p">,</span> <span class="n">filename</span><span class="p">)])))</span>
+</code></pre></div>
 
 <p>In <code>app.py</code>:</p>
-<pre><code class="python">import survey
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">survey</span>
 
-from hemlock import create_app
+<span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">create_app</span>
 
-app = create_app()
+<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
 
-if __name__ == '__main__':
-    from hemlock.app import socketio
-    socketio.run(app, debug=True)
-</code></pre>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">hemlock.app</span> <span class="kn">import</span> <span class="n">socketio</span>
+    <span class="n">socketio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
 
 <p>Run the app locally with:</p>
-<pre><code>$ python app.py # or python3 app.py
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ python app.py # or python3 app.py
+</code></pre></div>
 
 <p>And open your browser to <a href="http://localhost:5000/">http://localhost:5000/</a>. Click on the
 download button to download the file from your Google bucket.</p>
@@ -724,17 +732,17 @@ download button to download the file from your Google bucket.</p>
 </table>
 
 <h4 id="examples_6">Examples</h4>
-<pre><code class="python">from hemlock import Page, Label, push_app_context
-from hemlock.tools import Img
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">Img</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-img = Img(
-    src='https://imgs.xkcd.com/comics/wanna_see_the_code.png',
-    align='center'
-).render()
-Page(Label(img)).preview()
-</code></pre>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Img</span><span class="p">(</span>
+    <span class="n">src</span><span class="o">=</span><span class="s1">&#39;https://imgs.xkcd.com/comics/wanna_see_the_code.png&#39;</span><span class="p">,</span>
+    <span class="n">align</span><span class="o">=</span><span class="s1">&#39;center&#39;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+<span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="n">img</span><span class="p">))</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <h4 id="methods_1">Methods</h4>
 <p class="func-header">
@@ -787,14 +795,14 @@ Page(Label(img)).preview()
 </table>
 
 <h4 id="examples_7">Examples</h4>
-<pre><code class="python">from hemlock import Page, Label, push_app_context
-from hemlock.tools import Vid
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">Vid</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-vid = Vid.from_youtube('https://www.youtube.com/watch?v=UbQgXeY_zi4')
-Page(Label(vid.render())).preview()
-</code></pre>
+<span class="n">vid</span> <span class="o">=</span> <span class="n">Vid</span><span class="o">.</span><span class="n">from_youtube</span><span class="p">(</span><span class="s1">&#39;https://www.youtube.com/watch?v=UbQgXeY_zi4&#39;</span><span class="p">)</span>
+<span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="n">vid</span><span class="o">.</span><span class="n">render</span><span class="p">()))</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <h4 id="methods_2">Methods</h4>
 <p class="func-header">

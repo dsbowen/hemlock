@@ -187,6 +187,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -266,8 +274,8 @@ I put on my best shirt, throw open the door at precisely 12 noon and... the conf
 
 <p>I'm giving a Hemlock demo in my department when one of my colleagues asks, <em>Can you give me an example of when I would want to use Hemlock instead of Qualtrics?</em>. </p>
 <p>No problem. Prof. Bob Axelrod from Michigan is running forecasting studies in which participants predict AI players' actions in a game theoretic setting. He's got the python code written to simulate the AI players. The players play a game, and after each of 40 rounds, the participant predicts what the players will do next. But it's not integrated into the survey. So, he displays the game in a terminal window, which looks something like this:</p>
-<pre><code>Player 1: ['Defect', 'Defect', 'Cooperate', 'Cooperate', 'Defect', 'Cooperate', 'Cooperate', 'Defect', 'Cooperate', 'Defect'] Player 2: ['Cooperate', 'Cooperate', 'Defect', 'Defect', 'Cooperate', 'Defect', 'Cooperate', 'Cooperate', 'Cooperate', 'Cooperate']
-</code></pre>
+<div class="highlight"><pre><span></span><code>Player 1: [&#39;Defect&#39;, &#39;Defect&#39;, &#39;Cooperate&#39;, &#39;Cooperate&#39;, &#39;Defect&#39;, &#39;Cooperate&#39;, &#39;Cooperate&#39;, &#39;Defect&#39;, &#39;Cooperate&#39;, &#39;Defect&#39;] Player 2: [&#39;Cooperate&#39;, &#39;Cooperate&#39;, &#39;Defect&#39;, &#39;Defect&#39;, &#39;Cooperate&#39;, &#39;Defect&#39;, &#39;Cooperate&#39;, &#39;Cooperate&#39;, &#39;Cooperate&#39;, &#39;Cooperate&#39;]
+</code></pre></div>
 
 <p>Participants have to go back and forth between entering things into the terminal window and entering things in Qualtrics to keep the python simulation synchronized with Qualtrics. (And, by the way, because participants have to use a terminal window, you can't distribute the study online).</p>
 <p>But now imagine you're using Hemlock. You've already got the python code to run the simulation, so all you need is one line of code to put the results a table. Problem solved!</p>

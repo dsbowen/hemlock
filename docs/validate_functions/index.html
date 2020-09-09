@@ -317,6 +317,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -415,18 +423,18 @@ the repsonse is invalid.</p>
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='hello world', validate=V.response_type(float))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">response_type</span><span class="p">(</span><span class="nb">float</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter a number.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter a number.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidaterequire">hemlock.functions.validate.<strong>require</strong></h2>
 <p class="func-header">
@@ -449,18 +457,18 @@ inpt.error
 </table>
 
 <h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response=None, validate=V.require())
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">require</span><span class="p">())</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please respond to this question.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please respond to this question.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidateis_in">hemlock.functions.validate.<strong>is_in</strong></h2>
 <p class="func-header">
@@ -491,18 +499,18 @@ inpt.error
 </table>
 
 <h4 id="examples_2">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='earth', validate=V.is_in(('wind', 'fire')))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;earth&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">is_in</span><span class="p">((</span><span class="s1">&#39;wind&#39;</span><span class="p">,</span> <span class="s1">&#39;fire&#39;</span><span class="p">)))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter wind or fire.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter wind or fire.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidateis_not_in">hemlock.functions.validate.<strong>is_not_in</strong></h2>
 <p class="func-header">
@@ -534,21 +542,21 @@ responses.</p>
 </table>
 
 <h4 id="examples_3">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(
-    response='earth',
-    validate=V.is_not_in(('earth', 'wind', 'fire'))
-)
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span>
+    <span class="n">response</span><span class="o">=</span><span class="s1">&#39;earth&#39;</span><span class="p">,</span>
+    <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">is_not_in</span><span class="p">((</span><span class="s1">&#39;earth&#39;</span><span class="p">,</span> <span class="s1">&#39;wind&#39;</span><span class="p">,</span> <span class="s1">&#39;fire&#39;</span><span class="p">))</span>
+<span class="p">)</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please do not enter earth, wind, or fire.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please do not enter earth, wind, or fire.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidatemax_val">hemlock.functions.validate.<strong>max_val</strong></h2>
 <p class="func-header">
@@ -579,18 +587,18 @@ inpt.error
 </table>
 
 <h4 id="examples_4">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='101', validate=V.max_val(100))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;101&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">max_val</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter a response less than 100.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter a response less than 100.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidatemin_val">hemlock.functions.validate.<strong>min_val</strong></h2>
 <p class="func-header">
@@ -621,18 +629,18 @@ inpt.error
 </table>
 
 <h4 id="examples_5">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='-1', validate=V.min_val(0))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;-1&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">min_val</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter a response greater than 0.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter a response greater than 0.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidaterange_val">hemlock.functions.validate.<strong>range_val</strong></h2>
 <p class="func-header">
@@ -667,18 +675,18 @@ inpt.error
 </table>
 
 <h4 id="examples_6">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='101', validate=V.range_val(0, 100))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;101&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">range_val</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter a response between 0 and 100.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter a response between 0 and 100.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidateexact_len">hemlock.functions.validate.<strong>exact_len</strong></h2>
 <p class="func-header">
@@ -707,18 +715,18 @@ choices selected.</p>
 </table>
 
 <h4 id="examples_7">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='hello world', validate=V.exact_len(5))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">exact_len</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter exactly 5 characters.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter exactly 5 characters.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidatemax_len">hemlock.functions.validate.<strong>max_len</strong></h2>
 <p class="func-header">
@@ -750,18 +758,18 @@ choices selected.</p>
 <p>A response of <code>None</code> is assumed to satisfy the max length validation. Use
 <code>Validate.require</code> to require a response that is not <code>None</code>.</p>
 <h4 id="examples_8">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='hello world', validate=V.max_len(5))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">max_len</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter at most 5 characters.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter at most 5 characters.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidatemin_len">hemlock.functions.validate.<strong>min_len</strong></h2>
 <p class="func-header">
@@ -790,18 +798,18 @@ choices selected.</p>
 </table>
 
 <h4 id="examples_9">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='hello world', validate=V.min_len(15))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">min_len</span><span class="p">(</span><span class="mi">15</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter at least 15 characters.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter at least 15 characters.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidaterange_len">hemlock.functions.validate.<strong>range_len</strong></h2>
 <p class="func-header">
@@ -834,18 +842,18 @@ choices selected.</p>
 </table>
 
 <h4 id="examples_10">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='hello world', validate=V.range_len(5, 10))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">range_len</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter 5 to 10 characters.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter 5 to 10 characters.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidateexact_words">hemlock.functions.validate.<strong>exact_words</strong></h2>
 <p class="func-header">
@@ -872,18 +880,18 @@ inpt.error
 </table>
 
 <h4 id="examples_11">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='hello world', validate=V.exact_words(1))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">exact_words</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter exactly 1 word.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter exactly 1 word.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidatemax_words">hemlock.functions.validate.<strong>max_words</strong></h2>
 <p class="func-header">
@@ -910,18 +918,18 @@ inpt.error
 </table>
 
 <h4 id="examples_12">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='hello world', validate=V.max_words(1))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">max_words</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter at most 1 word.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter at most 1 word.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidatemin_words">hemlock.functions.validate.<strong>min_words</strong></h2>
 <p class="func-header">
@@ -948,18 +956,18 @@ inpt.error
 </table>
 
 <h4 id="examples_13">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='hello world', validate=V.min_words(3))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">min_words</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter at least 3 words.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter at least 3 words.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidaterange_words">hemlock.functions.validate.<strong>range_words</strong></h2>
 <p class="func-header">
@@ -990,18 +998,18 @@ inpt.error
 </table>
 
 <h4 id="examples_14">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='hello world', validate=V.range_words(3, 5))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">range_words</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter between 3 and 5 words.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter between 3 and 5 words.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidateexact_decimals">hemlock.functions.validate.<strong>exact_decimals</strong></h2>
 <p class="func-header">
@@ -1028,18 +1036,18 @@ inpt.error
 </table>
 
 <h4 id="examples_15">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='1', validate=V.exact_decimals(2))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">exact_decimals</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter a number with exactly 2 decimals.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter a number with exactly 2 decimals.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidatemax_decimals">hemlock.functions.validate.<strong>max_decimals</strong></h2>
 <p class="func-header">
@@ -1066,18 +1074,18 @@ inpt.error
 </table>
 
 <h4 id="examples_16">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='1.123', validate=V.max_decimals(2))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;1.123&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">max_decimals</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter a number with at most 2 decimals.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter a number with at most 2 decimals.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidatemin_decimals">hemlock.functions.validate.<strong>min_decimals</strong></h2>
 <p class="func-header">
@@ -1104,18 +1112,18 @@ inpt.error
 </table>
 
 <h4 id="examples_17">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='1', validate=V.min_decimals(2))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">min_decimals</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter a number with at least 2 decimals.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter a number with at least 2 decimals.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidaterange_decimals">hemlock.functions.validate.<strong>range_decimals</strong></h2>
 <p class="func-header">
@@ -1146,18 +1154,18 @@ inpt.error
 </table>
 
 <h4 id="examples_18">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='1.123', validate=V.range_decimals(0, 2))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;1.123&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">range_decimals</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter a number with 0 to 2 decimals.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter a number with 0 to 2 decimals.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidatematch">hemlock.functions.validate.<strong>match</strong></h2>
 <p class="func-header">
@@ -1184,18 +1192,18 @@ inpt.error
 </table>
 
 <h4 id="examples_19">Examples</h4>
-<pre><code class="python">from hemlock import Input, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-inpt = Input(response='hello world', validate=V.match('goodbye *'))
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;goodbye *&#39;</span><span class="p">))</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please enter a response with the correct pattern.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please enter a response with the correct pattern.
+</code></pre></div>
 
 <h2 id="hemlockfunctionsvalidatecorrect_choices">hemlock.functions.validate.<strong>correct_choices</strong></h2>
 <p class="func-header">
@@ -1222,23 +1230,23 @@ inpt.error
 </table>
 
 <h4 id="examples_20">Examples</h4>
-<pre><code class="python">from hemlock import Check, Validate as V, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Check</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-check = Check(
-    '&lt;p&gt;Select the correct choice.&lt;/p&gt;',
-    ['correct', 'incorrect', 'also incorrect'],
-    validate=V.correct_choices('correct'),
-)
-check.response = check.choices[1]
-check._validate()
-check.error
-</code></pre>
+<span class="n">check</span> <span class="o">=</span> <span class="n">Check</span><span class="p">(</span>
+    <span class="s1">&#39;&lt;p&gt;Select the correct choice.&lt;/p&gt;&#39;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s1">&#39;correct&#39;</span><span class="p">,</span> <span class="s1">&#39;incorrect&#39;</span><span class="p">,</span> <span class="s1">&#39;also incorrect&#39;</span><span class="p">],</span>
+    <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">correct_choices</span><span class="p">(</span><span class="s1">&#39;correct&#39;</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">check</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">check</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">check</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">check</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Please select the correct choice.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Please select the correct choice.
+</code></pre></div>
               
             </div>
           </div>

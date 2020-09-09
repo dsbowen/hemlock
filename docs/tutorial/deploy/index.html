@@ -207,6 +207,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -261,8 +269,8 @@
 <p>Before we deploy our project 'for real', we're going to deploy to a staging environment using free heroku resources and run our debugger one more time. Why? Because the production environment is subtly different from your local environment, which can cause problems in very rare cases. The staging environment is virtually identical to the production environment, so if things go well in staging, our app should run smoothly in production.</p>
 <h3 id="deploying-your-app-in-staging">Deploying your app in staging</h3>
 <p>Deploying your application is as easy as:</p>
-<pre><code class="bash">$ hlk deploy
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk deploy
+</code></pre></div>
 
 <p>You'll be redirected to a page on the heroku website. If this is your first time deploying an app, heroku will prompt you to connect to your github account.</p>
 <p>Once you're on the heroku page, make the following modifications to your application configuration:</p>
@@ -274,55 +282,55 @@
 <p>Click 'Deploy app' and watch the magic happen. In 2-3 minutes, your survey will be online.</p>
 <h3 id="running-the-debugger">Running the debugger</h3>
 <p>In the last part of the tutorial, we ran our debugger in the local environment. Now, we're going to run it in staging. First, let's hook up our project to our online application:</p>
-<pre><code class="bash">$ heroku git:remote -a &lt;my-app-name&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ heroku git:remote -a &lt;my-app-name&gt;
+</code></pre></div>
 
 <p>Replacing <code>&lt;my-app-name&gt;</code> with your application name. For example, if your application is named <code>my-first-project235</code>, you'd enter:</p>
-<pre><code class="bash">$ heroku git:remote -a my-first-project235
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ heroku git:remote -a my-first-project235
+</code></pre></div>
 
 <p>Now, run the debugger:</p>
-<pre><code class="bash">$ hlk debug --staging
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk debug --staging
+</code></pre></div>
 
 <p>This is almost exactly what we did in the previous part of the tutorial. The difference is that we added the <code>--staging</code> flag, indicating that we're running the debugger in the staging environment.</p>
 <p>Where's the webdriver? In production, Chromedriver needs to run in 'headless' mode, meaning you won't be able to see the debugger going through the survey in your browser. You will, however, see it going through pages in the terminal window.</p>
 <p>Hopefully the debugger runs smoothly. If it doesn't, fix your code, update your application, and run the debugger again. Update your application with:</p>
-<pre><code class="bash">$ hlk update
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk update
+</code></pre></div>
 
 <p>Once you're satisfied that your app is as error-free as possible, we'll destroy the staging version to 'make room' for the production version:</p>
-<pre><code class="bash">$ heroku apps:destroy
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ heroku apps:destroy
+</code></pre></div>
 
 <h2 id="deploying-your-application">Deploying your application</h2>
 <p>We're finally ready to deploy our application <em>for real</em>. This is basically the same process as deploying to the staging environment, with a few small changes.</p>
 <p>First, open <code>app.json</code>:</p>
-<pre><code class="bash">$ code app.json
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ code app.json
+</code></pre></div>
 
 <p>We're going to modify this to give us more powerful compute resources. At the top of the file, we'll change our addons and formation from:</p>
-<pre><code class="json">{
-    &quot;addons&quot;: [&quot;heroku-postgresql:hobby-dev&quot;],
-    &quot;formation&quot;: {
-        &quot;web&quot;: {&quot;quantity&quot;: 1, &quot;size&quot;: &quot;free&quot;}
-    },
-    ...
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+    <span class="nt">&quot;addons&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;heroku-postgresql:hobby-dev&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;formation&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;web&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;quantity&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nt">&quot;size&quot;</span><span class="p">:</span> <span class="s2">&quot;free&quot;</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="err">...</span>
+</code></pre></div>
 
 <p>to:</p>
-<pre><code class="json">{
-    &quot;addons&quot;: [&quot;heroku-postgresql:standard-0&quot;],
-    &quot;formation&quot;: {
-        &quot;web&quot;: {&quot;quantity&quot;: 10, &quot;size&quot;: &quot;standard-1x&quot;}
-    },
-    ...
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+    <span class="nt">&quot;addons&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;heroku-postgresql:standard-0&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;formation&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;web&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;quantity&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="nt">&quot;size&quot;</span><span class="p">:</span> <span class="s2">&quot;standard-1x&quot;</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="err">...</span>
+</code></pre></div>
 
 <p>Save <code>app.json</code>.</p>
 <p>Let's deploy our app and set our configuration variables like we did before:</p>
-<pre><code class="bash">$ hlk deploy
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk deploy
+</code></pre></div>
 
 <ol>
 <li>Enter a name for your application.</li>
@@ -332,8 +340,8 @@
 </ol>
 <p>Like before, click 'Deploy app' at the bottom of the page.</p>
 <p>Your app is now online, ready to send to the world! Don't forget to download your data, and destroy your application when you're finished:</p>
-<pre><code class="bash">$ heroku apps:destroy -a &lt;my-app-name&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ heroku apps:destroy -a &lt;my-app-name&gt;
+</code></pre></div>
 
 <h2 id="cost">Cost</h2>
 <p>How much will it cost me to play around with my app in production? Answer: $0.10. Calculation: This formation gives us a standard-0 database ($50/mo) and 10 standard-1x 'dynos' (like servers, $25/mo/dyno * 10 dynos = $250/mo). That's $300/mo total. Heroku prorates by the second, meaning that if you mess around with the app for 15 minutes, you'll be charged $300/mo * 1 mo/30 days * 1 day/24 hours * 1 hour/60 min * 15 min = $0.10. </p>

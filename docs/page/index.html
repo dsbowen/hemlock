@@ -213,6 +213,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -597,12 +605,12 @@ displays to the participant in index order.</p>
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Page, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-Page(Label('&lt;p&gt;Hello World&lt;/p&gt;')).preview()
-</code></pre>
+<span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Hello World&lt;/p&gt;&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <h4 id="methods">Methods</h4>
 <p class="func-header">
@@ -708,8 +716,8 @@ Page(Label('&lt;p&gt;Hello World&lt;/p&gt;')).preview()
 <h4 id="notes_1">Notes</h4>
 <p>If running in WSL, first specify the distribution as an environment
 variable. For example, if running in Ubuntu:</p>
-<pre><code class="bash">$ export WSL_DISTRIBUTION=Ubuntu
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">export</span> <span class="nv">WSL_DISTRIBUTION</span><span class="o">=</span>Ubuntu
+</code></pre></div>
 
 <p>This method does not run the compile functions.</p>
 <p class="func-header">

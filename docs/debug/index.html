@@ -203,6 +203,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -280,13 +288,13 @@ entering random responses.</p>
 <p>If your app is running on a different local host port than 5000, set the url
 root as an environment variable before opening the python shell in your second
 terminal:</p>
-<pre><code>$ export ULR_ROOT=http://localhost:xxxx
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ export ULR_ROOT=http://localhost:xxxx
+</code></pre></div>
 
 <p>If your application import is not <code>app.app</code>, set the import as an enviornment
 variable before opening the python shell in your second terminal:</p>
-<pre><code>$ export APP_IMPORT=path.to.app
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ export APP_IMPORT=path.to.app
+</code></pre></div>
 
 <p>AI participants run in batches of specified sizes. For local debugging, I
 recommend a batch size of 1. For production debugging, you can safely go up
@@ -294,45 +302,45 @@ to 3.</p>
 <h4 id="examples">Examples</h4>
 <p>This example debugs an app locally.</p>
 <p>In <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, Page, Label, route
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">route</span>
 
-@route('/survey')
-def start():
-    x = 1/0
-    return Branch(Page(Label('&lt;p&gt;Hello World&lt;/p&gt;'), terminal=True))
-</code></pre>
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/survey&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">0</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span><span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Hello World&lt;/p&gt;&#39;</span><span class="p">),</span> <span class="n">terminal</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</code></pre></div>
 
 <p>In <code>app.py</code>:</p>
-<pre><code class="python">import survey
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">survey</span>
 
-from hemlock import create_app
+<span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">create_app</span>
 
-app = create_app()
+<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
 
-if __name__ == '__main__':
-    from hemlock.app import socketio
-    socketio.run(app)
-</code></pre>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">hemlock.app</span> <span class="kn">import</span> <span class="n">socketio</span>
+    <span class="n">socketio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</code></pre></div>
 
 <p>Open a terminal and run the app with:</p>
-<pre><code>$ python app.py $ or python3 app.py
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ python app.py $ or python3 app.py
+</code></pre></div>
 
 <p>Open a second terminal and open the python shell with:</p>
-<pre><code>$ python # or python3
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ python # or python3
+</code></pre></div>
 
 <p>Run the debugger in the second terminal:</p>
-<pre><code>&gt;&gt;&gt; from hemlock.debug import AIParticipant, debug
+<div class="highlight"><pre><span></span><code>&gt;&gt;&gt; from hemlock.debug import AIParticipant, debug
 &gt;&gt;&gt; debug()
-</code></pre>
+</code></pre></div>
 
 <p>The debugger will open a chromedriver and attempt to complete the survey. The
 first terminal window will display this error:</p>
-<pre><code>File &quot;/home/&lt;username&gt;/hemlock/survey.py&quot;, line 9, in start
+<div class="highlight"><pre><span></span><code>File &quot;/home/&lt;username&gt;/hemlock/survey.py&quot;, line 9, in start
     x = 1/0
 ZeroDivisionError: division by zero
-</code></pre>
+</code></pre></div>
 
 <h2 id="hemlockdebugdebug">hemlock.debug.<strong>debug</strong></h2>
 <p class="func-header">

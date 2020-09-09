@@ -203,6 +203,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -254,36 +262,36 @@
 <p>We often need to make sure participants are entering the right kind of answer, whether it's typing the same password twice, answering a comprehension check by clicking on the correct choice, or entering a number instead of a word.</p>
 <h2 id="basic-syntax">Basic syntax</h2>
 <p>Open your jupyter notebook and run the following:</p>
-<pre><code class="python">from hemlock import Input, Validate as V
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span>
 
-inpt = Input(validate=V.require())
-inpt.validate
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">require</span><span class="p">())</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">validate</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>[&lt;Validate 1&gt;]
-</code></pre>
+<div class="highlight"><pre><span></span><code>[&lt;Validate 1&gt;]
+</code></pre></div>
 
 <p>You can add validate functions to a page or question by setting its <code>validate</code> attribute or passing a <code>validate</code> argument to its constructor. Validate functions run when a participant attempts to submit a page. If the participant's response is valid, the function returns <code>None</code>, allowing the participant to continue the survey. If the participant's response is invalid, the function returns an error message.</p>
 <p>As its name indicates, the validate function requires the participant to respond to the input question. By default, the input question has no response. It also has no error message. We can see this as follows:</p>
-<pre><code class="python">(
-    'The input has no response or error message', 
-    not inpt.response and not inpt.error
-)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">(</span>
+    <span class="s1">&#39;The input has no response or error message&#39;</span><span class="p">,</span> 
+    <span class="ow">not</span> <span class="n">inpt</span><span class="o">.</span><span class="n">response</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+<span class="p">)</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>('The input has no response or error message', True)
-</code></pre>
+<div class="highlight"><pre><span></span><code>(&#39;The input has no response or error message&#39;, True)
+</code></pre></div>
 
 <p>Now, let's run the validate function. Because the input question has no response, the validate function will return an error message. This error message is stored in the input question's <code>error</code> attribute:</p>
-<pre><code class="python">inpt._validate()
-inpt.error
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>'Please respond to this question.'
-</code></pre>
+<div class="highlight"><pre><span></span><code>&#39;Please respond to this question.&#39;
+</code></pre></div>
 
 <p><strong>Notes:</strong></p>
 <ol>
@@ -293,97 +301,97 @@ inpt.error
 <h2 id="custom-validation">Custom validation</h2>
 <p>This is a good start, but what happens when someone enters a nonsense response for date of birth?</p>
 <p>For this, we're going to need a custom validate function. Let's see how to do this in our notebook:</p>
-<pre><code class="python">from datetime import datetime
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
-@V.register
-def date_format(inpt):
-    try:
-        # try to convert to a datetime object
-        datetime.strptime(inpt.response, '%m/%d/%Y')
-    except:
-        # if this fails, the participant entered an invalid response
-        return '&lt;p&gt;Format your date of birth as mm/dd/yyyy.&lt;/p&gt;'
+<span class="nd">@V</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">date_format</span><span class="p">(</span><span class="n">inpt</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># try to convert to a datetime object</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">inpt</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">/%Y&#39;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="c1"># if this fails, the participant entered an invalid response</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;p&gt;Format your date of birth as mm/dd/yyyy.&lt;/p&gt;&#39;</span>
 
-inpt = Input(validate=V.date_format())
-inpt.response = '''
-I, George Thaddeus Thatch the Third, was born in the first fortnight of August 1792.
-'''
-inpt._validate()
-inpt.error
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">date_format</span><span class="p">())</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">I, George Thaddeus Thatch the Third, was born in the first fortnight of August 1792.</span>
+<span class="s1">&#39;&#39;&#39;</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+<span class="n">inpt</span><span class="o">.</span><span class="n">error</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>Format your date of birth as mm/dd/yyyy.
-</code></pre>
+<div class="highlight"><pre><span></span><code>Format your date of birth as mm/dd/yyyy.
+</code></pre></div>
 
 <h2 id="code-explanation">Code explanation</h2>
 <p>First, we import <code>datetime</code>, a native python package for handling dates and times.</p>
 <p>Next, we register a new validate function with the <code>@V.register</code> decorator. The validate function tries to convert the input question's response to a <code>datetime</code> object and returns an error message if this fails.</p>
 <p>It's worth re-emphasizing that <code>V.my_function</code> does <em>not</em> return the result of <code>my_function</code>. <code>V.my_function</code> returns <code>&lt;Validate x&gt;</code>, which will call <code>my_function</code> later, when the participant attempts to submit the page.</p>
 <p>Note that <code>date_format</code> takes an input question as its argument. In general, validate functions take their 'parent' (the branch, page, or question to which they belong) as their first argument. The arguments passed to <code>V.my_function</code> will be passed to <code>my_function</code> <em>after</em> the parent. For example:</p>
-<pre><code class="python">@V.register
-def my_function(parent, my_argument):
-    print('My parent is:', parent)
-    print('My argument is:', my_argument)
+<div class="highlight"><pre><span></span><code><span class="nd">@V</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">my_argument</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;My parent is:&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;My argument is:&#39;</span><span class="p">,</span> <span class="n">my_argument</span><span class="p">)</span>
 
-inpt = Input(validate=V.my_function('hello world'))
-inpt
-</code></pre>
+<span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">my_function</span><span class="p">(</span><span class="s1">&#39;hello world&#39;</span><span class="p">))</span>
+<span class="n">inpt</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>&lt;Input 1&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>&lt;Input 1&gt;
+</code></pre></div>
 
 <p>In:</p>
-<pre><code class="python">inpt._validate()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">inpt</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>My parent is: &lt;Input 1&gt;
+<div class="highlight"><pre><span></span><code>My parent is: &lt;Input 1&gt;
 My argument is: hello world
-</code></pre>
+</code></pre></div>
 
 <p>The same pattern holds for the other function models (submit, compile, and navigate functions) we will see in the coming sections.</p>
 <h2 id="validation-in-our-app">Validation in our app</h2>
 <p>Now that we've seen how to add validation in our notebook, let's add it to our app.</p>
 <p>In <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, Check, Input, Label, Page, Range, Select, Validate as V, route
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Check</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Range</span><span class="p">,</span> <span class="n">Select</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">route</span>
 
-from datetime import datetime
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
-@route('/survey')
-def start():
-    return Branch(
-        Page(
-            Input(
-                '&lt;p&gt;Enter your date of birth.&lt;/p&gt;',
-                placeholder='mm/dd/yyyy',
-                var='DoB', data_rows=-1, 
-                validate=V.date_format()
-            ),
-            Check(
-                '&lt;p&gt;Indicate your gender.&lt;/p&gt;',
-                ['Male', 'Female', 'Other'],
-                var='Gender', data_rows=-1,
-                validate=V.require()
-            ),
-            # REST OF THE DEMOGRAPHICS PAGE HERE
-        ),
-        Page(
-            Label('&lt;p&gt;Thank you for completing the survey!&lt;/p&gt;'), 
-            terminal=True
-        )
-    )
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/survey&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Input</span><span class="p">(</span>
+                <span class="s1">&#39;&lt;p&gt;Enter your date of birth.&lt;/p&gt;&#39;</span><span class="p">,</span>
+                <span class="n">placeholder</span><span class="o">=</span><span class="s1">&#39;mm/dd/yyyy&#39;</span><span class="p">,</span>
+                <span class="n">var</span><span class="o">=</span><span class="s1">&#39;DoB&#39;</span><span class="p">,</span> <span class="n">data_rows</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> 
+                <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">date_format</span><span class="p">()</span>
+            <span class="p">),</span>
+            <span class="n">Check</span><span class="p">(</span>
+                <span class="s1">&#39;&lt;p&gt;Indicate your gender.&lt;/p&gt;&#39;</span><span class="p">,</span>
+                <span class="p">[</span><span class="s1">&#39;Male&#39;</span><span class="p">,</span> <span class="s1">&#39;Female&#39;</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">],</span>
+                <span class="n">var</span><span class="o">=</span><span class="s1">&#39;Gender&#39;</span><span class="p">,</span> <span class="n">data_rows</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">require</span><span class="p">()</span>
+            <span class="p">),</span>
+            <span class="c1"># REST OF THE DEMOGRAPHICS PAGE HERE</span>
+        <span class="p">),</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Thank you for completing the survey!&lt;/p&gt;&#39;</span><span class="p">),</span> 
+            <span class="n">terminal</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 
-@V.register
-def date_format(inpt):
-    try:
-        # try to convert to a datetime object
-        datetime.strptime(inpt.response, '%m/%d/%Y')
-    except:
-        # if this fails, the participant entered an invalid response
-        return '&lt;p&gt;Format your date of birth as mm/dd/yyyy.&lt;/p&gt;'
-</code></pre>
+<span class="nd">@V</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">date_format</span><span class="p">(</span><span class="n">inpt</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># try to convert to a datetime object</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">inpt</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">/%Y&#39;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="c1"># if this fails, the participant entered an invalid response</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;p&gt;Format your date of birth as mm/dd/yyyy.&lt;/p&gt;&#39;</span>
+</code></pre></div>
 
 <p>Run the app again and try to continue past the demographics page; enter an invalid date of birth, leave some questions blank, and see your validation at work.</p>
 <h2 id="multiple-validate-functions">Multiple validate functions</h2>

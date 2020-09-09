@@ -195,6 +195,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -240,61 +248,61 @@
 <p>Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.8/blackboard.ipynb" target="_blank"><code>blackboard.ipynb</code></a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.8/survey.py" target="_blank"><code>survey.py</code></a> files should look like at the end of this part of the tutorial.</p>
 <h2 id="basic-syntax">Basic syntax</h2>
 <p>Open your jupyter notebook and run the following:</p>
-<pre><code class="python">from hemlock import Participant
-from hemlock.tools import Assigner
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Participant</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">Assigner</span>
 
-part = Participant.gen_test_participant()
-conditions = {'Treatment': (0,1), 'Level': ('low','med','high')}
-assigner = Assigner(conditions)
-assigner.next()
-</code></pre>
+<span class="n">part</span> <span class="o">=</span> <span class="n">Participant</span><span class="o">.</span><span class="n">gen_test_participant</span><span class="p">()</span>
+<span class="n">conditions</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Treatment&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;Level&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;low&#39;</span><span class="p">,</span><span class="s1">&#39;med&#39;</span><span class="p">,</span><span class="s1">&#39;high&#39;</span><span class="p">)}</span>
+<span class="n">assigner</span> <span class="o">=</span> <span class="n">Assigner</span><span class="p">(</span><span class="n">conditions</span><span class="p">)</span>
+<span class="n">assigner</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>{'Treatment': 0, 'Level': 'low'}
-</code></pre>
+<div class="highlight"><pre><span></span><code>{&#39;Treatment&#39;: 0, &#39;Level&#39;: &#39;low&#39;}
+</code></pre></div>
 
 <p>The <code>Assigner</code> randomly and evenly assigns participants to conditions, and easily handles factorial designs. It automatically records the assignment in the participant's embedded data:</p>
-<pre><code class="python">[(e.var, e.data) for e in part.embedded]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">[(</span><span class="n">e</span><span class="o">.</span><span class="n">var</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">part</span><span class="o">.</span><span class="n">embedded</span><span class="p">]</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>[('Treatment', 0), ('Level', 'low')]
-</code></pre>
+<div class="highlight"><pre><span></span><code>[(&#39;Treatment&#39;, 0), (&#39;Level&#39;, &#39;low&#39;)]
+</code></pre></div>
 
 <h2 id="random-assignment-in-our-app">Random assignment in our app</h2>
 <p>In <code>survey.py</code>:</p>
-<pre><code class="python">...
-from hemlock.tools import Assigner, comprehension_check, join
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">Assigner</span><span class="p">,</span> <span class="n">comprehension_check</span><span class="p">,</span> <span class="n">join</span>
 
-from datetime import datetime
-from random import randint
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 
-# the number of rounds participants play
-N_ROUNDS = 5
-# the amount of money split
-POT = 20
+<span class="c1"># the number of rounds participants play</span>
+<span class="n">N_ROUNDS</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="c1"># the amount of money split</span>
+<span class="n">POT</span> <span class="o">=</span> <span class="mi">20</span>
 
-assigner = Assigner({'Proposer': (0, 1)})
+<span class="n">assigner</span> <span class="o">=</span> <span class="n">Assigner</span><span class="p">({</span><span class="s1">&#39;Proposer&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)})</span>
 
-...
+<span class="o">...</span>
 
-@N.register
-def ultimatum_game(start_branch=None):
-    proposer = assigner.next()['Proposer']
-    return Branch(
-        *comprehension_check(
-            # COMPREHENSION CHECK ARGUMENTS HERE
-        ),
-        Page(
-            Label(
-                '''
-                &lt;p&gt;You are about to play an ultimatum game as a &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;
-                '''.format('proposer' if proposer else 'responder')
-            ),
-            terminal=True
-        )
-    )
-</code></pre>
+<span class="nd">@N</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">ultimatum_game</span><span class="p">(</span><span class="n">start_branch</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">proposer</span> <span class="o">=</span> <span class="n">assigner</span><span class="o">.</span><span class="n">next</span><span class="p">()[</span><span class="s1">&#39;Proposer&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">comprehension_check</span><span class="p">(</span>
+            <span class="c1"># COMPREHENSION CHECK ARGUMENTS HERE</span>
+        <span class="p">),</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Label</span><span class="p">(</span>
+                <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">                &lt;p&gt;You are about to play an ultimatum game as a &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;</span>
+<span class="sd">                &#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;proposer&#39;</span> <span class="k">if</span> <span class="n">proposer</span> <span class="k">else</span> <span class="s1">&#39;responder&#39;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">terminal</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div>
 
 <p>Run your app and pass the comprehenion check to see which condition you've been assigned to.</p>
 <h2 id="summary">Summary</h2>

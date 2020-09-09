@@ -60,12 +60,6 @@
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Checklist</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#initialize">Initialize</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#additional-steps-if-using-git-bash-on-windows">Additional steps if using git bash on Windows</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#additional-steps-if-using-wsl">Additional steps if using WSL</a>
-    </li>
-        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#edit">Edit</a>
     </li>
@@ -201,6 +195,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -240,69 +242,72 @@
 <p>This is a checklist of the steps involved in initializing, editing, and deploying a hemlock project.</p>
 <p>This will make sense after you <a href="../tutorial/intro/">go through the tutorial</a>.</p>
 <h2 id="initialize">Initialize</h2>
-<pre><code class="bash">$ hlk init &lt;my-project-name&gt; &lt;my-github-username&gt; &lt;my-github-token&gt;
-$ cd &lt;my-project-name&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk init &lt;my-project-name&gt; &lt;my-github-username&gt; &lt;my-github-token&gt;
+$ <span class="nb">cd</span> &lt;my-project-name&gt;
+</code></pre></div>
 
-<h4 id="additional-steps-if-using-git-bash-on-windows">Additional steps if using git bash on Windows</h4>
-<pre><code class="bash">$ . hemlock-venv/scripts/activate
-$ pip install -r local-requirements.txt
-</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Additional steps for Windows git bash</p>
+<div class="highlight"><pre><span></span><code>hlk setup-venv &lt;my-project-name&gt;
+</code></pre></div>
 
-<h4 id="additional-steps-if-using-wsl">Additional steps if using WSL</h4>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Additional steps for WSL</p>
 <p>Open <code>env.yaml</code> and add the following line:</p>
-<pre><code class="yaml">WSL_DISTRIBUTION: Ubuntu-20.04 # or other WSL distribution
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">WSL_DISTRIBUTION</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Ubuntu-20.04</span> <span class="c1"># or other WSL distribution</span>
+</code></pre></div>
 
+</div>
 <h2 id="edit">Edit</h2>
 <p>Iterate quickly on the blackboard:</p>
-<pre><code class="bash">$ jupyter notebook # open blackboard.ipynb, Kernel &gt;&gt; Change kernel &gt;&gt; &lt;my-project-name&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ jupyter notebook <span class="c1"># open blackboard.ipynb, Kernel &gt;&gt; Change kernel &gt;&gt; &lt;my-project-name&gt;</span>
+</code></pre></div>
 
 <p>Edit survey files:</p>
-<pre><code class="bash">$ code survey.py
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ code survey.py
+</code></pre></div>
 
 <p>Run locally:</p>
-<pre><code class="bash">$ hlk serve
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk serve
+</code></pre></div>
 
 <p>Debug:</p>
-<pre><code class="bash">$ hlk debug
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk debug
+</code></pre></div>
 
 <h2 id="deploy">Deploy</h2>
 <p>Deploy to and debug in staging:</p>
-<pre><code class="bash">$ hlk deploy # make sure to set the PASSWORD and URL_ROOT environment variables
+<div class="highlight"><pre><span></span><code>$ hlk deploy <span class="c1"># make sure to set the PASSWORD and URL_ROOT environment variables</span>
 $ heroku git:remote -a &lt;my-app-name&gt;
 $ hlk debug --staging
-</code></pre>
+</code></pre></div>
 
 <p>Destroy the staging app:</p>
-<pre><code class="bash">$ heroku apps:destroy
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ heroku apps:destroy
+</code></pre></div>
 
 <p>Change <code>app.json</code> from:</p>
-<pre><code class="json">{
-    &quot;addons&quot;: [&quot;heroku-postgresql:hobby-dev&quot;],
-    &quot;formation&quot;: {
-        &quot;web&quot;: {&quot;quantity&quot;: 1, &quot;size&quot;: &quot;free&quot;}
-    },
-    ...
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+    <span class="nt">&quot;addons&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;heroku-postgresql:hobby-dev&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;formation&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;web&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;quantity&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nt">&quot;size&quot;</span><span class="p">:</span> <span class="s2">&quot;free&quot;</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="err">...</span>
+</code></pre></div>
 
 <p>to:</p>
-<pre><code class="json">{
-    &quot;addons&quot;: [&quot;heroku-postgresql:standard-0&quot;],
-    &quot;formation&quot;: {
-        &quot;web&quot;: {&quot;quantity&quot;: 10, &quot;size&quot;: &quot;standard-1x&quot;}
-    },
-    ...
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+    <span class="nt">&quot;addons&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;heroku-postgresql:standard-0&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;formation&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;web&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;quantity&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="nt">&quot;size&quot;</span><span class="p">:</span> <span class="s2">&quot;standard-1x&quot;</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="err">...</span>
+</code></pre></div>
 
 <p>Deploy in production:</p>
-<pre><code class="bash">hlk deploy # set PASSWORD, URL_ROOT, and DEBUG_FUNCTIONS
-</code></pre>
+<div class="highlight"><pre><span></span><code>hlk deploy <span class="c1"># set PASSWORD, URL_ROOT, and DEBUG_FUNCTIONS</span>
+</code></pre></div>
               
             </div>
           </div>

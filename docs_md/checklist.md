@@ -11,20 +11,17 @@ $ hlk init <my-project-name> <my-github-username> <my-github-token>
 $ cd <my-project-name>
 ```
 
-#### Additional steps if using git bash on Windows
+!!! note "Additional steps for Windows git bash"
+    ```bash
+    hlk setup-venv <my-project-name>
+    ```
 
-```bash
-$ . hemlock-venv/scripts/activate
-$ pip install -r local-requirements.txt
-```
+!!! note "Additional steps for WSL"
+    Open `env.yaml` and add the following line:
 
-#### Additional steps if using WSL
-
-Open `env.yaml` and add the following line:
-
-```yaml
-WSL_DISTRIBUTION: Ubuntu-20.04 # or other WSL distribution
-```
+    ```yaml
+    WSL_DISTRIBUTION: Ubuntu-20.04 # or other WSL distribution
+    ```
 
 ## Edit
 

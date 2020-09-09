@@ -49,49 +49,47 @@ $ cd my-first-project
 $ ls
 ```
 
-**Note.** You will only have to run `hlk init` once per project.
+!!! note
+    You will only have to run `hlk init` once per project.
 
-**You may see an error message** starting with *Cannot uninstall PyYAML*. To fix this, run:
+!!! error
+    You may see an error message starting with *Cannot uninstall PyYAML*. To fix this, run:
 
-```bash
-$ pip install --ignore-installed pyyaml
-```
+    ```bash
+    $ pip install --ignore-installed pyyaml
+    ```
 
-#### If using git bash on Windows
+!!! note "If using Windows git bash"
+    After changing into your project directory, set up your virtual environment:
 
-If using git bash on Windows, you'll need to activate your virtual environment and install the project requirements:
+    ```bash
+    $ hlk setup-venv my-first-project
+    ```
 
-```bash
-$ cd my-first-project
-$ . hemlock-venv/scripts/activate
-$ pip install -r local-requirements.txt
-```
+!!! note "If using WSL"
+    You'll need to specify your distribution as an environment variable. Open the file which sets your local environment variables:
 
-#### If using WSL
+    ```bash
+    $ code env.yaml
+    ```
 
-If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable. Open a file which specifies your local environment variables:
+    And add the following line:
 
-```bash
-$ code env.yaml
-```
+    ```yaml
+    WSL_DISTRIBUTION: Ubuntu-20.04 # or other WSL distribution
+    ```
 
-And add the following line:
+    If you're not sure which distribution you have, run:
 
-```yaml
-WSL_DISTRIBUTION: Ubuntu-20.04 # or other WSL distribution
-```
+    ```bash
+    $ explorer.exe .
+    ```
 
-If you're not sure which distribution you have, run:
+    This will open a file explorer. At the top of the file explorer, you'll see:
 
-```bash
-$ explorer.exe .
-```
+    > `<my-wsl-distribution>\home\<my-wsl-username>\my-first-project`
 
-This will open a file explorer. At the top of the file explorer, you'll see:
-
-> `<my-wsl-distribution>\home\<my-wsl-username>\my-first-project`
-
-We're looking for `<my-wsl-distribution>`.
+    We're looking for `<my-wsl-distribution>`.
 
 ## Preview a page in jupyter notebook
 

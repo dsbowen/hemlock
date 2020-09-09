@@ -189,6 +189,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -288,13 +296,13 @@
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Compile as C, Page, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Compile</span> <span class="k">as</span> <span class="n">C</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-p = Page(error='Error message', compile=C.call_method('clear_error'))
-p.preview()._compile().preview()
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="s1">&#39;Error message&#39;</span><span class="p">,</span> <span class="nb">compile</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">call_method</span><span class="p">(</span><span class="s1">&#39;clear_error&#39;</span><span class="p">))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <h2 id="hemlockfunctionscompileclear_error">hemlock.functions.compile.<strong>clear_error</strong></h2>
 <p class="func-header">
@@ -317,13 +325,13 @@ p.preview()._compile().preview()
 </table>
 
 <h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock import Compile as C, Page, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Compile</span> <span class="k">as</span> <span class="n">C</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-p = Page(error='Error message', compile=C.clear_error())
-p.preview()._compile().preview()
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="s1">&#39;Error message&#39;</span><span class="p">,</span> <span class="nb">compile</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">clear_error</span><span class="p">())</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <h2 id="hemlockfunctionscompileclear_response">hemlock.functions.compile.<strong>clear_response</strong></h2>
 <p class="func-header">
@@ -346,13 +354,13 @@ p.preview()._compile().preview()
 </table>
 
 <h4 id="examples_2">Examples</h4>
-<pre><code class="python">from hemlock import Compile as C, Input, Page, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Compile</span> <span class="k">as</span> <span class="n">C</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-p = Page(Input(response='Hello World'), compile=C.clear_response())
-p.preview()._compile().preview()
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="s1">&#39;Hello World&#39;</span><span class="p">),</span> <span class="nb">compile</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">clear_response</span><span class="p">())</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <h2 id="hemlockfunctionscompileshuffle">hemlock.functions.compile.<strong>shuffle</strong></h2>
 <p class="func-header">
@@ -384,16 +392,16 @@ p.preview()._compile().preview()
 <p>If the object is a <code>hemlock.ChoiceQuestion</code>, the default shuffled
 attribute is its <code>choices</code>.</p>
 <h4 id="examples_3">Examples</h4>
-<pre><code class="python">from hemlock import Compile as C, Label, Page, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Compile</span> <span class="k">as</span> <span class="n">C</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-p = Page(
-    *(Label('&lt;p&gt;Label {}&lt;/p&gt;'.format(i)) for i in range(4)),
-    compile=C.shuffle()
-)
-p.preview()._compile().preview()
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Label </span><span class="si">{}</span><span class="s1">&lt;/p&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)),</span>
+    <span class="nb">compile</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()</span>
+<span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
               
             </div>
           </div>

@@ -197,6 +197,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -242,51 +250,51 @@
 <p>Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.1/blackboard.ipynb" target="_blank"><code>blackboard.ipynb</code></a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.1/survey.py" target="_blank"><code>survey.py</code></a> files should look like at the end of this part of the tutorial.</p>
 <h2 id="creating-a-demographics-page">Creating a demographics page</h2>
 <p>We'll use jupyter notebook as a blackboard to iterate on our demographics page design. After pushing the application context, we'll create the following page:</p>
-<pre><code class="python">from hemlock import Check, Input, Page, Label, Range, Select
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Check</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Range</span><span class="p">,</span> <span class="n">Select</span>
 
-p = Page(
-    Input(
-        '&lt;p&gt;Enter your date of birth.&lt;/p&gt;',
-        placeholder='mm/dd/yyyy'
-    ),
-    Check(
-        '&lt;p&gt;Indicate your gender.&lt;/p&gt;',
-        ['Male', 'Female', 'Other']
-    ),
-    Check(
-        '&lt;p&gt;Indicate your race or ethnicity. Check as many as apply.&lt;/p&gt;',
-        [
-            'White',
-            'Black or African-American',
-            'Asian',
-            'Native Hawaiian or other Pacific Islander',
-            'Other',
-        ],
-        multiple=True
-    ),
-    Select(
-        '&lt;p&gt;Select your current marital status.&lt;/p&gt;',
-        [
-            'Married',
-            'Widowed',
-            'Divorced',
-            'Separated',
-            'Never married',
-        ]
-    ),
-    Range(
-        '''
-        &lt;p&gt;At the right end of the scale are the people who are the 
-        best off; those who have the most money, the most 
-        education, and the best jobs. On the left are the people 
-        who are the worst off; those who have the least money, the 
-        least education, and the worst jobs (or are unemployed). 
-        Please indicate where you think you stand on this scale.&lt;/p&gt;
-        ''',
-        min=0, max=10
-    ),
-)
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span>
+    <span class="n">Input</span><span class="p">(</span>
+        <span class="s1">&#39;&lt;p&gt;Enter your date of birth.&lt;/p&gt;&#39;</span><span class="p">,</span>
+        <span class="n">placeholder</span><span class="o">=</span><span class="s1">&#39;mm/dd/yyyy&#39;</span>
+    <span class="p">),</span>
+    <span class="n">Check</span><span class="p">(</span>
+        <span class="s1">&#39;&lt;p&gt;Indicate your gender.&lt;/p&gt;&#39;</span><span class="p">,</span>
+        <span class="p">[</span><span class="s1">&#39;Male&#39;</span><span class="p">,</span> <span class="s1">&#39;Female&#39;</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">]</span>
+    <span class="p">),</span>
+    <span class="n">Check</span><span class="p">(</span>
+        <span class="s1">&#39;&lt;p&gt;Indicate your race or ethnicity. Check as many as apply.&lt;/p&gt;&#39;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;White&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Black or African-American&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Asian&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Native Hawaiian or other Pacific Islander&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Other&#39;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">),</span>
+    <span class="n">Select</span><span class="p">(</span>
+        <span class="s1">&#39;&lt;p&gt;Select your current marital status.&lt;/p&gt;&#39;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;Married&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Widowed&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Divorced&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Separated&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Never married&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">),</span>
+    <span class="n">Range</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        &lt;p&gt;At the right end of the scale are the people who are the </span>
+<span class="sd">        best off; those who have the most money, the most </span>
+<span class="sd">        education, and the best jobs. On the left are the people </span>
+<span class="sd">        who are the worst off; those who have the least money, the </span>
+<span class="sd">        least education, and the worst jobs (or are unemployed). </span>
+<span class="sd">        Please indicate where you think you stand on this scale.&lt;/p&gt;</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">10</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
 
 <p>As usual, use <code>p.preview()</code> to preview the page and <code>[os.remove(f) for f in app.tmpfiles if os.path.exists(f)]</code> when you're done.</p>
 <h2 id="code-explanation">Code explanation</h2>
@@ -297,24 +305,24 @@ p = Page(
 <p>Our final question is a range slider. By default, it goes from 0 to 100, but we set its range from 0 to 10 here.</p>
 <h2 id="adding-the-page-to-the-survey">Adding the page to the survey</h2>
 <p>Once we're satisfied with the preview, we incorporate the page into our survey. Our <code>survey.py</code> file should be:</p>
-<pre><code class="python">from hemlock import Branch, Check, Input, Page, Label, Range, Select, route
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Check</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Range</span><span class="p">,</span> <span class="n">Select</span><span class="p">,</span> <span class="n">route</span>
 
-@route('/survey')
-def start():
-    return Branch(
-        Page(
-            Input(
-                '&lt;p&gt;Enter your date of birth.&lt;/p&gt;',
-                placeholder='mm/dd/yyyy'
-            ),
-            # INSERT THE REST OF THE DEMOGRAPHICS PAGE HERE
-        ),
-        Page(
-            Label('&lt;p&gt;Thank you for completing this survey.&lt;/p&gt;'), 
-            terminal=True
-        )
-    )
-</code></pre>
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/survey&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Input</span><span class="p">(</span>
+                <span class="s1">&#39;&lt;p&gt;Enter your date of birth.&lt;/p&gt;&#39;</span><span class="p">,</span>
+                <span class="n">placeholder</span><span class="o">=</span><span class="s1">&#39;mm/dd/yyyy&#39;</span>
+            <span class="p">),</span>
+            <span class="c1"># INSERT THE REST OF THE DEMOGRAPHICS PAGE HERE</span>
+        <span class="p">),</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Thank you for completing this survey.&lt;/p&gt;&#39;</span><span class="p">),</span> 
+            <span class="n">terminal</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div>
 
 <h2 id="summary">Summary</h2>
 <p>In this part of the tutorial, you learned how to create a demographics questionnaire using several question polymorphs.</p>

@@ -197,6 +197,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -344,16 +352,16 @@ queue of pages which it displays to its participant.</p>
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Branch, Label, Page, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-Branch(
-    Page(Label('&lt;p&gt;Hello World&lt;/p&gt;')),
-    Page(Label('&lt;p&gt;Hello Moon&lt;/p&gt;')),
-    Page(Label('&lt;p&gt;Hello Star&lt;/p&gt;'))
-).preview()
-</code></pre>
+<span class="n">Branch</span><span class="p">(</span>
+    <span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Hello World&lt;/p&gt;&#39;</span><span class="p">)),</span>
+    <span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Hello Moon&lt;/p&gt;&#39;</span><span class="p">)),</span>
+    <span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Hello Star&lt;/p&gt;&#39;</span><span class="p">))</span>
+<span class="p">)</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <p>This will open all of the branch's pages in separate tabs.</p>
 <h4 id="methods">Methods</h4>

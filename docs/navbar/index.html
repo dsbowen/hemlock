@@ -221,6 +221,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -292,30 +300,30 @@
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Page, push_app_context
-from hemlock.tools import Navbar, Navitem, Navitemdd, Dropdownitem
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">Navbar</span><span class="p">,</span> <span class="n">Navitem</span><span class="p">,</span> <span class="n">Navitemdd</span><span class="p">,</span> <span class="n">Dropdownitem</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-url_root = 'https://dsbowen.github.io/'
+<span class="n">url_root</span> <span class="o">=</span> <span class="s1">&#39;https://dsbowen.github.io/&#39;</span>
 
-navbar = Navbar(
-    'Hemlock',
-    [
-        Navitem('Application', href=url_root+'app'),
-        Navitemdd(
-            'Tools',
-            [
-                Dropdownitem('Language', href=url_root+'lang'),
-                Dropdownitem('Navbar', href=url_root+'navbar')
-           ]
-        )
-    ],
-    href=url_root+'hemlock'
-)
+<span class="n">navbar</span> <span class="o">=</span> <span class="n">Navbar</span><span class="p">(</span>
+    <span class="s1">&#39;Hemlock&#39;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="n">Navitem</span><span class="p">(</span><span class="s1">&#39;Application&#39;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">url_root</span><span class="o">+</span><span class="s1">&#39;app&#39;</span><span class="p">),</span>
+        <span class="n">Navitemdd</span><span class="p">(</span>
+            <span class="s1">&#39;Tools&#39;</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="n">Dropdownitem</span><span class="p">(</span><span class="s1">&#39;Language&#39;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">url_root</span><span class="o">+</span><span class="s1">&#39;lang&#39;</span><span class="p">),</span>
+                <span class="n">Dropdownitem</span><span class="p">(</span><span class="s1">&#39;Navbar&#39;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">url_root</span><span class="o">+</span><span class="s1">&#39;navbar&#39;</span><span class="p">)</span>
+           <span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">href</span><span class="o">=</span><span class="n">url_root</span><span class="o">+</span><span class="s1">&#39;hemlock&#39;</span>
+<span class="p">)</span>
 
-Page(navbar=navbar.render()).preview()
-</code></pre>
+<span class="n">Page</span><span class="p">(</span><span class="n">navbar</span><span class="o">=</span><span class="n">navbar</span><span class="o">.</span><span class="n">render</span><span class="p">())</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <h2 id="hemlocktoolsnavbase">hemlock.tools.<strong>NavBase</strong></h2>
 <p class="func-header">

@@ -207,6 +207,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -252,25 +260,25 @@
 <p>Click here to see what your <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.9/blackboard.ipynb" target="_blank"><code>blackboard.ipynb</code></a> and <a href="https://github.com/dsbowen/hemlock-tutorial/blob/v0.9/survey.py" target="_blank"><code>survey.py</code></a> files should look like at the end of this part of the tutorial.</p>
 <h2 id="the-proposal-input">The proposal input</h2>
 <p>First, we'll write a function to generate an input question where the proposer will input the proposed split. Enter the following in your jupyter notebook:</p>
-<pre><code class="python">from hemlock import Input, Label, Page, Submit as S, Validate as V
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Submit</span> <span class="k">as</span> <span class="n">S</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span>
 
-N_ROUNDS = 5
-POT = 20
+<span class="n">N_ROUNDS</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">POT</span> <span class="o">=</span> <span class="mi">20</span>
 
-def gen_proposal_input(round_):
-    return Input(
-        '''
-        &lt;p&gt;&lt;b&gt;Round {} of {}&lt;/b&gt;&lt;/p&gt;
-        &lt;p&gt;You have ${} to split between you and the responder. How 
-        much money would you like to offer to the responder?&lt;/p&gt;
-        '''.format(round_, N_ROUNDS, POT),
-        prepend='$', append='.00', var='Proposal',
-        validate=V.range_val(0, POT),
-        submit=S.data_type(int)
-    )
+<span class="k">def</span> <span class="nf">gen_proposal_input</span><span class="p">(</span><span class="n">round_</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Input</span><span class="p">(</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        &lt;p&gt;&lt;b&gt;Round {} of {}&lt;/b&gt;&lt;/p&gt;</span>
+<span class="sd">        &lt;p&gt;You have ${} to split between you and the responder. How </span>
+<span class="sd">        much money would you like to offer to the responder?&lt;/p&gt;</span>
+<span class="sd">        &#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">round_</span><span class="p">,</span> <span class="n">N_ROUNDS</span><span class="p">,</span> <span class="n">POT</span><span class="p">),</span>
+        <span class="n">prepend</span><span class="o">=</span><span class="s1">&#39;$&#39;</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="s1">&#39;.00&#39;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;Proposal&#39;</span><span class="p">,</span>
+        <span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">range_val</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">POT</span><span class="p">),</span>
+        <span class="n">submit</span><span class="o">=</span><span class="n">S</span><span class="o">.</span><span class="n">data_type</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="p">)</span>
 
-Page(gen_proposal_input(1)).preview()
-</code></pre>
+<span class="n">Page</span><span class="p">(</span><span class="n">gen_proposal_input</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <p>This function generates an input which asks the proposer how much money they would like to offer to the responder. We record the data in a variable named <code>'Proposal'</code>.</p>
 <p>We add range validation so that the proposer inputs an integer between 0 and the size of the pot. We also add a submit function which converts the data type to an integer.</p>
@@ -278,87 +286,87 @@ Page(gen_proposal_input(1)).preview()
 <h2 id="finding-a-responder">Finding a responder</h2>
 <p>We can use the <a href="https://docs.sqlalchemy.org/en/13/orm/query.html">SQLAlchemy Query API</a> to pair the proposer with a random responder this round. </p>
 <p>First, we create an input with variable name <code>'Response'</code> and data <code>5</code>:</p>
-<pre><code class="python">import random
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">random</span>
 
-response_input = Input(var='Response', data=5)
-response_input
-</code></pre>
+<span class="n">response_input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">var</span><span class="o">=</span><span class="s1">&#39;Response&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">response_input</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>&lt;Input 3&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>&lt;Input 3&gt;
+</code></pre></div>
 
 <p>Next, we get all <code>Input</code> objects in the database with the variable name <code>'Response'</code> whose data is not <code>None</code>:</p>
-<pre><code class="python">response_inputs = Input.query.filter(
-    Input.var=='Response', Input.data!=None
-).all()
-response_inputs
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">response_inputs</span> <span class="o">=</span> <span class="n">Input</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+    <span class="n">Input</span><span class="o">.</span><span class="n">var</span><span class="o">==</span><span class="s1">&#39;Response&#39;</span><span class="p">,</span> <span class="n">Input</span><span class="o">.</span><span class="n">data</span><span class="o">!=</span><span class="kc">None</span>
+<span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="n">response_inputs</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>[&lt;Input 3&gt;]
-</code></pre>
+<div class="highlight"><pre><span></span><code>[&lt;Input 3&gt;]
+</code></pre></div>
 
 <p>Finally, we choose one of these inputs randomly and get its data:</p>
-<pre><code class="python">random.choice(response_inputs).data
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">response_inputs</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>5
-</code></pre>
+<div class="highlight"><pre><span></span><code>5
+</code></pre></div>
 
 <h2 id="displaying-the-proposer-outcome">Displaying the proposer outcome</h2>
 <p>Now we want to display the outcome of the round to the proposer. This calls for a compile function:</p>
-<pre><code class="python">from hemlock import Compile as C, Embedded
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Compile</span> <span class="k">as</span> <span class="n">C</span><span class="p">,</span> <span class="n">Embedded</span>
 
-from random import randint
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 
-@C.register
-def proposer_outcome(outcome_label, proposal_input):
-    # get the proposal
-    proposal = POT-proposal_input.data, proposal_input.data
-    # get all responses
-    response_inputs = Input.query.filter(
-        Input.var=='Response', Input.data!=None
-    ).all()
-    if response_inputs:
-        # randomly choose a response
-        response = random.choice(response_inputs).data
-    else:
-        # no responses are available
-        # e.g. if this is the first participant
-        response = randint(0, POT)
-    # compute the payoff
-    accept = response &lt;= proposal[1]
-    payoff = proposal if accept else (0, 0)
-    # record results as embedded data
-    outcome_label.page.embedded = [
-        Embedded('Response', response),
-        Embedded('Accept', int(accept)),
-        Embedded('ProposerPayoff', payoff[0]),
-        Embedded('ResponderPayoff', payoff[1])
-    ]
-    # describe the outcome of the round
-    outcome_label.label = '''
-        &lt;p&gt;You proposed the following split:&lt;/p&gt;
-        &lt;ul&gt;
-            &lt;li&gt;You: ${}&lt;/li&gt;
-            &lt;li&gt;Responder: ${}&lt;/li&gt;
-        &lt;/ul&gt;
-        &lt;p&gt;The responder said they will accept any proposal which gives
-        them at least ${}.&lt;/p&gt;
-        &lt;p&gt;&lt;b&gt;Your proposal was {}, giving you a payoff of ${}.&lt;/b&gt;&lt;/p&gt;
-    '''.format(
-        *proposal, response, 'accepted' if accept else 'rejected', payoff[0]
-    )
+<span class="nd">@C</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">proposer_outcome</span><span class="p">(</span><span class="n">outcome_label</span><span class="p">,</span> <span class="n">proposal_input</span><span class="p">):</span>
+    <span class="c1"># get the proposal</span>
+    <span class="n">proposal</span> <span class="o">=</span> <span class="n">POT</span><span class="o">-</span><span class="n">proposal_input</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">proposal_input</span><span class="o">.</span><span class="n">data</span>
+    <span class="c1"># get all responses</span>
+    <span class="n">response_inputs</span> <span class="o">=</span> <span class="n">Input</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">Input</span><span class="o">.</span><span class="n">var</span><span class="o">==</span><span class="s1">&#39;Response&#39;</span><span class="p">,</span> <span class="n">Input</span><span class="o">.</span><span class="n">data</span><span class="o">!=</span><span class="kc">None</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">response_inputs</span><span class="p">:</span>
+        <span class="c1"># randomly choose a response</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">response_inputs</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># no responses are available</span>
+        <span class="c1"># e.g. if this is the first participant</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">POT</span><span class="p">)</span>
+    <span class="c1"># compute the payoff</span>
+    <span class="n">accept</span> <span class="o">=</span> <span class="n">response</span> <span class="o">&lt;=</span> <span class="n">proposal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">payoff</span> <span class="o">=</span> <span class="n">proposal</span> <span class="k">if</span> <span class="n">accept</span> <span class="k">else</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># record results as embedded data</span>
+    <span class="n">outcome_label</span><span class="o">.</span><span class="n">page</span><span class="o">.</span><span class="n">embedded</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Embedded</span><span class="p">(</span><span class="s1">&#39;Response&#39;</span><span class="p">,</span> <span class="n">response</span><span class="p">),</span>
+        <span class="n">Embedded</span><span class="p">(</span><span class="s1">&#39;Accept&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">accept</span><span class="p">)),</span>
+        <span class="n">Embedded</span><span class="p">(</span><span class="s1">&#39;ProposerPayoff&#39;</span><span class="p">,</span> <span class="n">payoff</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+        <span class="n">Embedded</span><span class="p">(</span><span class="s1">&#39;ResponderPayoff&#39;</span><span class="p">,</span> <span class="n">payoff</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="p">]</span>
+    <span class="c1"># describe the outcome of the round</span>
+    <span class="n">outcome_label</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        &lt;p&gt;You proposed the following split:&lt;/p&gt;</span>
+<span class="s1">        &lt;ul&gt;</span>
+<span class="s1">            &lt;li&gt;You: $</span><span class="si">{}</span><span class="s1">&lt;/li&gt;</span>
+<span class="s1">            &lt;li&gt;Responder: $</span><span class="si">{}</span><span class="s1">&lt;/li&gt;</span>
+<span class="s1">        &lt;/ul&gt;</span>
+<span class="s1">        &lt;p&gt;The responder said they will accept any proposal which gives</span>
+<span class="s1">        them at least $</span><span class="si">{}</span><span class="s1">.&lt;/p&gt;</span>
+<span class="s1">        &lt;p&gt;&lt;b&gt;Your proposal was </span><span class="si">{}</span><span class="s1">, giving you a payoff of $</span><span class="si">{}</span><span class="s1">.&lt;/b&gt;&lt;/p&gt;</span>
+<span class="s1">    &#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">proposal</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="s1">&#39;accepted&#39;</span> <span class="k">if</span> <span class="n">accept</span> <span class="k">else</span> <span class="s1">&#39;rejected&#39;</span><span class="p">,</span> <span class="n">payoff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">)</span>
 
-proposal_outcome_page = Page(
-    Label(
-        compile=C.proposer_outcome(Input(data=10))
-    )
-)
-proposal_outcome_page._compile().preview()
-</code></pre>
+<span class="n">proposal_outcome_page</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span>
+    <span class="n">Label</span><span class="p">(</span>
+        <span class="nb">compile</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">proposer_outcome</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">proposal_outcome_page</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <p>Let's go through this step by step.</p>
 <p>First, we get the proposal from the proposal input question. Remember that we converted the data for this input to an integer using a submit function. The data for this input is the amount of money the proposer offered to the responder, meaning that the proposed split is <code>(POT-proposal_input.data, proposal_input.data)</code>.</p>
@@ -366,80 +374,80 @@ proposal_outcome_page._compile().preview()
 <p>Third, we compute the payoff and record the results of the round using embedded data.</p>
 <p>Finally, we set the outcome label's <code>label</code> attribute to display the outcome of the round.</p>
 <p>Notice that the outcome of the round is recorded in the proposer's outcome page's embedded data:</p>
-<pre><code class="python">[(e.var, e.data) for e in proposal_outcome_page.embedded]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">[(</span><span class="n">e</span><span class="o">.</span><span class="n">var</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">proposal_outcome_page</span><span class="o">.</span><span class="n">embedded</span><span class="p">]</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>[('Response', 5),
- ('Accept', 1),
- ('ProposerPayoff', 10),
- ('ResponderPayoff', 10)]
-</code></pre>
+<div class="highlight"><pre><span></span><code>[(&#39;Response&#39;, 5),
+ (&#39;Accept&#39;, 1),
+ (&#39;ProposerPayoff&#39;, 10),
+ (&#39;ResponderPayoff&#39;, 10)]
+</code></pre></div>
 
 <h2 id="adding-the-proposer-branch-to-our-survey">Adding the proposer branch to our survey</h2>
 <h3 id="navigating-to-the-proposer-branch">Navigating to the proposer branch</h3>
 <p>We'll begin by modifying the ultimatum game branch to navigate to the proposer branch if the participant was assigned to be a proposer. In <code>survey.py</code>:</p>
-<pre><code class="python">...
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
 
-@N.register
-def ultimatum_game(start_branch=None):
-    proposer = assigner.next()['Proposer']
-    return Branch(
-        # COMPREHENSION CHECK HERE
-        Page(
-            Label(
-                '''
-                &lt;p&gt;You are about to play an ultimatum game as a &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;
-                '''.format('proposer' if proposer else 'responder')
-            )
-            # DELETE terminal=True
-        ),
-        navigate=N.proposer_branch()
-    )
+<span class="nd">@N</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">ultimatum_game</span><span class="p">(</span><span class="n">start_branch</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">proposer</span> <span class="o">=</span> <span class="n">assigner</span><span class="o">.</span><span class="n">next</span><span class="p">()[</span><span class="s1">&#39;Proposer&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span>
+        <span class="c1"># COMPREHENSION CHECK HERE</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Label</span><span class="p">(</span>
+                <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">                &lt;p&gt;You are about to play an ultimatum game as a &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;</span>
+<span class="sd">                &#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;proposer&#39;</span> <span class="k">if</span> <span class="n">proposer</span> <span class="k">else</span> <span class="s1">&#39;responder&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="c1"># DELETE terminal=True</span>
+        <span class="p">),</span>
+        <span class="n">navigate</span><span class="o">=</span><span class="n">N</span><span class="o">.</span><span class="n">proposer_branch</span><span class="p">()</span>
+    <span class="p">)</span>
 
-...
-</code></pre>
+<span class="o">...</span>
+</code></pre></div>
 
 <h3 id="the-proposer-branch-navigate-function">The proposer branch navigate function</h3>
 <p>Next we'll add our proposer navigate function to the bottom of <code>survey.py</code>:</p>
-<pre><code class="python">...
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
 
-import random # ADD THIS IMPORT AT THE TOP OF THE FILE
-from datetime import datetime
-from random import randint
+<span class="kn">import</span> <span class="nn">random</span> <span class="c1"># ADD THIS IMPORT AT THE TOP OF THE FILE</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 
-...
+<span class="o">...</span>
 
-@N.register
-def proposer_branch(ultimatum_game_branch):
-    branch = Branch()
-    for round_ in range(N_ROUNDS):
-        proposal_input = gen_proposal_input(round_+1)
-        branch.pages.append(Page(proposal_input))
-        branch.pages.append(Page(
-            Label(compile=C.proposer_outcome(proposal_input)),
-            cache_compile=True
-        ))
-    branch.pages.append(Page(
-        Label('&lt;p&gt;Thank you for completing the hemlock tutorial!&lt;/p&gt;'),
-        terminal=True      
-    ))
-    return branch
-</code></pre>
+<span class="nd">@N</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">proposer_branch</span><span class="p">(</span><span class="n">ultimatum_game_branch</span><span class="p">):</span>
+    <span class="n">branch</span> <span class="o">=</span> <span class="n">Branch</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">round_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_ROUNDS</span><span class="p">):</span>
+        <span class="n">proposal_input</span> <span class="o">=</span> <span class="n">gen_proposal_input</span><span class="p">(</span><span class="n">round_</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">branch</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Page</span><span class="p">(</span><span class="n">proposal_input</span><span class="p">))</span>
+        <span class="n">branch</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Page</span><span class="p">(</span>
+            <span class="n">Label</span><span class="p">(</span><span class="nb">compile</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">proposer_outcome</span><span class="p">(</span><span class="n">proposal_input</span><span class="p">)),</span>
+            <span class="n">cache_compile</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">))</span>
+    <span class="n">branch</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Page</span><span class="p">(</span>
+        <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Thank you for completing the hemlock tutorial!&lt;/p&gt;&#39;</span><span class="p">),</span>
+        <span class="n">terminal</span><span class="o">=</span><span class="kc">True</span>      
+    <span class="p">))</span>
+    <span class="k">return</span> <span class="n">branch</span>
+</code></pre></div>
 
 <p>This navigate function simply adds two pages to the proposer branch for each of <code>N_ROUNDS</code>. The first page asks the proposer to propose a split. The second page displays the outcome of the round.</p>
 <p>Notice that passed <code>cache_compile=True</code> to the second page. This caches the result of the compile functions; removing them so that they won't run again if the participant refreshed the page. Why do we want to do this? Suppose we set up our study so that participants are playing for real money. We don't want participants refreshing their screen over and over again to see if they can get a better outcome.</p>
 <h3 id="generating-the-proposal-input-and-outcome-label">Generating the proposal input and outcome label</h3>
 <p>Finally, we'll add the <code>gen_proposal_input</code> and <code>proposer_outcome</code> functions we wrote in our notebook:</p>
-<pre><code class="python">...
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
 
-def gen_proposal_input(round_):
-    # AS IN THE NOTEBOOK
+<span class="k">def</span> <span class="nf">gen_proposal_input</span><span class="p">(</span><span class="n">round_</span><span class="p">):</span>
+    <span class="c1"># AS IN THE NOTEBOOK</span>
 
-@C.register
-def proposer_outcome(outcome_label, proposal_input):
-    # AS IN THE NOTEBOOK
-</code></pre>
+<span class="nd">@C</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">proposer_outcome</span><span class="p">(</span><span class="n">outcome_label</span><span class="p">,</span> <span class="n">proposal_input</span><span class="p">):</span>
+    <span class="c1"># AS IN THE NOTEBOOK</span>
+</code></pre></div>
 
 <p>Run the app and see what the survey looks like in the proposer condition.</p>
 <h2 id="summary">Summary</h2>

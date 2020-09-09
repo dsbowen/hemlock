@@ -197,6 +197,14 @@
     </ul>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -246,10 +254,10 @@
 </ol>
 <h2 id="password-protection">Password protection</h2>
 <p>Hemlock users should password protect their applications before distribution to participants. This can be done simply with:</p>
-<pre><code class="python">from hemlock import settings
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">settings</span>
 
-settings['password'] = '&lt;my-secret-password&gt;'
-</code></pre>
+<span class="n">settings</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;my-secret-password&gt;&#39;</span>
+</code></pre></div>
 
 <p>Hemlock will encrypt your password with the <a href="https://werkzeug.palletsprojects.com/en/1.0.x/utils/">werkzeug password hash utility</a>.</p>
 <p><strong>Note.</strong> Be sure not to have your password set in a public code repository while your application is in production.</p>
@@ -261,6 +269,8 @@ settings['password'] = '&lt;my-secret-password&gt;'
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../changelog/" class="btn btn-neutral float-right" title="Changelog">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../utils/" class="btn btn-neutral" title="Utilities"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -293,6 +303,8 @@ settings['password'] = '&lt;my-secret-password&gt;'
       
         <span><a href="../utils/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
+      
+        <span style="margin-left: 15px"><a href="../changelog/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

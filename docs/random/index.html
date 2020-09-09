@@ -211,6 +211,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -308,14 +316,14 @@
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import tools
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">tools</span>
 
-tools.key(10)
-</code></pre>
+<span class="n">tools</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>gpGmZuRfF7
-</code></pre>
+<div class="highlight"><pre><span></span><code>gpGmZuRfF7
+</code></pre></div>
 
 <h2 id="hemlocktoolsrandomizer">hemlock.tools.<strong>Randomizer</strong></h2>
 <p class="func-header">
@@ -353,16 +361,16 @@ tools.key(10)
 </table>
 
 <h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock.tools import Randomizer
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">Randomizer</span>
 
-elements = ('world','moon','star')
-randomizer = Randomizer(elements, r=2, combination=False)
-randomizer.next()
-</code></pre>
+<span class="n">elements</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;world&#39;</span><span class="p">,</span><span class="s1">&#39;moon&#39;</span><span class="p">,</span><span class="s1">&#39;star&#39;</span><span class="p">)</span>
+<span class="n">randomizer</span> <span class="o">=</span> <span class="n">Randomizer</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">combination</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">randomizer</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>('moon', 'world')
-</code></pre>
+<div class="highlight"><pre><span></span><code>(&#39;moon&#39;, &#39;world&#39;)
+</code></pre></div>
 
 <h4 id="methods">Methods</h4>
 <p class="func-header">
@@ -416,28 +424,28 @@ randomizer.next()
 </table>
 
 <h4 id="examples_2">Examples</h4>
-<pre><code class="python">from hemlock import Participant, push_app_context
-from hemlock.tools import Assigner
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Participant</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">Assigner</span>
 
-push_app_context()
+<span class="n">push_app_context</span><span class="p">()</span>
 
-part = Participant.gen_test_participant()
-conditions = {'Treatment': (0,1), 'Level': ('low','med','high')}
-assigner = Assigner(conditions)
-assigner.next()
-</code></pre>
+<span class="n">part</span> <span class="o">=</span> <span class="n">Participant</span><span class="o">.</span><span class="n">gen_test_participant</span><span class="p">()</span>
+<span class="n">conditions</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Treatment&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;Level&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;low&#39;</span><span class="p">,</span><span class="s1">&#39;med&#39;</span><span class="p">,</span><span class="s1">&#39;high&#39;</span><span class="p">)}</span>
+<span class="n">assigner</span> <span class="o">=</span> <span class="n">Assigner</span><span class="p">(</span><span class="n">conditions</span><span class="p">)</span>
+<span class="n">assigner</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>{'Treatment': 1, 'Level': 'low'}
-</code></pre>
+<div class="highlight"><pre><span></span><code>{&#39;Treatment&#39;: 1, &#39;Level&#39;: &#39;low&#39;}
+</code></pre></div>
 
 <p>In:</p>
-<pre><code class="python">[(e.var, e.data) for e in part.embedded]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">[(</span><span class="n">e</span><span class="o">.</span><span class="n">var</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">part</span><span class="o">.</span><span class="n">embedded</span><span class="p">]</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>[('Treatment', 0), ('Level', 'low')]
-</code></pre>
+<div class="highlight"><pre><span></span><code>[(&#39;Treatment&#39;, 0), (&#39;Level&#39;, &#39;low&#39;)]
+</code></pre></div>
 
 <h4 id="methods_1">Methods</h4>
 <p class="func-header">

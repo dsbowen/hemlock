@@ -69,12 +69,6 @@
     <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#initialize-a-new-hemlock-project">Initialize a new hemlock project</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#if-using-git-bash-on-windows">If using git bash on Windows</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#if-using-wsl">If using WSL</a>
-    </li>
-        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#preview-a-page-in-jupyter-notebook">Preview a page in jupyter notebook</a>
     </li>
@@ -205,6 +199,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -267,80 +269,88 @@
 </ul>
 <h2 id="initialize-a-new-hemlock-project">Initialize a new hemlock project</h2>
 <p>Run the following, replacing <code>&lt;my-github-username&gt;</code> with your github username and<code>&lt;my-github-token&gt;</code> with your github authentication token:</p>
-<pre><code class="bash">$ hlk init my-first-project &lt;my-github-username&gt; &lt;my-github-token&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk init my-first-project &lt;my-github-username&gt; &lt;my-github-token&gt;
+</code></pre></div>
 
 <p>For example, I would enter:</p>
-<pre><code class="bash">$ hlk init my-first-project dsbowen bts4rxpmw2x6tsy2qel1y7p5hwmhd7wxopmk5vsp
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk init my-first-project dsbowen bts4rxpmw2x6tsy2qel1y7p5hwmhd7wxopmk5vsp
+</code></pre></div>
 
 <p>(This isn't my real authentication token!)</p>
 <p>This will 'clone' the template into a folder <code>my-first-project</code>, initialize an eponymous github repository for your project, and set up a virtual environment.</p>
 <p>Change into the project directory and check out the folder structure:</p>
-<pre><code class="bash">$ cd my-first-project
+<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> my-first-project
 $ ls
-</code></pre>
+</code></pre></div>
 
-<p><strong>Note.</strong> You will only have to run <code>hlk init</code> once per project.</p>
-<p><strong>You may see an error message</strong> starting with <em>Cannot uninstall PyYAML</em>. To fix this, run:</p>
-<pre><code class="bash">$ pip install --ignore-installed pyyaml
-</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You will only have to run <code>hlk init</code> once per project.</p>
+</div>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<p>You may see an error message starting with <em>Cannot uninstall PyYAML</em>. To fix this, run:</p>
+<div class="highlight"><pre><span></span><code>$ pip install --ignore-installed pyyaml
+</code></pre></div>
 
-<h4 id="if-using-git-bash-on-windows">If using git bash on Windows</h4>
-<p>If using git bash on Windows, you'll need to activate your virtual environment and install the project requirements:</p>
-<pre><code class="bash">$ cd my-first-project
-$ . hemlock-venv/scripts/activate
-$ pip install -r local-requirements.txt
-</code></pre>
+</div>
+<div class="admonition note">
+<p class="admonition-title">If using Windows git bash</p>
+<p>After changing into your project directory, set up your virtual environment:</p>
+<div class="highlight"><pre><span></span><code>$ hlk setup-venv my-first-project
+</code></pre></div>
 
-<h4 id="if-using-wsl">If using WSL</h4>
-<p>If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable. Open a file which specifies your local environment variables:</p>
-<pre><code class="bash">$ code env.yaml
-</code></pre>
+</div>
+<div class="admonition note">
+<p class="admonition-title">If using WSL</p>
+<p>You'll need to specify your distribution as an environment variable. Open the file which sets your local environment variables:</p>
+<div class="highlight"><pre><span></span><code>$ code env.yaml
+</code></pre></div>
 
 <p>And add the following line:</p>
-<pre><code class="yaml">WSL_DISTRIBUTION: Ubuntu-20.04 # or other WSL distribution
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">WSL_DISTRIBUTION</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Ubuntu-20.04</span> <span class="c1"># or other WSL distribution</span>
+</code></pre></div>
 
 <p>If you're not sure which distribution you have, run:</p>
-<pre><code class="bash">$ explorer.exe .
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ explorer.exe .
+</code></pre></div>
 
 <p>This will open a file explorer. At the top of the file explorer, you'll see:</p>
 <blockquote>
 <p><code>&lt;my-wsl-distribution&gt;\home\&lt;my-wsl-username&gt;\my-first-project</code></p>
 </blockquote>
 <p>We're looking for <code>&lt;my-wsl-distribution&gt;</code>.</p>
+</div>
 <h2 id="preview-a-page-in-jupyter-notebook">Preview a page in jupyter notebook</h2>
 <p>Jupyter notebook is a great tool for iterating quickly on project designs. I recommend using it for most of your work. Open the jupyter dashboard with:</p>
-<pre><code class="bash">$ jupyter notebook
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ jupyter notebook
+</code></pre></div>
 
 <p>Jupyter will attempt to open the dashboard automatically in your browser. If this fails, the terminal window will show you links to the dashboard that you can manually copy and paste into your browser.</p>
 <p>Open the file named <code>blackboard.ipynb</code>.</p>
 <p>Change the kernel to <code>my-first-project</code> (in general, your project name). At the top of the notebook click Kernel &gt;&gt; Change kernel &gt;&gt; my-first-project.</p>
 <p>Run the first cell (Shift + Enter) to set up the environment and application context. It's not important right now to understand exactly what it does.</p>
 <p>Now, create your first hemlock page. In a new code cell below the first one, enter the following:</p>
-<pre><code class="python">from hemlock import Page, Label
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Label</span>
 
-p = Page(Label('&lt;p&gt;Hello, World!&lt;/p&gt;'))
-p.preview()
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Hello, World!&lt;/p&gt;&#39;</span><span class="p">))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <p>This opens a preview of your page in your browser.</p>
 <p>Previewing works by creating temporary preview files. When you're done previewing your files, it's good practice to delete them:</p>
-<pre><code class="python">[os.remove(f) for f in app.tmpfiles if os.path.exists(f)]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">tmpfiles</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span>
+</code></pre></div>
 
 <h2 id="code-explanation">Code explanation</h2>
 <p>The first line simply imports <code>Page</code> and <code>Label</code> objects.</p>
 <p>The next line, <code>p = Page(Label('&lt;p&gt;Hello, World!&lt;/p&gt;'))</code>, creates a <code>Page</code> instance. A <code>Page</code> contains a list of 'questions' which it displays to participants. We can set a page's questions by passing them as arguments to the <code>Page</code> constructor. Alternatively, we can set a page's questions by setting the page's <code>questions</code> attribute, meaning that the following are equivalent:</p>
-<pre><code class="python">p = Page(Label('&lt;p&gt;Label 0&lt;/p&gt;'), Label('&lt;p&gt;Label 1&lt;/p&gt;'))
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Label 0&lt;/p&gt;&#39;</span><span class="p">),</span> <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Label 1&lt;/p&gt;&#39;</span><span class="p">))</span>
+</code></pre></div>
 
-<pre><code class="python">p = Page()
-p.questions = [Label('&lt;p&gt;Label 0&lt;/p&gt;'), Label('&lt;p&gt;Label 1&lt;/p&gt;')]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">questions</span> <span class="o">=</span> <span class="p">[</span><span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Label 0&lt;/p&gt;&#39;</span><span class="p">),</span> <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Label 1&lt;/p&gt;&#39;</span><span class="p">)]</span>
+</code></pre></div>
 
 <p>The <code>Page</code>'s question is a <code>Label</code>, although this is in some sense a misnomer because label objects only contains text. The first argument to <code>Label</code> is a string, written in html, which the label object displays on its page.</p>
 <p><strong>Note.</strong> If you don't like writing html, you can easily find Word to html converters online.</p>
@@ -353,55 +363,41 @@ p.questions = [Label('&lt;p&gt;Label 0&lt;/p&gt;'), Label('&lt;p&gt;Label 1&lt;/
 
 Create a folder for your project and change into it:
 
-
-<pre><code class="bash">$ mkdir my-first-project
-$ cd my-first-project
-</code></pre>
-
+<div class="highlight"><pre><span></span><code>$ mkdir my-first-project
+$ <span class="nb">cd</span> my-first-project
+</code></pre></div>
 
 #### Set up your virtual environment
 
 Create your virtual environment and activate it:
 
-
-<pre><code class="bash">$ python3 -m venv hemlock-venv
-</code></pre>
-
+<div class="highlight"><pre><span></span><code>$ python3 -m venv hemlock-venv
+</code></pre></div>
 
 Activate from git bash on Windows:
 
-
-<pre><code class="bash">$ . hemlock-venv/scripts/activate
-</code></pre>
-
+<div class="highlight"><pre><span></span><code>$ . hemlock-venv/scripts/activate
+</code></pre></div>
 
 Activate from Windows command prompt:
 
-
-<pre><code class="bash">$ hemlock-venv\scripts\activate.bat
-</code></pre>
-
+<div class="highlight"><pre><span></span><code>$ hemlock-venv<span class="se">\s</span>cripts<span class="se">\a</span>ctivate.bat
+</code></pre></div>
 
 Activate from Mac or WSL:
 
-
-<pre><code class="bash">$ . hemlock-venv/bin/activate
-</code></pre>
-
+<div class="highlight"><pre><span></span><code>$ . hemlock-venv/bin/activate
+</code></pre></div>
 
 Next, install hemlock and ipykernel:
 
-
-<pre><code class="bash">$ pip install hemlock-survey ipykernel
-</code></pre>
-
+<div class="highlight"><pre><span></span><code>$ pip install hemlock-survey ipykernel
+</code></pre></div>
 
 Add your virtual environment to jupyter:
 
-
-<pre><code class="bash">$ python3 -m ipykernel install --user --name=hemlock-venv
-</code></pre>
-
+<div class="highlight"><pre><span></span><code>$ python3 -m ipykernel install --user --name<span class="o">=</span>hemlock-venv
+</code></pre></div>
 
 **Note.** You will only have to pip install hemlock and ipykernel and add hemlock-venv to jupyter once per project. However, you will have to activate your virtual environment every time you open a new terminal to work on this project. That is, suppose you close and re-open your terminal. You will have to change directory into your project folder and re-activate the virtual environment.
 
@@ -409,19 +405,15 @@ Add your virtual environment to jupyter:
 
 If using Windows Subsystem for Linux (WSL), you'll need to specify your distribution as an environment variable.
 
-
-<pre><code class="bash">$ export WSL_DISTRIBUTION=Ubuntu-20.04 # or other WSL distribution
-</code></pre>
-
+<div class="highlight"><pre><span></span><code>$ <span class="nb">export</span> <span class="nv">WSL_DISTRIBUTION</span><span class="o">=</span>Ubuntu-20.04 <span class="c1"># or other WSL distribution</span>
+</code></pre></div>
 
 Make sure your `WSL_DISTRIBUTION` environment variable is set every time you open a terminal.
 
 If you're not sure which distribution you have, run:
 
-
-<pre><code class="bash">$ explorer.exe .
-</code></pre>
-
+<div class="highlight"><pre><span></span><code>$ explorer.exe .
+</code></pre></div>
 
 This will open a file explorer. At the top of the file explorer, you'll see:
 
@@ -433,10 +425,8 @@ We're looking for `<my-wsl-distribution>`.
 
 Jupyter notebook is a great tool for iterating quickly on project designs. I recommend using it for most of your work. Open the jupyter dashboard with:
 
-
-<pre><code class="bash">$ jupyter notebook
-</code></pre>
-
+<div class="highlight"><pre><span></span><code>$ jupyter notebook
+</code></pre></div>
 
 Jupyter will attempt to open the dashboard automatically in your browser. If this fails, the terminal window will show you links to the dashboard that you can manually copy and paste into your browser.
 
@@ -444,24 +434,20 @@ Create a new notebook. In the upper right, click New >> hemlock-venv.
 
 Run the following in the first cell of your notebook:
 
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">push_app_context</span>
 
-<pre><code class="python">from hemlock import push_app_context
-
-app = push_app_context()
-</code></pre>
-
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
+</code></pre></div>
 
 This sets up the hemlock environment, including the application context. It's not important right now to understand exactly what it does.
 
 Now, create your first hemlock page. In a new code cell below the first one, enter the following:
 
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Label</span>
 
-<pre><code class="python">from hemlock import Page, Label
-
-p = Page(Label('&lt;p&gt;Hello, World!&lt;/p&gt;'))
-p.preview()
-</code></pre>
-
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Hello, World!&lt;/p&gt;&#39;</span><span class="p">))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 This opens a preview of your page in your browser.
 

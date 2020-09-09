@@ -213,6 +213,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -256,18 +264,18 @@
 <p>These instructions were written for Mac OS 10.9.</p>
 <h2 id="open-a-terminal-window">Open a terminal window</h2>
 <p>Hemlock requires you to use a terminal window for setting up, editing, and deploying hemlock projects. To open a terminal window, enter 'terminal' in spotlight search. Terminal commands are written in bash:</p>
-<pre><code class="bash">$ &lt;my-bash-command&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ &lt;my-bash-command&gt;
+</code></pre></div>
 
 <p><strong>Note 1.</strong> You don't type <code>$</code>; it simply indicates the beginning of a bash command.</p>
 <p><strong>Note 2.</strong> For this tutorial, always make sure to change to your home directory after you open your terminal. Do this by entering:</p>
-<pre><code class="bash">$ cd
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span>
+</code></pre></div>
 
 <h2 id="xcode">Xcode</h2>
 <p>Mac OS typically requires Xcode Command-line Tools. Install in your terminal:</p>
-<pre><code class="bash">$ xcode-select --install
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ xcode-select --install
+</code></pre></div>
 
 <p>Or from the <a href="https://apps.apple.com/us/app/xcode/id497799835" target="_blank">Mac app store</a>.</p>
 <h2 id="python3-and-pip3">Python3 and pip3</h2>
@@ -279,46 +287,46 @@
 <p><strong>When you start the python installer, you'll see an <em>Add Python to PATH</em> option on the first page. Make sure to select this option.</strong></p>
 <p><strong>STOP.</strong></p>
 <p>Close and re-open your terminal window. Verify your python installation.</p>
-<pre><code class="bash">$ python3 --version
-Python 3.x.x
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ python3 --version
+Python <span class="m">3</span>.x.x
+</code></pre></div>
 
 <p>Upgrade pip:</p>
-<pre><code class="bash">$ python3 -m pip install --upgrade pip
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ python3 -m pip install --upgrade pip
+</code></pre></div>
 
 <p>Verify your pip installation:</p>
-<pre><code class="bash">$ pip3 --version
+<div class="highlight"><pre><span></span><code>$ pip3 --version
 pip xx.x.x ...
-</code></pre>
+</code></pre></div>
 
 <h2 id="hemlock-cli">Hemlock-CLI</h2>
 <p>Hemlock's command line interface, hemlock-CLI, defines many useful commands for initializing, editing, and deploying hemlock projects. Install with:</p>
-<pre><code class="bash">$ pip install -U hemlock-cli
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ pip install -U hemlock-cli
+</code></pre></div>
 
 <p>Verify your hemlock-CLI installation:</p>
-<pre><code class="bash">$ hlk --version
+<div class="highlight"><pre><span></span><code>$ hlk --version
 hlk, version x.x.xx
-</code></pre>
+</code></pre></div>
 
 <h2 id="git-and-github">Git and github</h2>
 <p><a href="https://git-scm.com/" target="_blank">Git</a> is a version control system, and <a href="https://github.com/" target="_blank">github</a> hosts code repositories. Together, they allow you to share and collaborate on hemlock projects. You will also need git to initialize hemlock projects with the hemlock template.</p>
 <p>Macs typically have git pre-installed, which you can verify:</p>
-<pre><code class="bash">$ git --version
-git version 2.27.0.mac.1
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ git --version
+git version <span class="m">2</span>.27.0.mac.1
+</code></pre></div>
 
 <p>If you don't have git, follow the <a href="https://git-scm.com/download/mac">download and installation instructions here</a>.</p>
 <p>Then, create a <a href="https://github.com">github account here</a>. Configure your github command line interface:</p>
-<pre><code class="bash">$ git config --global user.name &lt;my-github-username&gt;
+<div class="highlight"><pre><span></span><code>$ git config --global user.name &lt;my-github-username&gt;
 $ git config --global user.email &lt;my-github-user-email&gt;
-</code></pre>
+</code></pre></div>
 
 <p>For example, I would enter:</p>
-<pre><code class="bash">$ git config --global user.name dsbowen
+<div class="highlight"><pre><span></span><code>$ git config --global user.name dsbowen
 $ git config --global user.email dsbowen@wharton.upenn.edu
-</code></pre>
+</code></pre></div>
 
 <p>Finally, you will need a personal access token to initialize hemlock applications with the hemlock command line interface.</p>
 <p><strong>Read everything until STOP before creating your github token.</strong></p>
@@ -331,52 +339,52 @@ $ git config --global user.email dsbowen@wharton.upenn.edu
 <h2 id="visual-studio-code">Visual studio code</h2>
 <p>I recommend visual studio code for editing python files. <a href="https://code.visualstudio.com/">Download VS code here</a>.</p>
 <p>Close and re-open your terminal. Verify your VS code installation:</p>
-<pre><code class="bash">$ code --version
-1.xx.x
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ code --version
+<span class="m">1</span>.xx.x
+</code></pre></div>
 
 <h2 id="jupyter">Jupyter</h2>
 <p><a href="https://jupyter.org/" target="_blank">Jupyter</a> allows you to quickly iterate on project designs. Install jupyter notebook with pip:</p>
-<pre><code class="bash">$ pip install -U notebook
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ pip install -U notebook
+</code></pre></div>
 
 <p>Close and re-open your terminal. Verify your jupyter installation:</p>
-<pre><code class="bash">$ jupyter --version
-jupyter core     : 4.6.3
-jupyter-notebook : 6.0.3
+<div class="highlight"><pre><span></span><code>$ jupyter --version
+jupyter core     : <span class="m">4</span>.6.3
+jupyter-notebook : <span class="m">6</span>.0.3
 qtconsole        : not installed
-ipython          : 7.16.1
-ipykernel        : 5.3.2
-jupyter client   : 6.1.5
+ipython          : <span class="m">7</span>.16.1
+ipykernel        : <span class="m">5</span>.3.2
+jupyter client   : <span class="m">6</span>.1.5
 jupyter lab      : not installed
-nbconvert        : 5.6.1
+nbconvert        : <span class="m">5</span>.6.1
 ipywidgets       : not installed
-nbformat         : 5.0.7
-traitlets        : 4.3.3
-</code></pre>
+nbformat         : <span class="m">5</span>.0.7
+traitlets        : <span class="m">4</span>.3.3
+</code></pre></div>
 
 <h2 id="google-chrome">Google chrome</h2>
 <p>Hemlock is developed and tested primarily on chrome. <a href="https://www.google.com/chrome/" target="_blank">Download chrome here</a>.</p>
 <p>Verify that you can open it as follows:</p>
-<pre><code class="bash">$ python3
+<div class="highlight"><pre><span></span><code>$ python3
 &gt;&gt;&gt; import webbrowser
-&gt;&gt;&gt; webbrowser.open('https://dsbowen.github.io/hemlock')
+&gt;&gt;&gt; webbrowser.open<span class="o">(</span><span class="s1">&#39;https://dsbowen.github.io/hemlock&#39;</span><span class="o">)</span>
 True
-&gt;&gt;&gt; exit()
-</code></pre>
+&gt;&gt;&gt; exit<span class="o">()</span>
+</code></pre></div>
 
 <p>You should see chrome open to the hemlock docs.</p>
 <p><strong>Note.</strong> <code>&gt;&gt;&gt;</code> is where you enter python commands in the python interpreter.</p>
 <p>If you came here from the tutorial, you're now ready to return to it and get started with your first hemlock project. <a href="../../tutorial/first_project/">Click here to go back to the First Project section of the tutorial</a>.</p>
 <h2 id="chromedriver">Chromedriver</h2>
 <p>Hemlock's custom debugging tool and survey view functions use <a href="https://chromedriver.chromium.org/downloads" target="_blank">chromedriver</a>. To use these features locally, you'll need to download chromedriver:</p>
-<pre><code class="bash">$ hlk setup mac --chromedriver
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk setup mac --chromedriver
+</code></pre></div>
 
 <p>Close and re-open your terminal. Verify your chromedriver installation:</p>
-<pre><code class="bash">$ which chromedriver
+<div class="highlight"><pre><span></span><code>$ which chromedriver
 /users/&lt;my-mac-username&gt;/webdrivers/chromedriver
-</code></pre>
+</code></pre></div>
 
 <h4 id="chrome-and-chromedriver-compatibility">Chrome and chromedriver compatibility</h4>
 <p>As of 07/14/2020, <code>hlk setup mac --chromedriver</code> installs chromedriver for chrome 83. While chrome updates automatically, chromedriver does not. This means that you will encounter compatibility issues when chrome updates to version 84+. To fix this:</p>
@@ -385,21 +393,21 @@ True
 <li>Put the chrome binary, <code>chromedriver</code>, in <code>/users/&lt;my-mac-username&gt;/webdrivers/</code>. For example, I would put my chromedriver binary in <code>/users/dsbowen/webdrivers/</code>.</li>
 </ol>
 <p>Chromedriver should still be in your path, which you can verify:</p>
-<pre><code class="bash">$ which chromedriver
+<div class="highlight"><pre><span></span><code>$ which chromedriver
 /users/&lt;my-mac-username&gt;/webdrivers/chromedriver
-</code></pre>
+</code></pre></div>
 
 <p>If you came here from the Debug section of the tutorial, you're now ready to return to it and run the debugger. <a href="../../tutorial/debug/">Click here to go back to the Debug section of the tutorial</a>.</p>
 <h2 id="heroku">Heroku</h2>
 <p>Heroku is an easy and inexpensive service for deploying web applications (i.e. putting them online), including hemlock applications. <a href="https://signup.heroku.com/" target="_blank">Sign up for heroku here</a>.</p>
 <p>You can install heroku-CLI using hemlock-CLI:</p>
-<pre><code class="bash">$ hlk setup mac --heroku-cli
-</code></pre>
+<div class="highlight"><pre><span></span><code>$ hlk setup mac --heroku-cli
+</code></pre></div>
 
 <p>Verify your heroku-CLI installation:</p>
-<pre><code class="bash">$ heroku --version
+<div class="highlight"><pre><span></span><code>$ heroku --version
 heroku/x.xx.x mac node-vxx.xx.x
-</code></pre>
+</code></pre></div>
 
 <p><strong>Note.</strong> See <a href="https://github.com/heroku/legacy-cli/issues/1969" target="_blank">this github issue</a> if you experience a 'EACCES' error. <em>Do not</em> simply use <code>sudo</code>; this only masks issues you'll encounter later.</p>
 <p><a href="../../tutorial/deploy/">Click here to return to the Deploy section of the tutorial</a>.</p>

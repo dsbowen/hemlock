@@ -213,6 +213,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -310,14 +318,14 @@
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock.tools import indef_article
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">indef_article</span>
 
-[indef_article(fruit) for fruit in ('apple','banana')]
-</code></pre>
+<span class="p">[</span><span class="n">indef_article</span><span class="p">(</span><span class="n">fruit</span><span class="p">)</span> <span class="k">for</span> <span class="n">fruit</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span><span class="s1">&#39;banana&#39;</span><span class="p">)]</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>['an apple', 'a banana']
-</code></pre>
+<div class="highlight"><pre><span></span><code>[&#39;an apple&#39;, &#39;a banana&#39;]
+</code></pre></div>
 
 <h2 id="hemlocktoolsjoin">hemlock.tools.<strong>join</strong></h2>
 <p class="func-header">
@@ -350,16 +358,16 @@
 </table>
 
 <h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock.tools import join
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">join</span>
 
-print(join('and', 'world', 'sun'))
-print(join('or', 'world', 'sun', 'moon'))
-</code></pre>
+<span class="nb">print</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">,</span> <span class="s1">&#39;sun&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="s1">&#39;world&#39;</span><span class="p">,</span> <span class="s1">&#39;sun&#39;</span><span class="p">,</span> <span class="s1">&#39;moon&#39;</span><span class="p">))</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>world and sun
+<div class="highlight"><pre><span></span><code>world and sun
 world, sun, or moon
-</code></pre>
+</code></pre></div>
 
 <h2 id="hemlocktoolsplural">hemlock.tools.<strong>plural</strong></h2>
 <p class="func-header">
@@ -396,14 +404,14 @@ world, sun, or moon
 </table>
 
 <h4 id="examples_2">Examples</h4>
-<pre><code class="python">from hemlock.tools import plural
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">plural</span>
 
-['{} {}'.format(n, plural(n, 'cat')) for n in range(0,3)]
-</code></pre>
+<span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">plural</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="s1">&#39;cat&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">)]</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>['0 cats', '1 cat', '2 cats']
-</code></pre>
+<div class="highlight"><pre><span></span><code>[&#39;0 cats&#39;, &#39;1 cat&#39;, &#39;2 cats&#39;]
+</code></pre></div>
 
 <h2 id="hemlocktoolspronouns">hemlock.tools.<strong>pronouns</strong></h2>
 <p class="func-header">
@@ -444,37 +452,37 @@ world, sun, or moon
 </table>
 
 <h4 id="examples_3">Examples</h4>
-<pre><code class="python">from hemlock.tools import pronouns
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">pronouns</span>
 
-string = '''
-{A_subject} said hello to {B_object} as {B_subject} was walking
-{B_dep_poss} neighbor's dog. 'Is that dog {B_indep_poss}?', {A_subject}
-thought to {A_reflex}.
-'''
-string.format(
-    **pronouns(3, True, 'male', pfx='A_'),
-    **pronouns(3, True, 'female', pfx='B_')
-)
-</code></pre>
+<span class="n">string</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="si">{A_subject}</span><span class="s1"> said hello to </span><span class="si">{B_object}</span><span class="s1"> as </span><span class="si">{B_subject}</span><span class="s1"> was walking</span>
+<span class="si">{B_dep_poss}</span><span class="s1"> neighbor&#39;s dog. &#39;Is that dog </span><span class="si">{B_indep_poss}</span><span class="s1">?&#39;, </span><span class="si">{A_subject}</span><span class="s1"></span>
+<span class="s1">thought to </span><span class="si">{A_reflex}</span><span class="s1">.</span>
+<span class="s1">&#39;&#39;&#39;</span>
+<span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="o">**</span><span class="n">pronouns</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;male&#39;</span><span class="p">,</span> <span class="n">pfx</span><span class="o">=</span><span class="s1">&#39;A_&#39;</span><span class="p">),</span>
+    <span class="o">**</span><span class="n">pronouns</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;female&#39;</span><span class="p">,</span> <span class="n">pfx</span><span class="o">=</span><span class="s1">&#39;B_&#39;</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>he said hello to her as she was walking
-her neighbor's dog. 'Is that dog hers?', he
+<div class="highlight"><pre><span></span><code>he said hello to her as she was walking
+her neighbor&#39;s dog. &#39;Is that dog hers?&#39;, he
 thought to himself.
-</code></pre>
+</code></pre></div>
 
 <p>In:</p>
-<pre><code class="python">string.format(
-    **pronouns(3, True, 'female', pfx='A_'),
-    **pronouns(3, True, 'male', pfx='B_')
-)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="o">**</span><span class="n">pronouns</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;female&#39;</span><span class="p">,</span> <span class="n">pfx</span><span class="o">=</span><span class="s1">&#39;A_&#39;</span><span class="p">),</span>
+    <span class="o">**</span><span class="n">pronouns</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;male&#39;</span><span class="p">,</span> <span class="n">pfx</span><span class="o">=</span><span class="s1">&#39;B_&#39;</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>she said hello to him as he was walking
-his neighbor's dog. 'Is that dog his?', she
+<div class="highlight"><pre><span></span><code>she said hello to him as he was walking
+his neighbor&#39;s dog. &#39;Is that dog his?&#39;, she
 thought to herself.
-</code></pre>
+</code></pre></div>
               
             </div>
           </div>

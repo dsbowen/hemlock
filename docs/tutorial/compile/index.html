@@ -203,6 +203,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -251,30 +259,30 @@
 <p>In our case, we're going to make a confirmation page for the participant's demographic information.</p>
 <h2 id="basic-syntax">Basic syntax</h2>
 <p>Open your jupyter notebook and run the following:</p>
-<pre><code class="python">from hemlock import Check, Compile as C
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Check</span><span class="p">,</span> <span class="n">Compile</span> <span class="k">as</span> <span class="n">C</span>
 
-check = Check(
-    '&lt;p&gt;Select the correct answer.&lt;/p&gt;',
-    ['Correct', 'Incorrect', 'Also incorrect'],
-    compile=C.shuffle()
-)
-check.compile
-</code></pre>
+<span class="n">check</span> <span class="o">=</span> <span class="n">Check</span><span class="p">(</span>
+    <span class="s1">&#39;&lt;p&gt;Select the correct answer.&lt;/p&gt;&#39;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s1">&#39;Correct&#39;</span><span class="p">,</span> <span class="s1">&#39;Incorrect&#39;</span><span class="p">,</span> <span class="s1">&#39;Also incorrect&#39;</span><span class="p">],</span>
+    <span class="nb">compile</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()</span>
+<span class="p">)</span>
+<span class="n">check</span><span class="o">.</span><span class="n">compile</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>[&lt;Compile 1&gt;]
-</code></pre>
+<div class="highlight"><pre><span></span><code>[&lt;Compile 1&gt;]
+</code></pre></div>
 
 <p>You can add compile functions to a page or question by setting its <code>compile</code> attribute or passing a <code>compile</code> argument to its constructor. Compile functions run just before a page's html is compiled.</p>
 <p>The <code>shuffle</code> compile function shuffles a question's choices. (Or, if attached to a page, shuffles its page's questions).</p>
 <p>Let's watch our compile function at work:</p>
-<pre><code>check._compile()
+<div class="highlight"><pre><span></span><code>check._compile()
 [choice.label for choice in check.choices]
-</code></pre>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>['Incorrect', 'Also incorrect', 'Correct']
-</code></pre>
+<div class="highlight"><pre><span></span><code>[&#39;Incorrect&#39;, &#39;Also incorrect&#39;, &#39;Correct&#39;]
+</code></pre></div>
 
 <p>Run this a few times and notice how the order of the choices changes. This behavior is useful for comprehension checks, as we'll see later.</p>
 <p><strong>Notes.</strong></p>
@@ -285,96 +293,96 @@ check.compile
 <h2 id="custom-compilation">Custom compilation</h2>
 <p>We're going to take the participant's responses to the demographics page and display them on a new page. We'll ask the participant to correct any errors by going back to the demographics page.</p>
 <p>Let's see how to do this in our notebook:</p>
-<pre><code class="python">from hemlock import Input, Label, Page, Range, Select
-from hemlock.tools import join
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Range</span><span class="p">,</span> <span class="n">Select</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">join</span>
 
-@C.register
-def confirm(confirm_label, demographics_page):
-    # get the participant's data from the demographics page
-    demographics = [q.data for q in demographics_page.questions]
-    # re-format the race demographic data
-    race = demographics_page.questions[2]
-    race = join('and', *(key for key in race.data if race.data[key]))
-    demographics[2] = race
-    # set the label based on the participant's demographics data
-    confirm_label.label = '''
-    &lt;p&gt;Confirm the following information:&lt;/p&gt;
-    &lt;ul&gt;
-        &lt;li&gt;Date of birth: {}&lt;/li&gt;
-        &lt;li&gt;Gender: {}&lt;/li&gt;
-        &lt;li&gt;Race/Ethnicity: {}&lt;/li&gt;
-        &lt;li&gt;Marital status: {}&lt;/li&gt;
-        &lt;li&gt;Subjective socio-economic status: {}&lt;/li&gt;
-    &lt;/ul&gt;
-    &lt;p&gt;To correct this information, click '&lt;&lt;'.&lt;/p&gt;
-    '''.format(*demographics)
+<span class="nd">@C</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">confirm</span><span class="p">(</span><span class="n">confirm_label</span><span class="p">,</span> <span class="n">demographics_page</span><span class="p">):</span>
+    <span class="c1"># get the participant&#39;s data from the demographics page</span>
+    <span class="n">demographics</span> <span class="o">=</span> <span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">data</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">demographics_page</span><span class="o">.</span><span class="n">questions</span><span class="p">]</span>
+    <span class="c1"># re-format the race demographic data</span>
+    <span class="n">race</span> <span class="o">=</span> <span class="n">demographics_page</span><span class="o">.</span><span class="n">questions</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">race</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">race</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="n">race</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+    <span class="n">demographics</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">race</span>
+    <span class="c1"># set the label based on the participant&#39;s demographics data</span>
+    <span class="n">confirm_label</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    &lt;p&gt;Confirm the following information:&lt;/p&gt;</span>
+<span class="s1">    &lt;ul&gt;</span>
+<span class="s1">        &lt;li&gt;Date of birth: </span><span class="si">{}</span><span class="s1">&lt;/li&gt;</span>
+<span class="s1">        &lt;li&gt;Gender: </span><span class="si">{}</span><span class="s1">&lt;/li&gt;</span>
+<span class="s1">        &lt;li&gt;Race/Ethnicity: </span><span class="si">{}</span><span class="s1">&lt;/li&gt;</span>
+<span class="s1">        &lt;li&gt;Marital status: </span><span class="si">{}</span><span class="s1">&lt;/li&gt;</span>
+<span class="s1">        &lt;li&gt;Subjective socio-economic status: </span><span class="si">{}</span><span class="s1">&lt;/li&gt;</span>
+<span class="s1">    &lt;/ul&gt;</span>
+<span class="s1">    &lt;p&gt;To correct this information, click &#39;&lt;&lt;&#39;.&lt;/p&gt;</span>
+<span class="s1">    &#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">demographics</span><span class="p">)</span>
 
-demographics_page = Page(
-    Input(data='10/26/1992'),
-    Check(data='Male'),
-    Check(data={'White': 1, 'Black': 1}),
-    Select(data='Never married'),
-    Range(data='5')
-)
-confirm_page = Page(
-    Label(compile=C.confirm(demographics_page)), 
-    back=True
-)
-confirm_page._compile().preview()
-</code></pre>
+<span class="n">demographics_page</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span>
+    <span class="n">Input</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;10/26/1992&#39;</span><span class="p">),</span>
+    <span class="n">Check</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;Male&#39;</span><span class="p">),</span>
+    <span class="n">Check</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;White&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Black&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}),</span>
+    <span class="n">Select</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;Never married&#39;</span><span class="p">),</span>
+    <span class="n">Range</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;5&#39;</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">confirm_page</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span>
+    <span class="n">Label</span><span class="p">(</span><span class="nb">compile</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">confirm</span><span class="p">(</span><span class="n">demographics_page</span><span class="p">)),</span> 
+    <span class="n">back</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+<span class="n">confirm_page</span><span class="o">.</span><span class="n">_compile</span><span class="p">()</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
 
 <h3 id="code-explanation">Code explanation</h3>
 <p>First, we register a new compile function with the <code>@C.register</code> decorator. The compile function takes the confirmation label as its first argument. In general, compile functions take their parent as their first argument. We also pass in the demographics page as the compile function's second argument.</p>
 <p>Next, we add a back button to the page with <code>back=True</code>.</p>
 <p>Then, we compile and preview the page.</p>
 <p><code>confirm</code> begins by gathering the demographics data from the demographics page. The data are well formatted to insert into our confirmation page except for race. For <code>Check</code> and <code>Select</code> questions, if the participant can select multiple choices, the data are stored as a dictionary mapping choice values (<code>'White'</code>, <code>'Black'</code>, etc.) to a 0-1 indicator that the participant selected that choice. We fix this with the following:</p>
-<pre><code class="python">from hemlock.tools import join
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">join</span>
 
-race_data = demographics_page.questions[2].data
-race = join('and', *(key for key in race_data if race_data[key]))
-demographics[2] = race
-</code></pre>
+<span class="n">race_data</span> <span class="o">=</span> <span class="n">demographics_page</span><span class="o">.</span><span class="n">questions</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="n">race</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">race_data</span> <span class="k">if</span> <span class="n">race_data</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+<span class="n">demographics</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">race</span>
+</code></pre></div>
 
 <p>Note that <code>race_data[key]</code> evaluates to <code>True</code> if the <code>key</code> (<code>'White'</code>, <code>'Black'</code>, etc.) was selected. So the expression <code>(key for key in race_data if race_data[key])</code> means 'get all the keys (races) the participant selected'. The expression</p>
-<pre><code class="python">join('and', *(key for key in race_data if race_data[key]))
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">join</span><span class="p">(</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">race_data</span> <span class="k">if</span> <span class="n">race_data</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</code></pre></div>
 
 <p>means 'join all of the selected keys with "and", e.g. "White and Black"'.</p>
 <p>Finally, <code>confirm</code> adds the demographics to the confirmation label.</p>
 <h2 id="compilation-in-our-app">Compilation in our app</h2>
 <p>Now that we've seen how to add compile functions in our notebook, let's add it to our app.</p>
 <p>In <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, Check, Compile as C, Embedded, Input, Label, Page, Range, Select, Submit as S, Validate as V, route
-from hemlock.tools import join
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Check</span><span class="p">,</span> <span class="n">Compile</span> <span class="k">as</span> <span class="n">C</span><span class="p">,</span> <span class="n">Embedded</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Range</span><span class="p">,</span> <span class="n">Select</span><span class="p">,</span> <span class="n">Submit</span> <span class="k">as</span> <span class="n">S</span><span class="p">,</span> <span class="n">Validate</span> <span class="k">as</span> <span class="n">V</span><span class="p">,</span> <span class="n">route</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">join</span>
 
-from datetime import datetime
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
-@route('/survey')
-def start():
-    demographics_page = Page(
-        Input(
-            '&lt;p&gt;Enter your date of birth.&lt;/p&gt;',
-            placeholder='mm/dd/yyyy',
-            var='DoB', data_rows=-1,
-            validate=[V.require(), V.date_format()],
-            submit=S.record_age()
-        ),
-        # REST OF THE DEMOGRAPHICS PAGE HERE
-    )
-    return Branch(
-        demographics_page,
-        Page(
-            Label(compile=C.confirm(demographics_page)),
-            back=True, terminal=True
-        )
-    )
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/survey&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="n">demographics_page</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span>
+        <span class="n">Input</span><span class="p">(</span>
+            <span class="s1">&#39;&lt;p&gt;Enter your date of birth.&lt;/p&gt;&#39;</span><span class="p">,</span>
+            <span class="n">placeholder</span><span class="o">=</span><span class="s1">&#39;mm/dd/yyyy&#39;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="s1">&#39;DoB&#39;</span><span class="p">,</span> <span class="n">data_rows</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">validate</span><span class="o">=</span><span class="p">[</span><span class="n">V</span><span class="o">.</span><span class="n">require</span><span class="p">(),</span> <span class="n">V</span><span class="o">.</span><span class="n">date_format</span><span class="p">()],</span>
+            <span class="n">submit</span><span class="o">=</span><span class="n">S</span><span class="o">.</span><span class="n">record_age</span><span class="p">()</span>
+        <span class="p">),</span>
+        <span class="c1"># REST OF THE DEMOGRAPHICS PAGE HERE</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span>
+        <span class="n">demographics_page</span><span class="p">,</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Label</span><span class="p">(</span><span class="nb">compile</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">confirm</span><span class="p">(</span><span class="n">demographics_page</span><span class="p">)),</span>
+            <span class="n">back</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">terminal</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 
-...
+<span class="o">...</span>
 
-@C.register
-def confirm(confirm_label, demographics_page):
-    # PUT YOUR COMPILE FUNCTION HERE
-</code></pre>
+<span class="nd">@C</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">confirm</span><span class="p">(</span><span class="n">confirm_label</span><span class="p">,</span> <span class="n">demographics_page</span><span class="p">):</span>
+    <span class="c1"># PUT YOUR COMPILE FUNCTION HERE</span>
+</code></pre></div>
 
 <p>Run the app again to see your confirmation page.</p>
 <h2 id="summary">Summary</h2>

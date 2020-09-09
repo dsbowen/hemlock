@@ -247,6 +247,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -350,16 +358,16 @@ driver with <code>driver.close()</code>.</p>
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Debug as D, Page, push_app_context
-from hemlock.tools import chromedriver
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Debug</span> <span class="k">as</span> <span class="n">D</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">chromedriver</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-driver = chromedriver()
+<span class="n">driver</span> <span class="o">=</span> <span class="n">chromedriver</span><span class="p">()</span>
 
-p = Page(debug=[D.debug_questions(), D.forward()])
-p.preview(driver)._debug(driver)
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="p">[</span><span class="n">D</span><span class="o">.</span><span class="n">debug_questions</span><span class="p">(),</span> <span class="n">D</span><span class="o">.</span><span class="n">forward</span><span class="p">()])</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">_debug</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+</code></pre></div>
 
 <h2 id="hemlockfunctionsdebugback">hemlock.functions.debug.<strong>back</strong></h2>
 <p class="func-header">
@@ -386,16 +394,16 @@ p.preview(driver)._debug(driver)
 </table>
 
 <h4 id="examples_1">Examples</h4>
-<pre><code class="python">from hemlock import Debug as D, Page, push_app_context
-from hemlock.tools import chromedriver
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Debug</span> <span class="k">as</span> <span class="n">D</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">chromedriver</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-driver = chromedriver()
+<span class="n">driver</span> <span class="o">=</span> <span class="n">chromedriver</span><span class="p">()</span>
 
-p = Page(debug=[D.debug_questions(), D.back()])
-p.preview(driver)._debug(driver)
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="p">[</span><span class="n">D</span><span class="o">.</span><span class="n">debug_questions</span><span class="p">(),</span> <span class="n">D</span><span class="o">.</span><span class="n">back</span><span class="p">()])</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">_debug</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+</code></pre></div>
 
 <h2 id="hemlockfunctionsdebugsend_keys">hemlock.functions.debug.<strong>send_keys</strong></h2>
 <p class="func-header">
@@ -430,16 +438,16 @@ p.preview(driver)._debug(driver)
 </table>
 
 <h4 id="examples_2">Examples</h4>
-<pre><code class="python">from hemlock import Debug as D, Input, Page, push_app_context
-from hemlock.tools import chromedriver
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Debug</span> <span class="k">as</span> <span class="n">D</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">chromedriver</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-driver = chromedriver()
+<span class="n">driver</span> <span class="o">=</span> <span class="n">chromedriver</span><span class="p">()</span>
 
-p = Page(Input(debug=D.send_keys('hello world')))
-p.preview(driver)._debug(driver)
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="n">D</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(</span><span class="s1">&#39;hello world&#39;</span><span class="p">)))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">_debug</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+</code></pre></div>
 
 <h2 id="hemlockfunctionsdebugrandom_str">hemlock.functions.debug.<strong>random_str</strong></h2>
 <p class="func-header">
@@ -474,16 +482,16 @@ p.preview(driver)._debug(driver)
 </table>
 
 <h4 id="examples_3">Examples</h4>
-<pre><code class="python">from hemlock import Debug as D, Input, Page, push_app_context
-from hemlock.tools import chromedriver
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Debug</span> <span class="k">as</span> <span class="n">D</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">chromedriver</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-driver = chromedriver()
+<span class="n">driver</span> <span class="o">=</span> <span class="n">chromedriver</span><span class="p">()</span>
 
-p = Page(Input(debug=D.random_str()))
-p.preview(driver)._debug(driver)
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="n">D</span><span class="o">.</span><span class="n">random_str</span><span class="p">()))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">_debug</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+</code></pre></div>
 
 <h2 id="hemlockfunctionsdebugrandom_number">hemlock.functions.debug.<strong>random_number</strong></h2>
 <p class="func-header">
@@ -530,16 +538,16 @@ p.preview(driver)._debug(driver)
 </table>
 
 <h4 id="examples_4">Examples</h4>
-<pre><code class="python">from hemlock import Debug as D, Input, Page, push_app_context
-from hemlock.tools import chromedriver
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Debug</span> <span class="k">as</span> <span class="n">D</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">chromedriver</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-driver = chromedriver()
+<span class="n">driver</span> <span class="o">=</span> <span class="n">chromedriver</span><span class="p">()</span>
 
-p = Page(Input(debug=D.random_number()))
-p.preview(driver)._debug(driver)
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="n">D</span><span class="o">.</span><span class="n">random_number</span><span class="p">()))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">_debug</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+</code></pre></div>
 
 <h2 id="hemlockfunctionsdebugsend_datetime">hemlock.functions.debug.<strong>send_datetime</strong></h2>
 <p class="func-header">
@@ -571,18 +579,18 @@ p.preview(driver)._debug(driver)
 </table>
 
 <h4 id="examples_5">Examples</h4>
-<pre><code class="python">from hemlock import Debug as D, Input, Page, push_app_context
-from hemlock.tools import chromedriver
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Debug</span> <span class="k">as</span> <span class="n">D</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">chromedriver</span>
 
-from datetime import datetime
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-driver = chromedriver()
+<span class="n">driver</span> <span class="o">=</span> <span class="n">chromedriver</span><span class="p">()</span>
 
-p = Page(Input(input_type='date', debug=D.send_datetime(datetime.utcnow())))
-p.preview(driver)._debug(driver)
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="n">input_type</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">D</span><span class="o">.</span><span class="n">send_datetime</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">())))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">_debug</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+</code></pre></div>
 
 <h2 id="hemlockfunctionsdebugdrag_range">hemlock.functions.debug.<strong>drag_range</strong></h2>
 <p class="func-header">
@@ -621,16 +629,16 @@ p.preview(driver)._debug(driver)
 </table>
 
 <h4 id="examples_6">Examples</h4>
-<pre><code class="python">from hemlock import Debug as D, Page, Range, push_app_context
-from hemlock.tools import chromedriver
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Debug</span> <span class="k">as</span> <span class="n">D</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Range</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">chromedriver</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-driver = chromedriver()
+<span class="n">driver</span> <span class="o">=</span> <span class="n">chromedriver</span><span class="p">()</span>
 
-p = Page(Range(debug=D.drag_range(80)))
-p.preview(driver)._debug(driver)
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Range</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="n">D</span><span class="o">.</span><span class="n">drag_range</span><span class="p">(</span><span class="mi">80</span><span class="p">)))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">_debug</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+</code></pre></div>
 
 <h2 id="hemlockfunctionsdebugclick_choices">hemlock.functions.debug.<strong>click_choices</strong></h2>
 <p class="func-header">
@@ -661,22 +669,22 @@ p.preview(driver)._debug(driver)
 </table>
 
 <h4 id="examples_7">Examples</h4>
-<pre><code class="python">from hemlock import Check, Debug as D, Page, push_app_context
-from hemlock.tools import chromedriver
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Check</span><span class="p">,</span> <span class="n">Debug</span> <span class="k">as</span> <span class="n">D</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">chromedriver</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-driver = chromedriver()
+<span class="n">driver</span> <span class="o">=</span> <span class="n">chromedriver</span><span class="p">()</span>
 
-p = Page(
-    Check(
-        '&lt;p&gt;Click &quot;Yes&quot;.&lt;/p&gt;',
-        ['Yes', 'No'],
-        debug=D.click_choices('Yes')
-    )
-)
-p.preview(driver)._debug(driver)
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span>
+    <span class="n">Check</span><span class="p">(</span>
+        <span class="s1">&#39;&lt;p&gt;Click &quot;Yes&quot;.&lt;/p&gt;&#39;</span><span class="p">,</span>
+        <span class="p">[</span><span class="s1">&#39;Yes&#39;</span><span class="p">,</span> <span class="s1">&#39;No&#39;</span><span class="p">],</span>
+        <span class="n">debug</span><span class="o">=</span><span class="n">D</span><span class="o">.</span><span class="n">click_choices</span><span class="p">(</span><span class="s1">&#39;Yes&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">_debug</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+</code></pre></div>
 
 <h2 id="hemlockfunctionsdebugclear_choices">hemlock.functions.debug.<strong>clear_choices</strong></h2>
 <p class="func-header">
@@ -705,23 +713,23 @@ p.preview(driver)._debug(driver)
 <h4 id="notes_1">Notes</h4>
 <p>Intended only for questions in which multiple choices may be selected.</p>
 <h4 id="examples_8">Examples</h4>
-<pre><code class="python">from hemlock import Check, Debug as D, Page, push_app_context
-from hemlock.tools import chromedriver
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Check</span><span class="p">,</span> <span class="n">Debug</span> <span class="k">as</span> <span class="n">D</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">chromedriver</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-driver = chromedriver()
+<span class="n">driver</span> <span class="o">=</span> <span class="n">chromedriver</span><span class="p">()</span>
 
-p = Page(
-    Check(
-        '&lt;p&gt;Click &quot;Yes&quot;.&lt;/p&gt;',
-        ['Yes', 'No'],
-        multiple=True,
-        debug=D.clear_choices()
-    )
-)
-p.preview(driver)._debug(driver)
-</code></pre>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span>
+    <span class="n">Check</span><span class="p">(</span>
+        <span class="s1">&#39;&lt;p&gt;Click &quot;Yes&quot;.&lt;/p&gt;&#39;</span><span class="p">,</span>
+        <span class="p">[</span><span class="s1">&#39;Yes&#39;</span><span class="p">,</span> <span class="s1">&#39;No&#39;</span><span class="p">],</span>
+        <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">debug</span><span class="o">=</span><span class="n">D</span><span class="o">.</span><span class="n">clear_choices</span><span class="p">()</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">_debug</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+</code></pre></div>
               
             </div>
           </div>

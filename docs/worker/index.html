@@ -195,6 +195,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -286,48 +294,48 @@ next page.</p>
 
 <h4 id="examples">Examples</h4>
 <p>In <code>survey.py</code>:</p>
-<pre><code class="python">from hemlock import Branch, Compile as C, Label, Page, route
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Compile</span> <span class="k">as</span> <span class="n">C</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">route</span>
 
-@route('/survey')
-def start():
-    return Branch(
-        Page(
-            Label('&lt;p&gt;Hello, World!&lt;/p&gt;')
-        ),
-        Page(
-            Label(
-                '&lt;p&gt;Goodbye, Moon!&lt;/p&gt;',
-                compile=C.complex_function(seconds=5)
-            ),
-            compile_worker=True,
-            terminal=True
-        ),
-    )
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/survey&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Hello, World!&lt;/p&gt;&#39;</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Label</span><span class="p">(</span>
+                <span class="s1">&#39;&lt;p&gt;Goodbye, Moon!&lt;/p&gt;&#39;</span><span class="p">,</span>
+                <span class="nb">compile</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">complex_function</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">compile_worker</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">terminal</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 
-@C.register
-def complex_function(label, seconds):
-    import time
-    for t in range(seconds):
-        print('Progress: {}%'.format(round(100.*t/seconds)))
-        time.sleep(1)
-    print('Progress: 100%')
-</code></pre>
+<span class="nd">@C</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">complex_function</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">time</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">seconds</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Progress: </span><span class="si">{}</span><span class="s1">%&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="mf">100.</span><span class="o">*</span><span class="n">t</span><span class="o">/</span><span class="n">seconds</span><span class="p">)))</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Progress: 100%&#39;</span><span class="p">)</span>
+</code></pre></div>
 
 <p>Note that the second page (or rather, one of its questions), needs to run
 a complex compile function. We add a worker to it by setting
 <code>compile_worker=True</code>. Use a similar syntax to add validate, submit, and
 navigate workers.</p>
 <p>Our <code>app.py</code> is standard:</p>
-<pre><code class="python">import survey
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">survey</span>
 
-from hemlock import create_app
+<span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">create_app</span>
 
-app = create_app()
+<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
 
-if __name__ == '__main__':
-    from hemlock.app import socketio
-    socketio.run(app, debug=True)
-</code></pre>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">hemlock.app</span> <span class="kn">import</span> <span class="n">socketio</span>
+    <span class="n">socketio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
 
 <p>To run the app locally, you will need to set the <code>REDIS_URL</code> environment
 variable and run a redis queue from your project's root directory.</p>
@@ -346,10 +354,10 @@ variable and run a redis queue from your project's root directory.</p>
 <li>Run the app by entering <code>python3 app.py</code> in your first terminal.</li>
 </ol>
 <p>Go to <a href="http://localhost:5000/">http://localhost:5000/</a> in your browser. Notice that, when you click past the first page, you see a loading gif before the second page is loaded. In your second terminal window, you should see:</p>
-<pre><code>Progress: 0%
+<div class="highlight"><pre><span></span><code>Progress: 0%
 ...
 Progress: 100%
-</code></pre>
+</code></pre></div>
 
 <p>To run redis in production on heroku:</p>
 <ol>
@@ -357,17 +365,17 @@ Progress: 100%
 <li>Create a redis addon. Add <code>"heroku-redis:hobby-dev"</code> to <code>"addons"</code> in <code>app.json</code>.</li>
 <li>Add a worker to your dyno formation. Add <code>"worker: {"quantity": 1, "size": "hobby"}</code> to <code>"formation"</code> in <code>app.json</code>.</li>
 </ol>
-<pre><code class="json">{
-    &quot;addons&quot;: [
-        &quot;heroku-postgresql:hobby-basic&quot;,
-        &quot;heroku-redis:hobby-dev&quot;
-    ],
-    &quot;formation&quot;: {
-        &quot;web&quot;: {&quot;quantity&quot;: 1, &quot;size&quot;: &quot;hobby&quot;},
-        &quot;worker&quot;: {&quot;quantity&quot;: 1, &quot;size&quot;: &quot;hobby&quot;}
-    },
-...
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+    <span class="nt">&quot;addons&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;heroku-postgresql:hobby-basic&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;heroku-redis:hobby-dev&quot;</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;formation&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;web&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;quantity&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nt">&quot;size&quot;</span><span class="p">:</span> <span class="s2">&quot;hobby&quot;</span><span class="p">},</span>
+        <span class="nt">&quot;worker&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;quantity&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nt">&quot;size&quot;</span><span class="p">:</span> <span class="s2">&quot;hobby&quot;</span><span class="p">}</span>
+    <span class="p">},</span>
+<span class="err">...</span>
+</code></pre></div>
 
 <p>When scaling for production, I recommend using the premium-1 redis plan,
 quantity 10, size standard-1x.</p>

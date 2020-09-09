@@ -201,6 +201,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -247,116 +255,116 @@
 <h2 id="previewing-data-from-a-single-participant">Previewing data from a single participant</h2>
 <p>Each hemlock project has a downloadable data frame containing the data for all participants. We'll start by looking at the data belonging to a 'test participant'.</p>
 <p>Run the following in your jupyter notebook:</p>
-<pre><code class="python">from hemlock import Participant
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Participant</span>
 
-part = Participant.gen_test_participant()
-dict(part.get_data())
-</code></pre>
+<span class="n">part</span> <span class="o">=</span> <span class="n">Participant</span><span class="o">.</span><span class="n">gen_test_participant</span><span class="p">()</span>
+<span class="nb">dict</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>{'ID': [1],
- 'EndTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
- 'StartTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
- 'Status': ['InProgress']}
-</code></pre>
+<div class="highlight"><pre><span></span><code>{&#39;ID&#39;: [1],
+ &#39;EndTime&#39;: [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
+ &#39;StartTime&#39;: [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
+ &#39;Status&#39;: [&#39;InProgress&#39;]}
+</code></pre></div>
 
 <p>This shows the data our test participant contributes to the data frame. The keys are variable names, and values are list of entries for that variable.</p>
 <p>An easy way to add data is with 'embedded data':</p>
-<pre><code class="python">from hemlock import Embedded
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Embedded</span>
 
-part.embedded = [Embedded(var='MyVariable', data='MyData')]
-dict(part.get_data())
-</code></pre>
+<span class="n">part</span><span class="o">.</span><span class="n">embedded</span> <span class="o">=</span> <span class="p">[</span><span class="n">Embedded</span><span class="p">(</span><span class="n">var</span><span class="o">=</span><span class="s1">&#39;MyVariable&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;MyData&#39;</span><span class="p">)]</span>
+<span class="nb">dict</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>{'ID': [1],
- 'EndTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
- 'StartTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
- 'Status': ['InProgress'],
- 'MyVariable': ['MyData'],
- 'MyVariableOrder': [0],
- 'MyVariableIndex': [0]}
-</code></pre>
+<div class="highlight"><pre><span></span><code>{&#39;ID&#39;: [1],
+ &#39;EndTime&#39;: [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
+ &#39;StartTime&#39;: [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
+ &#39;Status&#39;: [&#39;InProgress&#39;],
+ &#39;MyVariable&#39;: [&#39;MyData&#39;],
+ &#39;MyVariableOrder&#39;: [0],
+ &#39;MyVariableIndex&#39;: [0]}
+</code></pre></div>
 
 <p>This adds an <code>Embedded</code> data object to our participant. Embedded data are a type of data element, like questions, but unlike questions, are not displayed to participants. We can add embedded data to a participant, branch, or page.</p>
 <p>When we examine the data, we see that the participant has a new variable named <code>'MyVariable'</code> with data <code>['MyData']</code>. We also see two additional variables named <code>'MyVariableOrder'</code> and <code>'MyVariableIndex'</code>. Hemlock automatically adds order and index data for every data element. Order is the order in which this data element appeared in the survey, relative to other data elements belonging to the same variable. Index is the order in which this data element appeared in its parent's list of children; for example, the order in which a question appeared on its page.</p>
 <h2 id="ordering">Ordering</h2>
 <p>The order in which data elements appear in the data frame is the order in which they were created; not necessarily the order in which they appear to the participant. For example:</p>
-<pre><code class="python">embedded1 = Embedded('MyVariable', 1)
-embedded0 = Embedded('MyVariable', 0)
-part.embedded = [embedded0, embedded1]
-dict(part.get_data())
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">embedded1</span> <span class="o">=</span> <span class="n">Embedded</span><span class="p">(</span><span class="s1">&#39;MyVariable&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">embedded0</span> <span class="o">=</span> <span class="n">Embedded</span><span class="p">(</span><span class="s1">&#39;MyVariable&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">part</span><span class="o">.</span><span class="n">embedded</span> <span class="o">=</span> <span class="p">[</span><span class="n">embedded0</span><span class="p">,</span> <span class="n">embedded1</span><span class="p">]</span>
+<span class="nb">dict</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>{'ID': [1, 1],
- 'EndTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
+<div class="highlight"><pre><span></span><code>{&#39;ID&#39;: [1, 1],
+ &#39;EndTime&#39;: [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
   datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
- 'StartTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
+ &#39;StartTime&#39;: [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
   datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
- 'Status': ['InProgress', 'InProgress'],
- 'MyVariable': [1, 0],
- 'MyVariableOrder': [1, 0],
- 'MyVariableIndex': [1, 0]}
-</code></pre>
+ &#39;Status&#39;: [&#39;InProgress&#39;, &#39;InProgress&#39;],
+ &#39;MyVariable&#39;: [1, 0],
+ &#39;MyVariableOrder&#39;: [1, 0],
+ &#39;MyVariableIndex&#39;: [1, 0]}
+</code></pre></div>
 
 <p>Note that the data for <code>'MyVariable'</code> are <code>[1, 0]</code> because we created <code>embedded1</code> before <code>embedded0</code>.</p>
 <h2 id="data-rows">Data rows</h2>
 <p>By default, data elements (embedded data and questions) contribute 1 row to the data frame. But we often want the same data to be repeated on multiple rows. We do this by setting the <code>data_rows</code> attribute:</p>
-<pre><code class="python">part.embedded = [Embedded('MyVariable', 'MyData', data_rows=3)]
-dict(part.get_data())
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">part</span><span class="o">.</span><span class="n">embedded</span> <span class="o">=</span> <span class="p">[</span><span class="n">Embedded</span><span class="p">(</span><span class="s1">&#39;MyVariable&#39;</span><span class="p">,</span> <span class="s1">&#39;MyData&#39;</span><span class="p">,</span> <span class="n">data_rows</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
+<span class="nb">dict</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>{'ID': [1, 1, 1],
- 'EndTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
+<div class="highlight"><pre><span></span><code>{&#39;ID&#39;: [1, 1, 1],
+ &#39;EndTime&#39;: [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
   datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
   datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
- 'StartTime': [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
+ &#39;StartTime&#39;: [datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
   datetime.datetime(2020, 7, 8, 11, 46, 54, 462552),
   datetime.datetime(2020, 7, 8, 11, 46, 54, 462552)],
- 'Status': ['InProgress', 'InProgress', 'InProgress'],
- 'MyVariable': ['MyData', 'MyData', 'MyData'],
- 'MyVariableOrder': [0, 0, 0],
- 'MyVariableIndex': [0, 0, 0]}
-</code></pre>
+ &#39;Status&#39;: [&#39;InProgress&#39;, &#39;InProgress&#39;, &#39;InProgress&#39;],
+ &#39;MyVariable&#39;: [&#39;MyData&#39;, &#39;MyData&#39;, &#39;MyData&#39;],
+ &#39;MyVariableOrder&#39;: [0, 0, 0],
+ &#39;MyVariableIndex&#39;: [0, 0, 0]}
+</code></pre></div>
 
 <p>Additionally, we often want to 'fill in' rows of a variable to match the length of a data frame. For example, we may not know in advance how many rows a participant will contribute to the data frame, but we know that we want the participant's demographic information to appear on all rows. To do this, we set <code>data_rows</code> to a negative number. For example, <code>data_rows=-2</code> means 'fill in two rows with this data entry and, when you download the data, fill in any blank rows after this with the same data':</p>
-<pre><code class="python">part.embedded = [
-    # these data will fill in empty rows at the bottom of the data frame
-    Embedded('MyFilledVariable', 'MyFilledData', data_rows=-1),
-    # these data will appear on three rows of the data frame
-    Embedded('MyVariable', 'MyData', data_rows=3)
-]
-dict(part.get_data())['MyFilledVariable']
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">part</span><span class="o">.</span><span class="n">embedded</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># these data will fill in empty rows at the bottom of the data frame</span>
+    <span class="n">Embedded</span><span class="p">(</span><span class="s1">&#39;MyFilledVariable&#39;</span><span class="p">,</span> <span class="s1">&#39;MyFilledData&#39;</span><span class="p">,</span> <span class="n">data_rows</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+    <span class="c1"># these data will appear on three rows of the data frame</span>
+    <span class="n">Embedded</span><span class="p">(</span><span class="s1">&#39;MyVariable&#39;</span><span class="p">,</span> <span class="s1">&#39;MyData&#39;</span><span class="p">,</span> <span class="n">data_rows</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="nb">dict</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">get_data</span><span class="p">())[</span><span class="s1">&#39;MyFilledVariable&#39;</span><span class="p">]</span>
+</code></pre></div>
 
 <p>Out:</p>
-<pre><code>['MyFilledData', 'MyFilledData', 'MyFilledData']
-</code></pre>
+<div class="highlight"><pre><span></span><code>[&#39;MyFilledData&#39;, &#39;MyFilledData&#39;, &#39;MyFilledData&#39;]
+</code></pre></div>
 
 <h2 id="adding-data-to-our-survey">Adding data to our survey</h2>
 <p>We can add data to our existing survey in much the same way: by setting a question's <code>var</code> and (when necessary) <code>data_rows</code> attribute. We generally want demographics information to appear in all rows of the data frame, so we'll set <code>data_rows=-1</code>.</p>
 <p>In <code>survey.py</code>:</p>
-<pre><code class="python">...
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
 
-@route('/survey')
-def start():
-    return Branch(
-        Page(
-            Input(
-                '&lt;p&gt;Enter your date of birth.&lt;/p&gt;',
-                placeholder='mm/dd/yyyy',
-                var='DoB', data_rows=-1
-            ),
-            Check(
-                '&lt;p&gt;Indicate your gender.&lt;/p&gt;',
-                ['Male', 'Female', 'Other'],
-                var='Gender', data_rows=-1
-            ),
-            # SET THE `var` AND `data_rows` ATTRIBUTES FOR THE REST OF THE QUESTIONS
-            ...
-</code></pre>
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/survey&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Input</span><span class="p">(</span>
+                <span class="s1">&#39;&lt;p&gt;Enter your date of birth.&lt;/p&gt;&#39;</span><span class="p">,</span>
+                <span class="n">placeholder</span><span class="o">=</span><span class="s1">&#39;mm/dd/yyyy&#39;</span><span class="p">,</span>
+                <span class="n">var</span><span class="o">=</span><span class="s1">&#39;DoB&#39;</span><span class="p">,</span> <span class="n">data_rows</span><span class="o">=-</span><span class="mi">1</span>
+            <span class="p">),</span>
+            <span class="n">Check</span><span class="p">(</span>
+                <span class="s1">&#39;&lt;p&gt;Indicate your gender.&lt;/p&gt;&#39;</span><span class="p">,</span>
+                <span class="p">[</span><span class="s1">&#39;Male&#39;</span><span class="p">,</span> <span class="s1">&#39;Female&#39;</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">],</span>
+                <span class="n">var</span><span class="o">=</span><span class="s1">&#39;Gender&#39;</span><span class="p">,</span> <span class="n">data_rows</span><span class="o">=-</span><span class="mi">1</span>
+            <span class="p">),</span>
+            <span class="c1"># SET THE `var` AND `data_rows` ATTRIBUTES FOR THE REST OF THE QUESTIONS</span>
+            <span class="o">...</span>
+</code></pre></div>
 
 <p><strong>Note.</strong> When a participant submits a page, the questions' data are recorded in a <code>data</code> attribute. A question's data will be added to the data frame if and only if you set its <code>var</code> attribute. However, data will be stored in a question's <code>data</code> attribute whether or not the <code>var</code> attribute is set.</p>
 <h2 id="downloading-data">Downloading data</h2>

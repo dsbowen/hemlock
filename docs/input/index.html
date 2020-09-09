@@ -197,6 +197,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -322,18 +330,26 @@ object if the input takes dates or times.</p>
     <td class="field-body" width="100%"><b>input_type : <i>str, default='text'</i></b>
 <p class="attr">
     Type of html input. See <a href="https://www.w3schools.com/html/html_form_input_types.asp">https://www.w3schools.com/html/html_form_input_types.asp</a>.
+</p>
+<b>placeholder : <i>str or None, default=None</i></b>
+<p class="attr">
+    Html placeholder.
+</p>
+<b>step : <i>float, str, or None, default=None</i></b>
+<p class="attr">
+    Step attribute for number inputs. By default, the step for number inputs is 1. Set to <code>'any'</code> for any step.
 </p></td>
 </tr>
     </tbody>
 </table>
 
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Input, Page, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-Page(Input('&lt;p&gt;Input text here.&lt;/p&gt;')).preview()
-</code></pre>
+<span class="n">Page</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Input text here.&lt;/p&gt;&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
               
             </div>
           </div>

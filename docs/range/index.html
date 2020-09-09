@@ -197,6 +197,14 @@
                     <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
                     </li>
                 </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../acknowledgements/">Acknowledgements</a>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -314,12 +322,12 @@ increments.</p>
 slider to participants. This will be appended to any <code>js</code> and <code>extra_js</code>
 arguments passed to the constructor.</p>
 <h4 id="examples">Examples</h4>
-<pre><code class="python">from hemlock import Range, Page, push_app_context
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Range</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">push_app_context</span>
 
-app = push_app_context()
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
 
-Page(Range('&lt;p&gt;This is a range slider.&lt;/p&gt;')).preview()
-</code></pre>
+<span class="n">Page</span><span class="p">(</span><span class="n">Range</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;This is a range slider.&lt;/p&gt;&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
               
             </div>
           </div>
