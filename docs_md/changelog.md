@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.22
+
+- added support for embedded `dash` apps
+
 ## CLI 0.0.17
 
 - added `setup-venv` command for easier virtual environment setup on Windows git bash

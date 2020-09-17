@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Comprehension check - Hemlock</title>
+  <title>Dashboard - Hemlock</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -19,8 +19,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Comprehension check";
-    var mkdocs_page_input_path = "comprehension.md";
+    var mkdocs_page_name = "Dashboard";
+    var mkdocs_page_input_path = "dashboard.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -148,10 +148,24 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Question polymorphs</span></p>
-                <ul>
+                <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../check/">Check</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../dashboard/">Dashboard</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Dashboard</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#hemlockdashboard">hemlock.Dashboard</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#methods">Methods</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_1">Examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_2">Examples</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../download/">Download</a>
                     </li>
@@ -171,18 +185,8 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Tools</span></p>
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Comprehension check</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolscomprehension_check">hemlock.tools.comprehension_check</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a>
-    </li>
-        </ul>
-    </li>
-    </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../comprehension/">Comprehension check</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../lang/">Language</a>
                     </li>
@@ -228,14 +232,14 @@
     
       
         
-          <li>Tools &raquo;</li>
+          <li>Question polymorphs &raquo;</li>
         
       
     
-    <li>Comprehension check</li>
+    <li>Dashboard</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/comprehension.md"
+        <a href="https://github.com/dsbowen/hemlock/edit/master/docs_md/dashboard.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -268,7 +272,7 @@
     }
 </style>
 
-<h1 id="comprehension-check">Comprehension check</h1>
+<h1 id="dashboard">Dashboard</h1>
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
     <col class="field-body" />
@@ -277,72 +281,72 @@
     </tbody>
 </table>
 
-<h2 id="hemlocktoolscomprehension_check">hemlock.tools.<strong>comprehension_check</strong></h2>
+<h2 id="hemlockdashboard">hemlock.<strong>Dashboard</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>comprehension_check</b>(<i>instructions, checks, attempts=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/comprehension.py#L8">[source]</a>
+    <i>class</i> hemlock.<b>Dashboard</b>(<i>label='', template='hemlock/dash.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/dashboard.py#L11">[source]</a>
 </p>
 
-<p>A comprehension check consists of 'instruction' pages followed by 'check'
-pages. The data of all questions in a check page must evaluate to <code>True</code>
-to pass the check. When a participant fails a check, he is brought back to
-the first instructions page.</p>
-<p>Participants only have to pass each check once. For example, suppose there
-are two checks, A and B. The participant passes check A but fails check B.
-He is brought back to the first page of the instructions. After rereading
-the instructions, he is brought directly to check B, skipping check A.</p>
+<p>Embeds a <a href="https://plotly.com/dash/" target="_blank">dash app</a>.</p>
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
     <col class="field-body" />
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Parameters:</b></td>
-    <td class="field-body" width="100%"><b>instructions : <i>hemlock.Page or list of hemlock.Page</i></b>
+    <td class="field-body" width="100%"><b>label : <i>str or bs4.BeautifulSoup, default=''</i></b>
 <p class="attr">
-    Instruction page(s).
+    Dashboard label.
 </p>
-<b>checks : <i>hemlock.Page or list of hemlock.Page</i></b>
+<b>template : <i>str, default='hemlock/dash.html'</i></b>
 <p class="attr">
-    Check page(s).
-</p>
-<b>attempts : <i>int or None, default=None</i></b>
-<p class="attr">
-    Number of attempts allotted. Participants are allowed to proceed with the survey after exceeding the maximum number of attempts. If <code>None</code>, participants must pass the comprehension check before continuing the survey.
+    Template for the dashboard body.
 </p></td>
 </tr>
 <tr class="field">
-    <th class="field-name"><b>Returns:</b></td>
-    <td class="field-body" width="100%"><b>pages : <i>list of hemlock.Page</i></b>
+    <th class="field-name"><b>Attributes:</b></td>
+    <td class="field-body" width="100%"><b>aspect_ratio : <i>tuple of (int, int), default=(16, 9)</i></b>
 <p class="attr">
-    List of instructions pages + check pages.
+    Aspect ratio of the embedded application. See <a href="https://getbootstrap.com/docs/4.0/utilities/embed/#aspect-ratios">https://getbootstrap.com/docs/4.0/utilities/embed/#aspect-ratios</a>.
+</p>
+<b>embed : <i>bs4.Tag</i></b>
+<p class="attr">
+    <code>&lt;div&gt;</code> tag of the embedded app.
+</p>
+<b>iframe : <i>bs4.Tag</i></b>
+<p class="attr">
+    <code>&lt;iframe&gt;</code> tag of the embedded app.
+</p>
+<b>src : <i>str</i></b>
+<p class="attr">
+    <code>src</code> attribute of the <code>&lt;iframe&gt;</code> tag.
 </p></td>
 </tr>
     </tbody>
 </table>
 
-<h4 id="notes">Notes</h4>
-<p>This function adds a <code>hemlock.Submit</code> function to each check page. This
-must be the last submit function of each check page.</p>
 <h4 id="examples">Examples</h4>
-<p>We have two files in our root directory. In <code>survey.py</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Submit</span> <span class="k">as</span> <span class="n">S</span><span class="p">,</span> <span class="n">route</span>
-<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">comprehension_check</span>
+<p>In this example, we create a simple dash app in which participants click on a
+button. We embed this app in a hemlock survey, and record the number of times
+a participant clicked the button.</p>
+<p>Install <code>dash</code> with:</p>
+<div class="highlight"><pre><span></span><code>$ hlk install dash
+</code></pre></div>
+
+<p>Or:</p>
+<div class="highlight"><pre><span></span><code>$ pip install dash
+</code></pre></div>
+
+<p>In <code>survey.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Dashboard</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Page</span><span class="p">,</span> <span class="n">route</span>
 
 <span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/survey&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">Branch</span><span class="p">(</span>
-        <span class="o">*</span><span class="n">comprehension_check</span><span class="p">(</span>
-            <span class="n">instructions</span><span class="o">=</span><span class="n">Page</span><span class="p">(</span>
-                <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Here are some instructions.&lt;/p&gt;&#39;</span><span class="p">)</span>
-            <span class="p">),</span>
-            <span class="n">checks</span><span class="o">=</span><span class="n">Page</span><span class="p">(</span>
-                <span class="n">Input</span><span class="p">(</span>
-                    <span class="s1">&#39;&lt;p&gt;Enter &quot;hello world&quot; or you... shall not... PASS!&lt;/p&gt;&#39;</span><span class="p">,</span>
-                    <span class="n">submit</span><span class="o">=</span><span class="n">S</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;hello world&#39;</span><span class="p">)</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
+        <span class="n">Page</span><span class="p">(</span>
+            <span class="n">Dashboard</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">&#39;/dashapp/&#39;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;n_clicks&#39;</span><span class="p">)</span>
         <span class="p">),</span>
         <span class="n">Page</span><span class="p">(</span>
-            <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;You passed the comprehension check!&lt;/p&gt;&#39;</span><span class="p">),</span>
+            <span class="n">Label</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;The end.&lt;/p&gt;&#39;</span><span class="p">),</span>
             <span class="n">terminal</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
     <span class="p">)</span>
@@ -351,9 +355,33 @@ must be the last submit function of each check page.</p>
 <p>In <code>app.py</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">survey</span>
 
-<span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">create_app</span>
+<span class="kn">import</span> <span class="nn">dash</span>
+<span class="kn">import</span> <span class="nn">dash_core_components</span> <span class="k">as</span> <span class="nn">dcc</span>
+<span class="kn">import</span> <span class="nn">dash_html_components</span> <span class="k">as</span> <span class="nn">html</span>
+<span class="kn">from</span> <span class="nn">dash.dependencies</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Output</span>
+<span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Dashboard</span><span class="p">,</span> <span class="n">create_app</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+<span class="n">dash_app</span> <span class="o">=</span> <span class="n">dash</span><span class="o">.</span><span class="n">Dash</span><span class="p">(</span>
+    <span class="n">server</span><span class="o">=</span><span class="n">app</span><span class="p">,</span>
+    <span class="n">routes_pathname_prefix</span><span class="o">=</span><span class="s1">&#39;/dashapp/&#39;</span><span class="p">,</span>
+    <span class="n">external_stylesheets</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;https://codepen.io/chriddyp/pen/bWLwgP.css&#39;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">dash_app</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">([</span>
+    <span class="n">dcc</span><span class="o">.</span><span class="n">Location</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;url&#39;</span><span class="p">),</span>
+    <span class="n">html</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="s1">&#39;Click me!&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;button&#39;</span><span class="p">),</span>
+    <span class="n">html</span><span class="o">.</span><span class="n">P</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;click-tracker&#39;</span><span class="p">),</span>
+<span class="p">])</span>
+
+<span class="nd">@dash_app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
+    <span class="n">Output</span><span class="p">(</span><span class="s1">&#39;click-tracker&#39;</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">),</span>
+    <span class="p">[</span><span class="n">Input</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="s1">&#39;search&#39;</span><span class="p">),</span> <span class="n">Input</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="s1">&#39;n_clicks&#39;</span><span class="p">)]</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">update_clicks</span><span class="p">(</span><span class="n">search</span><span class="p">,</span> <span class="n">n_clicks</span><span class="p">):</span>
+    <span class="n">n_clicks</span> <span class="o">=</span> <span class="n">n_clicks</span> <span class="ow">or</span> <span class="mi">0</span>
+    <span class="n">Dashboard</span><span class="o">.</span><span class="n">record_response</span><span class="p">(</span><span class="n">search</span><span class="p">,</span> <span class="n">n_clicks</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> clicks&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_clicks</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">hemlock.app</span> <span class="kn">import</span> <span class="n">socketio</span>
@@ -361,10 +389,105 @@ must be the last submit function of each check page.</p>
 </code></pre></div>
 
 <p>Run the app with:</p>
-<div class="highlight"><pre><span></span><code>$ python app.py # or python3 app.py
+<div class="highlight"><pre><span></span><code>$ hlk serve
 </code></pre></div>
 
-<p>Open your browser to <a href="http://localhost:5000/">http://localhost:5000/</a>.</p>
+<p>Or:</p>
+<div class="highlight"><pre><span></span><code>$ python app.py
+</code></pre></div>
+
+<p>Then open your browser and navigate to <a href="http://localhost:5000/">http://localhost:5000/</a>.</p>
+<h4 id="methods">Methods</h4>
+<p class="func-header">
+    <i></i> <b>get</b>(<i>search</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/dashboard.py#L174">[source]</a>
+</p>
+
+<p>Utility for retrieving a dashboard question in a dash callback.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>search : <i>str, formatted as URL query string</i></b>
+<p class="attr">
+    Must have 'id' and 'key' parameters.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>dashboard : <i>hemlock_dash.Dashboard</i></b>
+<p class="attr">
+    Dashboard specified by the id in the search string.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_1">Examples</h4>
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
+<span class="kn">import</span> <span class="nn">dash_core_components</span> <span class="k">as</span> <span class="nn">dcc</span>
+<span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Dashboard</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">([</span>
+    <span class="n">dcc</span><span class="o">.</span><span class="n">Location</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="n">refresh</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+    <span class="o">...</span>
+<span class="p">])</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
+    <span class="n">Output</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+    <span class="p">[</span><span class="n">Input</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="s1">&#39;search&#39;</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_callback</span><span class="p">(</span><span class="n">search</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+    <span class="n">dashboard</span> <span class="o">=</span> <span class="n">Dashboard</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">search</span><span class="p">)</span>
+</code></pre></div>
+
+<p class="func-header">
+    <i></i> <b>record_response</b>(<i>search, response</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/dashboard.py#L214">[source]</a>
+</p>
+
+<p>Utility for writing the <code>response</code> attribute of the dashboard
+question.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>search : <i>str, formatted as URL query string</i></b>
+<p class="attr">
+    Must have 'id' and 'key' parameters.
+</p>
+<b>response : <i></i></b>
+<p class="attr">
+    Value to which to set the dash question's <code>repsonse</code> attribute.
+</p></td>
+</tr>
+<tr class="field">
+    <th class="field-name"><b>Returns:</b></td>
+    <td class="field-body" width="100%"><b>dashboard : <i>hemlock_dash.Dashboard</i></b>
+<p class="attr">
+    Dashboard specified by the id in the search string.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_2">Examples</h4>
+<p>```python
+...
+import dash_core_components as dcc
+from hemlock import Dashboard</p>
+<p>app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    ...
+])</p>
+<p>@app.callback(
+    Output(...),
+    [Input('url', 'search'), ...]
+)
+def my_callback(search, ...):
+    Dashboard.record_response(search, 'hello world')</p>
               
             </div>
           </div>
@@ -372,10 +495,10 @@ must be the last submit function of each check page.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../lang/" class="btn btn-neutral float-right" title="Language">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../download/" class="btn btn-neutral float-right" title="Download">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../textarea/" class="btn btn-neutral" title="Textarea"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../check/" class="btn btn-neutral" title="Check"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -403,10 +526,10 @@ must be the last submit function of each check page.</p>
           <a href="https://github.com/dsbowen/hemlock/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../textarea/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../check/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../lang/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../download/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

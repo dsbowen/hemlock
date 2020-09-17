@@ -136,7 +136,7 @@ settings = {
     'screenout_text': SCREENOUT_TXT,
     'socket_js_src': SOCKET_JS_SRC,
     'static_folder': 'static',
-    'template_folder': 'templates',
+    'template_folder': os.path.join(os.getcwd(), 'templates'),
     'time_expired_text': TIME_EXPIRED_TXT,
     'time_limit': None,
     'validate': True,

@@ -108,15 +108,20 @@ class Input(InputGroup, InputBase, Question):
         self.body.changed()
 
     def _validate(self, *args, **kwargs):
-        if self.input_type == 'number':
-            self.response = (
+        return super()._validate(*args, **kwargs)
+
+    def _record_data(self):
+        if self.input_type in html_datetime_types:
+            self.data = get_datetime(self.response) or None
+        elif self.input_type == 'number' and self.response: 
+            self.data = (
                 float(self.response) if '.' in self.response 
                 else int(self.response)
             )
-        return super()._validate(*args, **kwargs)
+        else:
+            super()._record_data()
+        return self
 
     def _submit(self, *args, **kwargs):
         """Convert data to `datetime` object if applicable"""
-        if self.input_type in html_datetime_types:
-            self.data = get_datetime(self.response) or None
         return super()._submit(*args, **kwargs)

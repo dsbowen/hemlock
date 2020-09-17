@@ -50,6 +50,7 @@ nav:
     - Worker: worker.md
   - Question polymorphs:
     - Check: check.md
+    - Dashboard: dashboard.md
     - Download: download.md
     - File upload: file.md
     - Input: input.md

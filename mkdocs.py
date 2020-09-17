@@ -68,6 +68,7 @@ modifications = {'input_group': mod_input_group}
 
 qpolymorph_filenames = [
     'check',
+    'dashboard',
     'download',
     'file',
     'input',
