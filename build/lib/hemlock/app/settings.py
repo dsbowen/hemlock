@@ -171,6 +171,7 @@ settings = {
             'img-src': ['\'self\'', '\'unsafe-inline\'', 'data:'],
             'script-src': [
                 '\'self\'',
+                '\'unsafe-eval\'',
                 '\'unsafe-inline\'',
                 'https://code.jquery.com',
                 'https://cdn.jsdelivr.net',

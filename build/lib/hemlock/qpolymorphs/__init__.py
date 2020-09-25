@@ -1,6 +1,7 @@
 """Question polymorphs"""
 
 from .check import Check
+from .dashboard import Dashboard
 from .download import CreateFile, Download, HandleForm
 from .file import File
 from .input import Input
