@@ -40,7 +40,7 @@ difference between them, but reflects the underlying html.
 ##hemlock.**Choice**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Choice</b>(<i>label='', template='hemlock/choice.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/choice.py#L17">[source]</a>
+    <i>class</i> hemlock.<b>Choice</b>(<i>label='', template='hemlock/choice.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\choice.py#L17">[source]</a>
 </p>
 
 Choices are displayed as part of their question in index order.
@@ -103,7 +103,7 @@ to the constructor.
 
 
 <p class="func-header">
-    <i></i> <b>set_all</b>(<i>self, val</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/choice.py#L89">[source]</a>
+    <i></i> <b>set_all</b>(<i>self, val</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\choice.py#L89">[source]</a>
 </p>
 
 Set the choice's label, name, and value.
@@ -134,7 +134,7 @@ Set the choice's label, name, and value.
 
 
 <p class="func-header">
-    <i></i> <b>is_default</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/choice.py#L105">[source]</a>
+    <i></i> <b>is_default</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\choice.py#L105">[source]</a>
 </p>
 
 
@@ -161,7 +161,7 @@ The question's default choice(s) is the question's `response`, if not
 ##hemlock.**Option**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Option</b>(<i>label='', template='hemlock/option.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/choice.py#L162">[source]</a>
+    <i>class</i> hemlock.<b>Option</b>(<i>label='', template='hemlock/option.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\choice.py#L162">[source]</a>
 </p>
 
 Options are a choice polymorph for `hemlock.Select` questions.

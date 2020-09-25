@@ -34,7 +34,7 @@
 ##hemlock.**Select**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Select</b>(<i>label='', choices=[], template='hemlock/select.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/select.py#L17">[source]</a>
+    <i>class</i> hemlock.<b>Select</b>(<i>label='', choices=[], template='hemlock/select.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\select.py#L17">[source]</a>
 </p>
 
 Select questions allow participants to select one or more options from a

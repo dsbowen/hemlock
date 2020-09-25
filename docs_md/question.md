@@ -37,7 +37,7 @@ most useful when fleshed out. See section on question polymorphs.
 ##hemlock.**Question**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Question</b>(<i>label='', template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L20">[source]</a>
+    <i>class</i> hemlock.<b>Question</b>(<i>label='', template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\question.py#L20">[source]</a>
 </p>
 
 Base object for questions. Questions are displayed on their page in index
@@ -121,7 +121,7 @@ It inherits from
 
 
 <p class="func-header">
-    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L166">[source]</a>
+    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\question.py#L166">[source]</a>
 </p>
 
 Clear the error message.
@@ -145,7 +145,7 @@ Clear the error message.
 
 
 <p class="func-header">
-    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L177">[source]</a>
+    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\question.py#L177">[source]</a>
 </p>
 
 Clear the response.
@@ -169,7 +169,7 @@ Clear the response.
 ##hemlock.**ChoiceQuestion**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>ChoiceQuestion</b>(<i>label='', choices=[], template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L228">[source]</a>
+    <i>class</i> hemlock.<b>ChoiceQuestion</b>(<i>label='', choices=[], template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\question.py#L228">[source]</a>
 </p>
 
 A question which contains choices. Inherits from `hemlock.Question`.

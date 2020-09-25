@@ -34,7 +34,7 @@
 ##hemlock.**Check**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Check</b>(<i>label='', choices=[], template='hemlock/check.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/check.py#L15">[source]</a>
+    <i>class</i> hemlock.<b>Check</b>(<i>label='', choices=[], template='hemlock/check.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\check.py#L15">[source]</a>
 </p>
 
 Check questions use radio inputs if only one choice can be selected, or

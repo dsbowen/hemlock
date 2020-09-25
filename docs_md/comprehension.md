@@ -34,7 +34,7 @@
 ##hemlock.tools.**comprehension_check**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>comprehension_check</b>(<i>instructions, checks, attempts=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/comprehension.py#L8">[source]</a>
+    <i>def</i> hemlock.tools.<b>comprehension_check</b>(<i>instructions, checks, attempts=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\comprehension.py#L8">[source]</a>
 </p>
 
 A comprehension check consists of 'instruction' pages followed by 'check'

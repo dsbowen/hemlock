@@ -34,7 +34,7 @@
 ##hemlock.tools.**key**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>key</b>(<i>len_=90</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L12">[source]</a>
+    <i>def</i> hemlock.tools.<b>key</b>(<i>len_=90</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\random.py#L12">[source]</a>
 </p>
 
 
@@ -77,7 +77,7 @@ gpGmZuRfF7
 ##hemlock.tools.**Randomizer**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Randomizer</b>(<i>elements, r=1, combination=True</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L43">[source]</a>
+    <i>class</i> hemlock.tools.<b>Randomizer</b>(<i>elements, r=1, combination=True</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\random.py#L43">[source]</a>
 </p>
 
 Evenly randomizes over a set of elements.
@@ -132,7 +132,7 @@ Out:
 
 
 <p class="func-header">
-    <i></i> <b>next</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L88">[source]</a>
+    <i></i> <b>next</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\random.py#L88">[source]</a>
 </p>
 
 
@@ -156,7 +156,7 @@ Out:
 ##hemlock.tools.**Assigner**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Assigner</b>(<i>conditions</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L98">[source]</a>
+    <i>class</i> hemlock.tools.<b>Assigner</b>(<i>conditions</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\random.py#L98">[source]</a>
 </p>
 
 Evenly assigns participants to conditions. Inherits from
@@ -224,7 +224,7 @@ Out:
 
 
 <p class="func-header">
-    <i></i> <b>next</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/random.py#L153">[source]</a>
+    <i></i> <b>next</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\random.py#L153">[source]</a>
 </p>
 
 Assigns the participant to a condition. The condition assigment

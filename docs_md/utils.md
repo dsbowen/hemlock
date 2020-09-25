@@ -34,7 +34,7 @@
 ##hemlock.tools.**chromedriver**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>chromedriver</b>(<i>headless=False</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L9">[source]</a>
+    <i>def</i> hemlock.tools.<b>chromedriver</b>(<i>headless=False</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\utils.py#L9">[source]</a>
 </p>
 
 
@@ -77,7 +77,7 @@ driver = chromedriver()
 ##hemlock.tools.**get_data**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>get_data</b>(<i>dataframe='data'</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L47">[source]</a>
+    <i>def</i> hemlock.tools.<b>get_data</b>(<i>dataframe='data'</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\utils.py#L47">[source]</a>
 </p>
 
 
@@ -130,7 +130,7 @@ Out:
 ##hemlock.tools.**url_for**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>url_for</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L87">[source]</a>
+    <i>def</i> hemlock.tools.<b>url_for</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\utils.py#L87">[source]</a>
 </p>
 
 Attempt to return `flask.url_for(*args, **kwargs)`. However, this method

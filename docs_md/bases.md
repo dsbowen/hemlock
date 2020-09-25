@@ -34,7 +34,7 @@
 ##hemlock.**Base**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Base</b>(<i>**kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L15">[source]</a>
+    <i>class</i> hemlock.<b>Base</b>(<i>**kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L15">[source]</a>
 </p>
 
 Base for all Hemlock models.
@@ -110,7 +110,7 @@ Data elements 'pack' their data and return it to their participant, who in turn 
 ##hemlock.**HTMLMixin**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>HTMLMixin</b>(<i>template=None, extra_css='', extra_js='', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L136">[source]</a>
+    <i>class</i> hemlock.<b>HTMLMixin</b>(<i>template=None, extra_css='', extra_js='', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L136">[source]</a>
 </p>
 
 Mixin for models which contribute html to a page.
@@ -159,7 +159,7 @@ Mixin for models which contribute html to a page.
 
 
 <p class="func-header">
-    <i></i> <b>add_external_css</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L200">[source]</a>
+    <i></i> <b>add_external_css</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L200">[source]</a>
 </p>
 
 
@@ -192,7 +192,7 @@ See (statics.md#hemlocktoolsexternal_css).
 
 
 <p class="func-header">
-    <i></i> <b>add_internal_css</b>(<i>self, style</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L220">[source]</a>
+    <i></i> <b>add_internal_css</b>(<i>self, style</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L220">[source]</a>
 </p>
 
 
@@ -225,7 +225,7 @@ See (statics.md#hemlocktoolsinternal_css).
 
 
 <p class="func-header">
-    <i></i> <b>add_external_js</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L241">[source]</a>
+    <i></i> <b>add_external_js</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L241">[source]</a>
 </p>
 
 
@@ -258,7 +258,7 @@ See (statics.md#hemlocktoolsexternal_js).
 
 
 <p class="func-header">
-    <i></i> <b>add_internal_js</b>(<i>self, js</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L261">[source]</a>
+    <i></i> <b>add_internal_js</b>(<i>self, js</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L261">[source]</a>
 </p>
 
 
@@ -315,7 +315,7 @@ Base for models which contain `<input>` tags.
 
 
 <p class="func-header">
-    <i></i> <b>input_from_driver</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L295">[source]</a>
+    <i></i> <b>input_from_driver</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L295">[source]</a>
 </p>
 
 
@@ -346,7 +346,7 @@ Base for models which contain `<input>` tags.
 
 
 <p class="func-header">
-    <i></i> <b>label_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L309">[source]</a>
+    <i></i> <b>label_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L309">[source]</a>
 </p>
 
 

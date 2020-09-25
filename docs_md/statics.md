@@ -36,7 +36,7 @@ Tool for generating statics (embedded images and videos).
 ##hemlock.tools.**external_css**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>external_css</b>(<i>**attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L21">[source]</a>
+    <i>def</i> hemlock.tools.<b>external_css</b>(<i>**attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\statics.py#L21">[source]</a>
 </p>
 
 
@@ -84,7 +84,7 @@ Out:
 ##hemlock.tools.**internal_css**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>internal_css</b>(<i>style</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L79">[source]</a>
+    <i>def</i> hemlock.tools.<b>internal_css</b>(<i>style</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\statics.py#L79">[source]</a>
 </p>
 
 
@@ -134,7 +134,7 @@ Out:
 ##hemlock.tools.**external_js**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>external_js</b>(<i>**attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L120">[source]</a>
+    <i>def</i> hemlock.tools.<b>external_js</b>(<i>**attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\statics.py#L120">[source]</a>
 </p>
 
 
@@ -182,7 +182,7 @@ Out:
 ##hemlock.tools.**internal_js**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>internal_js</b>(<i>js</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L153">[source]</a>
+    <i>def</i> hemlock.tools.<b>internal_js</b>(<i>js</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\statics.py#L153">[source]</a>
 </p>
 
 
@@ -242,7 +242,7 @@ Out:
 ##hemlock.tools.**src_from_bucket**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>src_from_bucket</b>(<i>filename</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L200">[source]</a>
+    <i>def</i> hemlock.tools.<b>src_from_bucket</b>(<i>filename</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\statics.py#L200">[source]</a>
 </p>
 
 
@@ -300,7 +300,7 @@ Page(Label(img)).preview()
 ##hemlock.tools.**url_from_bucket**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>url_from_bucket</b>(<i>filename, expiration=1800, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L246">[source]</a>
+    <i>def</i> hemlock.tools.<b>url_from_bucket</b>(<i>filename, expiration=1800, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\statics.py#L246">[source]</a>
 </p>
 
 
@@ -388,7 +388,7 @@ download button to download the file from your Google bucket.
 ##hemlock.tools.**Static**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Static</b>(<i>template, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L322">[source]</a>
+    <i>class</i> hemlock.tools.<b>Static</b>(<i>template, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\statics.py#L322">[source]</a>
 </p>
 
 Base for static objects (images and videos).
@@ -429,7 +429,7 @@ Base for static objects (images and videos).
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self, tag_selector=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L350">[source]</a>
+    <i></i> <b>render</b>(<i>self, tag_selector=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\statics.py#L350">[source]</a>
 </p>
 
 
@@ -460,7 +460,7 @@ Base for static objects (images and videos).
 ##hemlock.tools.**Img**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Img</b>(<i>template=os.path.join(DIR, 'img.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L387">[source]</a>
+    <i>class</i> hemlock.tools.<b>Img</b>(<i>template=os.path.join(DIR, 'img.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\statics.py#L387">[source]</a>
 </p>
 
 Static image.
@@ -522,7 +522,7 @@ Page(Label(img)).preview()
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L476">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\statics.py#L476">[source]</a>
 </p>
 
 
@@ -546,7 +546,7 @@ Page(Label(img)).preview()
 ##hemlock.tools.**Vid**
 
 <p class="func-header">
-    <i>class</i> hemlock.tools.<b>Vid</b>(<i>template=os.path.join(DIR, 'vid.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L493">[source]</a>
+    <i>class</i> hemlock.tools.<b>Vid</b>(<i>template=os.path.join(DIR, 'vid.html'), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\statics.py#L493">[source]</a>
 </p>
 
 Static video.
@@ -593,7 +593,7 @@ Page(Label(vid.render())).preview()
 
 
 <p class="func-header">
-    <i></i> <b>from_youtube</b>(<i>src</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L538">[source]</a>
+    <i></i> <b>from_youtube</b>(<i>src</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\statics.py#L538">[source]</a>
 </p>
 
 Capture the YouTube video id and create an embedded src.
@@ -624,7 +624,7 @@ Capture the YouTube video id and create an embedded src.
 
 
 <p class="func-header">
-    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/statics.py#L562">[source]</a>
+    <i></i> <b>render</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\statics.py#L562">[source]</a>
 </p>
 
 

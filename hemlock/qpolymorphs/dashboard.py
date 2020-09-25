@@ -4,6 +4,8 @@ from .. import tools
 from ..app import db
 from ..models import Question
 
+from sqlalchemy_mutable import MutableDictType
+
 import re
 from urllib.parse import parse_qs, urlparse
 
@@ -28,6 +30,10 @@ class Dashboard(Question):
 
     embed : bs4.Tag
         `<div>` tag of the embedded app.
+
+    g : dict
+        [Mutable dictionary](https://dsbowen.github.io/sqlalchemy-mutable/) 
+        with dashboard arguments.
 
     iframe : bs4.Tag
         `<iframe>` tag of the embedded app.
@@ -126,6 +132,7 @@ class Dashboard(Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'dashboard'}
 
+    g = db.Column(MutableDictType)
     key = db.Column(db.String)
 
     def __init__(self, label='', template='hemlock/dash.html', **kwargs):

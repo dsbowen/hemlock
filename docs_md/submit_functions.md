@@ -34,7 +34,7 @@
 ##hemlock.functions.submit.**correct_choices**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>correct_choices</b>(<i>question, *values</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L8">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>correct_choices</b>(<i>question, *values</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions\submit.py#L8">[source]</a>
 </p>
 
 Convert the question's data to a 0-1 indicator that the participant
@@ -88,7 +88,7 @@ Out:
 ##hemlock.functions.submit.**data_type**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>data_type</b>(<i>question, new_type, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L50">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>data_type</b>(<i>question, new_type, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions\submit.py#L50">[source]</a>
 </p>
 
 Convert the quesiton's data to a new type. If the question's data cannot
@@ -137,7 +137,7 @@ Out:
 ##hemlock.functions.submit.**match**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>match</b>(<i>question, pattern</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L87">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>match</b>(<i>question, pattern</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions\submit.py#L87">[source]</a>
 </p>
 
 Convert the question's data to a 0-1 indicator that the data matches the
