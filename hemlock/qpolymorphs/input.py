@@ -114,10 +114,7 @@ class Input(InputGroup, InputBase, Question):
         if self.input_type in html_datetime_types:
             self.data = get_datetime(self.response) or None
         elif self.input_type == 'number' and self.response: 
-            self.data = (
-                float(self.response) if '.' in self.response 
-                else int(self.response)
-            )
+            self.data = float(self.response)
         else:
             super()._record_data()
         return self

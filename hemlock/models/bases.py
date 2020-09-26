@@ -121,7 +121,8 @@ class Data(Base, MutableModelBase, db.Model):
         """
         if self.var is None:
             return {}
-        data = {self.var: str(self.data)} if data is None else data
+        if data is None:
+            data = {self.var: None if self.data is None else str(self.data)}
         data[self.var+'Order'] = self.order
         if self.index is not None:
             data[self.var+'Index'] = self.index

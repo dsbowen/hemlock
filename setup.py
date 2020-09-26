@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hemlock-survey",
-    version="0.0.22",
+    version="0.0.24",
     author="Dillon Bowen",
     author_email="dsbowen@wharton.upenn.edu",
     description="A package for creating and deploying surveys",

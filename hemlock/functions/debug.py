@@ -332,7 +332,7 @@ def click_choices(driver, question, *values):
     p.preview(driver)._debug(driver)
     ```
     """
-    from ..qpolymorphs import Check
+    from ..qpolymorphs import Binary, Check
     if not values:
         order = list(range(len(question.choices)))
         shuffle(order)
@@ -342,7 +342,7 @@ def click_choices(driver, question, *values):
         clear_choices(driver, question)
     for value in values:
         choices = [c for c in question.choices if c.value == value]
-        if isinstance(question, Check):
+        if isinstance(question, (Binary, Check)):
             # check question
             [c.label_from_driver(driver).click() for c in choices]
         else:

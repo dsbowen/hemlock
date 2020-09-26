@@ -1,35 +1,35 @@
-"""# Check"""
+"""# Binary choice"""
 
 from .check_base import CheckBase
 from ..app import db, settings
 from ..functions.debug import click_choices
+from ..models import Choice
 
-settings['Check'] = {
+settings['Binary'] = {
     'align': 'left',
-    'inline': False,
+    'inline': True,
     'debug': click_choices,
     'multiple': False,
 }
 
 
-class Check(CheckBase):
+class Binary(CheckBase):
     """
-    Check questions use radio inputs if only one choice can be selected, or 
-    checkbox inputs if multiple choices can be selected.
+    Binary question use radio inputs and have two options, coded as 0 and 1.
 
     Inherits from [`hemlock.ChoiceQuestion`](question.md).
 
     Its default debug function is 
     [`check_choices`](debug_functions.md#hemlockfunctionsdebugclick_choices).
-
+    
     Parameters
     ----------
     label : str or bs4.BeautifulSoup, default=''
         Check question label.
 
-    choices : list of hemlock.Choice or str, default=[]
-        Choices which participants can check. String inputs are automatically
-        converted to `hemlock.Choice` objects.
+    choices : list of [str, str], default=['Yes', 'No']
+        Choices which participants can check. The first choice is coded as 1,
+        the second as 0.
 
     template : str, default='hemlock/check.html'
         Template for the check body.
@@ -52,18 +52,19 @@ class Check(CheckBase):
     Examples
     --------
     ```python
-    from hemlock import Check, Page, push_app_context
+    from hemlock import Binary, Page, push_app_context
 
     app = push_app_context()
 
-    Page(Check('<p>Check one.</p>', ['Yes','No','Maybe'])).preview()
-    ```
+    Page(Binary('<p>Yes or no?</p>')).preview()
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
-    __mapper_args__ = {'polymorphic_identity': 'check'}
+    __mapper_args__ = {'polymorphic_identity': 'binary'}
 
     def __init__(
-            self, label='', choices=[], template='hemlock/check.html', 
-            **kwargs
+            self, label='', choices=['Yes', 'No'], 
+            template='hemlock/check.html', **kwargs
         ):
+        assert len(choices) == 2, 'Binary question require 2 choices'
+        choices = [Choice(choices[0], value=1), Choice(choices[1], value=0)]
         super().__init__(label, choices, template, **kwargs)
