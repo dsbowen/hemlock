@@ -155,6 +155,10 @@ class Question(HTMLMixin, Data, MutableModelBase):
         self.body.set_element('span.error-txt', val)
 
     @property
+    def form_group(self):
+        return self.body.select_one('div.form-group')
+
+    @property
     def label(self):
         return self.body.text('.label-txt')
 
