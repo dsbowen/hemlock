@@ -16,6 +16,7 @@ setuptools.setup(
     include_package_data=True,
     install_requires=[
         'bs4>=0.0.1',
+        'cssutils>=1.0.2',
         'eventlet>=0.25.1',
         'flask>=1.1.1',
         'flask-download-btn>=0.0.21',
