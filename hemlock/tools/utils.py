@@ -100,12 +100,10 @@ def show_on_event(
         The question whose value determines whether the target is shown.
 
     value : str or hemlock.Choice
-        If the value is a `Choice` or `Option`, the target is shown when 
-        this choice is selected.. If the value is a string:
         1. If the condition is an input, the target is shown when the input 
         value matches this value.
-        2. If the condition is a `Check` or `Select`, the target is shown 
-        when the choice with this value is checked.
+        2. If the condition has choices, the target is shown when the choice
+        with this value is checked.
 
     init_hidden : bool, defualt=True
         Indicates that the initial state of the target should be hidden.
@@ -183,25 +181,34 @@ def show_on_event(
 def _show_on_event_js(
         target_id, condition, value, regex=False, duration=400, event=None, 
     ):
-    from ..models import Choice, Option
-    from ..qpolymorphs import Check, Select
+    from ..models import Choice, ChoiceQuestion, Option
 
-    event = event or (
-        'change' if isinstance(condition, (Check, Select)) else 'input'
-    )
-    check = isinstance(condition, (Check, Select))
-    if isinstance(value, (Choice, Option)):
-        value = value.model_id
-    elif isinstance(condition, (Check, Select)):
-        for choice in condition.choices:
-            if choice.value == value:
-                value = choice.model_id
-                break
+    def get_event_value(condition, value):
+        if isinstance(condition, ChoiceQuestion):
+            event = 'change' # listen for change event
+            for choice in condition.choices:
+                if choice.value == value:
+                    value = choice.id
+                    break
+        else:
+            event = 'input' # listen for input event
+        return event, value
+
+    event, value = get_event_value(condition, value)
+    if hasattr(condition, 'choice_cls'):
+        # value corresponds to a radio or check box
+        choice = condition.choice_cls == Choice
+        # value corresponds to an option
+        option = condition.choice_cls == Option
+    else:
+        # value corresponds to neither a radio, check box, or option
+        choice = option = False
     return render_template(
         'hemlock/show_on_event.js', 
         target_id=target_id, 
         condition=condition,
-        check=check, 
+        choice=choice,
+        option=option,
         value=value, 
         regex=regex, 
         event=event, 

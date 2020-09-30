@@ -12,9 +12,66 @@ from .bases import HTMLMixin, InputBase
 
 from flask import render_template
 from sqlalchemy_mutable import MutableType
+from sqlalchemy_mutablesoup import MutableSoup
+
+import json
+import time
 
 
-class Choice(InputBase, HTMLMixin, db.Model):
+class ChoiceBase():
+    def __init__(self, label, template, **kwargs):
+        from ..tools import key
+
+        self.id = key(10)
+        self.body = MutableSoup(
+            render_template(template, self_=self), 'html.parser'
+        )
+        self.label = label
+        self.name = kwargs['name'] if 'name' in kwargs else label
+        self.value = kwargs['value'] if 'value' in kwargs else label
+
+    def is_default(self, question):
+        """
+        Returns
+        -------
+        is_default : bool
+            Indicate that this choice is (one of) its question's default 
+            choice(s).
+
+        Notes
+        -----
+        The question's default choice(s) is the question's `response`, if not 
+        `None`, or the question's `default`.
+        """
+        default = (
+            question.response if question._has_responded 
+            else question.default
+        )
+        if not default:
+            return False
+        return (
+            self.value in default if isinstance(default, list)
+            else self.value == default
+        )
+
+    def set_all(self, val):
+        """
+        Set the choice's label, name, and value.
+
+        Parameters
+        ----------
+        val : 
+            Value to which the choice's label, name, and value should be set.
+
+        Returns
+        -------
+        self : hemlock.Choice
+        """
+        self.label = self.name = self.value = val
+        return self
+
+
+class Choice(ChoiceBase):
     """
     Choices are displayed as part of their question in index order.
 
@@ -58,25 +115,9 @@ class Choice(InputBase, HTMLMixin, db.Model):
     Passing `label` into the constructor is equivalent to calling 
     `self.set_all(label)` unless `name` and `value` arguments are also passed
     to the constructor.
-    """
-    id = db.Column(db.Integer, primary_key=True)
-    choice_type = db.Column(db.String)
-    __mapper_args__ = {
-        'polymorphic_identity': 'choice',
-        'polymorphic_on': choice_type
-    }
-    
-    _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-
-    index = db.Column(db.Integer)
-    value = db.Column(MutableType)
-    
+    """    
     def __init__(self, label='', template='hemlock/choice.html', **kwargs):
-        super().__init__(template, label=label, **kwargs)
-        if 'name' not in kwargs:
-            self.name = self.label
-        if 'value' not in kwargs:
-            self.value = self.label
+        super().__init__(label, template, **kwargs)
 
     @property
     def label(self):
@@ -86,80 +127,66 @@ class Choice(InputBase, HTMLMixin, db.Model):
     def label(self, val):
         self.body.set_element('label.choice', val)
 
-    def set_all(self, val):
-        """
-        Set the choice's label, name, and value.
+    def select(self, driver):
+        self._click(driver, if_selected=False)
 
-        Parameters
-        ----------
-        val : 
-            Value to which the choice's label, name, and value should be set.
+    def deselect(self, driver):
+        self._click(driver, if_selected=True)
 
-        Returns
-        -------
-        self : hemlock.Choice
-        """
-        self.label = self.name = self.value = val
-        return self
+    def _click(self, driver, if_selected):
+        inpt = driver.find_element_by_css_selector('#'+self.id)
+        if if_selected == bool(inpt.get_attribute('checked')):
+            selector = 'label[for={}]'.format(self.id)
+            label = driver.find_element_by_css_selector(selector)
+            try:
+                label.click()
+            except:
+                time.sleep(.5)
+                label.click()
     
-    def is_default(self):
-        """
-        Returns
-        -------
-        is_default : bool
-            Indicate that this choice is (one of) its question's default 
-            choice(s).
-
-        Notes
-        -----
-        The question's default choice(s) is the question's `response`, if not 
-        `None`, or the question's `default`.
-        """
-        if self.question is None:
-            return False
-        default = self.question.response or self.question.default
-        if isinstance(default, list):
-            return self in default
-        return self == default
-    
-    def _render(self, body=None):
+    def _render(self, question, idx, body=None):
         """Render the choice HTML
 
         Set the input name to reference the quesiton `model_id`. Then set 
         the `checked` attribute to reflect whether the choice is a default.
         """
-        body = body or self.body.copy()
-        inpt = body.select_one('input#'+self.model_id)
-        inpt['name'] = self.question.model_id
-        self._handle_multiple(body, inpt)
-        if self.is_default():
-            inpt['checked'] = None
-        else:
-            inpt.attrs.pop('checked', None)
-        return body
+        def handle_multiple():
+            """
+            Adds appropriate classes depending on whether users can select 
+            multiple choices
+            """
+            div = body.select_one('div.custom-control')
+            div_class = div['class']
+            rm_classes = (
+                'custom-radio', 'custom-checkbox', 'custom-control-inline'
+            )
+            div_class = [c for c in div_class if c not in rm_classes]
+            if question.multiple:
+                div_class.append('custom-checkbox')
+                inpt['type'] = 'checkbox'
+            else:
+                div_class.append('custom-radio')
+                inpt['type'] = 'radio'
+            if question.inline:
+                div_class.append('custom-control-inline')
+            div['class'] = div_class
 
-    def _handle_multiple(self, body, inpt):
-        """Appropriately converts body HTML for single or multiple choice"""
-        div_class = body.select_one('div.custom-control')['class']
-        rm_classes = [
-            'custom-radio', 'custom-checkbox', 'custom-control-inline'
-        ]
-        for class_ in rm_classes:
-            try:
-                div_class.remove(class_)
-            except:
-                pass
-        if not self.question.multiple:
-            div_class.append('custom-radio')
-            inpt['type'] = 'radio'
-        else:
-            div_class.append('custom-checkbox')
-            inpt['type'] = 'checkbox'
-        if self.question.inline:
-            div_class.append('custom-control-inline')
+        def handle_default():
+            if self.is_default(question):
+                inpt['checked'] = None
+            else:
+                inpt.attrs.pop('checked', None)
+
+        body = body or self.body.copy()
+        inpt = body.select_one('input')
+        inpt['name'] = question.model_id
+        inpt['value'] = idx
+        handle_multiple()
+        handle_default()
+        return body
             
 
-class Option(Choice):
+class Option(ChoiceBase):
     """
     Options are a choice polymorph for `hemlock.Select` questions.
 
@@ -173,8 +200,6 @@ class Option(Choice):
     template : str, default='hemlock/option.html'
         Template for the option `body`.
     """
-    id = db.Column(db.Integer, db.ForeignKey('choice.id'), primary_key=True)
-    __mapper_args__ = {'polymorphic_identity': 'option'}
 
     def __init__(self, label='', template='hemlock/option.html', **kwargs):
         super().__init__(label, template, **kwargs)
@@ -186,13 +211,32 @@ class Option(Choice):
     @label.setter
     def label(self, val):
         self.body.set_element('option', val)
+
+    def select(self, driver):
+        self._click(driver, if_selected=False)
+
+    def deselect(self, driver):
+        self._click(driver, if_selected=True)
+
+    def _click(self, driver, if_selected):
+        option = driver.find_element_by_css_selector('#'+self.id)
+        if if_selected == bool(option.get_attribute('selected')):
+            try:
+                option.click()
+            except:
+                time.sleep(.5)
+                option.click()
     
-    def _render(self, body=None):
+    def _render(self, question, idx, body=None):
+        def handle_default():
+            if self.is_default(question):
+                option['selected'] = None
+            else:
+                option.attrs.pop('selected', None)
+
         body = body or self.body.copy()
-        opt_tag = body.select_one('#'+self.model_id)
-        opt_tag['name'] = self.question.model_id
-        if self.is_default():
-            opt_tag['selected'] = None
-        else:
-            opt_tag.attrs.pop('selected', None)
+        option = body.select_one('option')
+        option['name'] = question.model_id
+        option['value'] = idx
+        handle_default()
         return body

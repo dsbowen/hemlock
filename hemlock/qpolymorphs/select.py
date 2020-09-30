@@ -1,14 +1,14 @@
 """# Select (dropdown)"""
 
 from ..app import db, settings
-from ..functions.debug import click_choices
-from ..models import ChoiceQuestion
+from ..functions.debug import select_choices
+from ..models import ChoiceQuestion, Option
 from .input_group import InputGroup
 
 settings['Select'] = {
     'align': 'left',
     'inline': False,
-    'debug': click_choices,
+    'debug': select_choices,
     'multiple': False,
     'size': None,
 }
@@ -60,6 +60,7 @@ class Select(InputGroup, ChoiceQuestion):
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'select'}
+    choice_cls = Option
 
     def __init__(
             self, label='', choices=[], template='hemlock/select.html', 

@@ -11,7 +11,7 @@ from .choice import Choice, Option
 from flask import render_template, request
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import validates
-from sqlalchemy_mutable import MutableType, MutableModelBase
+from sqlalchemy_mutable import MutableListType, MutableModelBase, MutableType
 
 import os
 from copy import copy
@@ -77,6 +77,7 @@ class Question(HTMLMixin, Data, MutableModelBase):
         'polymorphic_identity': 'question',
         'polymorphic_on': question_type
     }
+    _has_responded = db.Column(db.Boolean, default=False)
 
     # relationships
     @property
@@ -198,6 +199,7 @@ class Question(HTMLMixin, Data, MutableModelBase):
         return body or self.body.copy()
 
     def _record_response(self):
+        self._has_responded = True
         self.response = request.form.get(self.model_id)
         return self
         
@@ -255,28 +257,32 @@ class ChoiceQuestion(Question):
         Possible choices from which a participant can select.
     """
     multiple = db.Column(db.Boolean, default=False)
+    choice_cls = Choice
+    _choices = db.Column(MutableListType)
 
-    choices = db.relationship(
-        'Choice', 
-        backref='question',
-        order_by='Choice.index',
-        collection_class=ordering_list('index'),
-        foreign_keys='Choice._question_id'
-    )
+    @property
+    def choices(self):
+        return self._choices
 
-    @validates('choices')
-    def validate_choice(self, key, val):
-        """Convert the assigned value if it is not alread a `Choice` object
-
-        This allows for the following syntax:
-        question.choices = ['Red','Green','Blue']
-        """
-        if isinstance(val, Choice):
-            return val
-        val = str(val)
-        if type(self).__name__ == 'Select':
-            return Option(label=val)
-        return Choice(label=val)
+    @choices.setter
+    def choices(self, choices):
+        def convert(choice):
+            if isinstance(choice, self.choice_cls):
+                return choice
+            if isinstance(choice, str):
+                return self.choice_cls(label=choice)
+            if isinstance(choice, dict):
+                return self.choice_cls(**choice)
+            if isinstance(choice, (tuple, list)):
+                if len(choice) == 2:
+                    return self.choice_cls(label=choice[0], value=choice[1])
+                if len(choice) == 3:
+                    return self.choice_cls(
+                        label=choice[0], value=choice[1], name=choice[2]
+                    )
+            raise ValueError('Invalid choice value', choice)
+        
+        self._choices = [convert(choice) for choice in choices]
 
     def __init__(self, label='', choices=[], template=None, **kwargs):
         self.choices = choices
@@ -286,20 +292,23 @@ class ChoiceQuestion(Question):
         """Add choice HTML to `body`"""
         body = body or self.body.copy()
         choice_wrapper = body.select_one('.choice-wrapper')
-        [choice_wrapper.append(c._render()) for c in self.choices]
+        [
+            choice_wrapper.append(choice._render(self, idx)) 
+            for idx, choice in enumerate(self.choices)
+        ]
         return body
 
     def _record_response(self):
         """Record response
 
-        The response is a single choice or a list of choices (if multiple choices are allowed).
+        The response is a single choice or a list of choices (if multiple 
+        choices are allowed).
         """
+        self._has_responded = True
+        idx = request.form.getlist(self.model_id)
+        self.response = [self.choices[int(i)].value for i in idx]
         if not self.multiple:
-            response_id = request.form.get(self.model_id)
-            self.response = Choice.query.get(response_id)
-        else:
-            response_ids = request.form.getlist(self.model_id)
-            self.response = [Choice.query.get(id) for id in response_ids]
+            self.response = self.response[0] if self.response else None
         return self
 
     def _record_data(self):
@@ -311,13 +320,13 @@ class ChoiceQuestion(Question):
         For multiple choice questions, the data is a dictionary mapping 
         each choice's `value` to a binary indicator that it was selected.
         """
-        if not self.multiple:
-            self.data = None if self.response is None else self.response.value
-        else:
+        if self.multiple:
             self.data = {
-                c.value: int(c in self.response)
-                for c in self.choices if c.value is not None
+                choice.value: int(choice.value in self.response)
+                for choice in self.choices
             }
+        else:
+            self.data = self.response
         return self
     
     def _pack_data(self):

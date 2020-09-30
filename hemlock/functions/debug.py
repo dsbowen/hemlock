@@ -298,7 +298,7 @@ def drag_range(driver, range_, target=None, tol=0, max_iter=10):
 # Choice question debugger
 
 @Debug.register
-def click_choices(driver, question, *values):
+def select_choices(driver, question, *values):
     """
     Click on choices or options.
 
@@ -332,7 +332,6 @@ def click_choices(driver, question, *values):
     p.preview(driver)._debug(driver)
     ```
     """
-    from ..qpolymorphs import Binary, Check
     if not values:
         order = list(range(len(question.choices)))
         shuffle(order)
@@ -340,14 +339,10 @@ def click_choices(driver, question, *values):
         values = [question.choices[i].value for i in order[:n_clicks]]
     if question.multiple:
         clear_choices(driver, question)
-    for value in values:
-        choices = [c for c in question.choices if c.value == value]
-        if isinstance(question, (Binary, Check)):
-            # check question
-            [c.label_from_driver(driver).click() for c in choices]
-        else:
-            # select question
-            [c.input_from_driver(driver).click() for c in choices]
+    [
+        c.select(driver) 
+        for value in values for c in question.choices if c.value == value
+    ]
 
 @Debug.register
 def clear_choices(driver, question):
@@ -385,17 +380,9 @@ def clear_choices(driver, question):
     p.preview(driver)._debug(driver)
     ```
     """
-    from ..qpolymorphs import Check
     if not question.choices:
         return
     if not question.multiple:
         print("Warning: Only multiple choice questions cannot be cleared")
         return
-    for c in question.choices:
-        if c.input_from_driver(driver).get_attribute('checked'):
-            if isinstance(question, Check):
-                # check question
-                c.label_from_driver(driver).click()
-            else:
-                # select question
-                c.input_from_driver(driver).click()
+    [c.deselect(driver) for c in question.choices]

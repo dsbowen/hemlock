@@ -7,13 +7,8 @@
         {% if page.css is not none %}
             {{ page.css.render() }}
         {% endif %}
-        {% for q in page.questions%}
-            {% if q.css is not none %}
-                {{ q.css.render() }}
-            {% endif %}
-            {% for choice in q.choices if choice.css is not none %}
-                {{ choice.css.render() }}
-            {% endfor %}
+        {% for q in page.questions if q.css is not none %}
+            {{ q.css.render() }}
         {% endfor %}
     </head>
     <body>
@@ -26,13 +21,8 @@
         {% if page.js is not none %}
             {{ page.js.render() }}
         {% endif %}
-        {% for q in page.questions %}
-            {% if q.js is not none %}
-                {{ q.js.render() }}
-            {% endif %}
-            {% for choice in q.choices if choice.js is not none %}
-                {{ choice.js.render() }}
-            {% endfor %}
+        {% for q in page.questions if q.js is not none %}
+            {{ q.js.render() }}
         {% endfor %}
     </body>
 </html>

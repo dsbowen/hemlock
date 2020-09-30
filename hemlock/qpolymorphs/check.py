@@ -2,12 +2,12 @@
 
 from .check_base import CheckBase
 from ..app import db, settings
-from ..functions.debug import click_choices
+from ..functions.debug import select_choices
 
 settings['Check'] = {
     'align': 'left',
     'inline': False,
-    'debug': click_choices,
+    'debug': select_choices,
     'multiple': False,
 }
 

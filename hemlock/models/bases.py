@@ -123,13 +123,14 @@ class Data(Base, MutableModelBase, db.Model):
             return {}
         if data is None:
             data = {self.var: None if self.data is None else str(self.data)}
-        data[self.var+'Order'] = self.order
-        if self.index is not None:
+        if hasattr(self, 'order'):
+            data[self.var+'Order'] = self.order
+        if hasattr(self, 'index') and self.index is not None:
             data[self.var+'Index'] = self.index
         if hasattr(self, 'choices'):
             data.update({
-                self.var+c.name+'Index': c.index
-                for c in self.choices if c.name is not None
+                self.var+c.name+'Index': idx
+                for idx, c in enumerate(self.choices) if c.name is not None
             })
         return data
 

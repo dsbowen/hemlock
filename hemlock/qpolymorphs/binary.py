@@ -2,13 +2,13 @@
 
 from .check_base import CheckBase
 from ..app import db, settings
-from ..functions.debug import click_choices
+from ..functions.debug import select_choices
 from ..models import Choice
 
 settings['Binary'] = {
     'align': 'left',
     'inline': True,
-    'debug': click_choices,
+    'debug': select_choices,
     'multiple': False,
 }
 
@@ -66,5 +66,5 @@ class Binary(CheckBase):
             template='hemlock/check.html', **kwargs
         ):
         assert len(choices) == 2, 'Binary question require 2 choices'
-        choices = [Choice(choices[0], value=1), Choice(choices[1], value=0)]
+        choices = [(choices[0], 1), (choices[1], 0)]
         super().__init__(label, choices, template, **kwargs)
