@@ -3,17 +3,12 @@ from hemlock.tools import show_on_event
 
 @route('/survey')
 def start():
-    country_q = Select(
-        'Select your country',
-        ['United States', 'Other']
-    )
-    specify_q = Input(
-        'Please specify'
-    )
-    show_on_event(specify_q, country_q, 'Other')
     return Branch(
         Page(
-            country_q, specify_q
+            Select(
+                '<p>What year were you born in?</p>',
+                list(range(1900, 2020))
+            )
         ),
         Page(
             Label('<p>The end.</p>'),
@@ -21,7 +16,3 @@ def start():
             terminal=True
         )
     )
-
-def print_resp_data(q):
-    print(q.response)
-    print(q.data)

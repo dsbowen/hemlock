@@ -269,8 +269,6 @@ class ChoiceQuestion(Question):
         def convert(choice):
             if isinstance(choice, self.choice_cls):
                 return choice
-            if isinstance(choice, str):
-                return self.choice_cls(label=choice)
             if isinstance(choice, dict):
                 return self.choice_cls(**choice)
             if isinstance(choice, (tuple, list)):
@@ -280,7 +278,7 @@ class ChoiceQuestion(Question):
                     return self.choice_cls(
                         label=choice[0], value=choice[1], name=choice[2]
                     )
-            raise ValueError('Invalid choice value', choice)
+            return self.choice_cls(label=str(choice))
         
         self._choices = [convert(choice) for choice in choices]
 
