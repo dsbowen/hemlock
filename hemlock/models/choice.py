@@ -19,6 +19,50 @@ import time
 
 
 class ChoiceBase():
+    """
+    Base class for choices.
+
+    Parameters
+    ----------
+    label : str or bs4.BeautifulSoup, default=''
+        Choice label.
+
+    template : str
+        Jinja template for the choice html. The choice object is passed to the
+        template as a parameter named `self_`.
+
+    value : default=None
+        Value of the choice if selected. e.g. a choice with label `'Yes'` 
+        might have a value of `1`. If `None`, the `label` is used. For a 
+        question where only one choice can be selected, this is the value of 
+        the question's data if this choice is selected. For a question where 
+        multiple choices may be selected, data are one-hot encoded; the value 
+        is the suffix of the column name associated with the indicator 
+        variable that this choice was selected.
+
+    name : default=None
+        Name associated with this choice in the dataframe. If `None`, the 
+        `label` is used.
+
+    Attributes
+    ----------
+    id : str
+        Randomly generated from ascii letters and digits.
+
+    body : bs4.BeautifulSoup
+        Choice html created from the `template` parameter.
+
+    label : str
+
+    value : 
+
+    name :
+
+    Notes
+    -----
+    If passing `value` and `name` to contructor, these must be passed as 
+    keyword arguments
+    """
     def __init__(self, label, template, **kwargs):
         from ..tools import key
 
@@ -27,11 +71,16 @@ class ChoiceBase():
             render_template(template, self_=self), 'html.parser'
         )
         self.label = label
-        self.name = kwargs['name'] if 'name' in kwargs else label
         self.value = kwargs['value'] if 'value' in kwargs else label
+        self.name = kwargs['name'] if 'name' in kwargs else label
 
     def is_default(self, question):
         """
+        Parameters
+        ----------
+        question : hemlock.Question
+            The question to which this choice belongs.
+
         Returns
         -------
         is_default : bool
@@ -40,8 +89,9 @@ class ChoiceBase():
 
         Notes
         -----
-        The question's default choice(s) is the question's `response`, if not 
-        `None`, or the question's `default`.
+        The question's default choice(s) is the question's `response` if the 
+        participant responded to the question, or the question's `default` if
+        the participant has not yet responded to the question.
         """
         default = (
             question.response if question._has_responded 
@@ -73,48 +123,19 @@ class ChoiceBase():
 
 class Choice(ChoiceBase):
     """
-    Choices are displayed as part of their question in index order.
-
-    It inherits from 
-    [`hemlock.models.InputBase` and `hemlock.models.HTMLMixin`](bases.md).
+    Choices are displayed as part of their question (usually 
+    `hemlock.Check`). Inherits from `hemlock.ChoiceBase`.
 
     Parameters
     ----------
-    label : str, default=''
+    label : str or bs4.BeautifulSoup, default=''
         Choice label.
 
-    template : str, default='choice.html'
+    template : str, default='hemlock/choice.html'
         Template for the choice `body`.
 
-    Attributes
-    ----------
-    index : int or None, default=None
-        Order in which this choice appears in its question.
-
-    label : str, default=''
-        The choice label.
-
-    name : str or None, default=None
-        Name of the choice column in the dataframe.
-
-    value : sqlalchemy_mutable.MutableType or None, default=None
-        Value of the data associated with the choice. For a question where 
-        only one choice can be selected, this is the value of the question's 
-        data if this choice is selected. For a question where multiple 
-        choices may be selected, data are one-hot encoded; the value is the 
-        suffix of the column name associated with the indicator variable that 
-        this choice was selected.
-
-    Relationships
-    -------------
-    question : hemlock.Question
-        The question to which this choice belongs.
-
-    Notes
-    -----
-    Passing `label` into the constructor is equivalent to calling 
-    `self.set_all(label)` unless `name` and `value` arguments are also passed
-    to the constructor.
+    \*\*kwargs :
+        Set the choice's value and name using keyword arguments.
     """    
     def __init__(self, label='', template='hemlock/choice.html', **kwargs):
         super().__init__(label, template, **kwargs)
@@ -127,28 +148,62 @@ class Choice(ChoiceBase):
     def label(self, val):
         self.body.set_element('label.choice', val)
 
-    def select(self, driver):
-        self._click(driver, if_selected=False)
+    def click(self, driver, if_selected=None):
+        """
+        Use a selenium webdriver to click on this choice.
 
-    def deselect(self, driver):
-        self._click(driver, if_selected=True)
+        Parameters
+        ----------
+        driver : selenium.webdriver.chrome.webdriver.WebDriver
+            The selenium webdriver that clicks this choice. Does not have to 
+            be chromedriver.
 
-    def _click(self, driver, if_selected):
+        if_selected : bool or None, default=None
+            Indicates that the choice will be clicked only if it is already 
+            selected. If `False` the choice will be clicked only if it is not 
+            already selected. If `None` the choice will be clicked whether or 
+            not it is selected.
+
+        Returns
+        -------
+        self
+        """
         inpt = driver.find_element_by_css_selector('#'+self.id)
-        if if_selected == bool(inpt.get_attribute('checked')):
+        if (
+            if_selected is None
+            or if_selected == bool(inpt.get_attribute('checked'))
+        ):
             selector = 'label[for={}]'.format(self.id)
-            label = driver.find_element_by_css_selector(selector)
-            try:
-                label.click()
-            except:
-                time.sleep(.5)
-                label.click()
+            driver.find_element_by_css_selector(selector).click()
+        return self
+
+    def is_displayed(self, driver):
+        """
+        Parameters
+        ----------
+        driver : selenium.webdriver.chrome.webdriver.WebDriver
+            The selenium webdriver that clicks this choice. Does not have to 
+            be chromedriver.
+
+        Returns
+        -------
+        is_displayed : bool
+            Indicates that this choice is visible in the browser.
+        """
+        selector = 'label[for={}]'.format(self.id)
+        label = driver.find_element_by_css_selector(selector)
+        return label.is_displayed()
     
     def _render(self, question, idx, body=None):
         """Render the choice HTML
+        
+        Parameters
+        ----------
+        question : hemlock.Question
+            Question to which this choice belongs.
 
-        Set the input name to reference the quesiton `model_id`. Then set 
-        the `checked` attribute to reflect whether the choice is a default.
+        idx : int
+            Index of this choice in the question's `choices` list.
         """
         def handle_multiple():
             """
@@ -188,19 +243,22 @@ class Choice(ChoiceBase):
 
 class Option(ChoiceBase):
     """
-    Options are a choice polymorph for `hemlock.Select` questions.
-
-    Inherits from `hemlock.Choice`.
+    Options are displayed as part of their question (usually 
+    `hemlock.Select`). Inherits from `hemlock.ChoiceBase`. Its functionality
+    is similar to `hemlock.Choice`, but for `Select` questions instead of
+    `Check` questions.
 
     Parameters
     ----------
-    label : str, default=''
-        Option label.
+    label : str or bs4.BeautifulSoup, default=''
+        Choice label.
 
     template : str, default='hemlock/option.html'
-        Template for the option `body`.
-    """
+        Template for the choice `body`.
 
+    \*\*kwargs :
+        Set the choice's value and name using keyword arguments.
+    """
     def __init__(self, label='', template='hemlock/option.html', **kwargs):
         super().__init__(label, template, **kwargs)
 
@@ -212,22 +270,61 @@ class Option(ChoiceBase):
     def label(self, val):
         self.body.set_element('option', val)
 
-    def select(self, driver):
-        self._click(driver, if_selected=False)
+    def click(self, driver, if_selected=None):
+        """
+        Use a selenium webdriver to click on this choice.
 
-    def deselect(self, driver):
-        self._click(driver, if_selected=True)
+        Parameters
+        ----------
+        driver : selenium.webdriver.chrome.webdriver.WebDriver
+            The selenium webdriver that clicks this choice. Does not have to 
+            be chromedriver.
 
-    def _click(self, driver, if_selected):
+        if_selected : bool or None, default=None
+            Indicates that the choice will be clicked only if it is already 
+            selected. If `False` the choice will be clicked only if it is not 
+            already selected. If `None` the choice will be clicked whether or 
+            not it is selected.
+
+        Returns
+        -------
+        self
+        """
         option = driver.find_element_by_css_selector('#'+self.id)
-        if if_selected == bool(option.get_attribute('selected')):
-            try:
-                option.click()
-            except:
-                time.sleep(.5)
-                option.click()
+        if (
+            if_selected is None 
+            or if_selected == bool(option.get_attribute('selected'))
+        ):
+            option.click()
+        return self
+
+    def is_displayed(self, driver):
+        """
+        Parameters
+        ----------
+        driver : selenium.webdriver.chrome.webdriver.WebDriver
+            The selenium webdriver that clicks this choice. Does not have to 
+            be chromedriver.
+
+        Returns
+        -------
+        is_displayed : bool
+            Indicates that this choice is visible in the browser.
+        """
+        option = driver.find_element_by_css_selector('#'+self.id)
+        return option.is_displayed()
     
     def _render(self, question, idx, body=None):
+        """Render the choice HTML
+        
+        Parameters
+        ----------
+        question : hemlock.Question
+            Question to which this choice belongs.
+
+        idx : int
+            Index of this choice in the question's `choices` list.
+        """
         def handle_default():
             if self.is_default(question):
                 option['selected'] = None

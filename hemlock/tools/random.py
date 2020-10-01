@@ -22,6 +22,12 @@ def key(len_=90):
         Randomly generated key of ascii letters and digits of specificed 
         length.
 
+    Notes
+    -----
+    The first character is a letter. This allows you to use `key` to generate
+    strongly random id's for html elements. (Html element id's cannot start
+    with a digit.)
+
     Examples
     --------
     ```python
@@ -37,7 +43,8 @@ def key(len_=90):
     ```
     """
     chars = ascii_letters + digits
-    return ''.join(choice(chars) for i in range(len_))
+    first_char  = choice(ascii_letters)
+    return first_char + ''.join(choice(chars) for _ in range(len_-1))
 
 
 class Randomizer():

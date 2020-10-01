@@ -240,21 +240,32 @@ class ChoiceQuestion(Question):
     label : str or bs4.BeautifulSoup, default=''
         Question label.
 
-    choices : list of hemlock.Choice, default=[]
-        Choices which belong to this question.
+    choices : list, default=[]
+        Choices which belong to this question. List items are usually 
+        `hemlock.Choice` or `hemlock.Option`.
 
     template : str or None, default=None
         Template for the question body.
 
     Attributes
     ----------
+    choices : list, default=[]
+        Set from `choices` parameter.
+
+    choice_cls : class, default=hemlock.Choice
+        Class of the choices in the `choices` list.
+
     multiple : bool, default=False
         Indicates that the participant can select multiple choices.
 
-    Relationships
-    -------------
-    choices : list of hemlock.Choice, default=[]
-        Possible choices from which a participant can select.
+    Notes
+    -----
+    `choices` can be set using the following formats:
+    1. list of choice objects.
+    2. list of `str`, treated as choice labels.
+    3. list of `(choice label, value)` tuples.
+    4. list of `(choice label, value, name)` tuples.
+    5. list of dictionaries with choice keyword arguments.
     """
     multiple = db.Column(db.Boolean, default=False)
     choice_cls = Choice

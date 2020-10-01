@@ -1,14 +1,14 @@
 """# Select (dropdown)"""
 
 from ..app import db, settings
-from ..functions.debug import select_choices
+from ..functions.debug import click_choices
 from ..models import ChoiceQuestion, Option
 from .input_group import InputGroup
 
 settings['Select'] = {
     'align': 'left',
     'inline': False,
-    'debug': select_choices,
+    'debug': click_choices,
     'multiple': False,
     'size': None,
 }
@@ -22,14 +22,16 @@ class Select(InputGroup, ChoiceQuestion):
     Inherits from [`hemlock.InputGroup`](input_group.md) and 
     [`hemlock.ChoiceQuestion`](question.md).
 
+    Its default debug function is
+    [`click_choices`](debug_functions.md#hemlockfunctionsdebugclick_choices).
+
     Parameters
     ----------
     label : str or bs4.BeautifulSoup, default=''
         Select question label.
 
-    choices : list of str or hemlock.Option, default=[]
-        Options which participants can select. String inputs are automatically
-        converted to `hemlock.Option` objects.
+    choices : list of hemlock.Option, str, tuple, or dict, default=[]
+        Options which participants can select.
 
     template : str, default='hemlock/select.html'
         Template for the select body.
@@ -38,6 +40,9 @@ class Select(InputGroup, ChoiceQuestion):
     ----------
     align : str, default='left'
         Choice alignment; `'left'`, `'center'`, or `'right'`.
+
+    choices : list of `hemlock.Option`
+        Set for the `choices` parameter.
         
     multiple : bool, default=False
         Indicates that the participant may select multiple choices.

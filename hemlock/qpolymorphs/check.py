@@ -2,12 +2,12 @@
 
 from .check_base import CheckBase
 from ..app import db, settings
-from ..functions.debug import select_choices
+from ..functions.debug import click_choices
 
 settings['Check'] = {
     'align': 'left',
     'inline': False,
-    'debug': select_choices,
+    'debug': click_choices,
     'multiple': False,
 }
 
@@ -20,16 +20,15 @@ class Check(CheckBase):
     Inherits from [`hemlock.ChoiceQuestion`](question.md).
 
     Its default debug function is 
-    [`check_choices`](debug_functions.md#hemlockfunctionsdebugclick_choices).
+    [`click_choices`](debug_functions.md#hemlockfunctionsdebugclick_choices).
 
     Parameters
     ----------
     label : str or bs4.BeautifulSoup, default=''
         Check question label.
 
-    choices : list of hemlock.Choice or str, default=[]
-        Choices which participants can check. String inputs are automatically
-        converted to `hemlock.Choice` objects.
+    choices : list of hemlock.Choice, str, tuple, or dict, default=[]
+        Choices which participants can check.
 
     template : str, default='hemlock/check.html'
         Template for the check body.
@@ -39,11 +38,15 @@ class Check(CheckBase):
     align : str, default='left'
         Choice alignment; `'left'`, `'center'`, or `'right'`.
 
+    choices : list of `hemlock.Choice`
+        Set from the `choices` parameter.
+
     choice_wrapper : bs4.Tag
-        Tag fo the choice html wrapper.
+        Tag of the choice html wrapper.
 
     inline : bool, default=False
-        Indicates that choices should be [inline](https://getbootstrap.com/docs/4.0/components/forms/#inline), 
+        Indicates that choices should be 
+        [inline](https://getbootstrap.com/docs/4.0/components/forms/#inline), 
         as opposed to vertical.
 
     multiple : bool, default=False

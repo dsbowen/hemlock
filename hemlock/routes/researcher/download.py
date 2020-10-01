@@ -4,7 +4,7 @@ from ...app import bp, db
 from ...models import Choice, Page, Participant, Option
 from ...qpolymorphs import Check, CreateFile, Download, Input, Label, Select
 from ...models.private import DataStore
-from ...tools import chromedriver, join
+from ...tools import chromedriver, join, show_on_event
 from .login import researcher_login_required
 from .utils import navbar, render, researcher_page
 
@@ -26,16 +26,6 @@ HEIGHT_BUFFER = 74
 # Width of survey view for docx
 SURVEY_VIEW_IMG_WIDTH = Inches(6)
 
-SELECT_FILES_TXT = "<p>Select files to download.</p>"
-
-SURVEY_VIEW_TXT = "<p>Enter participant IDs for survey viewing.</p>"
-
-SURVEY_VIEW_PRESENTATION_TXT = "<p>Select presentation for viewing.</p>"
-
-SURVEY_VIEW_FILE_TXT = "<p>Select the type of download.</p>"
-
-INVALID_IDS = "<p>The following participant ID was invalid: {}.</p>"
-
 """1. Create a download page"""
 @bp.route('/download', methods=['GET','POST'])
 @researcher_login_required
@@ -49,32 +39,39 @@ def download_page():
     The download page allows researchers to select data download files and 
     survey view download files.
     """
+    dataframe_q = Check(
+        "<p>Select files to download.</p>", 
+        [('Data frame', 'data'), ('Participant metadata', 'meta')],
+        multiple=True
+    )
+    dataframe_options_q = Check(
+        '<p>Include item ordering and indices.</p>',
+        ['Order', 'Indices'],
+        multiple=True
+    )
+    show_on_event(dataframe_options_q, dataframe_q, 'data')
+
+    part_ids_q = Input(
+        "<p>Enter participant IDs for survey viewing.</p>", 
+        validate=valid_part_ids, submit=record_part_ids,
+    )
+    presentation_q = Select(
+        "<p>Select presentation for viewing.</p>",
+        [('First presentation only', 'first'), ('All presentations', 'all')]
+    )
+    show_on_event(presentation_q, part_ids_q, '\S+', regex=True)
+    file_type_q = Select(
+        "<p>Select the type of download.</p>",
+        [('Screenshots', 'screenshot'), ('Text', 'text')],
+    )
+    show_on_event(file_type_q, part_ids_q, '\S+', regex=True)
+
     return Page(
-        Check(
-            SELECT_FILES_TXT, 
-            [
-                Choice('Data frame', value='data'),
-                Choice('Participant metadata', value='meta')
-            ], 
-            multiple=True
-        ),
-        Input(
-            SURVEY_VIEW_TXT, validate=valid_part_ids, submit=record_part_ids,
-        ),
-        Select(
-            SURVEY_VIEW_PRESENTATION_TXT,
-            [
-                Option('First presentation only', value='first'),
-                Option('All presentations', value='all'),
-            ]
-        ),
-        Select(
-            SURVEY_VIEW_FILE_TXT,
-            [
-                Option('Screenshots', value='screenshot'),
-                Option('Text', value='text'),
-            ],
-        ),
+        dataframe_q,
+        dataframe_options_q,
+        part_ids_q,
+        presentation_q,
+        file_type_q,
         Download(
             callback=request.url, 
             download_msg='Download complete',
@@ -103,7 +100,9 @@ def valid_part_ids(survey_view_q):
     part_ids = [id for id in part_ids if id]
     invalid_ids = [i for i in part_ids if Participant.query.get(i) is None]
     if invalid_ids:
-        return INVALID_IDS.format(join('and', *invalid_ids))
+        return "<p>The following participant ID was invalid: {}.</p>".format(
+            join('and', *invalid_ids)
+        )
 
 def record_part_ids(survey_view_q):
     """

@@ -46,6 +46,7 @@ import re
 import webbrowser
 from random import shuffle, random
 from tempfile import NamedTemporaryFile
+from time import sleep
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 

@@ -2,13 +2,13 @@
 
 from .check_base import CheckBase
 from ..app import db, settings
-from ..functions.debug import select_choices
+from ..functions.debug import click_choices
 from ..models import Choice
 
 settings['Binary'] = {
     'align': 'left',
     'inline': True,
-    'debug': select_choices,
+    'debug': click_choices,
     'multiple': False,
 }
 
@@ -20,7 +20,7 @@ class Binary(CheckBase):
     Inherits from [`hemlock.ChoiceQuestion`](question.md).
 
     Its default debug function is 
-    [`check_choices`](debug_functions.md#hemlockfunctionsdebugclick_choices).
+    [`click_choices`](debug_functions.md#hemlockfunctionsdebugclick_choices).
     
     Parameters
     ----------
