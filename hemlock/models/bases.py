@@ -99,6 +99,9 @@ class Data(Base, MutableModelBase, db.Model):
     data_rows = db.Column(db.Integer, default=1)
     index = db.Column(db.Integer)
     var = db.Column(db.Text)
+    record_order = db.Column(db.Boolean, default=False)
+    record_index = db.Column(db.Boolean, default=False)
+    record_choice_index = db.Column(db.Boolean, default=False)
 
     def _pack_data(self, data=None):
         """
@@ -123,11 +126,11 @@ class Data(Base, MutableModelBase, db.Model):
             return {}
         if data is None:
             data = {self.var: None if self.data is None else str(self.data)}
-        if hasattr(self, 'order'):
+        if hasattr(self, 'order') and self.record_order:
             data[self.var+'Order'] = self.order
-        if hasattr(self, 'index') and self.index is not None:
+        if hasattr(self, 'index') and self.record_index:
             data[self.var+'Index'] = self.index
-        if hasattr(self, 'choices'):
+        if hasattr(self, 'choices') and self.record_choice_index:
             data.update({
                 self.var+c.name+'Index': idx
                 for idx, c in enumerate(self.choices) if c.name is not None
@@ -290,9 +293,26 @@ class InputBase():
     input : bs4.Tag or None
         Input tag associated with this model.
     """
+    def __init__(self, *args, **kwargs):
+        extra_attrs = kwargs.pop('extra_attrs', {})
+        super().__init__(*args, **kwargs)
+        self.update_attrs(**extra_attrs)
+
+    @property
+    def attrs(self):
+        return self.input.attrs
+
     @property
     def input(self):
         return self.body.select_one('#'+self.model_id)
+
+    @property
+    def input_type(self):
+        return self.attrs['type']
+
+    @input_type.setter
+    def input_type(self, val):
+        self.update_attrs(type=val)
 
     def input_from_driver(self, driver=None):
         """
@@ -322,6 +342,19 @@ class InputBase():
         """
         selector = 'label[for={}]'.format(self.model_id)
         return driver.find_element_by_css_selector(selector)
+
+    def update_attrs(self, **kwargs):
+        """
+        Update input attributes.
+
+        Parameters
+        ----------
+        \*\*kwargs :
+            Keyword arguments map attribute names to values.
+        """
+        self.attrs.update(kwargs)
+        self.body.changed()
+        return self
 
     def _render(self, body=None):
         """Set the default value before rendering"""

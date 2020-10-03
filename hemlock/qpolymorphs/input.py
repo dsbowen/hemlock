@@ -5,7 +5,7 @@ from ..functions.debug import send_datetime, send_keys
 from ..models import Debug, InputBase, Question
 from .input_group import InputGroup
 
-from datetime_selenium import get_datetime
+from selenium_tools import get_datetime
 
 html_datetime_types = (
     'date',
@@ -54,6 +54,9 @@ class Input(InputGroup, InputBase, Question):
 
     Attributes
     ----------
+    attrs : dict
+        Input tag attributes.
+        
     input_type : str, default='text'
         Type of html input. See <https://www.w3schools.com/html/html_form_input_types.asp>.
 
@@ -77,42 +80,35 @@ class Input(InputGroup, InputBase, Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'input'}
 
-    def __init__(self, label='', template='hemlock/input.html', **kwargs):
+    def __init__(
+            self, label='', template='hemlock/input.html', extra_attrs={}, 
+            **kwargs
+        ):
         super().__init__(label, template, **kwargs)
-
-    @property
-    def input_type(self):
-        return self.input.get('type')
-
-    @input_type.setter
-    def input_type(self, val):
-        self.input['type'] = val
-        self.body.changed()
+        self.update_attrs(**extra_attrs)
 
     @property
     def placeholder(self):
-        return self.input.get('placeholder')
+        return self.attrs['placeholder']
 
     @placeholder.setter
     def placeholder(self, val):
-        self.input['placeholder'] = val
-        self.body.changed()
+        self.update_attrs(placeholder=val)
 
     @property
     def step(self):
-        return self.input.get('step')
+        return self.attrs['step']
 
     @step.setter
     def step(self, val):
-        self.input['step'] = val
-        self.body.changed()
+        self.update_attrs(step=val)
 
     def _validate(self, *args, **kwargs):
         return super()._validate(*args, **kwargs)
 
     def _record_data(self):
         if self.input_type in html_datetime_types:
-            self.data = get_datetime(self.response) or None
+            self.data = get_datetime(self.input_type, self.response) or None
         elif self.input_type == 'number' and self.response: 
             self.data = float(self.response)
         else:

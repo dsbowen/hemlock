@@ -39,18 +39,6 @@ def download_page():
     The download page allows researchers to select data download files and 
     survey view download files.
     """
-    dataframe_q = Check(
-        "<p>Select files to download.</p>", 
-        [('Data frame', 'data'), ('Participant metadata', 'meta')],
-        multiple=True
-    )
-    dataframe_options_q = Check(
-        '<p>Include item ordering and indices.</p>',
-        ['Order', 'Indices'],
-        multiple=True
-    )
-    show_on_event(dataframe_options_q, dataframe_q, 'data')
-
     part_ids_q = Input(
         "<p>Enter participant IDs for survey viewing.</p>", 
         validate=valid_part_ids, submit=record_part_ids,
@@ -67,8 +55,11 @@ def download_page():
     show_on_event(file_type_q, part_ids_q, '\S+', regex=True)
 
     return Page(
-        dataframe_q,
-        dataframe_options_q,
+        Check(
+            "<p>Select files to download.</p>", 
+            [('Data frame', 'data'), ('Participant metadata', 'meta')],
+            multiple=True
+        ),
         part_ids_q,
         presentation_q,
         file_type_q,

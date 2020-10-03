@@ -120,6 +120,7 @@ class Timer(Embedded):
     time.sleep(1)
     print(timer.data)
     timer.pause()
+    print(timer.state)
     time.sleep(1)
     print(timer.data)
     ```
@@ -129,8 +130,9 @@ class Timer(Embedded):
     ```
     not started
     running
-    1.001034
-    1.001381
+    1.002405
+    paused
+    1.002983
     ```
     """
     id = db.Column(db.Integer, db.ForeignKey('embedded.id'), primary_key=True)

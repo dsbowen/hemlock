@@ -10,6 +10,7 @@ settings['Binary'] = {
     'inline': True,
     'debug': click_choices,
     'multiple': False,
+    'record_choice_index': False,
 }
 
 
