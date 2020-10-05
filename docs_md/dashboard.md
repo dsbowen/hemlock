@@ -34,7 +34,7 @@
 ##hemlock.**Dashboard**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Dashboard</b>(<i>label='', template='hemlock/dash.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\dashboard.py#L13">[source]</a>
+    <i>class</i> hemlock.<b>Dashboard</b>(<i>label='', template='hemlock/dash.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/dashboard.py#L13">[source]</a>
 </p>
 
 Embeds a <a href="https://plotly.com/dash/" target="_blank">dash app</a>.
@@ -173,7 +173,7 @@ Then open your browser and navigate to <http://localhost:5000/>.
 
 
 <p class="func-header">
-    <i></i> <b>get</b>(<i>search</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\dashboard.py#L181">[source]</a>
+    <i></i> <b>get</b>(<i>search</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/dashboard.py#L181">[source]</a>
 </p>
 
 Utility for retrieving a dashboard question in a dash callback.
@@ -222,7 +222,7 @@ def my_callback(search, ...):
 
 
 <p class="func-header">
-    <i></i> <b>record_response</b>(<i>search, response</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\dashboard.py#L221">[source]</a>
+    <i></i> <b>record_response</b>(<i>search, response</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/dashboard.py#L221">[source]</a>
 </p>
 
 Utility for writing the `response` attribute of the dashboard

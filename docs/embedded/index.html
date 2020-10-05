@@ -285,7 +285,7 @@
 
 <h2 id="hemlockembedded">hemlock.<strong>Embedded</strong></h2>
 <p class="func-header">
-    <i>class</i> hemlock.<b>Embedded</b>(<i>var=None, data=None, data_rows=1, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\embedded.py#L9">[source]</a>
+    <i>class</i> hemlock.<b>Embedded</b>(<i>var=None, data=None, data_rows=1, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L9">[source]</a>
 </p>
 
 <p>Embedded data belong to a branch or page. Use embedded data to manually
@@ -354,7 +354,7 @@ responses.</p>
 
 <h2 id="hemlocktimer">hemlock.<strong>Timer</strong></h2>
 <p class="func-header">
-    <i>class</i> hemlock.<b>Timer</b>(<i>var=None, data_rows=1, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\embedded.py#L83">[source]</a>
+    <i>class</i> hemlock.<b>Timer</b>(<i>var=None, data_rows=1, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L83">[source]</a>
 </p>
 
 <p>Tracks how much time a participant spends in various parts of the survey.</p>
@@ -403,6 +403,7 @@ responses.</p>
 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">timer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 <span class="n">timer</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">timer</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">timer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 </code></pre></div>
@@ -410,13 +411,14 @@ responses.</p>
 <p>Out:</p>
 <div class="highlight"><pre><span></span><code>not started
 running
-1.001034
-1.001381
+1.002405
+paused
+1.002983
 </code></pre></div>
 
 <h4 id="methods">Methods</h4>
 <p class="func-header">
-    <i></i> <b>start</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\embedded.py#L170">[source]</a>
+    <i></i> <b>start</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L172">[source]</a>
 </p>
 
 <p>Start the timer.</p>
@@ -435,7 +437,7 @@ running
 </table>
 
 <p class="func-header">
-    <i></i> <b>pause</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\embedded.py#L186">[source]</a>
+    <i></i> <b>pause</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L188">[source]</a>
 </p>
 
 <p>Pause the timer.</p>
@@ -454,7 +456,7 @@ running
 </table>
 
 <p class="func-header">
-    <i></i> <b>reset</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\embedded.py#L198">[source]</a>
+    <i></i> <b>reset</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L200">[source]</a>
 </p>
 
 <p>Reset all attributes to their default values.</p>

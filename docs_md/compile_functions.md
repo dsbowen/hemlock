@@ -34,7 +34,7 @@
 ##hemlock.functions.compile.**call_method**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.compile.<b>call_method</b>(<i>obj, method_name, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions\compile.py#L7">[source]</a>
+    <i>def</i> hemlock.functions.compile.<b>call_method</b>(<i>obj, method_name, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L7">[source]</a>
 </p>
 
 Calls one of the object's methods.
@@ -75,7 +75,7 @@ p.preview()._compile().preview()
 ##hemlock.functions.compile.**clear_error**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.compile.<b>clear_error</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions\compile.py#L36">[source]</a>
+    <i>def</i> hemlock.functions.compile.<b>clear_error</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L36">[source]</a>
 </p>
 
 Calls the object's `clear_error` method.
@@ -108,7 +108,7 @@ p.preview()._compile().preview()
 ##hemlock.functions.compile.**clear_response**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.compile.<b>clear_response</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions\compile.py#L59">[source]</a>
+    <i>def</i> hemlock.functions.compile.<b>clear_response</b>(<i>obj</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L59">[source]</a>
 </p>
 
 Calls the object's `clear_response` method.
@@ -141,7 +141,7 @@ p.preview()._compile().preview()
 ##hemlock.functions.compile.**shuffle**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.compile.<b>shuffle</b>(<i>obj, *attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions\compile.py#L82">[source]</a>
+    <i>def</i> hemlock.functions.compile.<b>shuffle</b>(<i>obj, *attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/compile.py#L82">[source]</a>
 </p>
 
 Shuffle an object's attributes.

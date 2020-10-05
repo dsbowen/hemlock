@@ -33,7 +33,7 @@ def random_input(driver, question):
     else:
         send_keys(driver, question)
 
-settings['Input'] = {'input_type': 'text', 'debug': random_input}
+settings['Input'] = {'type': 'text', 'debug': random_input}
 
 
 class Input(InputGroup, InputBase, Question):
@@ -80,41 +80,26 @@ class Input(InputGroup, InputBase, Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'input'}
 
-    def __init__(
-            self, label='', template='hemlock/input.html', extra_attrs={}, 
-            **kwargs
-        ):
+    def __init__(self, label='', template='hemlock/input.html', **kwargs):
         super().__init__(label, template, **kwargs)
-        self.update_attrs(**extra_attrs)
 
-    @property
-    def placeholder(self):
-        return self.attrs['placeholder']
-
-    @placeholder.setter
-    def placeholder(self, val):
-        self.update_attrs(placeholder=val)
-
-    @property
-    def step(self):
-        return self.attrs['step']
-
-    @step.setter
-    def step(self, val):
-        self.update_attrs(step=val)
-
-    def _validate(self, *args, **kwargs):
-        return super()._validate(*args, **kwargs)
+    def _render(self, body=None):
+        """Set the default value before rendering"""
+        body = body or self.body.copy()
+        inpt = body.select_one('#'+self.model_id)
+        if inpt is not None:
+            value = self.response if self.has_responded else self.default
+            if value is None:
+                inpt.attrs.pop('value', None)
+            else:
+                inpt['value'] = value
+        return super()._render(body)
 
     def _record_data(self):
-        if self.input_type in html_datetime_types:
-            self.data = get_datetime(self.input_type, self.response) or None
-        elif self.input_type == 'number' and self.response: 
+        if self.type in html_datetime_types:
+            self.data = get_datetime(self.type, self.response) or None
+        elif self.type == 'number' and self.response: 
             self.data = float(self.response)
         else:
             super()._record_data()
         return self
-
-    def _submit(self, *args, **kwargs):
-        """Convert data to `datetime` object if applicable"""
-        return super()._submit(*args, **kwargs)

@@ -34,7 +34,7 @@
 ##hemlock.**Select**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Select</b>(<i>label='', choices=[], template='hemlock/select.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\select.py#L17">[source]</a>
+    <i>class</i> hemlock.<b>Select</b>(<i>label='', choices=[], template='hemlock/select.html', ** kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/select.py#L17">[source]</a>
 </p>
 
 Select questions allow participants to select one or more options from a
@@ -42,6 +42,9 @@ dropdown menu.
 
 Inherits from [`hemlock.InputGroup`](input_group.md) and
 [`hemlock.ChoiceQuestion`](question.md).
+
+Its default debug function is
+[`click_choices`](debug_functions.md#hemlockfunctionsdebugclick_choices).
 
 <table class="docutils field-list field-table" frame="void" rules="none">
     <col class="field-name" />
@@ -53,9 +56,9 @@ Inherits from [`hemlock.InputGroup`](input_group.md) and
 <p class="attr">
     Select question label.
 </p>
-<b>choices : <i>list of str or hemlock.Option, default=[]</i></b>
+<b>choices : <i>list of hemlock.Option, str, tuple, or dict, default=[]</i></b>
 <p class="attr">
-    Options which participants can select. String inputs are automatically converted to <code>hemlock.Option</code> objects.
+    Options which participants can select.
 </p>
 <b>template : <i>str, default='hemlock/select.html'</i></b>
 <p class="attr">
@@ -67,6 +70,10 @@ Inherits from [`hemlock.InputGroup`](input_group.md) and
     <td class="field-body" width="100%"><b>align : <i>str, default='left'</i></b>
 <p class="attr">
     Choice alignment; <code>'left'</code>, <code>'center'</code>, or <code>'right'</code>.
+</p>
+<b>choices : <i>list of <code>hemlock.Option</code></i></b>
+<p class="attr">
+    Set for the <code>choices</code> parameter.
 </p>
 <b>multiple : <i>bool, default=False</i></b>
 <p class="attr">

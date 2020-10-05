@@ -198,6 +198,12 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolsshow_on_event">hemlock.tools.show_on_event</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#examples_2">Examples</a>
+    </li>
+        </ul>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#hemlocktoolsurl_for">hemlock.tools.url_for</a>
     </li>
     </ul>
@@ -287,7 +293,7 @@
 
 <h2 id="hemlocktoolschromedriver">hemlock.tools.<strong>chromedriver</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>chromedriver</b>(<i>headless=False</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\utils.py#L9">[source]</a>
+    <i>def</i> hemlock.tools.<b>chromedriver</b>(<i>headless=False</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L10">[source]</a>
 </p>
 
 <table class="docutils field-list field-table" frame="void" rules="none">
@@ -323,7 +329,7 @@ parameter you pass.</p>
 
 <h2 id="hemlocktoolsget_data">hemlock.tools.<strong>get_data</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>get_data</b>(<i>dataframe='data'</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\utils.py#L47">[source]</a>
+    <i>def</i> hemlock.tools.<b>get_data</b>(<i>dataframe='data'</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L48">[source]</a>
 </p>
 
 <table class="docutils field-list field-table" frame="void" rules="none">
@@ -367,9 +373,77 @@ parameter you pass.</p>
 &#39;Status&#39;: [&#39;Completed&#39;]}
 </code></pre></div>
 
+<h2 id="hemlocktoolsshow_on_event">hemlock.tools.<strong>show_on_event</strong></h2>
+<p class="func-header">
+    <i>def</i> hemlock.tools.<b>show_on_event</b>(<i>target, condition, value, init_hidden=True, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L88">[source]</a>
+</p>
+
+<p>Show the target question when a condition is met.</p>
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>target : <i>hemlock.Question</i></b>
+<p class="attr">
+    The question which will be shown when the condition is met.
+</p>
+<b>condition : <i>hemlock.Question</i></b>
+<p class="attr">
+    The question whose value determines whether the target is shown.
+</p>
+<b>value : <i>str or hemlock.Choice</i></b>
+<p class="attr">
+    >
+<li>If the condition is an input, the target is shown when the input value matches this value. 2. If the condition has choices, the target is shown when the choice with this value is checked.</li>
+<
+</p>
+<b>init_hidden : <i>bool, defualt=True</i></b>
+<p class="attr">
+    Indicates that the initial state of the target should be hidden.
+</p>
+<b>regex : <i>bool, default=False</i></b>
+<p class="attr">
+    Indicates that the target will be shown if input value matches the string as a regular expression.
+</p>
+<b>event : <i>str or None, default=None</i></b>
+<p class="attr">
+    Type of event which toggles the target display. If <code>None</code>, this function infers the type of event based on inputs.
+</p>
+<b>duration : <i>str or int, default=400</i></b>
+<p class="attr">
+    Show/hide event duration in milliseconds.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+<h4 id="examples_2">Examples</h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">hemlock</span> <span class="kn">import</span> <span class="n">Page</span><span class="p">,</span> <span class="n">Check</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">push_app_context</span>
+<span class="kn">from</span> <span class="nn">hemlock.tools</span> <span class="kn">import</span> <span class="n">show_on_event</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">push_app_context</span><span class="p">()</span>
+
+<span class="n">race</span> <span class="o">=</span> <span class="n">Check</span><span class="p">(</span>
+    <span class="s1">&#39;&lt;p&gt;Indicate your race.&lt;/p&gt;&#39;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s1">&#39;White&#39;</span><span class="p">,</span> <span class="s1">&#39;Black&#39;</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">],</span>
+    <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+<span class="n">specify</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;Please specify.&lt;/p&gt;&#39;</span><span class="p">)</span>
+<span class="n">show_on_event</span><span class="p">(</span><span class="n">specify</span><span class="p">,</span> <span class="n">race</span><span class="p">,</span> <span class="s1">&#39;Other&#39;</span><span class="p">)</span>
+<span class="n">Page</span><span class="p">(</span><span class="n">race</span><span class="p">,</span> <span class="n">specify</span><span class="p">)</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="n">name</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;What&#39;s your name?&lt;/p&gt;&quot;</span><span class="p">)</span>
+<span class="n">greet</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;Hello, World!&lt;/p&gt;&quot;</span><span class="p">)</span>
+<span class="n">show_on_event</span><span class="p">(</span><span class="n">greet</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;(w|W)orld&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+<span class="n">Page</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">greet</span><span class="p">)</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</code></pre></div>
+
 <h2 id="hemlocktoolsurl_for">hemlock.tools.<strong>url_for</strong></h2>
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>url_for</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\utils.py#L87">[source]</a>
+    <i>def</i> hemlock.tools.<b>url_for</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L218">[source]</a>
 </p>
 
 <p>Attempt to return <code>flask.url_for(*args, **kwargs)</code>. However, this method

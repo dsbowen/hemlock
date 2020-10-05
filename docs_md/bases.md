@@ -34,7 +34,7 @@
 ##hemlock.**Base**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Base</b>(<i>**kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L15">[source]</a>
+    <i>class</i> hemlock.<b>Base</b>(<i>**kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L15">[source]</a>
 </p>
 
 Base for all Hemlock models.
@@ -98,6 +98,18 @@ Data elements 'pack' their data and return it to their participant, who in turn 
 <b>var : <i>str or None, default=None</i></b>
 <p class="attr">
     Variable name associated with this data element. If <code>None</code>, the data will not be recorded.
+</p>
+<b>record_order : <i>bool, default=False</i></b>
+<p class="attr">
+    Indicates that the order of this data element should be recorded in the datafame. The order is the order in which this element appeared relative to other elements with the same variable name.
+</p>
+<b>record_index : <i>bool, default=False</i></b>
+<p class="attr">
+    Indicates that the index of this data element should be recorded in the dataframe. The index is the order in which this element appeared relative to other elements with the same parent. For example, the index of a question is the order in which the question appeared on its page.
+</p>
+<b>record_choice_index : <i>bool, default=False</i></b>
+<p class="attr">
+    Indicates that the index of this data element's choices should be recorded in the dataframe. For example, a <code>hemlock.Check</code> question has multiple choices that the participant can select. The index of a choice is its index in the question's choice list.
 </p></td>
 </tr>
     </tbody>
@@ -110,7 +122,7 @@ Data elements 'pack' their data and return it to their participant, who in turn 
 ##hemlock.**HTMLMixin**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>HTMLMixin</b>(<i>template=None, extra_css='', extra_js='', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L136">[source]</a>
+    <i>class</i> hemlock.<b>HTMLMixin</b>(<i>template=None, extra_css='', extra_js='', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L159">[source]</a>
 </p>
 
 Mixin for models which contribute html to a page.
@@ -136,7 +148,11 @@ Mixin for models which contribute html to a page.
 </tr>
 <tr class="field">
     <th class="field-name"><b>Attributes:</b></td>
-    <td class="field-body" width="100%"><b>body : <i>sqlalchemy_mutablesoup.MutableSoupType</i></b>
+    <td class="field-body" width="100%"><b>attrs : <i>dict</i></b>
+<p class="attr">
+    Most objects subclassing the <code>HTMLMixin</code> have a dictionary or html attributes for the main html tag of the <code>body</code>. For example, the <code>Input</code> object's main tag is an <code>&lt;input&gt;</code> tag with attributes such as <code>type</code>, <code>min</code>, and <code>max</code>.
+</p>
+<b>body : <i>sqlalchemy_mutablesoup.MutableSoupType</i></b>
 <p class="attr">
     The main html of the object.
 </p>
@@ -152,14 +168,37 @@ Mixin for models which contribute html to a page.
     </tbody>
 </table>
 
+####Notes
 
+`HTMLMixin` also allows you to set attributes of the main html tag as if
+setting an attribute of the `HTMLMixin` object. For example, you can set
+the `type` of the `<input>` tag of an `hemlock.Input` question with:
+
+```python
+from hemlock import Input, push_app_context
+
+app = push_app_context()
+
+inpt = Input(type='number')
+inpt.body
+```
+
+Out:
+
+```
+...
+<input class="form-control" id="input-1" name="input-1" type="number"/>
+...
+```
+
+Valid html attributes will vary depending on the object.
 
 ####Methods
 
 
 
 <p class="func-header">
-    <i></i> <b>add_external_css</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L200">[source]</a>
+    <i></i> <b>add_external_css</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L267">[source]</a>
 </p>
 
 
@@ -192,7 +231,7 @@ See (statics.md#hemlocktoolsexternal_css).
 
 
 <p class="func-header">
-    <i></i> <b>add_internal_css</b>(<i>self, style</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L220">[source]</a>
+    <i></i> <b>add_internal_css</b>(<i>self, style</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L287">[source]</a>
 </p>
 
 
@@ -225,7 +264,7 @@ See (statics.md#hemlocktoolsinternal_css).
 
 
 <p class="func-header">
-    <i></i> <b>add_external_js</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L241">[source]</a>
+    <i></i> <b>add_external_js</b>(<i>self, **attrs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L308">[source]</a>
 </p>
 
 
@@ -258,7 +297,7 @@ See (statics.md#hemlocktoolsexternal_js).
 
 
 <p class="func-header">
-    <i></i> <b>add_internal_js</b>(<i>self, js</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L261">[source]</a>
+    <i></i> <b>add_internal_js</b>(<i>self, js</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L328">[source]</a>
 </p>
 
 
@@ -288,6 +327,30 @@ See (statics.md#hemlocktoolsexternal_js).
 
 See (statics.md#hemlocktoolsinternal_js).
 
+
+
+<p class="func-header">
+    <i></i> <b>update_attrs</b>(<i>self, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L348">[source]</a>
+</p>
+
+Update html tag attributes.
+
+<table class="docutils field-list field-table" frame="void" rules="none">
+    <col class="field-name" />
+    <col class="field-body" />
+    <tbody valign="top">
+        <tr class="field">
+    <th class="field-name"><b>Parameters:</b></td>
+    <td class="field-body" width="100%"><b>**kwargs : <i></i></b>
+<p class="attr">
+    Keyword arguments map attribute names to values.
+</p></td>
+</tr>
+    </tbody>
+</table>
+
+
+
 ##hemlock.**InputBase**
 
 
@@ -300,7 +363,11 @@ Base for models which contain `<input>` tags.
     <tbody valign="top">
         <tr class="field">
     <th class="field-name"><b>Attributes:</b></td>
-    <td class="field-body" width="100%"><b>input : <i>bs4.Tag or None</i></b>
+    <td class="field-body" width="100%"><b>attrs : <i>dict</i></b>
+<p class="attr">
+    Input tag html attributes.
+</p>
+<b>input : <i>bs4.Tag or None</i></b>
 <p class="attr">
     Input tag associated with this model.
 </p></td>
@@ -315,7 +382,7 @@ Base for models which contain `<input>` tags.
 
 
 <p class="func-header">
-    <i></i> <b>input_from_driver</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L295">[source]</a>
+    <i></i> <b>input_from_driver</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L424">[source]</a>
 </p>
 
 
@@ -346,7 +413,7 @@ Base for models which contain `<input>` tags.
 
 
 <p class="func-header">
-    <i></i> <b>label_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\bases.py#L309">[source]</a>
+    <i></i> <b>label_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/bases.py#L438">[source]</a>
 </p>
 
 

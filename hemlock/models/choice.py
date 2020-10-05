@@ -8,7 +8,7 @@ difference between them, but reflects the underlying html.
 """
 
 from ..app import db
-from .bases import HTMLMixin, InputBase
+from .bases import HTMLMixin
 
 from flask import render_template
 from sqlalchemy_mutable import MutableType
@@ -52,11 +52,14 @@ class ChoiceBase():
     body : bs4.BeautifulSoup
         Choice html created from the `template` parameter.
 
-    label : str
+    label : str or bs4.BeautifulSoup
+        Set from the `label` parameter.
 
     value : 
+        Set from the `value` parameter.
 
     name :
+        Set from the `name` parameter.
 
     Notes
     -----
@@ -94,8 +97,7 @@ class ChoiceBase():
         the participant has not yet responded to the question.
         """
         default = (
-            question.response if question._has_responded 
-            else question.default
+            question.response if question.has_responded else question.default
         )
         if not default:
             return False

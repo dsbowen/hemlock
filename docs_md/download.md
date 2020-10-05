@@ -36,7 +36,7 @@ See <https://dsbowen.github.io/flask-download-btn/> for more details.
 ##hemlock.**Download**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Download</b>(<i>label='', template='hemlock/download.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\download.py#L16">[source]</a>
+    <i>class</i> hemlock.<b>Download</b>(<i>label='', template='hemlock/download.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/download.py#L16">[source]</a>
 </p>
 
 Allows participants to download files.

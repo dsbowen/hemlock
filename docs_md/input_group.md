@@ -31,7 +31,7 @@
 
 
 
-##hemlock.**InputGroup**
+##hemlock.qpolymorphs.**InputGroup**
 
 
 

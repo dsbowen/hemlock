@@ -77,7 +77,6 @@ class Question(HTMLMixin, Data, MutableModelBase):
         'polymorphic_identity': 'question',
         'polymorphic_on': question_type
     }
-    _has_responded = db.Column(db.Boolean, default=False)
 
     # relationships
     @property
@@ -130,6 +129,7 @@ class Question(HTMLMixin, Data, MutableModelBase):
     # Column attributes
     default = db.Column(MutableType)
     response = db.Column(MutableType)
+    has_responded = db.Column(db.Boolean, default=False)
 
     def __init__(self, label='', template=None, **kwargs):
         kwargs['label'] = label
@@ -188,6 +188,7 @@ class Question(HTMLMixin, Data, MutableModelBase):
         self : hemlock.Question
         """
         self.response = None
+        self.has_responded = False
         return self
 
     # methods executed during study
@@ -199,7 +200,7 @@ class Question(HTMLMixin, Data, MutableModelBase):
         return body or self.body.copy()
 
     def _record_response(self):
-        self._has_responded = True
+        self.has_responded = True
         self.response = request.form.get(self.model_id)
         return self
         

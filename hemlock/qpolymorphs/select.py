@@ -67,37 +67,32 @@ class Select(InputGroup, ChoiceQuestion):
     __mapper_args__ = {'polymorphic_identity': 'select'}
     choice_cls = Option
 
-    def __init__(
-            self, label='', choices=[], template='hemlock/select.html', 
-            **kwargs
-        ):
-        super().__init__(label, choices, template, **kwargs)
+    _html_attr_names = [
+        'autofocus',
+        'disabled',
+        'multiple',
+        'required',
+        'size'
+    ]
 
     @property
-    def multiple(self):
-        return 'multiple' in self.select.attrs
+    def attrs(self):
+        return self.select.attrs
 
-    @multiple.setter
-    def multiple(self, val):
-        assert isinstance(val, bool)
-        if val:
-            self.select['multiple'] = None
-        else:
-            self.select.attrs.pop('multiple', None)
+    @attrs.setter
+    def attrs(self, val):
+        self.select.attrs = val
         self.body.changed()
 
     @property
     def select(self):
         return self.body.select_one('select#'+self.model_id)
 
-    @property
-    def size(self):
-        return self.select.attrs.get('size')
+    def __init__(
+            self, label='', choices=[], template='hemlock/select.html', 
+            **kwargs
+        ):
+        super().__init__(label, choices, template, **kwargs)
 
-    @size.setter
-    def size(self, val):
-        if not val:
-            self.select.attrs.pop('size', None)
-        else:
-            self.select['size'] = val
-        self.body.changed()
+
+    

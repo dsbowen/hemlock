@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hemlock-survey",
-    version="0.0.25",
+    version="0.0.24",
     author="Dillon Bowen",
     author_email="dsbowen@wharton.upenn.edu",
     description="A package for creating and deploying surveys",
@@ -30,7 +30,7 @@ setuptools.setup(
         'redis>=3.3.11',
         'rq>=1.2.0',
         'selenium>=3.141.0',
-        'selenium-tools>=0.0.0',
+        'selenium-tools>=0.0.1',
         'sqlalchemy>=1.3.12',
         'sqlalchemy-function>=0.0.9',
         'sqlalchemy-modelid>=0.0.3',

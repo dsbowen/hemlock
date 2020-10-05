@@ -34,7 +34,7 @@
 ##hemlock.tools.**indef_article**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>indef_article</b>(<i>word</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\lang.py#L3">[source]</a>
+    <i>def</i> hemlock.tools.<b>indef_article</b>(<i>word</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/lang.py#L3">[source]</a>
 </p>
 
 
@@ -77,7 +77,7 @@ Out:
 ##hemlock.tools.**join**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>join</b>(<i>joiner, *items</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\lang.py#L32">[source]</a>
+    <i>def</i> hemlock.tools.<b>join</b>(<i>joiner, *items</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/lang.py#L32">[source]</a>
 </p>
 
 
@@ -126,7 +126,7 @@ world, sun, or moon
 ##hemlock.tools.**plural**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>plural</b>(<i>n, singular, plural=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\lang.py#L73">[source]</a>
+    <i>def</i> hemlock.tools.<b>plural</b>(<i>n, singular, plural=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/lang.py#L73">[source]</a>
 </p>
 
 
@@ -177,7 +177,7 @@ Out:
 ##hemlock.tools.**pronouns**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>pronouns</b>(<i>person, singular, gender=None, pfx=''</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools\lang.py#L108">[source]</a>
+    <i>def</i> hemlock.tools.<b>pronouns</b>(<i>person, singular, gender=None, pfx=''</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/lang.py#L108">[source]</a>
 </p>
 
 

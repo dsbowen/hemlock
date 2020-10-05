@@ -34,7 +34,7 @@
 ##hemlock.**Branch**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Branch</b>(<i>*pages, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\branch.py#L10">[source]</a>
+    <i>class</i> hemlock.<b>Branch</b>(<i>*pages, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L10">[source]</a>
 </p>
 
 Branches are stacked in a participant's branch stack. A branch contains a
@@ -131,7 +131,7 @@ This will open all of the branch's pages in separate tabs.
 
 
 <p class="func-header">
-    <i></i> <b>preview</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\branch.py#L166">[source]</a>
+    <i></i> <b>preview</b>(<i>self, driver=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L166">[source]</a>
 </p>
 
 Preview the page queue in the a browser window.
@@ -162,7 +162,7 @@ Preview the page queue in the a browser window.
 
 
 <p class="func-header">
-    <i></i> <b>view_nav</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\branch.py#L183">[source]</a>
+    <i></i> <b>view_nav</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/branch.py#L183">[source]</a>
 </p>
 
 Print this branch's page queue for debugging purposes.

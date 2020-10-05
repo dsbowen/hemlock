@@ -58,30 +58,3 @@ class Range(InputBase, Question):
     def __init__(self, label='', template='hemlock/range.html', **kwargs):
         super().__init__(label, template, **kwargs)
         self.add_internal_js(render_template('hemlock/range.js', self_=self))
-
-    @property
-    def max(self):
-        return float(self.input.attrs.get('max', 100))
-
-    @max.setter
-    def max(self, val):
-        self.input['max'] = val
-        self.body.changed()
-
-    @property
-    def min(self):
-        return float(self.input.attrs.get('min', 0))
-
-    @min.setter
-    def min(self, val):
-        self.input['min'] = val
-        self.body.changed()
-
-    @property
-    def step(self):
-        return float(self.input.attrs.get('step', 1))
-
-    @step.setter
-    def step(self, val):
-        self.input['step'] = val
-        self.body.changed()

@@ -34,7 +34,7 @@
 ##hemlock.**Embedded**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Embedded</b>(<i>var=None, data=None, data_rows=1, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\embedded.py#L9">[source]</a>
+    <i>class</i> hemlock.<b>Embedded</b>(<i>var=None, data=None, data_rows=1, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L9">[source]</a>
 </p>
 
 Embedded data belong to a branch or page. Use embedded data to manually
@@ -112,7 +112,7 @@ Out:
 ##hemlock.**Timer**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Timer</b>(<i>var=None, data_rows=1, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\embedded.py#L83">[source]</a>
+    <i>class</i> hemlock.<b>Timer</b>(<i>var=None, data_rows=1, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L83">[source]</a>
 </p>
 
 Tracks how much time a participant spends in various parts of the survey.
@@ -165,6 +165,7 @@ print(timer.state)
 time.sleep(1)
 print(timer.data)
 timer.pause()
+print(timer.state)
 time.sleep(1)
 print(timer.data)
 ```
@@ -174,8 +175,9 @@ Out:
 ```
 not started
 running
-1.001034
-1.001381
+1.002405
+paused
+1.002983
 ```
 
 ####Methods
@@ -183,7 +185,7 @@ running
 
 
 <p class="func-header">
-    <i></i> <b>start</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\embedded.py#L170">[source]</a>
+    <i></i> <b>start</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L172">[source]</a>
 </p>
 
 Start the timer.
@@ -207,7 +209,7 @@ Start the timer.
 
 
 <p class="func-header">
-    <i></i> <b>pause</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\embedded.py#L186">[source]</a>
+    <i></i> <b>pause</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L188">[source]</a>
 </p>
 
 Pause the timer.
@@ -231,7 +233,7 @@ Pause the timer.
 
 
 <p class="func-header">
-    <i></i> <b>reset</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\embedded.py#L198">[source]</a>
+    <i></i> <b>reset</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/embedded.py#L200">[source]</a>
 </p>
 
 Reset all attributes to their default values.

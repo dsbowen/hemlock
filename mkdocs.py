@@ -62,9 +62,15 @@ for filename in model_filenames:
 
 # question polymorphs
 def mod_input_group(soup):
-    soup.import_path = 'hemlock.qpolymorphs'
+    soup.objects[1].import_path = 'hemlock.qpolymorphs.'
+
+def mod_check(soup):
+    soup.objects[1].import_path = 'hemlock.qpolymorphs.check.'
     
-modifications = {'input_group': mod_input_group}
+modifications = {
+    'input_group': mod_input_group,
+    'check': mod_check
+}
 
 qpolymorph_filenames = [
     'check',

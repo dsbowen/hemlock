@@ -62,7 +62,7 @@ Inherits from
 
 
 <p class="func-header">
-    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\functions.py#L34">[source]</a>
+    <i></i> <b>register</b>(<i>cls, func</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L34">[source]</a>
 </p>
 
 This decorator registers a function.
@@ -132,7 +132,7 @@ p._compile().preview()
 ##hemlock.**Debug**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Debug</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\functions.py#L88">[source]</a>
+    <i>class</i> hemlock.<b>Debug</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L88">[source]</a>
 </p>
 
 Run to help debug the survey.
@@ -190,7 +190,7 @@ p.preview(driver)._debug(driver)
 
 
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\functions.py#L138">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L138">[source]</a>
 </p>
 
 Execute the debug function with probability `self.p_exec`.
@@ -208,7 +208,7 @@ Execute the debug function with probability `self.p_exec`.
 ##hemlock.**Validate**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Validate</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\functions.py#L146">[source]</a>
+    <i>class</i> hemlock.<b>Validate</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L146">[source]</a>
 </p>
 
 Validates a participant's response.
@@ -270,7 +270,7 @@ You entered "goodbye moon", not "hello world"
 
 
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\functions.py#L202">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L202">[source]</a>
 </p>
 
 
@@ -417,7 +417,7 @@ T = terminal page
 
 
 <p class="func-header">
-    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\functions.py#L317">[source]</a>
+    <i></i> <b>__call__</b>(<i>self, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/functions.py#L317">[source]</a>
 </p>
 
 Create a new branch and 'link' it to the tree. Linking in the new

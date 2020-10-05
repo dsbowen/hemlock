@@ -34,7 +34,7 @@
 ##hemlock.**upload_to_bucket**
 
 <p class="func-header">
-    <i>def</i> hemlock.<b>upload_to_bucket</b>(<i>file_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\file.py#L20">[source]</a>
+    <i>def</i> hemlock.<b>upload_to_bucket</b>(<i>file_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/file.py#L20">[source]</a>
 </p>
 
 Default `hemlock.File` submit function. Uploads a participant file to
@@ -59,7 +59,7 @@ Google bucket.
 ##hemlock.**File**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>File</b>(<i>label='', template='hemlock/file.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\file.py#L44">[source]</a>
+    <i>class</i> hemlock.<b>File</b>(<i>label='', template='hemlock/file.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/file.py#L44">[source]</a>
 </p>
 
 Allows participants to upload files.
@@ -156,7 +156,7 @@ And open your browser to <http://localhost:5000/>. Upload a .png and click to th
 
 
 <p class="func-header">
-    <i></i> <b>generate_signed_url</b>(<i>self, expiration=timedelta(hours=0.5), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\file.py#L132">[source]</a>
+    <i></i> <b>generate_signed_url</b>(<i>self, expiration=timedelta(hours=0.5), **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/file.py#L132">[source]</a>
 </p>
 
 Generate a signed URL for the uploaded file.
@@ -186,7 +186,7 @@ Read more about [signed URLs](https://cloud.google.com/storage/docs/access-contr
 
 
 <p class="func-header">
-    <i></i> <b>get_allowed_types</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\file.py#L155">[source]</a>
+    <i></i> <b>get_allowed_types</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/file.py#L155">[source]</a>
 </p>
 
 
@@ -210,7 +210,7 @@ Read more about [signed URLs](https://cloud.google.com/storage/docs/access-contr
 
 
 <p class="func-header">
-    <i></i> <b>get_path</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\file.py#L165">[source]</a>
+    <i></i> <b>get_path</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/file.py#L165">[source]</a>
 </p>
 
 

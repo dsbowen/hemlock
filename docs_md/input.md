@@ -34,7 +34,7 @@
 ##hemlock.**random_input**
 
 <p class="func-header">
-    <i>def</i> hemlock.<b>random_input</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\input.py#L18">[source]</a>
+    <i>def</i> hemlock.<b>random_input</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/input.py#L18">[source]</a>
 </p>
 
 Default debug function for input questions. This function sends a random
@@ -64,7 +64,7 @@ object if the input takes dates or times.
 ##hemlock.**Input**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Input</b>(<i>label='', template='hemlock/input.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\input.py#L39">[source]</a>
+    <i>class</i> hemlock.<b>Input</b>(<i>label='', template='hemlock/input.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/input.py#L39">[source]</a>
 </p>
 
 Inputs take text input by default, or other types of html inputs.
@@ -90,7 +90,11 @@ Inherits from [`hemlock.qpolymorphs.InputGroup`](input_group.md),
 </tr>
 <tr class="field">
     <th class="field-name"><b>Attributes:</b></td>
-    <td class="field-body" width="100%"><b>input_type : <i>str, default='text'</i></b>
+    <td class="field-body" width="100%"><b>attrs : <i>dict</i></b>
+<p class="attr">
+    Input tag attributes.
+</p>
+<b>input_type : <i>str, default='text'</i></b>
 <p class="attr">
     Type of html input. See <a href="https://www.w3schools.com/html/html_form_input_types.asp">https://www.w3schools.com/html/html_form_input_types.asp</a>.
 </p>

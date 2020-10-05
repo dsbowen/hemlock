@@ -37,7 +37,7 @@ most useful when fleshed out. See section on question polymorphs.
 ##hemlock.**Question**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Question</b>(<i>label='', template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\question.py#L20">[source]</a>
+    <i>class</i> hemlock.<b>Question</b>(<i>label='', template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L20">[source]</a>
 </p>
 
 Base object for questions. Questions are displayed on their page in index
@@ -121,7 +121,7 @@ It inherits from
 
 
 <p class="func-header">
-    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\question.py#L166">[source]</a>
+    <i></i> <b>clear_error</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L171">[source]</a>
 </p>
 
 Clear the error message.
@@ -145,7 +145,7 @@ Clear the error message.
 
 
 <p class="func-header">
-    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\question.py#L177">[source]</a>
+    <i></i> <b>clear_response</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L182">[source]</a>
 </p>
 
 Clear the response.
@@ -169,7 +169,7 @@ Clear the response.
 ##hemlock.**ChoiceQuestion**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>ChoiceQuestion</b>(<i>label='', choices=[], template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models\question.py#L228">[source]</a>
+    <i>class</i> hemlock.<b>ChoiceQuestion</b>(<i>label='', choices=[], template=None, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/question.py#L235">[source]</a>
 </p>
 
 A question which contains choices. Inherits from `hemlock.Question`.
@@ -184,9 +184,9 @@ A question which contains choices. Inherits from `hemlock.Question`.
 <p class="attr">
     Question label.
 </p>
-<b>choices : <i>list of hemlock.Choice, default=[]</i></b>
+<b>choices : <i>list, default=[]</i></b>
 <p class="attr">
-    Choices which belong to this question.
+    Choices which belong to this question. List items are usually <code>hemlock.Choice</code> or <code>hemlock.Option</code>.
 </p>
 <b>template : <i>str or None, default=None</i></b>
 <p class="attr">
@@ -195,20 +195,28 @@ A question which contains choices. Inherits from `hemlock.Question`.
 </tr>
 <tr class="field">
     <th class="field-name"><b>Attributes:</b></td>
-    <td class="field-body" width="100%"><b>multiple : <i>bool, default=False</i></b>
+    <td class="field-body" width="100%"><b>choices : <i>list, default=[]</i></b>
+<p class="attr">
+    Set from <code>choices</code> parameter.
+</p>
+<b>choice_cls : <i>class, default=hemlock.Choice</i></b>
+<p class="attr">
+    Class of the choices in the <code>choices</code> list.
+</p>
+<b>multiple : <i>bool, default=False</i></b>
 <p class="attr">
     Indicates that the participant can select multiple choices.
-</p></td>
-</tr>
-<tr class="field">
-    <th class="field-name"><b>Relationships:</b></td>
-    <td class="field-body" width="100%"><b>choices : <i>list of hemlock.Choice, default=[]</i></b>
-<p class="attr">
-    Possible choices from which a participant can select.
 </p></td>
 </tr>
     </tbody>
 </table>
 
+####Notes
 
+`choices` can be set using the following formats:
+1. list of choice objects.
+2. list of `str`, treated as choice labels.
+3. list of `(choice label, value)` tuples.
+4. list of `(choice label, value, name)` tuples.
+5. list of dictionaries with choice keyword arguments.
 

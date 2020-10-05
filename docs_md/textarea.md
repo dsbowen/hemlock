@@ -34,7 +34,7 @@
 ##hemlock.**Textarea**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Textarea</b>(<i>page=None, template='hemlock/textarea.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\textarea.py#L13">[source]</a>
+    <i>class</i> hemlock.<b>Textarea</b>(<i>page=None, template='hemlock/textarea.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L13">[source]</a>
 </p>
 
 Textareas provide large text boxes for free responses.
@@ -59,11 +59,7 @@ Inherits from [`hemlock.qpolymorphs.InputGroup`](input_group.md) and
 </tr>
 <tr class="field">
     <th class="field-name"><b>Attributes:</b></td>
-    <td class="field-body" width="100%"><b>rows : <i>int, default=3</i></b>
-<p class="attr">
-    Number of rows of text to display.
-</p>
-<b>textarea : <i>bs4.Tag</i></b>
+    <td class="field-body" width="100%"><b>textarea : <i>bs4.Tag</i></b>
 <p class="attr">
     The <code>&lt;textarea&gt;</code> tag.
 </p></td>
@@ -92,7 +88,7 @@ Page(Textarea('<p>This is a textarea.</p>')).preview()
 
 
 <p class="func-header">
-    <i></i> <b>textarea_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs\textarea.py#L83">[source]</a>
+    <i></i> <b>textarea_from_driver</b>(<i>self, driver</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/textarea.py#L83">[source]</a>
 </p>
 
 Get textarea from the webdriver for debugging.
