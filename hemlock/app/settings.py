@@ -9,6 +9,10 @@ clean_data : callable or None, default=None
     profile. This callable takes and returns `pandas.DataFrame`. If `None`, no
     additional cleaning is performend.
 
+collect_IP : bool, default=True
+    Indicates that participants' IP addresses will be associated with their
+    data.
+
 duplicate_keys : list, default=[]
     List of keys (column names) on which to block duplicate participants. If
     empty, the app will not screen out duplicates.
@@ -128,6 +132,7 @@ TIME_EXPIRED_TXT = 'You have exceeded your time limit for this survey'
 
 settings = {
     'clean_data': None,
+    'collect_IP': True,
     'duplicate_keys': [],
     'restart_option': True,
     'restart_text': RESTART_TXT,
@@ -162,7 +167,7 @@ settings = {
                 '\'self\'', 
                 '\'unsafe-inline\'', 
                 'data:',
-                'https://youtube.com',
+                'https://www.youtube.com',
             ],
             'font-src': [
                 'https://fonts.googleapis.com',

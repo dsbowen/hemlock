@@ -26,9 +26,33 @@ from random import choice, randint, random, randrange, shuffle
 from string import ascii_letters, digits
 from time import sleep
 
+def _is_displayed(element, max_wait=1, wait_interval=1):
+    """
+    Parameters
+    ----------
+    element : selenium.webdriver.remote.webelement.WebElement
+        Checks if this element is displayed.
+
+    max_wait : float, default=1
+        Maximum number of seconds to wait for element to be displayed.
+
+    wait_interval : float, default=1
+        Interval in between checking to see if element is displayed.
+
+    Returns
+    -------
+    is_displayed : bool
+        Indicates that the web element is displayed.
+    """
+    for _ in range(0, max_wait, wait_interval):
+        if element.is_displayed():
+            return True
+        sleep(wait_interval)
+    return False
+
 # Page debugging
 @Debug.register
-def forward(driver, page):
+def forward(driver, page, max_wait=30, wait_interval=3):
     """
     Click the forward button.
 
@@ -52,10 +76,14 @@ def forward(driver, page):
     p.preview(driver)._debug(driver)
     ```
     """
-    driver.find_element_by_id('forward-btn').click()
+    forward_btn = driver.find_element_by_id('forward-btn')
+    if _is_displayed(forward_btn, max_wait, wait_interval):
+        forward_btn.click()
+    else:
+        raise TimeoutError('Forward button not displayed')
 
 @Debug.register
-def back(driver, page):
+def back(driver, page, max_wait=30, wait_interval=1):
     """
     Click the back button.
 
@@ -79,7 +107,11 @@ def back(driver, page):
     p.preview(driver)._debug(driver)
     ```
     """
-    driver.find_element_by_id('back-btn').click()
+    back_btn = driver.find_element_by_id('back-btn')
+    if _is_displayed(back_btn, max_wait, wait_interval):
+        back_btn.click()
+    else:
+        raise TimeoutError('Back button not displayed')
 
 # Textarea and text input debugging
 
@@ -102,6 +134,10 @@ def send_keys(driver, question, *keys, p_num=.5):
         Probability of sending a random number if keys are not specified (as 
         opposed to a random string).
 
+    Notes
+    -----
+    This debug function is skipped if the question is not displayed.
+
     Examples
     --------
     ```python
@@ -120,13 +156,14 @@ def send_keys(driver, question, *keys, p_num=.5):
         inpt = question.textarea_from_driver(driver)
     except:
         inpt = question.input_from_driver(driver)
-    inpt.clear()
-    if keys:
-        [inpt.send_keys(key) for key in keys]
-    elif random() < p_num:
-        random_number(driver, question)
-    else:
-        random_str(driver, question)
+    if _is_displayed(inpt):
+        inpt.clear()
+        if keys:
+            [inpt.send_keys(key) for key in keys]
+        elif random() < p_num:
+            random_number(driver, question)
+        else:
+            random_str(driver, question)
 
 @Debug.register
 def random_str(driver, question, magnitude=2, p_whitespace=.2):
@@ -145,6 +182,10 @@ def random_str(driver, question, magnitude=2, p_whitespace=.2):
 
     p_whitespace : float, default=.2
         Frequency with which whitespace characters appear in the string.
+
+    Notes
+    -----
+    This debug function is skipped if the question is not displayed.
 
     Examples
     --------
@@ -192,6 +233,10 @@ def random_number(driver, question, *args, **kwargs):
     p_neg : float, default=.1
         Probability that the number is negative.
 
+    Notes
+    -----
+    This debug function is skipped if the question is not displayed.
+
     Examples
     --------
     ```python
@@ -225,6 +270,10 @@ def send_datetime(driver, question, datetime_=None):
         The datetime object to send. If `None`, a date and time are chosen
         randomly.
 
+    Notes
+    -----
+    This debug function is skipped if the question is not displayed.
+
     Examples
     --------
     ```python
@@ -242,9 +291,10 @@ def send_datetime(driver, question, datetime_=None):
     ```
     """
     inpt = question.input_from_driver(driver)
-    inpt.clear()
-    datetime_ = datetime_ or gen_datetime()
-    send_datetime_(inpt, datetime_)
+    if _is_displayed(inpt):
+        inpt.clear()
+        datetime_ = datetime_ or gen_datetime()
+        send_datetime_(inpt, datetime_)
 
 # Range debugger
 
@@ -270,6 +320,10 @@ def drag_range(driver, range_, target=None, tol=0, max_iter=10):
     max_iter : int, default=10
         Maximum number of iterations for the slider to reach the target.
 
+    Notes
+    -----
+    This debug function is skipped if the question is not displayed.
+
     Examples
     --------
     ```python
@@ -286,19 +340,19 @@ def drag_range(driver, range_, target=None, tol=0, max_iter=10):
     """
     if target is None:
         target = randrange(range_.min, range_.max, range_.step)
-    drag_range_(
-        driver, 
-        range_.input_from_driver(driver),
-        target,
-        horizontal=True, # all sliders are horizontal for now
-        tol=tol,
-        max_iter=max_iter
-    )
+    inpt = range_.input_from_driver(driver)
+    if _is_displayed(inpt):
+        drag_range_(
+            driver, inpt, target,
+            horizontal=True, # all sliders are horizontal for now
+            tol=tol,
+            max_iter=max_iter
+        )
 
 # Choice question debugger
 
 @Debug.register
-def click_choices(driver, question, *values):
+def click_choices(driver, question, *values, if_selected=None):
     """
     Click on choices or options.
 
@@ -312,10 +366,20 @@ def click_choices(driver, question, *values):
         Values of the choices on which to click. If no choices are specified, 
         the debugger will click on random choices.
 
+    if_selected : bool or None, default=None
+        Indicates that the choices will be clicked only if they are already 
+        selected. If `False` the choices will be clicked only if they are not 
+        already selected. If `None` the choices will be clicked whether or 
+        not they are selected.
+
+    Notes
+    -----
+    Will not attempt to click choices or options which are not displayed.
+
     Examples
     --------
     ```python
-    from hemlock import Check, Debug as D, Page, push_app_context
+    from hemlock import Binary, Debug as D, Page, push_app_context
     from hemlock.tools import chromedriver
 
     app = push_app_context()
@@ -323,31 +387,23 @@ def click_choices(driver, question, *values):
     driver = chromedriver()
 
     p = Page(
-    \    Check(
+    \    Binary(
     \        '<p>Click "Yes".</p>', 
-    \        ['Yes', 'No'], 
     \        debug=D.click_choices('Yes')
     \    )
     )
     p.preview(driver)._debug(driver)
-    ```
     """
-    from ..qpolymorphs import Check
-    if not values:
+    def choose_values():
         order = list(range(len(question.choices)))
         shuffle(order)
-        n_clicks = randint(0, len(question.choices))
-        values = [question.choices[i].value for i in order[:n_clicks]]
-    if question.multiple:
-        clear_choices(driver, question)
-    for value in values:
-        choices = [c for c in question.choices if c.value == value]
-        if isinstance(question, Check):
-            # check question
-            [c.label_from_driver(driver).click() for c in choices]
-        else:
-            # select question
-            [c.input_from_driver(driver).click() for c in choices]
+        n_values = randint(0, len(question.choices))
+        return [question.choices[i].value for i in order[:n_values]]
+
+    values = values if values else choose_values()
+    for c in question.choices:
+        if c.value in values and c.is_displayed(driver):
+            c.click(driver, if_selected=if_selected)
 
 @Debug.register
 def clear_choices(driver, question):
@@ -376,8 +432,9 @@ def clear_choices(driver, question):
 
     p = Page(
     \    Check(
-    \        '<p>Click "Yes".</p>', 
-    \        ['Yes', 'No'], 
+    \        "<p>Which ice cream flavors do you like?</p>",
+    \        ['Chocolate', 'Vanilla', 'Strawberry'],
+    \        default='Chocolate', 
     \        multiple=True,
     \        debug=D.clear_choices()
     \    )
@@ -385,17 +442,11 @@ def clear_choices(driver, question):
     p.preview(driver)._debug(driver)
     ```
     """
-    from ..qpolymorphs import Check
     if not question.choices:
         return
     if not question.multiple:
         print("Warning: Only multiple choice questions cannot be cleared")
         return
     for c in question.choices:
-        if c.input_from_driver(driver).get_attribute('checked'):
-            if isinstance(question, Check):
-                # check question
-                c.label_from_driver(driver).click()
-            else:
-                # select question
-                c.input_from_driver(driver).click()
+        if c.is_displayed(driver):
+            c.click(driver, if_selected=True)

@@ -1,6 +1,7 @@
 """# Utilities"""
 
-from flask import url_for as try_url_for
+from cssutils import parseStyle
+from flask import render_template, url_for as try_url_for
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
 
@@ -83,6 +84,136 @@ def get_data(dataframe='data'):
     """
     from ..models.private import DataStore
     return dict(getattr(DataStore.query.first(), dataframe))
+
+def show_on_event(
+        target, condition, value, init_hidden=True, *args,  **kwargs
+    ):
+    """
+    Show the target question when a condition is met.
+
+    Parameters
+    ----------
+    target : hemlock.Question
+        The question which will be shown when the condition is met.
+
+    condition : hemlock.Question
+        The question whose value determines whether the target is shown.
+
+    value : str or hemlock.Choice
+        1. If the condition is an input, the target is shown when the input 
+        value matches this value.
+        2. If the condition has choices, the target is shown when the choice
+        with this value is checked.
+
+    init_hidden : bool, defualt=True
+        Indicates that the initial state of the target should be hidden.
+
+    regex : bool, default=False
+        Indicates that the target will be shown if input value matches the 
+        string as a regular expression.
+
+    event : str or None, default=None
+        Type of event which toggles the target display. If `None`, this 
+        function infers the type of event based on inputs.
+
+    duration : str or int, default=400
+        Show/hide event duration in milliseconds.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Page, Check, Input, Label, push_app_context
+    from hemlock.tools import show_on_event
+
+    app = push_app_context()
+
+    race = Check(
+    \    '<p>Indicate your race.</p>', 
+    \    ['White', 'Black', 'Other'], 
+    \    multiple=True
+    )
+    specify = Input('<p>Please specify.</p>')
+    show_on_event(specify, race, 'Other')
+    Page(race, specify).preview()
+    ```
+
+    ```python
+    name = Input("<p>What's your name?</p>")
+    greet = Label("<p>Hello, World!</p>")
+    show_on_event(greet, name, '(w|W)orld', regex=True, duration=400)
+    Page(name, greet).preview()
+    ```
+    """
+    from ..models import Question, Choice, Option
+
+    def hide_target(target_id):
+        target_tag = target.body.select_one('#'+target_id)
+        style = parseStyle(target_tag.get('style'))
+        style['display'] = 'none'
+        target_tag['style'] = style.cssText
+        target.body.changed()
+
+    # NOTE I want to extend this to show choices and options as well
+    # but the code below isn't working right now
+
+    # assert (
+    #     isinstance(target, (Question, Choice, Option)), 
+    #     'target must be a Question, Choice, or Option'
+    # )
+    # if isinstance(target, Question):
+    #     # form-group
+    #     target_id = target.model_id+'-fg'
+    # elif isinstance(target, Choice):
+    #     # custom-conctrol
+    #     target_id = target.model_id+'-cc'
+    # else:
+    #     # option
+    #     target_id = target.model_id
+    assert isinstance(target, Question), 'target must be a Question'
+    target_id = target.model_id+'-fg' # form group div
+    if init_hidden:
+        hide_target(target_id)
+    target.add_internal_js(
+        _show_on_event_js(target_id, condition, value, *args, **kwargs)
+    )
+    return target
+
+def _show_on_event_js(
+        target_id, condition, value, regex=False, duration=400, event=None, 
+    ):
+    from ..models import Choice, ChoiceQuestion, Option
+
+    def get_event_value(condition, value):
+        if isinstance(condition, ChoiceQuestion):
+            event = 'change' # listen for change event
+            for choice in condition.choices:
+                if choice.value == value:
+                    value = choice.id
+                    break
+        else:
+            event = 'input' # listen for input event
+        return event, value
+
+    event, value = get_event_value(condition, value)
+    if hasattr(condition, 'choice_cls'):
+        # value corresponds to a radio or check box
+        choice = condition.choice_cls == Choice
+        # value corresponds to an option
+        option = condition.choice_cls == Option
+    else:
+        # value corresponds to neither a radio, check box, or option
+        choice = option = False
+    return render_template(
+        'hemlock/show_on_event.js', 
+        target_id=target_id, 
+        condition=condition,
+        choice=choice,
+        option=option,
+        value=value, 
+        regex=regex, 
+        event=event, 
+        duration=duration
+    )
 
 def url_for(*args, **kwargs):
     """

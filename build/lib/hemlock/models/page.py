@@ -46,6 +46,7 @@ import re
 import webbrowser
 from random import shuffle, random
 from tempfile import NamedTemporaryFile
+from time import sleep
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -172,9 +173,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     template : str, default='hemlock/page-body.html'
         Template for the page `body`.
 
-    timer_var : str or None, default=None
-        Variable name of `self.Timer`.
-
     Attributes
     ----------
     back : str or None, default=None
@@ -247,6 +245,13 @@ class Page(HTMLMixin, BranchingBase, db.Model):
 
     timer : hemlock.Timer or None, default=hemlock.Timer
         Tracks timing data for this page.
+        1. Timer can be set as a `Timer` object.
+        2. Setting `timer` to a `str` or `None` sets the timer object 
+        variable.
+        3. Setting `timer` to a `tuple` sets the timer object variable and 
+        data rows.
+        4. Setting `timer` to a `dict` sets the timer object attributes. The
+        `dict` maps attribute names to values.
 
     questions : list of hemlock.Question, default=[]
         List of questions which this page displays to its participant.
@@ -338,11 +343,31 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         collection_class=ordering_list('index'),
     )
 
-    timer = db.relationship(
+    _timer = db.relationship(
         'Timer', 
         uselist=False,
         foreign_keys='Timer._timed_page_id'
     )
+
+    @property
+    def timer(self):
+        return self._timer
+
+    @timer.setter
+    def timer(self, val):
+        if isinstance(val, Timer):
+            self._timer = val
+            return
+        if not hasattr(self, '_timer') or self._timer is None:
+            self._timer = Timer()
+        if isinstance(val, str) or val is None:
+            self._timer.var = val
+        elif isinstance(val, tuple):
+            self._timer.var, self._timer.data_rows = val
+        elif isinstance(val, dict):
+            [setattr(self._timer, key, value) for key, value in val.items()]
+        else:
+            raise ValueError('Invalid value {} for timer'.format(val))        
 
     questions = db.relationship(
         'Question', 
@@ -454,11 +479,10 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     viewed = db.Column(db.Boolean, default=False)
 
     def __init__(
-            self, *questions, template='hemlock/page-body.html', 
-            timer_var=None, **kwargs
+            self, *questions, template='hemlock/page-body.html', **kwargs
         ):
         self.questions = list(questions)
-        self.timer = Timer(var=timer_var)
+        kwargs['timer'] = kwargs['timer'] if 'timer' in kwargs else None
         super().__init__(template, **kwargs)
 
     # BeautifulSoup shortcuts

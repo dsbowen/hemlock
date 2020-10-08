@@ -27,9 +27,6 @@ class Textarea(InputGroup, Question):
 
     Attributes
     ----------
-    rows : int, default=3
-        Number of rows of text to display.
-
     textarea : bs4.Tag
         The `<textarea>` tag.
 
@@ -52,33 +49,36 @@ class Textarea(InputGroup, Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'textarea'}
 
-    def __init__(self, page=None, template='hemlock/textarea.html', **kwargs):
-        super().__init__(page, template, **kwargs)
-        self.add_internal_js(
-            render_template('hemlock/textarea.js', self_=self)
-        )
+    _html_attr_names = [
+        'autofocus',
+        'cols',
+        'disabled',
+        'maxlength',
+        'placeholder',
+        'readonly',
+        'required',
+        'rows',
+        'wrap'
+    ]
 
     @property
-    def rows(self):
-        return self.textarea.attrs.get('rows')
+    def attrs(self):
+        return self.textarea.attrs
 
-    @rows.setter
-    def rows(self, val):
-        self.textarea['rows'] = val
-        self.body.changed()
-
-    @property
-    def placeholder(self):
-        return self.textarea.get('placeholder')
-
-    @placeholder.setter
-    def placeholder(self, val):
-        self.textarea['placeholder'] = val
+    @attrs.setter
+    def attrs(self, val):
+        self.textarea.attrs = val
         self.body.changed()
 
     @property
     def textarea(self):
         return self.body.select_one('textarea#'+self.model_id)
+
+    def __init__(self, page=None, template='hemlock/textarea.html', **kwargs):
+        super().__init__(page, template, **kwargs)
+        self.add_internal_js(
+            render_template('hemlock/textarea.js', self_=self)
+        )
 
     def textarea_from_driver(self, driver):
         """
@@ -101,5 +101,3 @@ class Textarea(InputGroup, Question):
         textarea = body.select_one('#'+self.model_id)
         textarea.string = self.response or self.default or ''
         return super()._render(body)
-
-    

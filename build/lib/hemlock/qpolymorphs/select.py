@@ -2,7 +2,7 @@
 
 from ..app import db, settings
 from ..functions.debug import click_choices
-from ..models import ChoiceQuestion
+from ..models import ChoiceQuestion, Option
 from .input_group import InputGroup
 
 settings['Select'] = {
@@ -22,14 +22,16 @@ class Select(InputGroup, ChoiceQuestion):
     Inherits from [`hemlock.InputGroup`](input_group.md) and 
     [`hemlock.ChoiceQuestion`](question.md).
 
+    Its default debug function is
+    [`click_choices`](debug_functions.md#hemlockfunctionsdebugclick_choices).
+
     Parameters
     ----------
     label : str or bs4.BeautifulSoup, default=''
         Select question label.
 
-    choices : list of str or hemlock.Option, default=[]
-        Options which participants can select. String inputs are automatically
-        converted to `hemlock.Option` objects.
+    choices : list of hemlock.Option, str, tuple, or dict, default=[]
+        Options which participants can select.
 
     template : str, default='hemlock/select.html'
         Template for the select body.
@@ -38,6 +40,9 @@ class Select(InputGroup, ChoiceQuestion):
     ----------
     align : str, default='left'
         Choice alignment; `'left'`, `'center'`, or `'right'`.
+
+    choices : list of `hemlock.Option`
+        Set for the `choices` parameter.
         
     multiple : bool, default=False
         Indicates that the participant may select multiple choices.
@@ -60,6 +65,28 @@ class Select(InputGroup, ChoiceQuestion):
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'select'}
+    choice_cls = Option
+
+    _html_attr_names = [
+        'autofocus',
+        'disabled',
+        'multiple',
+        'required',
+        'size'
+    ]
+
+    @property
+    def attrs(self):
+        return self.select.attrs
+
+    @attrs.setter
+    def attrs(self, val):
+        self.select.attrs = val
+        self.body.changed()
+
+    @property
+    def select(self):
+        return self.body.select_one('select#'+self.model_id)
 
     def __init__(
             self, label='', choices=[], template='hemlock/select.html', 
@@ -67,31 +94,5 @@ class Select(InputGroup, ChoiceQuestion):
         ):
         super().__init__(label, choices, template, **kwargs)
 
-    @property
-    def multiple(self):
-        return 'multiple' in self.select.attrs
 
-    @multiple.setter
-    def multiple(self, val):
-        assert isinstance(val, bool)
-        if val:
-            self.select['multiple'] = None
-        else:
-            self.select.attrs.pop('multiple', None)
-        self.body.changed()
-
-    @property
-    def select(self):
-        return self.body.select_one('select#'+self.model_id)
-
-    @property
-    def size(self):
-        return self.select.attrs.get('size')
-
-    @size.setter
-    def size(self, val):
-        if not val:
-            self.select.attrs.pop('size', None)
-        else:
-            self.select['size'] = val
-        self.body.changed()
+    

@@ -85,7 +85,7 @@ def require(question):
     Please respond to this question.
     ```
     """
-    return None if question.response else REQUIRE_MSG
+    return REQUIRE_MSG if question.response in (None, '') else None
 
 # Set validation
 

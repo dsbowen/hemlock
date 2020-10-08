@@ -87,6 +87,24 @@ class Data(Base, MutableModelBase, db.Model):
     var : str or None, default=None
         Variable name associated with this data element. If `None`, the data 
         will not be recorded.
+
+    record_order : bool, default=False
+        Indicates that the order of this data element should be recorded in
+        the datafame. The order is the order in which this element appeared
+        relative to other elements with the same variable name.
+
+    record_index : bool, default=False
+        Indicates that the index of this data element should be recorded in
+        the dataframe. The index is the order in which this element appeared
+        relative to other elements with the same parent. For example, the
+        index of a question is the order in which the question appeared on its
+        page.
+
+    record_choice_index : bool, default=False
+        Indicates that the index of this data element's choices should be 
+        recorded in the dataframe. For example, a `hemlock.Check` question has
+        multiple choices that the participant can select. The index of a 
+        choice is its index in the question's choice list.
     """
     id = db.Column(db.Integer, primary_key=True)
     data_type = db.Column(db.String)
@@ -99,6 +117,9 @@ class Data(Base, MutableModelBase, db.Model):
     data_rows = db.Column(db.Integer, default=1)
     index = db.Column(db.Integer)
     var = db.Column(db.Text)
+    record_order = db.Column(db.Boolean, default=False)
+    record_index = db.Column(db.Boolean, default=False)
+    record_choice_index = db.Column(db.Boolean, default=False)
 
     def _pack_data(self, data=None):
         """
@@ -121,14 +142,16 @@ class Data(Base, MutableModelBase, db.Model):
         """
         if self.var is None:
             return {}
-        data = {self.var: str(self.data)} if data is None else data
-        data[self.var+'Order'] = self.order
-        if self.index is not None:
+        if data is None:
+            data = {self.var: None if self.data is None else str(self.data)}
+        if hasattr(self, 'order') and self.record_order:
+            data[self.var+'Order'] = self.order
+        if hasattr(self, 'index') and self.record_index:
             data[self.var+'Index'] = self.index
-        if hasattr(self, 'choices'):
+        if hasattr(self, 'choices') and self.record_choice_index:
             data.update({
-                self.var+c.name+'Index': c.index
-                for c in self.choices if c.name is not None
+                self.var+c.name+'Index': idx
+                for idx, c in enumerate(self.choices) if c.name is not None
             })
         return data
 
@@ -150,6 +173,12 @@ class HTMLMixin(Base):
 
     Attributes
     ----------
+    attrs : dict
+        Most objects subclassing the `HTMLMixin` have a dictionary or html
+        attributes for the main html tag of the `body`. For example, the 
+        `Input` object's main tag is an `<input>` tag with attributes such as
+        `type`, `min`, and `max`.
+
     body : sqlalchemy_mutablesoup.MutableSoupType
         The main html of the object.
 
@@ -158,10 +187,48 @@ class HTMLMixin(Base):
 
     js : sqlalchemy_mutablesoup.MutableSoupType, default=''
         Javascript the object contributes to the page.
+
+    Notes
+    -----
+    `HTMLMixin` also allows you to set attributes of the main html tag as if
+    setting an attribute of the `HTMLMixin` object. For example, you can set 
+    the `type` of the `<input>` tag of an `hemlock.Input` question with:
+
+    ```python
+    from hemlock import Input, push_app_context
+
+    app = push_app_context()
+
+    inpt = Input(type='number')
+    inpt.body
+    ```
+
+    Out:
+
+    ```
+    ...
+    <input class="form-control" id="input-1" name="input-1" type="number"/>
+    ...
+    ```
+
+    Valid html attributes will vary depending on the object.
     """
     body = db.Column(MutableSoupType)
     css = db.Column(MutableSoupType, default='')
     js = db.Column(MutableSoupType, default='')
+
+    # HTML attribute names for the main tag
+    _html_attr_names = []
+
+    @property
+    def attrs(self):
+        print('WARNING: attrs property not implemented')
+        return
+
+    @attrs.setter
+    def attrs(self, val):
+        print('WARNING: attrs property not implemented')
+        return
 
     def __init__(self, template=None, extra_css='', extra_js='', **kwargs):
         db.session.add(self)
@@ -278,6 +345,38 @@ class HTMLMixin(Base):
         self.js.changed()
         return self
 
+    def update_attrs(self, **kwargs):
+        """
+        Update html tag attributes.
+
+        Parameters
+        ----------
+        \*\*kwargs :
+            Keyword arguments map attribute names to values.
+        """
+        for key, val in kwargs.items():
+            if isinstance(val, bool) or val is None:
+                if val:
+                    self.attrs[key] = None
+                else:
+                    self.attrs.pop(key, None)
+            else:
+                self.attrs[key] = val
+        self.body.changed()
+        return self
+
+    def __getattribute__(self, key):
+        if key == '_html_attr_names' or key not in self._html_attr_names:
+            return super().__getattribute__(key)
+        val = self.attrs.get(key)
+        return val in self.attrs if val is None else val
+
+    def __setattr__(self, key, val):
+        if key in self._html_attr_names:
+            self.update_attrs(**{key: val})
+        else:
+            super().__setattr__(key, val)
+
 
 class InputBase():
     """
@@ -285,9 +384,39 @@ class InputBase():
 
     Attributes
     ----------
+    attrs : dict
+        Input tag html attributes.
+        
     input : bs4.Tag or None
         Input tag associated with this model.
     """
+    _html_attr_names = [
+        'type',
+        'readonly',
+        'disabled',
+        'size',
+        'maxlength',
+        'max', 'min',
+        'multiple',
+        'pattern',
+        'placeholder',
+        'required',
+        'step',
+        'autofocus',
+        'height', 'width',
+        'list',
+        'autocomplete',
+    ]
+
+    @property
+    def attrs(self):
+        return self.input.attrs
+
+    @attrs.setter
+    def attrs(self, val):
+        self.input.attrs = val
+        self.body.changed()
+
     @property
     def input(self):
         return self.body.select_one('#'+self.model_id)
@@ -320,15 +449,3 @@ class InputBase():
         """
         selector = 'label[for={}]'.format(self.model_id)
         return driver.find_element_by_css_selector(selector)
-
-    def _render(self, body=None):
-        """Set the default value before rendering"""
-        body = body or self.body.copy()
-        inpt = body.select_one('#'+self.model_id)
-        if inpt is not None:
-            value = self.response or self.default
-            if value is None:
-                inpt.attrs.pop('value', None)
-            else:
-                inpt['value'] = value
-        return super()._render(body)

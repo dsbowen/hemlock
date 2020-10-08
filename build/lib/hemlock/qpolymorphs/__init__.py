@@ -1,6 +1,6 @@
 """Question polymorphs"""
 
-from .check import Check
+from .check import Binary, Check
 from .dashboard import Dashboard
 from .download import CreateFile, Download, HandleForm
 from .file import File
