@@ -94,7 +94,7 @@ Inherits from [`hemlock.qpolymorphs.InputGroup`](input_group.md),
 <p class="attr">
     Input tag attributes.
 </p>
-<b>input_type : <i>str, default='text'</i></b>
+<b>type : <i>str, default='text'</i></b>
 <p class="attr">
     Type of html input. See <a href="https://www.w3schools.com/html/html_form_input_types.asp">https://www.w3schools.com/html/html_form_input_types.asp</a>.
 </p>

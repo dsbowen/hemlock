@@ -10,6 +10,7 @@ from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy_mutable import MutableDictType
 
 from datetime import datetime
+from random import randint
 
 settings['Participant'] = {'g': {}, 'meta': {}}
 
@@ -197,6 +198,8 @@ class Participant(UserMixin, Base, db.Model):
 
         ds = DataStore.query.first()
         ds.meta.append(self.meta)
+        if not settings.get('collect_IP'):
+            self.meta.pop('IPv4', None)
         ds.update_status(self)
         db.session.commit()
 

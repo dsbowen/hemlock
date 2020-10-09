@@ -15,6 +15,7 @@ from flask import request
 
 import os
 import re
+import time
 from base64 import b64encode
 from datetime import timedelta
 from io import BytesIO
@@ -25,6 +26,8 @@ from zipfile import ZipFile
 HEIGHT_BUFFER = 74
 # Width of survey view for docx
 SURVEY_VIEW_IMG_WIDTH = Inches(6)
+# number of seconds for <iframe> to load before taking screenshot
+IFRAME_LOAD_TIME = 3
 
 """1. Create a download page"""
 @bp.route('/download', methods=['GET','POST'])
@@ -296,25 +299,35 @@ class FileCreator():
         page : hemlock.models.private.ViewingPage
             Page to add to the document.
         """
+        def write_screenshot_to_doc():
+            dist = os.environ.get('WSL_DISTRIBUTION')
+            self.driver.get('file://'+('wsl$/'+dist+path if dist else path))
+            self.accept_alerts()
+            # width = self.driver.get_window_size()['width']
+            width = 1024
+            height = self.driver.execute_script(
+                'return document.body.parentNode.scrollHeight'
+            )
+            form = self.driver.find_element_by_tag_name('form')
+            try:
+                _ = form.find_element_by_tag_name('iframe')
+                time.sleep(IFRAME_LOAD_TIME)  # give the frame time to load
+                height = max(height, 768)
+            except:
+                pass
+            self.driver.set_window_size(width, height+HEIGHT_BUFFER)
+            with BytesIO() as page_bytes:
+                page_bytes = BytesIO()
+                page_bytes.write(form.screenshot_as_png)
+                doc.add_picture(page_bytes, width=SURVEY_VIEW_IMG_WIDTH)
+
         if self.driver is None:
             text = BeautifulSoup(page.html, 'html.parser').text.strip('\n')
             doc.add_paragraph(text)
             return
         path = page.mkstmp()
         try:
-            dist = os.environ.get('WSL_DISTRIBUTION')
-            self.driver.get('file://'+('wsl$/'+dist+path if dist else path))
-            self.accept_alerts()
-            width = self.driver.get_window_size()['width']
-            height = self.driver.execute_script(
-                'return document.body.parentNode.scrollHeight'
-            )
-            self.driver.set_window_size(width, height+HEIGHT_BUFFER)
-            form = self.driver.find_element_by_tag_name('form')
-            with BytesIO() as page_bytes:
-                page_bytes = BytesIO()
-                page_bytes.write(form.screenshot_as_png)
-                doc.add_picture(page_bytes, width=SURVEY_VIEW_IMG_WIDTH)
+            write_screenshot_to_doc()
         except:
             pass
         os.remove(path)

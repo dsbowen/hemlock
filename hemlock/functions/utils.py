@@ -59,7 +59,7 @@ def correct_choices(q, *values):
         return not bool(values)
     data = (
         [c.value for c in q.response] if isinstance(q.response, list) 
-        else q.response.value
+        else q.response
     )
     return set(data) == set(values) if q.multiple else data in values
 

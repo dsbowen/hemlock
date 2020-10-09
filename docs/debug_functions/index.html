@@ -602,7 +602,7 @@ driver with <code>driver.close()</code>.</p>
 
 <span class="n">driver</span> <span class="o">=</span> <span class="n">chromedriver</span><span class="p">()</span>
 
-<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="n">input_type</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">D</span><span class="o">.</span><span class="n">send_datetime</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">())))</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Input</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">D</span><span class="o">.</span><span class="n">send_datetime</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">())))</span>
 <span class="n">p</span><span class="o">.</span><span class="n">preview</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span><span class="o">.</span><span class="n">_debug</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
 </code></pre></div>
 

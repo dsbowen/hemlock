@@ -136,6 +136,10 @@ Below are the default settings for Hemlock applications and extensions.
 <p class="attr">
     Callable which cleans your data before downloading or creating a data profile. This callable takes and returns <code>pandas.DataFrame</code>. If <code>None</code>, no additional cleaning is performend.
 </p>
+<b>collect_IP : <i>bool, default=True</i></b>
+<p class="attr">
+    Indicates that participants' IP addresses will be associated with their data.
+</p>
 <b>duplicate_keys : <i>list, default=[]</i></b>
 <p class="attr">
     List of keys (column names) on which to block duplicate participants. If empty, the app will not screen out duplicates.

@@ -28,7 +28,7 @@ def random_input(driver, question):
 
     question : hemlock.Input
     """
-    if question.input_type in html_datetime_types:
+    if question.type in html_datetime_types:
         send_datetime(driver, question)
     else:
         send_keys(driver, question)
@@ -57,7 +57,7 @@ class Input(InputGroup, InputBase, Question):
     attrs : dict
         Input tag attributes.
         
-    input_type : str, default='text'
+    type : str, default='text'
         Type of html input. See <https://www.w3schools.com/html/html_form_input_types.asp>.
 
     placeholder : str or None, default=None

@@ -169,6 +169,9 @@ settings = {
                 'data:',
                 'https://www.youtube.com',
             ],
+            'frame-ancestors': [
+                '*'
+            ],
             'font-src': [
                 'https://fonts.googleapis.com',
                 'https://fonts.gstatic.com',

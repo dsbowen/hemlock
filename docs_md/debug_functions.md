@@ -336,7 +336,7 @@ app = push_app_context()
 
 driver = chromedriver()
 
-p = Page(Input(input_type='date', debug=D.send_datetime(datetime.utcnow())))
+p = Page(Input(type='date', debug=D.send_datetime(datetime.utcnow())))
 p.preview(driver)._debug(driver)
 ```
 

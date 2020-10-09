@@ -929,9 +929,9 @@ def correct_choices(question, *values):
     Please select the correct choice.
     ```
     """
-    if not correct_choices_(question, *correct):
+    if not correct_choices_(question, *values):
         if question.multiple:
             return '<p>Please select the correct choice(s).</p>'
-        if len(correct) == 1:
+        if len(values) == 1:
             return '<p>Please select the correct choice.</p>'
         return '<p>Please select one of the correct choices.</p>'

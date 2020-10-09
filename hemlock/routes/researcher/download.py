@@ -303,7 +303,8 @@ class FileCreator():
             dist = os.environ.get('WSL_DISTRIBUTION')
             self.driver.get('file://'+('wsl$/'+dist+path if dist else path))
             self.accept_alerts()
-            width = self.driver.get_window_size()['width']
+            # width = self.driver.get_window_size()['width']
+            width = 1024
             height = self.driver.execute_script(
                 'return document.body.parentNode.scrollHeight'
             )
@@ -311,7 +312,7 @@ class FileCreator():
             try:
                 _ = form.find_element_by_tag_name('iframe')
                 time.sleep(IFRAME_LOAD_TIME)  # give the frame time to load
-                height = max(height, 2000)
+                height = max(height, 768)
             except:
                 pass
             self.driver.set_window_size(width, height+HEIGHT_BUFFER)

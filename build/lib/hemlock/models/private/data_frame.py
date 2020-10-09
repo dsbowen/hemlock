@@ -1,5 +1,7 @@
 """DataFrame mutable object and column type"""
 
+from ...app import settings
+
 from sqlalchemy import PickleType
 from sqlalchemy_mutable import MutableList, MutableDict
 
@@ -182,10 +184,13 @@ class DataFrame(MutableDict):
         
         File download is (filename, file string) tuple.
         """
+        data = self.copy()
+        if not settings['collect_IP']:
+            data.pop('IPv4', None)
         csv_str = StringIO()
         writer = csv.writer(csv_str)
-        writer.writerow(self.keys())
-        writer.writerows(zip(*self.values()))
+        writer.writerow(data.keys())
+        writer.writerows(zip(*data.values()))
         return self.filename, csv_str
 
 
