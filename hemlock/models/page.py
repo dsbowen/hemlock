@@ -29,7 +29,7 @@ originating from this page.
 
 from ..app import db, settings
 from ..tools import Img
-from .bases import BranchingBase, HTMLMixin
+from .bases import BranchingBase, PageLogicBase, HTMLMixin
 from .embedded import Timer
 from .worker import _set_worker
 from .functions import Compile, Validate, Submit, Debug
@@ -151,14 +151,14 @@ settings['Page'] = {
     'forward': True,
     'banner': BANNER.render(),
     'terminal': False,
-    'compile': compile_questions,
-    'validate': validate_questions,
-    'submit': submit_questions,
+    'compile': [compile_questions],
+    'validate': [validate_questions],
+    'submit': [submit_questions],
     'debug': [debug_questions, navigate],
 }
 
 
-class Page(HTMLMixin, BranchingBase, db.Model):
+class Page(HTMLMixin, BranchingBase, PageLogicBase, db.Model):
     """
     Pages are queued in a branch. A page contains a list of questions which it
     displays to the participant in index order.
@@ -380,13 +380,7 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     def data_elements(self):
         timer = [self.timer] if self.timer else []
         return self.embedded + timer + self.questions
-    
-    compile = db.relationship(
-        'Compile',
-        backref='page',
-        order_by='Compile.index',
-        collection_class=ordering_list('index')
-    )
+
     _compile_worker = db.relationship(
         'Worker', uselist=False, foreign_keys='Worker._compile_id'
     )
@@ -399,12 +393,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     def compile_worker(self, val):
         _set_worker(self, val, self._compile, '_compile_worker')
 
-    validate = db.relationship(
-        'Validate',
-        backref='page',
-        order_by='Validate.index',
-        collection_class=ordering_list('index')
-    )
     _validate_worker = db.relationship(
         'Worker', uselist=False, foreign_keys='Worker._validate_id'
     )
@@ -417,12 +405,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     def validate_worker(self, val):
         _set_worker(self, val, self._validate, '_validate_worker')
 
-    submit = db.relationship(
-        'Submit',
-        backref='page',
-        order_by='Submit.index',
-        collection_class=ordering_list('index')
-    )
     _submit_worker = db.relationship(
         'Worker', uselist=False, foreign_keys='Worker._submit_id'
     )
@@ -435,11 +417,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     def submit_worker(self, val):
         _set_worker(self, val, self._submit, '_submit_worker')
 
-    navigate = db.relationship(
-        'Navigate', 
-        backref='page', 
-        uselist=False
-    )
     _navigate_worker = db.relationship(
         'Worker', uselist=False, foreign_keys='Worker._navigate_page_id'
     )
@@ -451,22 +428,6 @@ class Page(HTMLMixin, BranchingBase, db.Model):
     @navigate_worker.setter
     def navigate_worker(self, val):
         _set_worker(self, val, self._navigate, '_navigate_worker')
-
-    _debug_functions = db.relationship(
-        'Debug',
-        backref='page',
-        order_by='Debug.index',
-        collection_class=ordering_list('index')
-    )
-
-    @property
-    def debug(self):
-        return self._debug_functions
-
-    @debug.setter
-    def debug(self, val):
-        if os.environ.get('DEBUG_FUNCTIONS') != 'False':
-            self._debug_functions = val
     
     # Column attributes
     cache_compile = db.Column(db.Boolean)
@@ -722,10 +683,9 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         if inspect(self).detached:
             # self will be detached if _compile is called from Redis
             self = Page.query.get(self.id)
-        [f(self) for f in self.compile]
+        [f(self) for f in self.compile] # the page uses its compile functions to f itself
         if self.cache_compile:
-            self.compile.clear()
-            self.compile_worker = None
+            self.compile = self.compile_worker = None
         if self.timer is not None:
             self.timer.start()
         return self
@@ -812,11 +772,10 @@ class Page(HTMLMixin, BranchingBase, db.Model):
         """
         if inspect(self).detached:
             self = Page.query.get(self.id)
-        self.error = None
+        self.clear_error()
         for f in self.validate:
-            error = f(self)
-            if error:
-                self.error = error
+            self.error = f(self)
+            if self.error:
                 break
         is_valid = self.is_valid()
         self.direction_from = 'forward' if is_valid else 'invalid'

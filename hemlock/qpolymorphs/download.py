@@ -5,12 +5,11 @@ See <https://dsbowen.github.io/flask-download-btn/> for more details.
 
 from ..app import db
 from ..models import Question
-from ..models.functions import FunctionRegistrar
 
 from bs4 import BeautifulSoup
 from flask import current_app, render_template
 from flask_download_btn import DownloadBtnManager, DownloadBtnMixin
-from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy_mutable import MutableType, partial
 
 
 @DownloadBtnManager.register
@@ -61,17 +60,8 @@ class Download(Question, DownloadBtnMixin):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'download'}
 
-    create_file_functions = db.relationship(
-        'CreateFile',
-        order_by='CreateFile.index',
-        collection_class=ordering_list('index')
-    )
-
-    handle_form_functions = db.relationship(
-        'HandleForm',
-        order_by='HandleForm.index',
-        collection_class=ordering_list('index')
-    )
+    create_file_functions = db.Column(MutableType)
+    handle_form_functions = db.Column(MutableType)
 
     @property
     def body(self):
@@ -118,24 +108,3 @@ class Download(Question, DownloadBtnMixin):
             progress = BeautifulSoup(self.render_progress(), 'html.parser')
             body.append(progress)
         return super()._render(body)
-
-
-class CreateFile(FunctionRegistrar, db.Model):
-    """
-    Function models for creating files and executing other operations after 
-    form handling and before download.
-
-    Inherits from [`hemlock.models.FunctionRegistrar`](functions.md).
-    """
-    id = db.Column(db.Integer, primary_key=True)
-    bnt_id = db.Column(db.Integer, db.ForeignKey('download.id'))
-
-
-class HandleForm(FunctionRegistrar, db.Model):
-    """
-    Function models for form handling.
-
-    Inherits from [`hemlock.models.FunctionRegistrar`](functions.md).
-    """
-    id = db.Column(db.Integer, primary_key=True)
-    bnt_id = db.Column(db.Integer, db.ForeignKey('download.id'))

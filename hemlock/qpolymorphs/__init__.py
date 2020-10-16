@@ -2,7 +2,7 @@
 
 from .check import Binary, Check
 from .dashboard import Dashboard
-from .download import CreateFile, Download, HandleForm
+from .download import Download
 from .file import File
 from .input import Input
 from .label import Label

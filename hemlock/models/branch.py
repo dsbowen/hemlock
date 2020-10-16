@@ -5,6 +5,7 @@ from .bases import BranchingBase
 from .worker import _set_worker
 
 from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy_mutable import MutableType
 
 
 class Branch(BranchingBase, db.Model):
@@ -140,11 +141,6 @@ class Branch(BranchingBase, db.Model):
         [elements.extend(p.data_elements) for p in self.pages]
         return elements
         
-    navigate = db.relationship(
-        'Navigate',
-        backref='branch', 
-        uselist=False
-    )
     _navigate_worker = db.relationship(
         'Worker', uselist=False, foreign_keys='Worker._navigate_branch_id'
     )

@@ -1,55 +1,19 @@
 """# Function models"""
 
-from ..app import db
-from .bases import Base
-from .branch import Branch
+from sqlalchemy_mutable import Mutable, partial
 
-from sqlalchemy_function import FunctionMixin
-
-import os
 from random import random
 
-PARENT_ERR_MSG = """
-First argument must be the parent; a Branch, Page, or Question, not {}
-"""
+
+class MutableFunctionBase(Mutable):
+    def __init__(self, source=None, root=None):
+        super().__init__(source.func, *source.args, **source.kwargs)
+
+    def __repr__(self):
+        return '<{} {}>'.format(self.__class__.__name__, self.func.__name__)
 
 
-class FunctionRegistrar(FunctionMixin, Base):
-    """
-    Mixin for Function models which provides a method for function 
-    registration.
-    
-    Inherits from 
-    [`sqlalchemy_function.FunctionMixin`](<https://dsbowen.github.io/sqlalchemy-function/>).
-
-    Attributes
-    ----------
-    index : int or None
-        Order in which this Function will be executed, relative to other 
-        Functions belonging to the same parent object.
-    """
-    id = db.Column(db.Integer, primary_key=True)
-    index = db.Column(db.Integer)
-
-    @classmethod
-    def register(cls, func):
-        """
-        This decorator registers a function.
-
-        Parameters
-        ----------
-        func : callable
-            The function to register.
-        """
-        def add_function(*args, **kwargs):
-            if cls != Debug or os.environ.get('DEBUG_FUNCTIONS') != 'False':
-                return cls(func, *args, **kwargs)
-                
-        setattr(cls, func.__name__, add_function)
-        return func
-
-
-class Compile(FunctionRegistrar, db.Model):
+class Compile(partial):
     """
     Helps compile a page or question html before it is rendered and displayed 
     to a participant.
@@ -81,11 +45,14 @@ class Compile(FunctionRegistrar, db.Model):
     p._compile().preview()
     ```
     """
-    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
 
 
-class Debug(FunctionRegistrar, db.Model):
+@Mutable.register_tracked_type(Compile)
+class CompileFunction(MutableFunctionBase, Compile):
+    pass
+
+
+class Debug(partial):
     """
     Run to help debug the survey.
 
@@ -126,11 +93,6 @@ class Debug(FunctionRegistrar, db.Model):
     p.preview(driver)._debug(driver)
     ```
     """
-    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-
-    p_exec = db.Column(db.Float)
-
     def __init__(self, *args, **kwargs):
         self.p_exec = kwargs.pop('p_exec', 1.)
         super().__init__(*args, **kwargs)
@@ -143,7 +105,12 @@ class Debug(FunctionRegistrar, db.Model):
             return super().__call__(*args, **kwargs)
 
 
-class Validate(FunctionRegistrar, db.Model):
+@Mutable.register_tracked_type(Debug)
+class DebugFunction(MutableFunctionBase, Debug):
+    pass
+
+
+class Validate(partial):
     """
     Validates a participant's response.
 
@@ -172,7 +139,7 @@ class Validate(FunctionRegistrar, db.Model):
 
     app = push_app_context()
 
-    @Validate.register
+    @V.register
     def match(inpt, pattern):
     \    if inpt.response != pattern:
     \        return '<p>You entered "{}", not "{}"</p>'.format(inpt.response, pattern)
@@ -190,11 +157,6 @@ class Validate(FunctionRegistrar, db.Model):
     You entered "goodbye moon", not "hello world"
     ```
     """
-    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-
-    error_msg = db.Column(db.Text)
-
     def __init__(self, *args, **kwargs):
         self.error_msg = kwargs.pop('error_msg', None)
         super().__init__(*args, **kwargs)
@@ -211,8 +173,13 @@ class Validate(FunctionRegistrar, db.Model):
         if error_msg:
             return self.error_msg or error_msg
 
+
+@Mutable.register_tracked_type(Validate)
+class ValidateFunction(MutableFunctionBase, Validate):
+    pass
+
             
-class Submit(FunctionRegistrar, db.Model):
+class Submit(partial):
     """
     Runs after a participant has successfully submitted a page.
 
@@ -249,11 +216,14 @@ class Submit(FunctionRegistrar, db.Model):
     A.Y.
     ```
     """
-    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-    _question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
 
 
-class Navigate(FunctionRegistrar, db.Model):
+@Mutable.register_tracked_type(Submit)
+class SubmitFunction(MutableFunctionBase, Submit):
+    pass
+
+
+class Navigate(partial):
     """
     Creates a new branch to which the participant will navigate.
 
@@ -311,30 +281,34 @@ class Navigate(FunctionRegistrar, db.Model):
     T = terminal page
     ```
     """
-    _branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'))
-    _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-
-    def __call__(self, *args, **kwargs):
+    def __call__(self, origin, *args, **kwargs):
         """
         Create a new branch and 'link' it to the tree. Linking in the new 
         branch involves setting the `next_branch` and `origin_branch` or 
         `origin_page` relationships.
         """
-        next_branch = super().__call__(*args, **kwargs)
+        from .branch import Branch
+
+        next_branch = super().__call__(origin, *args, **kwargs)
         assert isinstance(next_branch, Branch)
-        parent = self.branch or self.page
-        if parent is not None:
-            self._set_relationships(parent, next_branch)
+        self._set_relationships(origin, next_branch)
         next_branch.current_page = next_branch.start_page
         return next_branch
 
-    def _set_relationships(self, parent, next_branch):
+    def _set_relationships(self, origin, next_branch):
         """Set relationships between next_branch and its origin"""
-        parent.next_branch = next_branch
-        if isinstance(parent, Branch):
+        from .branch import Branch
+
+        origin.next_branch = next_branch
+        if isinstance(origin, Branch):
             next_branch.origin_page = None
-            next_branch.origin_branch = parent
+            next_branch.origin_branch = origin
         else:
             # origin is hemlock.Page
             next_branch.origin_branch = None
-            next_branch.origin_page = parent
+            next_branch.origin_page = origin
+
+
+@Mutable.register_tracked_type(Navigate)
+class NavigateFunction(MutableFunctionBase, Navigate):
+    pass

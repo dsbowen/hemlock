@@ -10,9 +10,6 @@ from werkzeug.security import check_password_hash
 
 from functools import wraps
 
-PASSWORD_INCORRECT = 'Incorrect password.'
-PASSWORD_PROMPT = '<p>Please enter your password.</p>'
-
 @bp.route('/login', methods=['GET','POST'])
 def login():
     """Login view function"""
@@ -28,7 +25,7 @@ def login():
 def login_page():
     """Create login page"""
     return Page(
-        Input(PASSWORD_PROMPT, input_type='password'), 
+        Input('<p>Please enter your password.</p>', type='password'), 
         back=False, 
         forward='Login',
         validate=check_password
@@ -37,7 +34,7 @@ def login_page():
 def check_password(login_page):
     """Check the input password against researcher password"""
     if not password_correct():
-        return PASSWORD_INCORRECT
+        return 'Incorrect password.'
 
 def password_correct():
     """Indicate that the session password is correct"""

@@ -2,7 +2,7 @@
 
 from ...app import bp, db
 from ...models import Choice, Page, Participant, Option
-from ...qpolymorphs import Check, CreateFile, Download, Input, Label, Select
+from ...qpolymorphs import Check, Download, Input, Label, Select
 from ...models.private import DataStore
 from ...tools import chromedriver, join, show_on_event
 from .login import researcher_login_required

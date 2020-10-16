@@ -5,7 +5,7 @@ most useful when fleshed out. See section on question polymorphs.
 """
 
 from ..app import db
-from .bases import Data, HTMLMixin
+from .bases import Data, HTMLMixin, PageLogicBase
 from .choice import Choice, Option
 
 from flask import render_template, request
@@ -17,7 +17,7 @@ import os
 from copy import copy
 
 
-class Question(HTMLMixin, Data, MutableModelBase):
+class Question(HTMLMixin, Data, PageLogicBase, MutableModelBase):
     """
     Base object for questions. Questions are displayed on their page in index 
     order.
@@ -88,43 +88,6 @@ class Question(HTMLMixin, Data, MutableModelBase):
         return None if self.page is None else self.page.branch
 
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-
-    compile = db.relationship(
-        'Compile',
-        backref='question',
-        order_by='Compile.index',
-        collection_class=ordering_list('index')
-    )
-
-    validate = db.relationship(
-        'Validate', 
-        backref='question', 
-        order_by='Validate.index',
-        collection_class=ordering_list('index')
-    )
-    
-    submit = db.relationship(
-        'Submit',
-        backref='question',
-        order_by='Submit.index',
-        collection_class=ordering_list('index')
-    )
-
-    _debug_functions = db.relationship(
-        'Debug',
-        backref='question',
-        order_by='Debug.index',
-        collection_class=ordering_list('index')
-    )
-
-    @property
-    def debug(self):
-        return self._debug_functions
-
-    @debug.setter
-    def debug(self, val):
-        if os.environ.get('DEBUG_FUNCTIONS') != 'False':
-            self._debug_functions = val
 
     # Column attributes
     default = db.Column(MutableType)
@@ -212,9 +175,8 @@ class Question(HTMLMixin, Data, MutableModelBase):
         and return False. Otherwise, return True.
         """
         for f in self.validate:
-            error = f(self)
-            if error:
-                self.error = error
+            self.error = f(self)
+            if self.error:
                 return False
         self.error = None
         return True
