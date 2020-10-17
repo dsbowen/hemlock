@@ -8,7 +8,7 @@ from random import random
 class Base():
     @property
     def __name__(self):
-        return self.func.__name__
+        return 'None' if self.func is None else self.func.__name__
 
     def __init__(self, func):
         self.func = func

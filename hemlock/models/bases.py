@@ -48,17 +48,7 @@ class Base(FunctionRelator, OrderingItem, ModelIdBase):
 
 
 class BranchingBase(Base):
-    _navigate_func = db.Column(MutableType)
-
-    @property
-    def navigate(self):
-        return self._navigate_func
-
-    @navigate.setter
-    def navigate(self, func):
-        if callable(func) and not isinstance(func, partial):
-            func = partial(func)
-        self._navigate_func = func
+    navigate = db.Column(MutableType)
 
     def _eligible_to_insert_branch(self):
         """Indicate that object is eligible to grow and insert next branch

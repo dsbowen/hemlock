@@ -14,12 +14,20 @@ def start():
         ),
         Page(
             Label(compile=partial(greet, inpt)),
-            # terminal=True
+            navigate=middle
         ),
         navigate=end
     )
 
-# @N.register
+def middle(branch):
+    return Branch(
+        Page(
+            Label(
+                '<p>Middle</p>'
+            )
+        )
+    )
+
 def end(branch):
     return Branch(
         Page(
@@ -33,6 +41,5 @@ def end(branch):
 def uppercase(q):
     q.response = q.response.upper()
 
-@C.register
 def greet(greet_q, name_q):
     greet_q.label = name_q.response
