@@ -1,28 +1,38 @@
-from hemlock import Branch, Page, Check, Input, Label, Select, Submit as S, route
-from hemlock.tools import show_on_event
+from hemlock import Branch, Compile as C, Page, Label, Input, Validate as V, Navigate as N, route
+from sqlalchemy_mutable import partial
 
 @route('/survey')
 def start():
-    race = Check(
-        '<p>Race</p>',
-        ['White', 'Black', 'Other'],
-        multiple=True
+    inpt = Input(
+        "<p>What's your name?</p>", 
+        validate=V.require(error_msg='<p>ERROR!</p>'), 
+        submit=uppercase
     )
-    specify_race = Input('<p>Specify race</p>')
-    show_on_event(specify_race, race, 'Other')
-    gender = Select(
-        '<p>Gender</p>',
-        ['Male', 'Female', 'Other']
-    )
-    specify_gender = Input('<p>Specify gender</p>')
-    show_on_event(specify_gender, gender, 'Other')
     return Branch(
         Page(
-            race, specify_race, gender, specify_gender
+            inpt,
         ),
         Page(
-            Label('<p>The end.</p>'),
-            back=True,
+            Label(compile=partial(greet, inpt)),
+            # terminal=True
+        ),
+        navigate=end
+    )
+
+# @N.register
+def end(branch):
+    return Branch(
+        Page(
+            Label(
+                'the end'
+            ),
             terminal=True
         )
     )
+
+def uppercase(q):
+    q.response = q.response.upper()
+
+@C.register
+def greet(greet_q, name_q):
+    greet_q.label = name_q.response

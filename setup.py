@@ -32,7 +32,6 @@ setuptools.setup(
         'selenium>=3.141.0',
         'selenium-tools>=0.0.1',
         'sqlalchemy>=1.3.12',
-        'sqlalchemy-function>=0.0.9',
         'sqlalchemy-modelid>=0.0.3',
         'sqlalchemy-mutable>=0.0.8',
         'sqlalchemy-mutablesoup>=0.0.9',

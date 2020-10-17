@@ -8,7 +8,7 @@ from flask import current_app, render_template
 from sqlalchemy import Column, inspect
 from sqlalchemy_function import FunctionRelator
 from sqlalchemy_modelid import ModelIdBase
-from sqlalchemy_mutable import MutableType, MutableListType, MutableModelBase
+from sqlalchemy_mutable import MutableType, MutableListType, MutableModelBase, partial
 from sqlalchemy_mutablesoup import MutableSoupType
 from sqlalchemy_orderingitem import OrderingItem
 
@@ -56,8 +56,8 @@ class BranchingBase(Base):
 
     @navigate.setter
     def navigate(self, func):
-        if callable(func) and not isinstance(func, Navigate):
-            func = Navigate(func)
+        if callable(func) and not isinstance(func, partial):
+            func = partial(func)
         self._navigate_func = func
 
     def _eligible_to_insert_branch(self):
@@ -73,62 +73,32 @@ class BranchingBase(Base):
         )
 
     def _navigate(self):
+        from .branch import Branch
+
+        def set_relationships():
+            self.next_branch = next_branch
+            if isinstance(self, Branch):
+                next_branch.origin_branch = self
+                next_branch.origin_page = None
+            else:
+                # self is hemlock.Page
+                next_branch.origin_branch = None
+                next_branch.origin_page = self
+
         if inspect(self).detached:
             self = self.__class__.query.get(self.id)
-        self.navigate(self)
+        next_branch = self.navigate(self)
+        assert isinstance(next_branch, Branch)
+        set_relationships()
+        next_branch.current_page = next_branch.start_page
         return self
 
 
 class PageLogicBase(Base):
-    _compile_funcs = db.Column(MutableListType)
-
-    @property
-    def compile(self):
-        return self._compile_funcs or []
-
-    @compile.setter
-    def compile(self, funcs):
-        self._compile_funcs = self._function_setter(funcs, Compile)
-
-    _debug_funcs = db.Column(MutableListType)
-
-    @property
-    def debug(self):
-        return self._debug_funcs or []
-
-    @debug.setter
-    def debug(self, funcs):
-        if os.environ.get('DEBUG_FUNCTIONS') != 'False':
-            self._debug_funcs = self._function_setter(funcs, Debug)
-
-    _validate_funcs = db.Column(MutableListType)
-
-    @property
-    def validate(self):
-        return self._validate_funcs or []
-
-    @validate.setter
-    def validate(self, funcs):
-        self._validate_funcs = self._function_setter(funcs, Validate)
-
-    _submit = db.Column(MutableListType)
-
-    @property
-    def submit(self):
-        return self._submit_funcs or []
-
-    @submit.setter
-    def submit(self, funcs):
-        self._submit_funcs = self._function_setter(funcs, Submit)
-
-    def _function_setter(self, funcs, func_cls):
-        if not funcs:
-            return []
-        if not isinstance(funcs, list):
-            funcs = [funcs]
-        return [
-            f if isinstance(f, func_cls) else func_cls(f) for f in funcs
-        ]
+    compile = db.Column(MutableListType, default=[])
+    debug = db.Column(MutableListType, default=[])
+    validate = db.Column(MutableListType, default=[])
+    submit = db.Column(MutableListType, default=[])
 
 
 class Data(Base, MutableModelBase, db.Model):

@@ -1,19 +1,31 @@
-"""# Function models"""
+"""# Function column types"""
 
 from sqlalchemy_mutable import Mutable, partial
 
 from random import random
 
 
-class MutableFunctionBase(Mutable):
-    def __init__(self, source=None, root=None):
-        super().__init__(source.func, *source.args, **source.kwargs)
+class Base():
+    @property
+    def __name__(self):
+        return self.func.__name__
 
-    def __repr__(self):
-        return '<{} {}>'.format(self.__class__.__name__, self.func.__name__)
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
+
+    @classmethod
+    def register(cls, func):
+        def add_function(*args, **kwargs):
+            return partial(cls(func), *args, **kwargs)
+
+        setattr(cls, func.__name__, add_function)
+        return func
 
 
-class Compile(partial):
+class Compile(Base):
     """
     Helps compile a page or question html before it is rendered and displayed 
     to a participant.
@@ -47,12 +59,7 @@ class Compile(partial):
     """
 
 
-@Mutable.register_tracked_type(Compile)
-class CompileFunction(MutableFunctionBase, Compile):
-    pass
-
-
-class Debug(partial):
+class Debug(Base):
     """
     Run to help debug the survey.
 
@@ -93,24 +100,13 @@ class Debug(partial):
     p.preview(driver)._debug(driver)
     ```
     """
-    def __init__(self, *args, **kwargs):
-        self.p_exec = kwargs.pop('p_exec', 1.)
-        super().__init__(*args, **kwargs)
-
     def __call__(self, *args, **kwargs):
-        """
-        Execute the debug function with probability `self.p_exec`.
-        """
-        if random() < self.p_exec:
-            return super().__call__(*args, **kwargs)
+        p_exec = kwargs.pop('p_exec', 1)
+        if random() < p_exec:
+            return self.func(*args, **kwargs)
 
 
-@Mutable.register_tracked_type(Debug)
-class DebugFunction(MutableFunctionBase, Debug):
-    pass
-
-
-class Validate(partial):
+class Validate(Base):
     """
     Validates a participant's response.
 
@@ -157,29 +153,14 @@ class Validate(partial):
     You entered "goodbye moon", not "hello world"
     ```
     """
-    def __init__(self, *args, **kwargs):
-        self.error_msg = kwargs.pop('error_msg', None)
-        super().__init__(*args, **kwargs)
-
     def __call__(self, *args, **kwargs):
-        """
-        Returns
-        -------
-        error_msg : str or None
-            Return `None` if there is no error. If there is an error, return
-            `self.error_msg` or the output of `self.func`.
-        """
-        error_msg = super().__call__(*args, **kwargs)
+        custom_error_msg = kwargs.pop('error_msg', None)
+        error_msg = self.func(*args, **kwargs)
         if error_msg:
-            return self.error_msg or error_msg
-
-
-@Mutable.register_tracked_type(Validate)
-class ValidateFunction(MutableFunctionBase, Validate):
-    pass
+            return custom_error_msg or error_msg
 
             
-class Submit(partial):
+class Submit(Base):
     """
     Runs after a participant has successfully submitted a page.
 
@@ -218,12 +199,7 @@ class Submit(partial):
     """
 
 
-@Mutable.register_tracked_type(Submit)
-class SubmitFunction(MutableFunctionBase, Submit):
-    pass
-
-
-class Navigate(partial):
+class Navigate(Base):
     """
     Creates a new branch to which the participant will navigate.
 
@@ -281,34 +257,3 @@ class Navigate(partial):
     T = terminal page
     ```
     """
-    def __call__(self, origin, *args, **kwargs):
-        """
-        Create a new branch and 'link' it to the tree. Linking in the new 
-        branch involves setting the `next_branch` and `origin_branch` or 
-        `origin_page` relationships.
-        """
-        from .branch import Branch
-
-        next_branch = super().__call__(origin, *args, **kwargs)
-        assert isinstance(next_branch, Branch)
-        self._set_relationships(origin, next_branch)
-        next_branch.current_page = next_branch.start_page
-        return next_branch
-
-    def _set_relationships(self, origin, next_branch):
-        """Set relationships between next_branch and its origin"""
-        from .branch import Branch
-
-        origin.next_branch = next_branch
-        if isinstance(origin, Branch):
-            next_branch.origin_page = None
-            next_branch.origin_branch = origin
-        else:
-            # origin is hemlock.Page
-            next_branch.origin_branch = None
-            next_branch.origin_page = origin
-
-
-@Mutable.register_tracked_type(Navigate)
-class NavigateFunction(MutableFunctionBase, Navigate):
-    pass
