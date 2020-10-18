@@ -2,7 +2,7 @@
 
 from ..app import db, settings
 from ..functions.debug import click_choices
-from ..models import ChoiceQuestion, Option
+from ..models import ChoiceQuestion, OptionListType
 from .input_group import InputGroup
 
 settings['Select'] = {
@@ -65,7 +65,15 @@ class Select(InputGroup, ChoiceQuestion):
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'select'}
-    choice_cls = Option
+    options = db.Column(OptionListType)
+
+    @property
+    def choices(self):
+        return self.options
+
+    @choices.setter
+    def choices(self, val):
+        self.options = val
 
     _html_attr_names = [
         'autofocus',

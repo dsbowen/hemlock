@@ -2,7 +2,7 @@
 
 from ..app import db, settings
 from ..functions.debug import click_choices
-from ..models import ChoiceQuestion
+from ..models import ChoiceQuestion, ChoiceListType
 
 
 class CheckBase(ChoiceQuestion):
@@ -21,6 +21,7 @@ class CheckBase(ChoiceQuestion):
         [inline](https://getbootstrap.com/docs/4.0/components/forms/#inline), 
         as opposed to vertical.
     """
+    choices = db.Column(ChoiceListType)
     inline = db.Column(db.Boolean, default=False)
 
     @property

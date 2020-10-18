@@ -10,8 +10,10 @@ difference between them, but reflects the underlying html.
 from ..app import db
 from .bases import HTMLMixin
 
+from convert_list import ConvertList
 from flask import render_template
-from sqlalchemy_mutable import MutableType
+from sqlalchemy.types import PickleType
+from sqlalchemy_mutable import MutableType, MutableList
 from sqlalchemy_mutablesoup import MutableSoup
 
 import json
@@ -77,6 +79,11 @@ class ChoiceBase():
         self.value = kwargs['value'] if 'value' in kwargs else label
         self.name = kwargs['name'] if 'name' in kwargs else label
 
+    def __repr__(self):
+        return '<{} {}>'.format(
+            self.__class__.__name__, self.value.__repr__()
+        )
+
     def is_default(self, question):
         """
         Parameters
@@ -121,6 +128,33 @@ class ChoiceBase():
         """
         self.label = self.name = self.value = val
         return self
+
+
+class ChoiceListBase(ConvertList, MutableList):
+    """
+    Converts items in a list of choices to the choice class.
+    """
+    choice_cls = None # must be implemented by ChoiceList
+
+    @classmethod
+    def convert(cls, item):
+        if isinstance(item, cls.choice_cls):
+            # item is already the choice class
+            return item
+        if isinstance(item, dict):
+            # item is a dict of keyword arguments for the choice class
+            return cls.choice_cls(**item)
+        if isinstance(item, (tuple, list)):
+            if len(item) == 2:
+                # item is (label, value) tuple
+                return cls.choice_cls(label=item[0], value=item[1])
+            if len(item) == 3:
+                # item is (label, value, name) tuple
+                return cls.choice_cls(
+                    label=item[0], value=item[1], name=item[2]
+                )
+        # item is label, value, name
+        return cls.choice_cls(label=str(item), value=item, name=str(item))
 
 
 class Choice(ChoiceBase):
@@ -241,7 +275,16 @@ class Choice(ChoiceBase):
         handle_multiple()
         handle_default()
         return body
-            
+
+
+class ChoiceListType(PickleType):
+    pass
+
+class ChoiceList(ChoiceListBase):
+    choice_cls = Choice
+
+ChoiceList.associate_with(ChoiceListType)
+
 
 class Option(ChoiceBase):
     """
@@ -339,3 +382,12 @@ class Option(ChoiceBase):
         option['value'] = idx
         handle_default()
         return body
+
+
+class OptionListType(PickleType):
+    pass
+
+class OptionList(ChoiceListBase):
+    choice_cls = Option
+
+OptionList.associate_with(OptionListType)

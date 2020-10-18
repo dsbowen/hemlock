@@ -231,30 +231,7 @@ class ChoiceQuestion(Question):
     5. list of dictionaries with choice keyword arguments.
     """
     multiple = db.Column(db.Boolean, default=False)
-    choice_cls = Choice
-    _choices = db.Column(MutableListType)
-
-    @property
-    def choices(self):
-        return self._choices
-
-    @choices.setter
-    def choices(self, choices):
-        def convert(choice):
-            if isinstance(choice, self.choice_cls):
-                return choice
-            if isinstance(choice, dict):
-                return self.choice_cls(**choice)
-            if isinstance(choice, (tuple, list)):
-                if len(choice) == 2:
-                    return self.choice_cls(label=choice[0], value=choice[1])
-                if len(choice) == 3:
-                    return self.choice_cls(
-                        label=choice[0], value=choice[1], name=choice[2]
-                    )
-            return self.choice_cls(label=str(choice))
-        
-        self._choices = [convert(choice) for choice in choices]
+    choices = None # must be implemented by choice question
 
     def __init__(self, label='', choices=[], template=None, **kwargs):
         self.choices = choices
