@@ -181,7 +181,8 @@ def show_on_event(
 def _show_on_event_js(
         target_id, condition, value, regex=False, duration=400, event=None, 
     ):
-    from ..models import Choice, ChoiceQuestion, Option
+    from ..models import ChoiceQuestion
+    from ..qpolymorphs import Binary, Check, Select
 
     def get_event_value(condition, value):
         if isinstance(condition, ChoiceQuestion):
@@ -195,14 +196,13 @@ def _show_on_event_js(
         return event, value
 
     event, value = get_event_value(condition, value)
-    if hasattr(condition, 'choice_cls'):
-        # value corresponds to a radio or check box
-        choice = condition.choice_cls == Choice
-        # value corresponds to an option
-        option = condition.choice_cls == Option
-    else:
-        # value corresponds to neither a radio, check box, or option
-        choice = option = False
+    choice = option = False # value is neither a radio, check box, or option
+    if isinstance(condition, (Binary, Check)):
+        # value corresponds to radio or check box
+        choice, option = True, False
+    elif isinstance(condition, Select):
+        # value corresponds to option
+        choice, option = False, True        
     return render_template(
         'hemlock/show_on_event.js', 
         target_id=target_id, 

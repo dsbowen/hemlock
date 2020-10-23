@@ -1,31 +1,11 @@
 from hemlock import Branch, Check, Compile as C, Page, Label, Input, Validate as V, Navigate as N, route
 from sqlalchemy_mutable import partial
+from hemlock_demographics import comprehensive_demographics
 
 @route('/survey')
 def start():
-    inpt = Input(
-        "<p>What's your name?</p>", 
-        validate=V.require(error_msg='<p>ERROR!</p>'), 
-        submit=uppercase
-    )
-    check = Check(
-        '<p>This is some text without a meaning.</p>',
-        [
-            'World',
-            ('Moon', 'moon'),
-        ]
-    )
-    check.choices.append(('Sun', 'sun'))
-    print(check.choices)
     return Branch(
-        Page(
-            inpt,
-            check
-        ),
-        Page(
-            Label(compile=partial(greet, inpt)),
-            navigate=middle
-        ),
+        comprehensive_demographics(page=True),
         navigate=end
     )
 
@@ -33,7 +13,7 @@ def middle(branch):
     return Branch(
         Page(
             Label(
-                '<p>Middle</p>'
+                'Middle'
             )
         )
     )

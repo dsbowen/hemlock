@@ -12,10 +12,10 @@ class Label(Question):
 
     Parameters
     ----------
-    label : str or bs4.BeautifulSoup, default=''
+    label : str or None, default=None
         Question label.
 
-    template : str, default='hemlock/form-group.html'
+    template : str, default='hemlock/label.html'
         Path to the Jinja template for the label body.
 
     Examples
@@ -31,10 +31,8 @@ class Label(Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'label'}
 
-    def __init__(
-            self, label='', template='hemlock/form-group.html', **kwargs
-        ):
-        super().__init__(label, template, **kwargs)
+    def __init__(self, label=None, template='hemlock/label.html', **kwargs):
+        super().__init__(label=label, template=template, **kwargs)
 
     def _record_data(self):
         return self

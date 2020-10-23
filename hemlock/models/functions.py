@@ -1,44 +1,32 @@
-"""# Function column types"""
+"""# Function column types
 
-from sqlalchemy_mutable import Mutable, partial
+All of these classes inherit from 
+[`sqlalchemy_mutable.partial`](https://dsbowen.github.io/sqlalchemy-mutable).
+"""
+
+from sqlalchemy_mutable import partial as partial_base
 
 from random import random
 
-
-class Base():
-    @property
-    def __name__(self):
-        return 'None' if self.func is None else self.func.__name__
-
-    def __init__(self, func):
-        self.func = func
-
-    def __call__(self, *args, **kwargs):
-        return self.func(*args, **kwargs)
-
+class partial(partial_base):
     @classmethod
     def register(cls, func):
+        from ..app import db
         def add_function(*args, **kwargs):
-            return partial(cls(func), *args, **kwargs)
+            for arg in args:
+                if isinstance(arg, db.Model):
+                    db.session.add(arg)
+                    db.session.flush([arg])
+            return cls(func, *args, **kwargs)
 
         setattr(cls, func.__name__, add_function)
         return func
 
 
-class Compile(Base):
+class Compile(partial):
     """
     Helps compile a page or question html before it is rendered and displayed 
     to a participant.
-
-    Inherits from `hemlock.FunctionRegistrar`.
-
-    Relationships
-    -------------
-    page : hemlock.Page or None
-        Page to which this model belongs.
-
-    question : hemlock.Question or None
-        Question to which this model belongs.
 
     Examples
     --------
@@ -59,25 +47,9 @@ class Compile(Base):
     """
 
 
-class Debug(Base):
+class Debug(partial):
     """
     Run to help debug the survey.
-
-    Inherits from `hemlock.FunctionRegistrar`.
-
-    Attributes
-    ----------
-    p_exec : float, default=1.
-        Probability that the debug function will execute. You can set this by
-        passing in an `p_exec` keyword argument to the constructor.
-
-    Relationships
-    -------------
-    page : hemlock.Page or None
-        Page to which this model belongs.
-
-    question : hemlock.Question or None
-        Question to which this model belongs.
 
     Examples
     --------
@@ -100,33 +72,26 @@ class Debug(Base):
     p.preview(driver)._debug(driver)
     ```
     """
+    def __init__(self, func, *args, p_exec=1., **kwargs):
+        super().__init__(func, *args, **kwargs)
+        self.p_exec = p_exec
+
     def __call__(self, *args, **kwargs):
-        p_exec = kwargs.pop('p_exec', 1)
-        if random() < p_exec:
-            return self.func(*args, **kwargs)
+        if random() < self.p_exec:
+            return super().__call__(*args, **kwargs)
 
 
-class Validate(Base):
+class Validate(partial):
     """
     Validates a participant's response.
-
-    Inherits from `hemlock.FunctionRegistrar`.
 
     Attributes
     ----------
     error_msg : str or None
-        If the validate function returns an error message, the `error_msg`
-        attribute is returned instead of the output of the validate function.
+        If the validate function returns an error message, `error_msg` is 
+        returned instead of the output of the validate function.
         You can set this by passing in an `error_msg` keyword argument to the
         constructor.
-
-    Relationships
-    -------------
-    page : hemlock.Page or None
-        Page to which this model belongs.
-
-    question : hemlock.Question or None
-        Question to which this model belongs.
 
     Examples
     --------
@@ -153,26 +118,19 @@ class Validate(Base):
     You entered "goodbye moon", not "hello world"
     ```
     """
+    def __init__(self, func, *args, error_msg=None, **kwargs):
+        super().__init__(func, *args, **kwargs)
+        self.error_msg = error_msg
+
     def __call__(self, *args, **kwargs):
-        custom_error_msg = kwargs.pop('error_msg', None)
-        error_msg = self.func(*args, **kwargs)
+        error_msg = super().__call__(*args, **kwargs)
         if error_msg:
-            return custom_error_msg or error_msg
+            return self.error_msg or error_msg
 
             
-class Submit(Base):
+class Submit(partial):
     """
     Runs after a participant has successfully submitted a page.
-
-    Inherits from `hemlock.FunctionRegistrar`.
-
-    Relationships
-    -------------
-    page : hemlock.Page or None
-        Page to which this model belongs.
-
-    question : hemlock.Question or None
-        Question to which this model belongs.
 
     Examples
     --------
@@ -199,17 +157,9 @@ class Submit(Base):
     """
 
 
-class Navigate(Base):
+class Navigate(partial):
     """
     Creates a new branch to which the participant will navigate.
-
-    Relationships
-    -------------
-    branch : hemlock.Branch or None
-        Branch to which this model belongs.
-
-    page : hemlock.Page or None
-        Page to which this model belongs.
 
     Examples
     --------

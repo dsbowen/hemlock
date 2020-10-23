@@ -1,9 +1,14 @@
 """# Statics
 
-Tool for generating statics (embedded images and videos).
-"""
+Tool for embedding statics:
 
-from sqlalchemy_mutablesoup import SoupBase
+- css
+- javascript
+- images
+- iframes
+- YouTube videos
+- links to Google bucket files
+"""
 
 from flask import current_app
 
@@ -13,12 +18,35 @@ from datetime import timedelta
 from urllib.parse import parse_qs, urlparse, urlencode
 
 DIR = os.path.dirname(os.path.realpath(__file__))
-NO_BUCKET_ERR_MSG = """
-Enable a Google Cloud Bucket to access this feature.
-\n  See `hlk gcloud-bucket`
-"""
 
-def external_css(**attrs):
+def format_attrs(**attrs):
+    """
+    Parameters
+    ----------
+    \*\*attrs : dict
+        Maps HTML attribute name to value.
+
+    Returns
+    -------
+    attrs : str
+        Formated attributes for insertion into HTML tag.
+    """
+    def format_item(key, val):
+        if not val:
+            # val is empty string, None, False, etc.
+            return ''
+        return key if val is True else '{}="{}"'.format(key, val)
+
+    attrs = attrs.copy()
+    if 'class' in attrs and isinstance(attrs['class'], list):
+        attrs['class'] = ' '.join(attrs['class'])
+    if 'style' in attrs and isinstance(attrs['style'], dict):
+        attrs['style'] = ' '.join(
+            ['{}:{};'.format(*item) for item in attrs['style'].items()
+        ])
+    return ' '.join(format_item(*item) for item in attrs.items())
+
+def external_css(href, rel='stylesheet', type='text/css', **attrs):
     """
     Parameters
     ----------
@@ -49,32 +77,9 @@ def external_css(**attrs):
     <link href="https://my-css-url" rel="stylesheet" type="text/css"/>
     ```
     """
-    return _gen_tag(
-        '<link {}/>', {'rel': 'stylesheet', 'type': 'text/css'}, attrs
+    return '<link {}/>'.format(
+        format_attrs(href=href, rel=rel, type=type, **attrs)
     )
-
-def _gen_tag(template, attrs, input_attrs):
-    """
-    Generate a html tag.
-
-    Parameters
-    ----------
-    template : str
-        Tag template.
-
-    attrs : dict
-        Default attributes. Maps attribute names to values.
-
-    input_attrs: dict
-        User input attributes. Overwrites the default attributes.
-
-    Returns
-    -------
-    tag : str
-    """
-    attrs.update(input_attrs)
-    html_attrs = ' '.join([key+'="'+val+'"' for key,val in attrs.items()])
-    return template.format(html_attrs)
 
 def internal_css(style):
     """
@@ -111,16 +116,19 @@ def internal_css(style):
     ```
     """
     def format_style(selector, attrs):
-        attrs = ' '.join([key+':'+val+';' for key, val in attrs.items()])
+        attrs = ' '.join(['{}: {};'.format(*item) for item in attrs.items()])
         return selector+' {'+attrs+'}'
 
     css = ' '.join([format_style(key, val) for key, val in style.items()])
     return '<style>{}</style>'.format(css)
 
-def external_js(**attrs):
+def external_js(src, **attrs):
     """
     Parameters
     ----------
+    src : str
+        External javascript source.
+
     \*\*attrs :
         Attribute names and values in the `<script>` tag.
 
@@ -148,14 +156,17 @@ def external_js(**attrs):
     <script src="https://my-js-url"></script>
     ```
     """
-    return _gen_tag('<script {}></script>', {}, attrs)
+    return '<script {}></script>'.format(format_attrs(src=src, **attrs))
 
-def internal_js(js):
+def internal_js(js, **attrs):
     """
     Parameters
     ----------
     js : str
         Javascript code.
+
+    \*\*attrs : dict
+        Mapping of HTML attributes to values for the `<script>` tag.
 
     Returns
     -------
@@ -194,8 +205,13 @@ def internal_js(js):
     ```
     """
     if not js.startswith('<script>'):
-        js = '<script>{}</script>'.format(js)
+        js = '<script {}>{}</script>'.format(format_attrs(**attrs), js)
     return js
+
+NO_BUCKET_ERR_MSG = """
+Enable a Google Cloud Bucket to access this feature.
+\n  See `hlk gcloud-bucket`
+"""
 
 def src_from_bucket(filename):
     """
@@ -318,252 +334,210 @@ def url_from_bucket(filename, expiration=1800, **kwargs):
     blob = current_app.gcp_bucket.blob(filename)
     return blob.generate_signed_url(**kwargs)
 
-
-class Static():
+def img(
+    src, caption='', img_align='left', caption_align='left',
+    figure_class='figure w-100', figure_attrs={},
+    img_class='figure-img img-fluid rounded', img_attrs={},
+    caption_class='figure-caption', caption_attrs={},
+    template=os.path.join(DIR, 'img.html')
+):
     """
-    Base for static objects (images and videos).
-
     Parameters
     ----------
-    template : str
-        Path to template file. This is *not* a Jinja template, as you may 
-        wish to generate html for statics outside the application context.
-
-    \*\*kwargs :
-        Any attribute of the static object can be set by passing it as a 
-        keyword argument.
-
-    Attributes
-    ----------
-    body : sqlalchemy_mutablesoup.MutableSoup
-        Html of the static object.
-
-    src_params : dict
-        Maps url parameter names to values. These will be attached to the 
-        `src` html attribute when the static is rendered.
-    """
-    def __init__(self, template, **kwargs):
-        self.body = SoupBase(open(template).read(), 'html.parser')
-        self.src_params = {}
-        [setattr(self, key, val) for key, val in kwargs.items()]
-
-    def render(self, tag_selector=None):
-        """
-        Parameters
-        ----------
-        tag_selector : str
-            CSS selector for the html tag containing the `src` attribute.
-
-        Returns
-        -------
-        html : str
-            Rendered html.
-        """
-        body = self.body.copy()
-        if tag_selector is not None:
-            tag = body.select_one(tag_selector)
-            if self.src_params:
-                tag['src'] = tag.get('src')+'?'+urlencode(self.src_params)
-        return str(body)
-
-    def _set_src(self, tag, src):
-        """
-        Set the `src` attribute.
-
-        Parameters
-        ----------
-        tag : bs4.Tag
-            Tag containing the `src` attribute.
-
-        src : str
-            New value of the `src` attribute.
-        """
-        # store src params for later; add back when rendering
-        self.src_params = parse_qs(urlparse(src).query)
-        # set the src as just the url root
-        tag['src'] = src.split('?')[0]
-
-
-class Img(Static):
-    """
-    Static image.
-
-    Parameters
-    ----------
-    template : str, default='directory/img.html'
-        Image template. By default, this is a file stored in the directory of 
-        the current file.
-
-    Attributes
-    ----------
-    align : str
-        Image alignment; `'left'`, `'center'`, or `'right`'.
+    src : str
+        Image source.
 
     caption : str
-        Image caption.
 
-    figure : bs4.Tag
-        `<figure>` tag.
+    img_align : str, default='left'
 
-    img : bs4.Tag
-        `<img>` tag.
+    caption_align : str, default='left'
 
-    src : str
-        `src` attribute of the `<img>` tag.
+    figure_class : list or str, default='figure w-100'
+        Class for the `<figure>` tag.
+
+    figure_attrs : dict, default={}
+        HTML attributes for the `<figure>` tag.
+
+    img_class : list or str, default='figure-img img-fluid rounded'
+        Class for the `<img>` tag.
+
+    img_attrs : dict, default={}
+        HTML attributes for the `<img>` tag.
+
+    caption_class : list or str, default='figure-caption'
+        Class for the `<figcaption>` tag.
+
+    caption_attrs : dict, default={}
+        HTML attributes for the `<figcaption>` tag.
+
+    template : str, default='directory/img.html'
+        Path to image template. Default is a template in the same directory as
+        the current file. This may also be a string to be used directly as the
+        template.
+
+    Returns
+    -------
+    img : str
+        Image html.
 
     Examples
     --------
     ```python
-    from hemlock import Page, Label, push_app_context
-    from hemlock.tools import Img
+    from hemlock.tools import img
 
-    app = push_app_context()
-        
-    img = Img(
-    \    src='https://imgs.xkcd.com/comics/wanna_see_the_code.png', 
-    \    align='center'
-    ).render()
-    Page(Label(img)).preview()
+    img(
+    \    'https://imgs.xkcd.com/comics/wanna_see_the_code.png',
+    \    img_align='center', caption='Wanna See The Code?'
+    )
+    ```
+
+    Out:
+
+    ```
+    <figure class="figure w-100 text-center">
+    \    <img class="figure-img img-fluid rounded" src="https://imgs.xkcd.com/comics/wanna_see_the_code.png">
+    \    <figcaption class="figure-caption text-left">Wanna See The Code?</figcaption>
+    </figure>
     ```
     """
-    def __init__(self, template=os.path.join(DIR, 'img.html'), **kwargs):
-        super().__init__(template, **kwargs)
+    _add_class(figure_attrs, figure_class)
+    figure_attrs['class'].append('text-'+img_align)
+    _add_class(img_attrs, img_class)
+    img_attrs['src'] = src
+    _add_class(caption_attrs, caption_class)
+    caption_attrs['class'].append('text-'+caption_align)
+    if os.path.exists(template):
+        template = open(template).read()
+    return template.format(
+        figure_attrs=format_attrs(**figure_attrs),
+        img_attrs=format_attrs(**img_attrs),
+        caption_attrs=format_attrs(**caption_attrs),
+        caption=caption
+    )
 
-    @property
-    def align(self):
-        for class_ in self.figure['class']:
-            if class_ == 'text-left':
-                return 'left'
-            if class_ == 'text-center':
-                return 'center'
-            if class_ == 'text-right':
-                return 'right'
-
-    @align.setter
-    def align(self, align_):
-        align_classes = ['text-'+i for i in ['left','center','right']]
-        self.figure['class'] = [
-            c for c in self.figure['class'] if c not in align_classes
-        ]
-        if align_:
-            align_ = 'text-' + align_
-            self.figure['class'].append(align_)
-
-    @property
-    def caption(self):
-        return self.body.text('figcaption')
-
-    @caption.setter
-    def caption(self, val):
-        self.body.set_element('figcaption', val)
-
-    @property
-    def figure(self):
-        return self.body.select_one('figure')
-
-    @property
-    def img(self):
-        return self.body.select_one('img')
-
-    @property
-    def src(self):
-        return self.img.attrs.get('src')
-
-    @src.setter
-    def src(self, val):
-        super()._set_src(self.img, val)
-
-    def render(self):
-        """
-        Returns
-        -------
-        html : str
-            Rendered image html.
-        """
-        return super().render('img')
-
-
-YOUTUBE_ATTRS = {
-    'frameborder': 0,
-    'allow': 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
-    'allowfullscreen': None
-}
-
-
-class Vid(Static):
+def iframe(
+    src, aspect_ratio=(16, 9), query_string={},
+    div_class='embed-responsive', div_attrs={},
+    iframe_class='embed-responsive-item', 
+    iframe_attrs={'allowfullscreen': True},
+    template=os.path.join(DIR, 'iframe.html')
+):
     """
-    Static video.
-    
     Parameters
     ----------
-    template : str, default='directory/vid.html'
-        Video template. By default, this is a file stored in the directory of 
-        the current file.
-
-    Attributes
-    ----------
-    iframe : bs4.Tag
-        `<iframe>` tag.
-
     src : str
-        `src` attribute of the `<iframe>` tag.
+        Embed source.
+
+    aspect_ratio : tuple of (int, int), default=(16, 9)
+        Embed 
+        [aspect ratio](https://getbootstrap.com/docs/4.0/utilities/embed/#aspect-ratios).
+
+    query_string : dict
+        Mapping of URL query keys to values.
+
+    div_class : str or list, default='embed-responsive'
+        Class of the `<div>` which wraps the `<iframe>`.
+
+    div_attrs : dict, default={}
+        HTML attributes for the `<div>` wrapper.
+
+    iframe_class : str or list, default='embed-responsive-item'
+        Class of the `<iframe>` tag.
+
+    iframe_attrs : dict, default={'allowfullscreen': True}
+        HTML attributes for the `<iframe>` tag.
+
+    template : str, default='directory/iframe.html'
+        Path to iframe template. Default is a template in the same directory 
+        as the current file. This may also be a string to be used directly as 
+        the template.
+
+    Returns
+    -------
+    iframe : str
+        Iframe HTML.
 
     Examples
     --------
     ```python
-    from hemlock import Page, Label, push_app_context
-    from hemlock.tools import Vid
+    from hemlock.tools import iframe
 
-    app = push_app_context()
-        
-    vid = Vid.from_youtube('https://www.youtube.com/watch?v=UbQgXeY_zi4')
-    Page(Label(vid.render())).preview()
+    iframe(
+    \    'https://www.youtube.com/embed/zpOULjyy-n8?rel=0', 
+    \    aspect_ratio=(21, 9)
+    )
+    ```
+
+    Out:
+
+    ```
+    <div class="embed-responsive embed-responsive-21by9">
+    \    <iframe allowfullscreen class="embed-responsive-item" src="https://www.youtube.com/embed/zpOULjyy-n8?rel=0"></iframe>
+    </div>
     ```
     """
-    def __init__(self, template=os.path.join(DIR, 'vid.html'), **kwargs):
-        super().__init__(template, **kwargs)
+    _add_class(div_attrs, div_class)
+    div_attrs['class'].append('embed-responsive-{}by{}'.format(*aspect_ratio))
+    _add_class(iframe_attrs, iframe_class)
+    if query_string:
+        src += '?' + urlencode(query_string)
+    iframe_attrs['src'] = src
+    if os.path.exists(template):
+        template = open(template).read()
+    return template.format(
+        div_attrs=format_attrs(**div_attrs),
+        iframe_attrs=format_attrs(**iframe_attrs)
+    )
 
-    @property
-    def iframe(self):
-        return self.body.select_one('iframe')
+def youtube(
+    src, iframe_attrs={
+        'allow': 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture;', 
+        'allowfullscreen': True
+    }, *args, **kwargs
+):
+    """
+    Embed a youtube video.
 
-    @property
-    def src(self):
-        return self.iframe.attrs.get('src')
+    Parameters
+    ----------
+    src : str
+        Link to youtube video. e.g. 
+        <https://www.youtube.com/watch?v=ts3s738ZkcQ>.
 
-    @src.setter
-    def src(self, val):
-        super()._set_src(self.iframe, val)
+    iframe_attrs : dict
+        HTML attributes for the `<iframe>` tag.
 
-    def from_youtube(src):
-        """
-        Capture the YouTube video id and create an embedded src.
-        
-        Parameters
-        ----------
-        src : str
-            Link to the YouTube video.
+    \*args, \*\*kwarg : 
+        Arguments and keyword arguments are passed to `hemlock.tools.iframe`.
 
-        Returns
-        -------
-        vid : hemlock.tools.Vid
-            Video object.
-        """
-        vid = Vid()
-        params = parse_qs(urlparse(src).query)
-        # video id
-        id = params.pop('v')[0]
-        # src for the embedded video
-        vid.src = 'https://www.youtube.com/embed/' + id
-        vid.iframe.attrs.update(YOUTUBE_ATTRS)
-        vid.params = params
-        return vid
-        
-    def render(self):
-        """
-        Returns
-        -------
-        html : str
-            Rendered video html.
-        """
-        return super().render('iframe')
+    Returns
+    -------
+    iframe : str
+        Iframe HTML.
+
+    Examples
+    --------
+    ```python
+    from hemlock.tools import youtube
+
+    youtube(
+    \    'https://www.youtube.com/watch?v=ts3s738ZkcQ', 
+    \    query_string={'autoplay': 1}
+    )
+    ```
+
+    Out:
+
+    ```
+    <div class="embed-responsive embed-responsive-16by9">
+    \    <iframe allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture;" allowfullscreen class="embed-responsive-item" src="https://www.youtube.com/embed/ts3s738ZkcQ?autoplay=1"></iframe>
+    </div>
+    ```
+    """
+    video_id = parse_qs(urlparse(src).query).pop('v')[0]
+    src = 'https://www.youtube.com/embed/{}'.format(video_id)
+    return iframe(src, *args, iframe_attrs=iframe_attrs, **kwargs)
+
+def _add_class(attrs, class_):
+    attrs['class'] = class_ if isinstance(class_, list) else [class_]

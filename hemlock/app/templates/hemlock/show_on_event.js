@@ -21,11 +21,15 @@ $(document).ready(function() {
             // value is a string; show if input value is equal to it
             var show = condition.val() == "{{ value }}";
         {% endif %}
+        console.log("event triggered");
+        console.log(show);
         target = $('#{{ target_id }}');
         if (show) {
+            console.log('showing')
             target.show(duration);
         }
         else {
+            console.log('hiding')
             target.hide(duration);
         }
     }

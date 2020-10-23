@@ -4,6 +4,7 @@
 body, html {
     height: 100%;
     width: 100%;
+    background-color: #F5F5F5;
 }
 body {
     padding-top: 40px;
@@ -14,13 +15,17 @@ form.form-margins {
     margin: 20px 0px;
 }
 
+div.question {
+    border-radius: 8px;
+}
+
 /* Question div formatting */
 div.error {
     border-style: solid;
     border-width: thin;
-    border-radius: 5px;
     background-color: #f2dede;
     border-color: #ebcccc;
+    border-radius: 8px;
 }
 
 /* Choice formatting */

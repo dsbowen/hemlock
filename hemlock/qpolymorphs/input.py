@@ -6,6 +6,7 @@ from ..models import Debug, InputBase, Question
 from .input_group import InputGroup
 
 from selenium_tools import get_datetime
+from sqlalchemy_mutable import HTMLAttrsType
 
 html_datetime_types = (
     'date',
@@ -33,10 +34,12 @@ def random_input(driver, question):
     else:
         send_keys(driver, question)
 
-settings['Input'] = {'type': 'text', 'debug': random_input}
+settings['Input'] = {
+    'class': ['form-control'], 'type': 'text', 'debug': random_input
+}
 
 
-class Input(InputGroup, InputBase, Question):
+class Input(Question):
     """
     Inputs take text input by default, or other types of html inputs.
 
@@ -54,18 +57,6 @@ class Input(InputGroup, InputBase, Question):
 
     Attributes
     ----------
-    attrs : dict
-        Input tag attributes.
-        
-    type : str, default='text'
-        Type of html input. See <https://www.w3schools.com/html/html_form_input_types.asp>.
-
-    placeholder : str or None, default=None
-        Html placeholder.
-
-    step : float, str, or None, default=None
-        Step attribute for number inputs. By default, the step for number 
-        inputs is 1. Set to `'any'` for any step.
     
     Examples
     --------
@@ -80,20 +71,32 @@ class Input(InputGroup, InputBase, Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'input'}
 
-    def __init__(self, label='', template='hemlock/input.html', **kwargs):
-        super().__init__(label, template, **kwargs)
+    input_attrs = db.Column(HTMLAttrsType)
+    prepend = db.Column(db.Text)
+    append = db.Column(db.Text)
 
-    def _render(self, body=None):
-        """Set the default value before rendering"""
-        body = body or self.body.copy()
-        inpt = body.select_one('#'+self.model_id)
-        if inpt is not None:
-            value = self.response if self.has_responded else self.default
-            if value is None:
-                inpt.attrs.pop('value', None)
-            else:
-                inpt['value'] = value
-        return super()._render(body)
+    _input_attr_names = [
+        'class',
+        'type',
+        'readonly',
+        'disabled',
+        'size',
+        'maxlength',
+        'max', 'min',
+        'multiple',
+        'pattern',
+        'placeholder',
+        'required',
+        'step',
+        'autofocus',
+        'height', 'width',
+        'list',
+        'autocomplete',
+    ]
+
+    def __init__(self, label=None, template='hemlock/input.html', **kwargs):
+        self.input_attrs = {}
+        super().__init__(label=label, template=template, **kwargs)
 
     def _record_data(self):
         if self.type in html_datetime_types:
@@ -103,3 +106,14 @@ class Input(InputGroup, InputBase, Question):
         else:
             super()._record_data()
         return self
+
+    def __getattribute__(self, key):
+        if key == '_input_attr_names' or key not in self._input_attr_names:
+            return super().__getattribute__(key)
+        return self.attrs.get(key)
+
+    def __setattr__(self, key, val):
+        if key in self._input_attr_names:
+            self.input_attrs[key] = val
+        else:
+            super().__setattr__(key, val)

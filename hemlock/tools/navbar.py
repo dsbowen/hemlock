@@ -30,9 +30,9 @@ Page(navbar=navbar.render()).preview()
 """
 
 from .random import key
+from .statics import format_attrs
 
 from flask import request
-from sqlalchemy_mutablesoup import SoupBase
 
 import os
 from copy import copy
@@ -43,56 +43,39 @@ class NavBase():
     """
     All navigation models inherit from this base.
 
-    Parameters
-    ----------
-    template : str
-        Path to template file. This is *not* a Jinja template, as you may 
-        wish to generate html for statics outside the application context.
-
-    \*\*kwargs :
-        Any attribute of navigation objects can be set by passing it as a 
-        keyword argument.
-    
-    Attributes
-    ----------
-    a : bs4.Tag
-        `<a>` tag.
-
-    body : bs4.BeautifulSoup (sqlalchemy_mutablesoup.MutableSoup)
-        Html container.
-
+    Parameters and attributes
+    -------------------------
     label : str
-        Navigation object label.
+        Label for the navigation element.
 
-    href : str
-        Hyperref associated with the object.
+    template : str
+        Path to template file or string. This is *not* a Jinja template, as 
+        you may wish to generate html for statics outside the application 
+        context.
+
+    href : str, default=''
+        Hyperref to which the navigation element links.
+
+    a_attrs : dict, default={}
+        Dictionary of HTML attributes for the navigation element's `<a>` tag.
     """
     @property
-    def a(self):
-        return self.body.select_one('a')
-
-    @property
-    def label(self):
-        return self.a.text
-
-    @label.setter
-    def label(self, val):
-        self.body.set_element('a', val)
-
-    @property
     def href(self):
-        return self.a.attrs.get('href')
+        return self.a_attrs.get('href')
 
     @href.setter
     def href(self, val):
-        self.a['href'] = val
+        self.a_attrs['href'] = val
 
-    def __init__(self, template, **kwargs):
+    def __init__(self, label, template, href='', a_attrs={}):
         self.id = 'navbar-'+key(10)
-        self.body = SoupBase(
-            open(template).read().format(self_=self), 'html.parser'
+        self.label = label
+        self.template = (
+            open(template).read() if os.path.exists(template)
+            else template # assume template is string
         )
-        [setattr(self, key, val) for key, val in kwargs.items()]
+        self.a_attrs = a_attrs
+        self.href = href
 
     def is_active(self):
         """        
@@ -112,33 +95,52 @@ class Navbar(NavBase):
     Parameters
     ----------
     label : str, default=''
-        Navbar brand.
 
     navitems : list of hemlock.tools.Navitem and hemlock.tools.Navitemdd
         Navigation items associated with the navbar.
 
+    href : str, default=''
+
     template : str, default='directory/navbar.html'
         By default, this is a file stored in the directory of the current 
         file.
+
+    a_attrs : dict
+
+    navbar_attrs : dict
+        HTML attributes for the `<nav>` tag.
     """
     def __init__(
-            self, label='', navitems=[], 
-            template=os.path.join(DIR, 'navbar.html'), **kwargs
+            self, label='', navitems=[], href='',
+            template=os.path.join(DIR, 'navbar.html'),             
+            a_attrs={'class': ['navbar-brand']},
+            navbar_attrs={
+                'class': [
+                    'navbar', 
+                    'navbar-expand-lg', 
+                    'navbar-light', 
+                    'bg-light', 
+                    'fixed-top'
+                ]
+            }
         ):
+        super().__init__(label, template, href, a_attrs)
         self.navitems = navitems
-        super().__init__(template, label=label, **kwargs)
+        self.navbar_attrs = navbar_attrs
 
     def render(self):
         """
         Returns
         -------
-        redered : bs4.BeautifulSoup
-            A copy of `self.body` with rendered navitems.
+        rendered : str
+            Rendered navbar HTML.
         """
-        body = copy(self.body)
-        ul = body.select_one('ul')
-        [ul.append(item.render()) for item in self.navitems]
-        return body
+        return self.template.format(
+            self=self,
+            navbar_attrs=format_attrs(**self.navbar_attrs),
+            a_attrs=format_attrs(**self.a_attrs),
+            navitems='\n'.join([item.render() for item in self.navitems])
+        )
 
 
 class Navitem(NavBase):
@@ -149,30 +151,39 @@ class Navitem(NavBase):
     ----------
     label : str, default=''
 
+    href : str, default=''
+
     template : str, default='directory/navitem.html'
         By default, this is a file stored in the directory of the current 
         file.
+
+    a_attrs : dict
+    
+    navitem_attrs : dict
+        HTML attributes for the `navitem` div.
     """
     def __init__(
-            self, label='', template=os.path.join(DIR, 'navitem.html'), 
-            **kwargs
+            self, label='', href='',
+            template=os.path.join(DIR, 'navitem.html'), 
+            a_attrs={'class': ['nav-link']},
+            navitem_attrs={'class': ['nav-item']}
         ):
-        super().__init__(template, label=label, **kwargs)
+        super().__init__(label, template, href, a_attrs)
+        self.navitem_attrs = navitem_attrs
 
     def render(self):
         """
         Returns
         -------
-        rendered : bs4.BeautifulSoup
-            Copy of `self.body`.
+        rendered : str
         """
-        body = copy(self.body)
-        if self.is_active():
-            li = body.select_one('li')
-            if li.attrs.get('class') is None:
-                li['class'] = []
-            li['class'].append('active')
-        return body
+        navitem_attrs = self.navitem_attrs.copy()
+        navitem_attrs['active'] = self.is_active()
+        return self.template.format(
+            self=self,
+            navitem_attrs=format_attrs(**navitem_attrs),
+            a_attrs=format_attrs(**self.a_attrs)
+        )
 
 
 class Navitemdd(NavBase):
@@ -188,25 +199,41 @@ class Navitemdd(NavBase):
     template : str, default='directory/navitemdd.html'
         By default, this is a file stored in the directory of the current 
         file.
+
+    a_attrs : dict
+
+    navitem_attrs : dict
+        HTML attributes for the `navitem` div.
     """
     def __init__(
             self, label='', dropdownitems=[], 
-            template=os.path.join(DIR, 'navitemdd.html'), **kwargs
+            template=os.path.join(DIR, 'navitemdd.html'),
+            a_attrs={
+                'class': ['nav-link', 'dropdown-toggle'],
+                'role': 'button',
+                'data-toggle': 'dropdown',
+                'aria-haspopup': 'true',
+                'aria-expanded': 'false'
+            },
+            navitem_attrs={'class': ['nav-item', 'dropdown']}
         ):
+        # note: href should not be passed
+        super().__init__(label, template, a_attrs=a_attrs)
         self.dropdownitems = dropdownitems
-        super().__init__(template, label=label, **kwargs)
+        self.navitem_attrs = navitem_attrs
 
     def render(self):
         """
         Returns
         -------
-        rendered : bs4.BeautifulSoup
-            A copy of `self.body` with rendered dropdown items.
+        rendered : str
         """
-        body = copy(self.body)
-        div = body.select_one('div.dropdown-menu')
-        [div.append(item.render()) for item in self.dropdownitems]
-        return body
+        return self.template.format(
+            self=self,
+            navitem_attrs=format_attrs(**self.navitem_attrs),
+            a_attrs=format_attrs(**self.a_attrs),
+            items='\n'.join([item.render() for item in self.dropdownitems])
+        )
 
 
 class Dropdownitem(NavBase):
@@ -215,27 +242,29 @@ class Dropdownitem(NavBase):
     ----------
     label : str, default=''
 
+    href : str, default=''
+
     template : str, default='directory/dropdownitem.html'
         By default, this is a file stored in the directory of the current 
         file.
+
+    a_attrs : dict
     """
     def __init__(
-            self, label='', template=os.path.join(DIR, 'dropdownitem.html'), 
-            **kwargs
+            self, label='', href='',
+            template=os.path.join(DIR, 'dropdownitem.html'), 
+            a_attrs={'class': ['dropdown-item']}
         ):
-        super().__init__(template, label=label, **kwargs)
+        super().__init__(label, template, a_attrs=a_attrs)
 
     def render(self):
         """
         Returns
         -------
-        rendered : bs4.BeautifulSoup
-            Copy of `self.body`.
+        rendered : str
         """
-        body = copy(self.body)
-        if self.is_active():
-            a = self.a
-            if a.get('class') is None:
-                a['class'] = []
-            a['class'].append('active')
-        return body
+        a_attrs = self.a_attrs.copy()
+        a_attrs['active'] = self.is_active()
+        return self.template.format(
+            self=self, a_attrs=format_attrs(**a_attrs)
+        )

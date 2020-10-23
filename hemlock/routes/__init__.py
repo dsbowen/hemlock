@@ -4,7 +4,7 @@ from ..app import bp, db
 from ..models import Participant
 from ..models.private import DataStore
 from . import participant
-from . import researcher
+# from . import researcher
 
 from flask import current_app, session, request
 from flask_login import current_user, login_required

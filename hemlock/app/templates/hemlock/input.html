@@ -1,5 +1,9 @@
 {% extends 'hemlock/input-group.html' %}
 
+{% set value = q.response if q.has_responded else q.default %}
+{% if value is none %}
+    {% set value = "" %}
+{% endif %}
 {% block input %}
-<input id="{{ self_.model_id }}" name="{{ self_.model_id }}" class="form-control" type="text"/>
+<input id="{{ q.model_id }}" name="{{ q.model_id }}" {{ q.input_attrs.to_html() | safe }} value="{{ value }}" />
 {% endblock %}

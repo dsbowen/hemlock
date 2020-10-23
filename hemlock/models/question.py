@@ -5,19 +5,22 @@ most useful when fleshed out. See section on question polymorphs.
 """
 
 from ..app import db
-from .bases import Data, HTMLMixin, PageLogicBase
+from .bases import Data
 from .choice import Choice, Option
 
 from flask import render_template, request
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import validates
-from sqlalchemy_mutable import MutableListType, MutableModelBase, MutableType
+from sqlalchemy_mutable import (
+    HTMLAttrsType, MutableType, MutableListType, MutableListJSONType
+)
 
+import html
 import os
 from copy import copy
 
 
-class Question(HTMLMixin, Data, PageLogicBase, MutableModelBase):
+class Question(Data):
     """
     Base object for questions. Questions are displayed on their page in index 
     order.
@@ -89,46 +92,53 @@ class Question(HTMLMixin, Data, PageLogicBase, MutableModelBase):
 
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
 
-    # Column attributes
-    default = db.Column(MutableType)
-    response = db.Column(MutableType)
+    # HTML attributes
+    template = db.Column(db.String)
+    css = db.Column(MutableListJSONType, default=[])
+    js = db.Column(MutableListJSONType, default=[])
+    form_group_class = db.Column(MutableListJSONType, default=[])
+    form_group_attrs = db.Column(HTMLAttrsType, default={})
+    error = db.Column(db.Text)
+    error_attrs = db.Column(HTMLAttrsType, default={})
+    label = db.Column(db.Text)
+
+    # Function attributes
+    compile = db.Column(MutableListType, default=[])
+    debug = db.Column(MutableListType, default=[])
+    validate = db.Column(MutableListType, default=[])
+    submit = db.Column(MutableListType, default=[])
+
+    # Additional attributes
+    default = db.Column(db.Text)
+    response = db.Column(db.Text)
     has_responded = db.Column(db.Boolean, default=False)
 
-    def __init__(self, label='', template=None, **kwargs):
-        kwargs['label'] = label
-        super().__init__(template, **kwargs)
+    def __init__(
+            self, label=None, extra_css=[], extra_js=[], 
+            form_group_class=['card', 'form-group', 'question'],
+            form_group_attrs={}, 
+            error_attrs={'style': {'color': 'rgb(114,28,36)'}}, 
+            **kwargs
+        ):
+        def add_extra(attr, extra):
+            # add extra css or javascript
+            if extra:
+                assert isinstance(extra, (str, list))
+                if isinstance(extra, str):
+                    attr.append(extra)
+                else:
+                    attr += extra
 
-    # BeautifulSoup shortcuts
-    @property
-    def error(self):
-        return self.body.text('.error-txt')
-
-    @error.setter
-    def error(self, val):
-        """
-        Add the 'error' class to the form-group tag and set the error text
-        """
-        form_grp_cls = self.body.select_one('div.form-group')['class']
-        if not val:
-            try:
-                form_grp_cls.remove('error')
-            except:
-                pass
-        elif 'error' not in form_grp_cls:
-            form_grp_cls.append('error')
-        self.body.set_element('span.error-txt', val)
-
-    @property
-    def form_group(self):
-        return self.body.select_one('div.form-group')
-
-    @property
-    def label(self):
-        return self.body.text('.label-txt')
-
-    @label.setter
-    def label(self, val):
-        self.body.set_element('.label-txt', val)
+        self.css, self.js = [], []
+        super().__init__(
+            label=label, 
+            form_group_class=form_group_class,
+            form_group_attrs=form_group_attrs,
+            error_attrs=error_attrs, 
+            **kwargs
+        )
+        add_extra(self.css, extra_css)
+        add_extra(self.js, extra_js)
 
     # methods
     def clear_error(self):
@@ -160,11 +170,14 @@ class Question(HTMLMixin, Data, PageLogicBase, MutableModelBase):
         return self
 
     def _render(self, body=None):
-        return body or self.body.copy()
+        return render_template(self.template, q=self)
 
     def _record_response(self):
         self.has_responded = True
         self.response = request.form.get(self.model_id)
+        if isinstance(self.response, str):
+            # convert to safe html
+            self.response = html.escape(self.response)
         return self
         
     def _validate(self):

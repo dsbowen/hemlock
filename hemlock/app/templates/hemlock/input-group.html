@@ -2,8 +2,16 @@
 
 {% block content %}
 <div class="input-group">
-    <div class="input-group-prepend"></div>
+    {% if q.prepend is not none %}
+    <div class="input-group-prepend">
+        {{ q.prepend | safe }}
+    </div>
+    {% endif %}
     {% block input %}{% endblock %}
-    <div class="input-group-append"></div>
+    {% if q.append is not none %}
+    <div class="input-group-append">
+        {{ q.append | safe}}
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

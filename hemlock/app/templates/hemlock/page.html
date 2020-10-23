@@ -1,28 +1,66 @@
 <!DOCTYPE html>
 
 <html>
+    <page id="{{ page.model_id }}"></page>
     <head>
+        {% block head %}
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        {% if page.css is not none %}
-            {{ page.css.render() }}
-        {% endif %}
-        {% for q in page.questions if q.css is not none %}
-            {{ q.css.render() }}
+        {{ page.css | join(" ") | safe }}
+        {% for q in page.questions %}
+            {{ q.css | join(" ") | safe }}
         {% endfor %}
+        {% endblock %}
     </head>
     <body>
+        {% block body %}
         {% if page.navbar is not none %}
-            {{ page.navbar.render() }}
+        {{ page.navbar | safe }}
         {% endif %}
 
-        {{ page.body.render() }}
+        <div class="container h-100">
+            <div class="row h-100 justify-content-center align-items-center">
+                <form method="POST" class="col-12 form-margins" enctype="multipart/form-data">
+                {% block form %}
+                    {% set part = page.part %}
+                    {% if part is not none and part.meta.get('Test') == '1' %}
+                    <input type="hidden" name="part_id" value="{{ part.id }}"/>
+                    <input type="hidden" name="part_key" value="{{ part._key }}"/>
+                    {% endif %}
 
-        {% if page.js is not none %}
-            {{ page.js.render() }}
-        {% endif %}
-        {% for q in page.questions if q.js is not none %}
-            {{ q.js.render() }}
+                    {% if page.error not in [false, none] %}
+                    <div {{ page.error_attrs.to_html() | safe }}>
+                        {{ page.error | safe }}
+                    </div>
+                    {% endif %}
+                    
+                    {% for q in page.questions %}
+                        {{ q._render() | safe }}
+                    {% endfor %}
+                    <br/>
+        
+                    {% if page.forward is not none and not page.terminal %}
+                    <button {{ page.forward_btn_attrs.to_html() | safe}}>
+                        {{ page.forward | safe }}
+                    </button>
+                    {% endif %}
+                    {% if page.back is not none and not page.first_page() %}
+                    <button {{ page.back_btn_attrs.to_html() | safe }}>
+                        {{ page.back | safe }}
+                    </button>
+                    {% endif %}
+                    <p style="clear:both;"><br></p>
+        
+                    {{ page.banner | safe }}
+                {% endblock %}
+                </form>
+            </div>
+        </div>
+
+        {{ page.js | join(" ") | safe }}
+        {% for q in page.questions %}
+            {{ q.js | join(" ") | safe }}
         {% endfor %}
+    {% endblock %}
     </body>
 </html>

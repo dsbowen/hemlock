@@ -1,7 +1,23 @@
-<div id="{{ self_.model_id }}-fg" class="form-group question">
-    <label class="w-100" for="{{ self_.model_id }}">
-        <span class="error-txt" style="color: rgb(114,28,36);"></span>
-        <span class="label-txt"></span>
-    </label>
-    {% block content %}{% endblock %}
+{% set fg_class=q.form_group_class | join(" ") %}
+{% if q.error is not none %}
+    {% set fg_class=fg_class+" error" %}
+{% endif %}
+<div class="{{ fg_class }}" {{ q.form_group_attrs.to_html() | safe }}>
+    <div class="card-body">
+        {% if q.error is not none or q.label is not none %}
+        {% block label %}
+        <label class="w-100" for="{{ q.model_id }}">
+            {% if q.error is not none %}
+            <span {{ q.error_attrs.to_html() | safe }}>
+                {{ q.error | safe}}
+            </span>
+            {% endif %}
+            {% if q.label is not none %}
+            {{ q.label | safe }}
+            {% endif %}
+        </label>
+        {% endblock %}
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
 </div>

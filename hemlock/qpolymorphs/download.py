@@ -50,7 +50,7 @@ class Download(Question, DownloadBtnMixin):
 
     Page(Download(
     \    '<p>Click here to download a file.</p>',
-    \    downloads=[('HELLO_WORLD_URL', 'hello_world.txt')]
+    \    downloads=('HELLO_WORLD_URL', 'hello_world.txt')
     )).preview()
     ```
 
@@ -59,9 +59,6 @@ class Download(Question, DownloadBtnMixin):
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'download'}
-
-    create_file_functions = db.Column(MutableType)
-    handle_form_functions = db.Column(MutableType)
 
     @property
     def body(self):
@@ -78,7 +75,6 @@ class Download(Question, DownloadBtnMixin):
             self.body = render_template(template, self_=self)
         manager = current_app.extensions['download_btn_manager']
         self.progress = render_template(manager.progress_template, btn=self)
-        self.downloads = []
         settings = current_app.settings.get('Download')
         settings = settings.copy() if settings else {}
         kwargs['label'] = label
