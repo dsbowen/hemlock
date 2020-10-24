@@ -14,6 +14,7 @@ from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
 from flask_worker import Manager
+from sqlalchemy_mutable import MutableManager
 
 import os
 
@@ -37,6 +38,7 @@ login_manager.login_message = None
 # scheduler = APScheduler()
 socketio = SocketIO(async_mode='eventlet')
 manager = Manager(db=db, socketio=socketio)
+MutableManager.db = db
 talisman = Talisman()
 
 def push_app_context():

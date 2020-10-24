@@ -1,7 +1,9 @@
 {% extends 'hemlock/input-group.html' %}
 
 {% block input %}
-<select id="{{ self_.model_id }}" name="{{ self_.model_id }}" class="custom-select">
-    <span class="choice-wrapper"></span>
+<select id="{{ q.key }}" name="{{ q.key }}" {{ q.input_attrs.to_html() | safe }}>
+    {% for opt in q.options %}
+    {{ opt._render(q, loop.index) | safe }}
+    {% endfor %}
 </select>
 {% endblock %}

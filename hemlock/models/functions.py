@@ -4,23 +4,9 @@ All of these classes inherit from
 [`sqlalchemy_mutable.partial`](https://dsbowen.github.io/sqlalchemy-mutable).
 """
 
-from sqlalchemy_mutable import partial as partial_base
+from sqlalchemy_mutable import partial
 
 from random import random
-
-class partial(partial_base):
-    @classmethod
-    def register(cls, func):
-        from ..app import db
-        def add_function(*args, **kwargs):
-            for arg in args:
-                if isinstance(arg, db.Model):
-                    db.session.add(arg)
-                    db.session.flush([arg])
-            return cls(func, *args, **kwargs)
-
-        setattr(cls, func.__name__, add_function)
-        return func
 
 
 class Compile(partial):

@@ -2,19 +2,19 @@
 
 from ..app import db, settings
 from ..functions.debug import click_choices
-from ..models import ChoiceQuestion, OptionListType
-from .input_group import InputGroup
+from ..models import ChoiceQuestion
+from .bases import InputBase
+from .choice import OptionListType
 
-settings['Select'] = {
-    'align': 'left',
-    'inline': False,
-    'debug': click_choices,
-    'multiple': False,
-    'size': None,
-}
+from sqlalchemy_mutable import HTMLAttrsType
+
+settings['Select'] = dict(
+    input_attrs={'class': ['custom-select'], 'multiple': False},
+    debug=click_choices,
+)
 
 
-class Select(InputGroup, ChoiceQuestion):
+class Select(InputBase, ChoiceQuestion):
     """
     Select questions allow participants to select one or more options from a 
     dropdown menu.
@@ -47,12 +47,6 @@ class Select(InputGroup, ChoiceQuestion):
     multiple : bool, default=False
         Indicates that the participant may select multiple choices.
 
-    select : bs4.Tag
-        `<select>` tag.
-
-    size : int or None, default=None
-        Number of rows of choices to display.
-
     Examples
     --------
     ```python
@@ -75,7 +69,7 @@ class Select(InputGroup, ChoiceQuestion):
     def choices(self, val):
         self.options = val
 
-    _html_attr_names = [
+    _input_attr_names = [
         'autofocus',
         'disabled',
         'multiple',
@@ -83,24 +77,8 @@ class Select(InputGroup, ChoiceQuestion):
         'size'
     ]
 
-    @property
-    def attrs(self):
-        return self.select.attrs
-
-    @attrs.setter
-    def attrs(self, val):
-        self.select.attrs = val
-        self.body.changed()
-
-    @property
-    def select(self):
-        return self.body.select_one('select#'+self.model_id)
-
     def __init__(
-            self, label='', choices=[], template='hemlock/select.html', 
+            self, label=None, choices=[], template='hemlock/select.html', 
             **kwargs
         ):
         super().__init__(label, choices, template, **kwargs)
-
-
-    

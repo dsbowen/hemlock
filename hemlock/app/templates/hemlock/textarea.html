@@ -1,12 +1,14 @@
-{% extends 'hemlock/form-group.html' %}
+{% extends 'hemlock/input-group.html' %}
 
-{% block content %}
-<div class="input-group">
-    <div class="input-group-prepend"></div>
-    <textarea id="{{ self_.model_id }}" name="{{ self_.model_id }}" class="form-control"></textarea>
-    <div class="input-group-append"></div>
-</div>
-<small>Characters: <span id="{{ self_.model_id }}-chars"></span></small>
+{% block input %}
+    {% set value = q.response if q.has_responded else q.default %}
+    {% if value is none %}
+        {% set value = "" %}
+    {% endif %}
+    <textarea id="{{ q.key }}" name="{{ q.key }}" {{ q.input_attrs.to_html() | safe }}>{{ value | safe}}</textarea>
+{% endblock %}
+{% block form_text %}
+<small>Characters: <span id="{{ q.key }}-chars"></span></small>
 <br/>
-<small>Words: <span id="{{ self_.model_id }}-words"></span></small>
+<small>Words: <span id="{{ q.key }}-words"></span></small>
 {% endblock %}

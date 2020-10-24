@@ -4,13 +4,17 @@
 <div class="input-group">
     {% if q.prepend is not none %}
     <div class="input-group-prepend">
-        {{ q.prepend | safe }}
+        <span class="input-group-text">
+            {{ q.prepend | safe }}
+        </span>
     </div>
     {% endif %}
     {% block input %}{% endblock %}
     {% if q.append is not none %}
     <div class="input-group-append">
-        {{ q.append | safe}}
+        <span class="input-group-text">
+            {{ q.append | safe }}
+        </span>
     </div>
     {% endif %}
 </div>

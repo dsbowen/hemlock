@@ -2,11 +2,17 @@
 
 from ..app import db, settings
 from ..functions.debug import drag_range
-from ..models import InputBase, Question
+from ..models import Question
+from .bases import InputBase
 
 from flask import render_template
 
-settings['Range'] = {'debug': drag_range, 'max': 100, 'min': 0, 'step': 1}
+settings['Range'] = {
+    'debug': drag_range,
+    'type': 'range', 
+    'class': ['custom-range'], 
+    'min': 0, 'max': 100, 'step': 1
+}
 
 
 class Range(InputBase, Question):
@@ -24,17 +30,6 @@ class Range(InputBase, Question):
 
     template : str, default='hemlock/range.html'
         Template for the range body.
-
-    Attributes
-    ----------
-    max : float, default=100
-        Maximum value of the range slider.
-
-    min : float, default=0
-        Minimum value of the range slider.
-
-    step : float, default=1
-        Increments in which the range slider steps.
 
     Notes
     -----
@@ -55,6 +50,6 @@ class Range(InputBase, Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'range'}
 
-    def __init__(self, label='', template='hemlock/range.html', **kwargs):
-        super().__init__(label, template, **kwargs)
-        self.add_internal_js(render_template('hemlock/range.js', self_=self))
+    def __init__(self, label=None, template='hemlock/range.html', **kwargs):
+        super().__init__(label=label, template=template, **kwargs)
+        self.js.append(render_template('hemlock/range.js', q=self))

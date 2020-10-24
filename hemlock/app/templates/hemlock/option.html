@@ -1,1 +1,6 @@
-<option id="{{ self_.id }}"></option>
+{% if opt.is_default(q) %}
+    {% set selected = "selected" %}
+{% endif %}
+<option id="{{ opt.key }}" name="{{ q.key }}" value="{{ idx }}" {{ selected }} {{ opt_attrs | safe }}>
+    {{ opt.label | safe }}
+</option>

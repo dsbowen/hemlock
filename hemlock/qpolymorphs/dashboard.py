@@ -133,7 +133,7 @@ class Dashboard(Question):
     __mapper_args__ = {'polymorphic_identity': 'dashboard'}
 
     g = db.Column(MutableDictType)
-    key = db.Column(db.String)
+    security_key = db.Column(db.String)
 
     def __init__(self, label='', template='hemlock/dash.html', **kwargs):
         super().__init__(label, template, **kwargs)
@@ -216,7 +216,7 @@ class Dashboard(Question):
         qs = parse_qs(urlparse(search).query)
         id, key = qs['id'][0], qs['key'][0]
         dash = Dashboard.query.get(id)
-        return dash if dash.key == key else None
+        return dash if dash.security_key == key else None
 
     @staticmethod
     def record_response(search, response):
@@ -267,7 +267,7 @@ class Dashboard(Question):
         iframe = body.select_one('iframe')
         # add id and key parameters to the src
         # these are used to get the dashboard object
-        iframe['src'] += '?id='+str(self.id)+'&key='+self.key
+        iframe['src'] += '?id='+str(self.id)+'&key='+self.security_key
         return super()._render(body)
 
     def _record_response(self):

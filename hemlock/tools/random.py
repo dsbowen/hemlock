@@ -1,7 +1,5 @@
 """# Randomization tools"""
 
-from ..models import Embedded
-
 from flask_login import current_user
 
 from itertools import combinations, cycle, permutations, product
@@ -167,6 +165,8 @@ class Assigner(Randomizer):
         assignment : dict
             Maps condition variable names to assigned conditions.
         """
+        from ..models import Embedded
+        
         assignment = super().next()
         assignment = {key: val for key, val in zip(self.keys, assignment)}
         try:

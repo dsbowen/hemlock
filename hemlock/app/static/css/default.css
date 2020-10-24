@@ -16,7 +16,7 @@ form.form-margins {
 }
 
 div.question {
-    border-radius: 8px;
+    border-radius: 7px;
 }
 
 /* Question div formatting */
@@ -25,7 +25,6 @@ div.error {
     border-width: thin;
     background-color: #f2dede;
     border-color: #ebcccc;
-    border-radius: 8px;
 }
 
 /* Choice formatting */
@@ -43,16 +42,4 @@ input:checked + label {
 }
 input[type="checkbox"]:checked:hover + label {
     background-color: #BEBEBE;
-}
-
-/* Video formatting */
-/* 16:9 aspect ratio */
-.video-wrapper {
-    padding-bottom: 56.25%;
-    position: relative;
-}
-.video {
-    position: absolute;
-    width: 100%;
-    height: 100%;
 }

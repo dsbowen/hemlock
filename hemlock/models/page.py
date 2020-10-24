@@ -483,6 +483,7 @@ class Page(BranchingBase, db.Model):
     direction_to = db.Column(db.String(8))
     g = db.Column(MutableType)
     index = db.Column(db.Integer)
+    name = db.Column(db.String)
     terminal = db.Column(db.Boolean)
     viewed = db.Column(db.Boolean, default=False)
 

@@ -2,10 +2,12 @@
 
 from ..app import db, settings
 from ..functions.debug import click_choices
-from ..models import ChoiceQuestion, ChoiceListType
+from ..models import ChoiceQuestion
+from .bases import InputBase
+from .choice import ChoiceListType
 
 
-class CheckBase(ChoiceQuestion):
+class CheckBase(InputBase, ChoiceQuestion):
     """
     Base for `hemlock.Binary` and `hemlock.Check` question types. Inherits 
     from [`hemlock.ChoiceQuestion`](question.md).
@@ -22,42 +24,11 @@ class CheckBase(ChoiceQuestion):
         as opposed to vertical.
     """
     choices = db.Column(ChoiceListType)
+    multiple = db.Column(db.Boolean, default=False)
     inline = db.Column(db.Boolean, default=False)
-
-    @property
-    def align(self):
-        choice_wrapper = self.choice_wrapper
-        if not choice_wrapper:
-            return
-        for class_ in choice_wrapper['class']:
-            if class_ == 'text-left':
-                return 'left'
-            if class_ == 'text-center':
-                return 'center'
-            if class_ == 'text-right':
-                return 'right'
-
-    @align.setter
-    def align(self, align_):
-        choice_wrapper = self.choice_wrapper
-        if not choice_wrapper:
-            raise AttributeError('Choice wrapper does not exist')
-        align_classes = ['text-'+i for i in ['left','center','right']]
-        choice_wrapper['class'] = [
-            c for c in choice_wrapper['class'] if c not in align_classes
-        ]
-        if align_:
-            align_ = 'text-' + align_
-            choice_wrapper['class'].append(align_)
-        self.body.changed()
-
-    @property
-    def choice_wrapper(self):
-        return self.body.select_one('.choice-wrapper')
 
 
 settings['Check'] = {
-    'align': 'left',
     'inline': False,
     'debug': click_choices,
     'multiple': False,
@@ -109,14 +80,13 @@ class Check(CheckBase):
     __mapper_args__ = {'polymorphic_identity': 'check'}
 
     def __init__(
-            self, label='', choices=[], template='hemlock/check.html', 
+            self, label=None, choices=[], template='hemlock/check.html', 
             **kwargs
         ):
         super().__init__(label, choices, template, **kwargs)
 
 
 settings['Binary'] = {
-    'align': 'left',
     'inline': True,
     'debug': click_choices,
     'multiple': False,
@@ -169,7 +139,7 @@ class Binary(CheckBase):
     __mapper_args__ = {'polymorphic_identity': 'binary'}
 
     def __init__(
-            self, label='', choices=['Yes', 'No'], 
+            self, label=None, choices=['Yes', 'No'], 
             template='hemlock/check.html', **kwargs
         ):
         assert len(choices) == 2, 'Binary question require 2 choices'

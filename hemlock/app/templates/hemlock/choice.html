@@ -1,4 +1,22 @@
-<div class="custom-control">
-    <input id="{{ self_.id }}" class="custom-control-input">
-    <label for="{{ self_.id }}" class="custom-control-label w-100 choice"></label>
+{% if q.multiple %}
+    {% set div_class = "custom-checkbox" %}
+    {% set type = "checkbox" %}
+{% else %}
+    {% set div_class = "custom-radio" %}
+    {% set type = "radio" %}
+{% endif %}
+{% if q.inline %}
+    {% set div_class = div_class + " custom-control-inline" %}
+{% endif %}
+{% if c.is_default(q) %}
+    {% set checked = "checked" %}
+{% else %}
+    {% set checked = "" %}
+{% endif %}
+
+<div class="{{ c.div_class | join(' ')}} {{ div_class }}" {{ div_attrs | safe }}>
+    <input id="{{ c.key }}" name="{{ q.key }}" type="{{ type }}" value="{{ idx }}" {{ checked }} {{ input_attrs | safe }}>
+    <label for="{{ c.key }}" {{ label_attrs | safe }}>
+        {{ c.label | safe }}
+    </label>
 </div>

@@ -5,5 +5,5 @@
     {% set value = "" %}
 {% endif %}
 {% block input %}
-<input id="{{ q.model_id }}" name="{{ q.model_id }}" {{ q.input_attrs.to_html() | safe }} value="{{ value }}" />
+    <input id="{{ q.key }}" name="{{ q.key }}" {{ q.input_attrs.to_html() | safe }} value="{{ value }}"/>
 {% endblock %}

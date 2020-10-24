@@ -5,8 +5,8 @@ most useful when fleshed out. See section on question polymorphs.
 """
 
 from ..app import db
+from ..tools import key
 from .bases import Data
-from .choice import Choice, Option
 
 from flask import render_template, request
 from sqlalchemy.ext.orderinglist import ordering_list
@@ -93,6 +93,7 @@ class Question(Data):
     _page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
 
     # HTML attributes
+    key = db.Column(db.String(10))
     template = db.Column(db.String)
     css = db.Column(MutableListJSONType, default=[])
     js = db.Column(MutableListJSONType, default=[])
@@ -101,6 +102,9 @@ class Question(Data):
     error = db.Column(db.Text)
     error_attrs = db.Column(HTMLAttrsType, default={})
     label = db.Column(db.Text)
+    prepend = db.Column(db.String)
+    append = db.Column(db.String)
+    input_attrs = db.Column(HTMLAttrsType)
 
     # Function attributes
     compile = db.Column(MutableListType, default=[])
@@ -129,6 +133,8 @@ class Question(Data):
                 else:
                     attr += extra
 
+        self.key = key(10)
+        self.compile, self.debug, self.validate, self.submit = [], [], [], []
         self.css, self.js = [], []
         super().__init__(
             label=label, 
@@ -174,7 +180,7 @@ class Question(Data):
 
     def _record_response(self):
         self.has_responded = True
-        self.response = request.form.get(self.model_id)
+        self.response = request.form.get(self.key)
         if isinstance(self.response, str):
             # convert to safe html
             self.response = html.escape(self.response)
@@ -243,22 +249,15 @@ class ChoiceQuestion(Question):
     4. list of `(choice label, value, name)` tuples.
     5. list of dictionaries with choice keyword arguments.
     """
-    multiple = db.Column(db.Boolean, default=False)
     choices = None # must be implemented by choice question
 
-    def __init__(self, label='', choices=[], template=None, **kwargs):
+    def __init__(self, label=None, choices=[], template=None, **kwargs):
         self.choices = choices
-        super().__init__(label, template, **kwargs)
+        super().__init__(label=label, template=template, **kwargs)
 
     def _render(self, body=None):
         """Add choice HTML to `body`"""
-        body = body or self.body.copy()
-        choice_wrapper = body.select_one('.choice-wrapper')
-        [
-            choice_wrapper.append(choice._render(self, idx)) 
-            for idx, choice in enumerate(self.choices)
-        ]
-        return body
+        return render_template(self.template, q=self)
 
     def _record_response(self):
         """Record response
@@ -267,7 +266,7 @@ class ChoiceQuestion(Question):
         choices are allowed).
         """
         self._has_responded = True
-        idx = request.form.getlist(self.model_id)
+        idx = request.form.getlist(self.key)
         self.response = [self.choices[int(i)].value for i in idx]
         if not self.multiple:
             self.response = self.response[0] if self.response else None

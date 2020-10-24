@@ -1,12 +1,11 @@
 """# Input"""
 
+from .bases import InputBase
 from ..app import db, settings
 from ..functions.debug import send_datetime, send_keys
-from ..models import Debug, InputBase, Question
-from .input_group import InputGroup
+from ..models import Question
 
 from selenium_tools import get_datetime
-from sqlalchemy_mutable import HTMLAttrsType
 
 html_datetime_types = (
     'date',
@@ -16,7 +15,6 @@ html_datetime_types = (
     'week',
 )
 
-@Debug.register
 def random_input(driver, question):
     """
     Default debug function for input questions. This function sends a random 
@@ -39,7 +37,7 @@ settings['Input'] = {
 }
 
 
-class Input(Question):
+class Input(InputBase, Question):
     """
     Inputs take text input by default, or other types of html inputs.
 
@@ -71,31 +69,7 @@ class Input(Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'input'}
 
-    input_attrs = db.Column(HTMLAttrsType)
-    prepend = db.Column(db.Text)
-    append = db.Column(db.Text)
-
-    _input_attr_names = [
-        'class',
-        'type',
-        'readonly',
-        'disabled',
-        'size',
-        'maxlength',
-        'max', 'min',
-        'multiple',
-        'pattern',
-        'placeholder',
-        'required',
-        'step',
-        'autofocus',
-        'height', 'width',
-        'list',
-        'autocomplete',
-    ]
-
     def __init__(self, label=None, template='hemlock/input.html', **kwargs):
-        self.input_attrs = {}
         super().__init__(label=label, template=template, **kwargs)
 
     def _record_data(self):
@@ -106,14 +80,3 @@ class Input(Question):
         else:
             super()._record_data()
         return self
-
-    def __getattribute__(self, key):
-        if key == '_input_attr_names' or key not in self._input_attr_names:
-            return super().__getattribute__(key)
-        return self.attrs.get(key)
-
-    def __setattr__(self, key, val):
-        if key in self._input_attr_names:
-            self.input_attrs[key] = val
-        else:
-            super().__setattr__(key, val)

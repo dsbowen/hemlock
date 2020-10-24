@@ -2,7 +2,6 @@
 
 from .bases import Base, Data, HTMLMixin, InputBase
 from .branch import Branch
-from .choice import Choice, ChoiceListType, Option, OptionListType
 from .embedded import Embedded, Timer
 from .functions import Compile, Debug, Validate, Submit, Navigate
 from .page import Page

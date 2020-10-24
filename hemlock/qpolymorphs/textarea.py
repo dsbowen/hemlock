@@ -3,14 +3,14 @@
 from ..app import db, settings
 from ..functions.debug import send_keys
 from ..models import Question
-from .input_group import InputGroup
+from .bases import InputBase
 
 from flask import render_template
 
-settings['Textarea'] = {'debug': send_keys, 'rows': 3}
+settings['Textarea'] = {'debug': send_keys, 'class': ['form-control'], 'rows': 3}
 
 
-class Textarea(InputGroup, Question):
+class Textarea(InputBase, Question):
     """
     Textareas provide large text boxes for free responses.
 
@@ -24,11 +24,6 @@ class Textarea(InputGroup, Question):
 
     template : str, default='hemlock/textarea.html'
         Template for the textarea body.
-
-    Attributes
-    ----------
-    textarea : bs4.Tag
-        The `<textarea>` tag.
 
     Notes
     -----
@@ -49,7 +44,8 @@ class Textarea(InputGroup, Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'textarea'}
 
-    _html_attr_names = [
+    _input_attr_names = [
+        'class',
         'autofocus',
         'cols',
         'disabled',
@@ -61,43 +57,8 @@ class Textarea(InputGroup, Question):
         'wrap'
     ]
 
-    @property
-    def attrs(self):
-        return self.textarea.attrs
-
-    @attrs.setter
-    def attrs(self, val):
-        self.textarea.attrs = val
-        self.body.changed()
-
-    @property
-    def textarea(self):
-        return self.body.select_one('textarea#'+self.model_id)
-
-    def __init__(self, page=None, template='hemlock/textarea.html', **kwargs):
-        super().__init__(page, template, **kwargs)
-        self.add_internal_js(
-            render_template('hemlock/textarea.js', self_=self)
-        )
-
-    def textarea_from_driver(self, driver):
-        """
-        Get textarea from the webdriver for debugging.
-        
-        Parameters
-        ----------
-        driver : selenium.webdriver.chrome.webdriver.WebDriver
-            Selenium webdriver (does not need to be `Chrome`).
-
-        Returns
-        -------
-        textarea : selenium.webdriver.remote.webelement.WebElement
-            Web element of the `<textarea>` tag associated with this model.
-        """
-        return driver.find_element_by_css_selector('textarea#'+self.model_id)
-
-    def _render(self, body=None):
-        body = body or self.body.copy()
-        textarea = body.select_one('#'+self.model_id)
-        textarea.string = self.response or self.default or ''
-        return super()._render(body)
+    def __init__(
+            self, label=None, template='hemlock/textarea.html', **kwargs
+        ):
+        super().__init__(label=label, template=template, **kwargs)
+        self.js.append(render_template('hemlock/textarea.js', q=self))
