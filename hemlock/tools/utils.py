@@ -144,14 +144,8 @@ def show_on_event(
     Page(name, greet).preview()
     ```
     """
-    from ..models import Question, Choice, Option
-
-    def hide_target(target_id):
-        target_tag = target.body.select_one('#'+target_id)
-        style = parseStyle(target_tag.get('style'))
-        style['display'] = 'none'
-        target_tag['style'] = style.cssText
-        target.body.changed()
+    from ..models import Question
+    from ..qpolymorphs import Choice, Option
 
     # NOTE I want to extend this to show choices and options as well
     # but the code below isn't working right now
@@ -170,16 +164,17 @@ def show_on_event(
     #     # option
     #     target_id = target.model_id
     assert isinstance(target, Question), 'target must be a Question'
-    target_id = target.model_id+'-fg' # form group div
     if init_hidden:
-        hide_target(target_id)
-    target.add_internal_js(
-        _show_on_event_js(target_id, condition, value, *args, **kwargs)
+        if 'style' not in target.form_group_attrs:
+            target.form_group_attrs['style'] = {}
+        target.form_group_attrs['style']['display'] = 'none'
+    target.js.append(
+        _show_on_event_js(target, condition, value, *args, **kwargs)
     )
     return target
 
 def _show_on_event_js(
-        target_id, condition, value, regex=False, duration=400, event=None, 
+        target, condition, value, regex=False, duration=400, event=None, 
     ):
     from ..models import ChoiceQuestion
     from ..qpolymorphs import Binary, Check, Select
@@ -189,7 +184,7 @@ def _show_on_event_js(
             event = 'change' # listen for change event
             for choice in condition.choices:
                 if choice.value == value:
-                    value = choice.id
+                    value = choice.key
                     break
         else:
             event = 'input' # listen for input event
@@ -204,8 +199,8 @@ def _show_on_event_js(
         # value corresponds to option
         choice, option = False, True        
     return render_template(
-        'hemlock/show_on_event.js', 
-        target_id=target_id, 
+        'hemlock/show-on-event.html', 
+        target=target, 
         condition=condition,
         choice=choice,
         option=option,

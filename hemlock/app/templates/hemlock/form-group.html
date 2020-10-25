@@ -2,7 +2,7 @@
 {% if q.error is not none %}
     {% set fg_class=fg_class+" error" %}
 {% endif %}
-<div class="{{ fg_class }}" {{ q.form_group_attrs.to_html() | safe }}>
+<div id="{{ q.key }}-fg" class="{{ fg_class }}" {{ q.form_group_attrs.to_html() | safe }}>
     <div class="card-body">
         {% if q.error is not none or q.label is not none %}
         {% block label %}

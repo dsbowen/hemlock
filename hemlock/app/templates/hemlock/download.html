@@ -1,7 +1,6 @@
 {% extends 'hemlock/form-group.html' %}
 
 {% block content %}
-<button id="{{ self_.get_id('btn') }}" type="button" class="btn btn-outline-primary btn-block">
-    Download
-</button>
+{{ q.render_btn() | safe }}
+{{ q.render_progress () | safe }}
 {% endblock %}

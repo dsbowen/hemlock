@@ -6,7 +6,7 @@ from ..tools import join
 from .bases import InputBase
 
 from flask import current_app, render_template, request
-from sqlalchemy_mutable import MutableListJSONType
+from sqlalchemy_mutable import HTMLAttrsType, MutableListJSONType
 from werkzeug.utils import secure_filename
 
 import os
@@ -38,7 +38,11 @@ def upload_to_bucket(file_):
         return
     blob.upload_from_string(upload.read())  
         
-settings['File'] = {'submit_functions': upload_to_bucket}
+settings['File'] = dict(
+    input_attrs={'class': ['custom-file-input'], 'type': 'file'},
+    file_label_attrs={'class': ['label-txt', 'custom-file-label']},
+    submit_functions=upload_to_bucket
+)
 
 
 class File(InputBase, Question):
@@ -122,12 +126,17 @@ class File(InputBase, Question):
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'file'}
 
+    # HTML attributes
+    file_label = db.Column(db.String)
+    file_label_attrs = db.Column(HTMLAttrsType)
+
+    # Additional attributes
     allowed_extensions = db.Column(MutableListJSONType)
     filename = db.Column(db.String)
 
     def __init__(self, label=None, template='hemlock/file.html', **kwargs):
-        super().__init__(label, template, **kwargs)
-        self.js = render_template('hemlock/file.js', self_=self)
+        super().__init__(label=label, template=template, **kwargs)
+        self.js.append(render_template('hemlock/file.js', q=self))
 
     def generate_signed_url(self, expiration=timedelta(hours=.5), **kwargs):
         """

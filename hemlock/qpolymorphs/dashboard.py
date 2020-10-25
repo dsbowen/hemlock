@@ -3,11 +3,13 @@
 from .. import tools
 from ..app import db
 from ..models import Question
+from ..tools import iframe, key
 
-from sqlalchemy_mutable import MutableDictType
+from flask import render_template
+from sqlalchemy_mutable import MutableDictType, MutableDictJSONType
 
 import re
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlencode, urlparse
 
 
 class Dashboard(Question):
@@ -24,20 +26,6 @@ class Dashboard(Question):
 
     Attributes
     ----------
-    aspect_ratio : tuple of (int, int), default=(16, 9)
-        Aspect ratio of the embedded application. See 
-        <https://getbootstrap.com/docs/4.0/utilities/embed/#aspect-ratios>.
-
-    embed : bs4.Tag
-        `<div>` tag of the embedded app.
-
-    g : dict
-        [Mutable dictionary](https://dsbowen.github.io/sqlalchemy-mutable/) 
-        with dashboard arguments.
-
-    iframe : bs4.Tag
-        `<iframe>` tag of the embedded app.
-
     src : str
         `src` attribute of the `<iframe>` tag.
 
@@ -133,53 +121,32 @@ class Dashboard(Question):
     __mapper_args__ = {'polymorphic_identity': 'dashboard'}
 
     g = db.Column(MutableDictType)
+    iframe_kwargs = db.Column(MutableDictJSONType)
     security_key = db.Column(db.String)
 
-    def __init__(self, label='', template='hemlock/dash.html', **kwargs):
-        super().__init__(label, template, **kwargs)
+    _iframe_kwargs_keys = [
+        'src', 'aspect_ratio', 'query_string', 'div_class', 'div_attrs',
+        'iframe_class', 'iframe_attrs'
+    ]
 
-    @property
-    def aspect_ratio(self):
-        classes_ = self.embed['class']
-        ratio_classes = [
-            class_ for class_ in classes_ 
-            if re.fullmatch('embed-responsive-\d+by\d+', class_)
-        ]
-        if not ratio_classes:
-            return None, None
-        ratio = ratio_classes[-1].strip('embed-responsive-').split('by')
-        return int(ratio[0]), int(ratio[1])
+    def __init__(self, label=None, template='hemlock/dash.html', **kwargs):
+        self.iframe_kwargs = {}
+        self.security_key = key()
+        super().__init__(label=label, template=template, **kwargs)
 
-    @aspect_ratio.setter
-    def aspect_ratio(self, ratio):
-        classes = self.embed['class']
-        classes = [
-            class_ for class_ in classes 
-            if not re.fullmatch('embed-responsive-\d+by\d+', class_)
-        ]
-        classes.append('embed-responsive-{}by{}'.format(*ratio))
-        self.embed['class'] = classes
-        self.body.changed()
+    def __getattribute__(self, key):
+        if key == '_iframe_kwargs_keys' or key not in self._iframe_kwargs_keys:
+            return super().__getattribute__(key)
+        return self.iframe_kwargs.get(key)
 
-    @property
-    def embed(self):
-        return self.body.select_one('div.embed-responsive')
+    def __setattr__(self, key, val):
+        if key in self._iframe_kwargs_keys:
+            self.iframe_kwargs[key] = val
+        else:
+            super().__setattr__(key, val)
 
-    @property
-    def iframe(self):
-        return self.body.select_one('iframe')
-    
-    @property
-    def src(self):
-        return self.iframe.attrs.get('src')
-
-    @src.setter
-    def src(self, val):
-        self.iframe.attrs['src'] = val
-        self.body.changed()
-
-    @staticmethod
-    def get(search):
+    @classmethod
+    def get(cls, search):
         """
         Utility for retrieving a dashboard question in a dash callback.
 
@@ -214,12 +181,12 @@ class Dashboard(Question):
         ```
         """
         qs = parse_qs(urlparse(search).query)
-        id, key = qs['id'][0], qs['key'][0]
-        dash = Dashboard.query.get(id)
+        id, key = qs['id'][0], qs['security_key'][0]
+        dash = cls.query.get(id)
         return dash if dash.security_key == key else None
 
-    @staticmethod
-    def record_response(search, response):
+    @classmethod
+    def record_response(cls, search, response):
         """
         Utility for writing the `response` attribute of the dashboard 
         question.
@@ -256,19 +223,26 @@ class Dashboard(Question):
         def my_callback(search, ...):
         \    Dashboard.record_response(search, 'hello world')
         """
-        dashboard = Dashboard.get(search)
+        dashboard = cls.get(search)
         dashboard.response = response
         db.session.commit()
         return dashboard
 
-    def _render(self, body=None):
-        self.key = tools.key()
-        body = body or self.body.copy()
-        iframe = body.select_one('iframe')
-        # add id and key parameters to the src
-        # these are used to get the dashboard object
-        iframe['src'] += '?id='+str(self.id)+'&key='+self.security_key
-        return super()._render(body)
+    def render_url(self):
+        qs = self.iframe_kwargs.get('query_string', {}).copy()
+        qs.update({'id': self.id, 'security_key': self.security_key})
+        return self.src + '?' + urlencode(qs)
+
+    def _render(self):
+        # add id and security key to query string
+        src = self.render_url()
+        kwargs = {
+            key: val for key, val in self.iframe_kwargs.items() 
+            if key not in ('src', 'query_string')
+        }
+        return render_template(
+            self.template, q=self, embed=iframe(src, **kwargs)
+        )
 
     def _record_response(self):
         # response should be recorded in a callback

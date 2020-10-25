@@ -178,6 +178,9 @@ class Question(Data):
     def _render(self, body=None):
         return render_template(self.template, q=self)
 
+    def _render_js(self):
+        return '\n'.join(self.js)
+
     def _record_response(self):
         self.has_responded = True
         self.response = request.form.get(self.key)

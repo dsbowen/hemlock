@@ -1,10 +1,11 @@
+<script>
 $(document).ready(function() {
     {% if option %}
         // the condition is a select element
-        var condition = $("select[name='{{ condition.model_id }}']");
+        var condition = $("select[name='{{ condition.key }}']");
     {% else %}
         // the condition is an input element
-        var condition = $("input[name='{{ condition.model_id }}']");
+        var condition = $("input[name='{{ condition.key }}']");
     {% endif %}
 
     function show_on_event(duration) {
@@ -23,7 +24,7 @@ $(document).ready(function() {
         {% endif %}
         console.log("event triggered");
         console.log(show);
-        target = $('#{{ target_id }}');
+        target = $('#{{ target.key }}-fg');
         if (show) {
             console.log('showing')
             target.show(duration);
@@ -39,3 +40,4 @@ $(document).ready(function() {
         show_on_event({{ duration }}); 
     });
 })
+</script>

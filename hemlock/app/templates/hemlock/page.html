@@ -59,7 +59,7 @@
 
         {{ page.js | join(" ") | safe }}
         {% for q in page.questions %}
-            {{ q.js | join(" ") | safe }}
+            {{ q._render_js() | safe }}
         {% endfor %}
     {% endblock %}
     </body>

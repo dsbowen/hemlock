@@ -1,11 +1,12 @@
-<div class="form-group question">
-    <span class="error-txt" style="color: rgb(114,28,36);"></span>
-    <div class="input-group">
-        <div class="input-group-prepend"></div>
-        <div class="custom-file">
-            <input id="{{ self_.model_id }}" name="{{ self_.model_id }}" type="file" class="custom-file-input">
-            <label id="{{ self_.model_id }}-label" class="label-txt custom-file-label" for="{{ self_.model_id }}"></label>
-        </div>
-        <div class="input-group-append"></div>
-    </div>
+{% extends 'hemlock/input-group.html' %}
+
+{% block input %}
+<div class="custom-file">
+    <input id="{{ q.key }}" name="{{ q.key }}" {{ q.input_attrs.to_html() | safe }}>
+    <label for="{{ q.key }}" {{ q.file_label_attrs.to_html() | safe }}>
+        {% if q.file_label is not none %}
+        {{ q.file_label | safe }}
+        {% endif %}
+    </label>
 </div>
+{% endblock %}
