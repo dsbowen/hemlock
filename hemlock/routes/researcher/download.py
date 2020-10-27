@@ -1,17 +1,17 @@
 """Data download"""
 
 from ...app import bp, db
-from ...models import Choice, Page, Participant, Option
-from ...qpolymorphs import Check, Download, Input, Label, Select
+from ...models import Page, Participant
+from ...qpolymorphs import Check, Download, Input, Select
 from ...models.private import DataStore
 from ...tools import chromedriver, join, show_on_event
 from .login import researcher_login_required
-from .utils import navbar, render, researcher_page
+from .utils import navbar
 
 from bs4 import BeautifulSoup
 from docx import Document
 from docx.shared import Inches
-from flask import request
+from flask import request, session
 
 import os
 import re
@@ -33,35 +33,37 @@ IFRAME_LOAD_TIME = 3
 @bp.route('/download', methods=['GET','POST'])
 @researcher_login_required
 def download():
-    return render(download_page())
+    page = get_download_page()
+    db.session.commit()
+    session['download-page-id'] = page.id
+    return page._render()
 
-@researcher_page('download')
-def download_page():
-    """Return the Download page
+def get_download_page():
+    if 'download-page-id' in session:
+        download_page = Page.query.get(session['download-page-id'])
+        if download_page:
+            return download_page
     
-    The download page allows researchers to select data download files and 
-    survey view download files.
-    """
     part_ids_q = Input(
-        "<p>Enter participant IDs for survey viewing.</p>", 
-        validate=valid_part_ids, submit=record_part_ids,
+        "Enter participant IDs for survey viewing.",
+        validate=valid_part_ids
     )
     presentation_q = Select(
-        "<p>Select presentation for viewing.</p>",
-        [('First presentation only', 'first'), ('All presentations', 'all')]
+        "Select presentation for viewing.",
+        [('First presentation only', 'first'), ('All presentations', 'all')],
     )
     show_on_event(presentation_q, part_ids_q, '\S+', regex=True)
     file_type_q = Select(
-        "<p>Select the type of download.</p>",
+        "Select the type of download.",
         [('Screenshots', 'screenshot'), ('Text', 'text')],
     )
     show_on_event(file_type_q, part_ids_q, '\S+', regex=True)
 
-    return Page(
+    page = Page(
         Check(
-            "<p>Select files to download.</p>", 
+            "Select files to download.", 
             [('Data frame', 'data'), ('Participant metadata', 'meta')],
-            multiple=True
+            multiple=True,
         ),
         part_ids_q,
         presentation_q,
@@ -73,6 +75,8 @@ def download_page():
         ),
         navbar=navbar.render(), back=False, forward=False
     )
+    db.session.add(page)
+    return page
 
 def valid_part_ids(survey_view_q):
     """
@@ -98,17 +102,6 @@ def valid_part_ids(survey_view_q):
             join('and', *invalid_ids)
         )
 
-def record_part_ids(survey_view_q):
-    """
-    Record requested participant IDs in the data of the survey view question.
-
-    Parameters
-    ----------
-    survey_view_q : hemlock.Input
-    """
-    part_ids = re.split(r'\W+', survey_view_q.response)
-    survey_view_q.data = [id for id in part_ids if id]
-
 def handle_download_form(response, btn):
     """
     Adds the appropriate file creation function to the download button.
@@ -121,18 +114,17 @@ def handle_download_form(response, btn):
     btn : hemlock.Download
         Download button (last question on the download page).
     """
-    download_p = download_page()
-    db.session.add(download_p)
+    page = get_download_page()
     btn.create_file_functions.clear()
     btn.downloads.clear()
-    download_p._record_response()
-    if download_p._validate():
-        download_p._submit()
-        # note: last question is the download button
+    page._record_response()
+    if page._validate():
         btn.create_file_functions = FileCreator(
-            *(q.data for q in download_p.questions[:-1])
+            dataframes=page.questions[0].response,
+            part_ids=page.questions[1].response,
+            presentation=page.questions[2].response,
+            download_type=page.questions[3].response
         )
-    db.session.commit()
 
 
 class FileCreator():
@@ -186,6 +178,8 @@ class FileCreator():
         self.files = []
 
         self.requested_dataframes = dataframes
+        part_ids = re.split(r'\W+', part_ids)
+        part_ids = [id for id in part_ids if id]
         self.requested_parts = Participant.query.filter(
             Participant.id.in_(part_ids)
         ).all()
@@ -208,11 +202,10 @@ class FileCreator():
         db.session.add_all(self.requested_parts)
         self.btn = btn
         self.datastore = DataStore.query.first()
-        db.session.add(self.datastore)
-        if self.requested_dataframes.get('data'):
+        if 'data' in self.requested_dataframes:
             for expr in self.prep_dataframe():
                 yield expr
-        if self.requested_dataframes.get('meta'):
+        if 'meta' in self.requested_dataframes:
             for expr in self.prep_meta():
                 yield expr
         if self.requested_parts:
@@ -303,8 +296,8 @@ class FileCreator():
             dist = os.environ.get('WSL_DISTRIBUTION')
             self.driver.get('file://'+('wsl$/'+dist+path if dist else path))
             self.accept_alerts()
-            # width = self.driver.get_window_size()['width']
-            width = 1024
+            width = self.driver.get_window_size()['width']
+            # width = 1024
             height = self.driver.execute_script(
                 'return document.body.parentNode.scrollHeight'
             )

@@ -2,9 +2,10 @@
 
 from ..app import db
 from .bases import BranchingBase
-from .worker import _set_worker
+from .worker import Worker
 
 from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy.orm import validates
 from sqlalchemy_mutable import MutableType
 
 
@@ -141,17 +142,15 @@ class Branch(BranchingBase, db.Model):
         [elements.extend(p.data_elements) for p in self.pages]
         return elements
         
-    _navigate_worker = db.relationship(
+    navigate_worker = db.relationship(
         'Worker', uselist=False, foreign_keys='Worker._navigate_branch_id'
     )
 
-    @property
-    def navigate_worker(self):
-        return self._navigate_worker
-
-    @navigate_worker.setter
-    def navigate_worker(self, val):
-        _set_worker(self, val, self._navigate, '_navigate_worker')
+    @validates('navigate_worker')
+    def set_worker(self, key, worker):
+        if not worker:
+            return
+        return worker if isinstance(worker, Worker) else Worker()
 
     index = db.Column(db.Integer)
 

@@ -6,7 +6,7 @@ from ...models.private import DataStore
 from ...qpolymorphs import Label
 from ...tools import external_js
 from .login import researcher_login_required
-from .utils import navbar, render, researcher_page
+from .utils import navbar
 
 from flask import current_app, url_for
 
@@ -39,21 +39,12 @@ PARTICIPANTS = """
 @researcher_login_required
 def status():
     """View participants' live status"""
-    return render(status_page())
-
-@researcher_page('status')
-def status_page():
-    """Return the Participant Status page"""
+    ds = DataStore.query.first()
     return Page(
-        Label(compile=live_status), 
+        Label(PARTICIPANTS.format(**ds.current_status)),
         navbar=navbar.render(), back=False, forward=False,
         extra_js=[
-            external_js(src=current_app.settings['socket_js_src']),
-            external_js(src=url_for('hemlock.static',filename='js/status.js'))
+            external_js(current_app.settings['socket_js_src']),
+            external_js(url_for('hemlock.static', filename='js/status.js'))
         ]
-    )
-
-def live_status(status_label):
-    """Set text to reflect participants' live status"""
-    ds = DataStore.query.first()
-    status_label.label = PARTICIPANTS.format(**ds.current_status)
+    )._render()

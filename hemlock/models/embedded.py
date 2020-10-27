@@ -162,9 +162,6 @@ class Timer(Embedded):
         return self._total_time
 
     def __init__(self, var=None, data_rows=1, **kwargs):
-        if self.id is None:
-            db.session.add(self)
-            db.session.flush([self])
         self.var = var
         self.data_rows = data_rows
         [setattr(self, key, val) for key, val in kwargs]

@@ -45,6 +45,7 @@ class ViewingPage(OrderingItem, db.Model):
         Set from the `part` parameter.
     """
     id = db.Column(db.Integer, primary_key=True)
+    downloaded = db.Column(db.Boolean, default=False)
     part_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
     first_presentation = db.Column(db.Boolean)
     html = db.Column(db.String)
@@ -63,39 +64,30 @@ class ViewingPage(OrderingItem, db.Model):
         path : str
             Path to temporary html file.
         """
-        self.convert_rel_paths()
+        def convert_rel_paths():
+            """
+            Convert stylesheets and scripts from relative to absolute paths and 
+            remove banner.
+            """
+            soup = BeautifulSoup(self.html, 'html.parser')
+            convert_url_attr(soup, 'href')
+            convert_url_attr(soup, 'src')
+            banner = soup.select_one('#banner')
+            if banner is not None:
+                banner.extract()
+            self.html = str(soup)
+
+        def convert_url_attr(soup, url_attr):
+            elements = soup.select('[{}]'.format(url_attr))
+            for e in elements:
+                url = e.attrs.get(url_attr)
+                if url is not None and url.startswith('/'):
+                    e.attrs[url_attr] = self.url_root + url
+
+        if not self.downloaded:
+            convert_rel_paths()
+            self.downloaded = True # cache result
         with NamedTemporaryFile('w', suffix='.html', delete=False) as f:
             f.write(self.html)
             uri = f.name
         return uri
-
-    def convert_rel_paths(self):
-        """
-        Convert stylesheets and scripts from relative to absolute paths and 
-        remove banner.
-        """
-        soup = BeautifulSoup(self.html, 'html.parser')
-        self.convert_url_attr(soup, 'href')
-        self.convert_url_attr(soup, 'src')
-        banner = soup.select_one('span.banner')
-        if banner is not None:
-            banner.string = ''
-        self.html = str(soup)
-
-    def convert_url_attr(self, soup, url_attr):
-        """
-        Convert relative to absolute path.
-
-        Parameters
-        ----------
-        soup : bs4.BeautifulSoup
-            Soup whose elements should be converted.
-
-        url_attr : str
-            URL attribute to convert.
-        """
-        elements = soup.select('[{}]'.format(url_attr))
-        for e in elements:
-            url = e.attrs.get(url_attr)
-            if url is not None and url.startswith('/'):
-                e.attrs[url_attr] = self.url_root + url

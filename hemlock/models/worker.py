@@ -5,32 +5,6 @@ from .bases import Base
 
 from flask_worker import WorkerMixin
 
-def _set_worker(parent, val, func, worker_attr):
-    """
-    Set a branch's or page's worker attribute.
-
-    Parameters
-    ----------
-    parent : hemlock.Branch or hemlock.Page
-        The parent to which the worker will be attached.
-
-    val : bool, None, or hemlock.Worker
-        The worker to attach to the parent.
-
-    func : callable
-        The function for which the worker will be responsible. This is a 
-        method of the parent; e.g. `parent._compile`.
-
-    worker_attr : str
-        Name of the parent's worker attribute; e.g. `'_compile_worker'`.
-    """
-    if val:
-        worker = val if isinstance(val, Worker) else Worker()
-        worker.func = func
-    else:
-        worker = None
-    setattr(parent, worker_attr, worker)
-
 
 class Worker(WorkerMixin, Base, db.Model):
     """

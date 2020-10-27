@@ -5,7 +5,7 @@ from .data_frame import DataFrameType
 
 import json
 import pandas as pd
-from sqlalchemy_mutable import MutableDictType
+from sqlalchemy_mutable import MutableDictJSONType
 
 from datetime import datetime
 
@@ -23,7 +23,7 @@ class DataStore(db.Model):
     2. `meta`. Participant metadata, used to detect screenouts and duplicates.
     """
     id = db.Column(db.Integer, primary_key=True)
-    _current_status = db.Column(MutableDictType, default=DEFAULT_STATUS)
+    _current_status = db.Column(MutableDictJSONType, default=DEFAULT_STATUS)
     data = db.Column(DataFrameType, default={})
     meta = db.Column(DataFrameType, default={})
     parts_stored = db.relationship('Participant')
@@ -36,8 +36,7 @@ class DataStore(db.Model):
         return current_status
     
     def __init__(self):
-        db.session.add(self)
-        db.session.flush([self])
+        self.data, self.meta = {}, {}
         self.data.filename = 'data.csv'
         self.meta.filename = 'metadata.csv'
     

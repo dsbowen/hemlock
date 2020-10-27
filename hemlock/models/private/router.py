@@ -17,14 +17,13 @@ from ...app import db
 from .viewing_page import ViewingPage
 
 from flask import current_app, request, redirect, url_for
-from flask_worker import RouterMixin as RouterMixinBase
-from flask_worker import set_route
+from flask_worker import RouterMixin as RouterMixinBase, set_route
 
 from datetime import datetime
 
 
 class RouterMixin(RouterMixinBase):
-    def run_worker(self, func, worker, next_route, *args, **kwargs):
+    def run_worker(self, obj, method_name, worker, next_route, *args, **kwargs):
         """
         Run a worker if applicable.
 
@@ -54,8 +53,8 @@ class RouterMixin(RouterMixinBase):
                 worker.reset()
                 return next_route(*args, **kwargs)
             else:
-                return worker()
-        func()
+                return worker.enqueue_method(obj, method_name)
+        getattr(obj, method_name)()
         return next_route(*args, **kwargs)
 
 
@@ -99,7 +98,7 @@ class Router(RouterMixin, db.Model):
         self.navigator = Navigator(gen_root)
         super().__init__(self.compile)
 
-    def __call__(self):
+    def __call__(self, *args, **kwargs):
         """Route overload
 
         If the participant's time has expired, render the current page with 
@@ -114,45 +113,40 @@ class Router(RouterMixin, db.Model):
         page : str (html)
             HTML of the participant's next page, or a loading page.
         """
-        part, page = self.part, self.page
-        if part.time_expired:
-            page.error = current_app.time_expired_text
-            db.session.commit()
-            return page._render()
-        if request.method == 'POST' and self.func == self.compile:
+        if self.part.time_expired:
+            self.page.error = current_app.time_expired_text
+            return self.page._render()
+        if request.method == 'POST' and self.func.name == 'compile':
             # participant has just submitted the page
             self.func = self.record_response
-        return super().__call__()
+        return super().__call__(*args, **kwargs)
 
     """Request track"""
     @set_route
     def compile(self):
         return self.run_worker(
-            self.page._compile, self.page.compile_worker, self.render
+            self.page, '_compile', self.page.compile_worker, self.render
         )
     
     def render(self):
-        part, page = self.part, self.page
-        if page.terminal and not part.completed:
-            part.end_time = datetime.utcnow()
-            part.completed = True
-        page_html = page._render()
-        part._viewing_pages.append(
-            ViewingPage(page_html, first_presentation=not page.viewed)
+        if self.page.terminal and not self.part.completed:
+            self.part.end_time = datetime.utcnow()
+            self.part.completed = True
+        page_html = self.page._render()
+        self.part._viewing_pages.append(
+            ViewingPage(page_html, first_presentation=not self.page.viewed)
         )
-        page.viewed = True
+        self.page.viewed = True
         return page_html
     
     """Submit track"""
     @set_route
     def record_response(self):
-        part, page = self.part, self.page
-        part.end_time = datetime.utcnow()
-        part.completed = False
-        part.updated = True
-        page._record_response()
-        if page.direction_from == 'back':
-            self.navigator.back(page.back_to)
+        self.part.end_time = datetime.utcnow()
+        self.part.completed, self.part.updated = False, True
+        self.page._record_response()
+        if self.page.direction_from == 'back':
+            self.navigator.back(self.page.back_to)
             return self.redirect()
         return self.validate()
     
@@ -162,17 +156,16 @@ class Router(RouterMixin, db.Model):
             # validation may be off for testing purposes
             return self.submit()
         return self.run_worker(
-            self.page._validate, self.page.validate_worker, self.submit
+            self.page, '_validate', self.page.validate_worker, self.submit
         )
     
     @set_route
     def submit(self):
-        page = self.page
-        if not page.is_valid() and current_app.settings['validate']:
+        if not self.page.is_valid() and current_app.settings['validate']:
             # will redirect to the same page with error messages
             return self.redirect()
         return self.run_worker(
-            page._submit, page.submit_worker, self.forward_prep, 
+            self.page, '_submit', self.page.submit_worker, self.forward_prep, 
         )
 
     @set_route
@@ -183,13 +176,12 @@ class Router(RouterMixin, db.Model):
         navigate appropriately. Otherwise, reset the navigator in preparation 
         for forward navigation.
         """
-        page = self.page
-        if page.direction_from == 'back':
-            self.navigator.back(page.back_to)
-        if page.direction_from in ['back', 'invalid']:
+        if self.page.direction_from == 'back':
+            self.navigator.back(self.page.back_to)
+        if self.page.direction_from in ('back', 'invalid'):
             return self.redirect()
         self.navigator.reset()
-        return self.forward(page.forward_to)
+        return self.forward(self.page.forward_to)
     
     @set_route
     def forward(self, forward_to):
@@ -216,24 +208,25 @@ class Router(RouterMixin, db.Model):
         forward_to : hemlock.Page
             Page to which to navigate.
         """
-        nav = self.navigator
-        loading_page = (
-            nav.forward(forward_to) if not nav.in_progress else nav() 
-        )
+        if self.navigator.in_progress:
+            loading_page = self.navigator()
+        else:
+            loading_page = self.navigator.forward(forward_to)
         if loading_page is None and forward_to is not None:
-            loading_page = nav.forward(forward_to)
+            loading_page = self.navigator.forward(forward_to)
         return loading_page or self.redirect()
 
     @set_route
     def redirect(self):
         self.reset()
-        part = self.part
         url_arg = 'hemlock.{}'.format(self.view_function)
-        if part.meta.get('Test') is None:
+        if self.part.meta.get('Test') is None:
             return redirect(url_for(url_arg))
         # during testing, you may have multiple users running at once
         # in this case, participants much be found be ID, not `current_user`
-        return redirect(url_for(url_arg, part_id=part.id, part_key=part._key))
+        return redirect(
+            url_for(url_arg, part_id=self.part.id, part_key=self.part._key)
+        )
 
 
 class Navigator(RouterMixin, db.Model):
@@ -301,7 +294,7 @@ class Navigator(RouterMixin, db.Model):
     def insert_branch(self, origin):
         """Grow and insert new branch into the branch stack"""
         return self.run_worker(
-            origin._navigate, 
+            origin, '_navigate',
             origin.navigate_worker, 
             self._insert_branch, 
             origin

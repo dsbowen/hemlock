@@ -201,7 +201,6 @@ class Participant(UserMixin, Base, db.Model):
         if not settings.get('collect_IP'):
             self.meta.pop('IPv4', None)
         ds.update_status(self)
-        db.session.commit()
 
     def _init_tree(self, gen_root):
         """

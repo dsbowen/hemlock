@@ -3,7 +3,7 @@
 {% block input %}
 <select id="{{ q.key }}" name="{{ q.key }}" {{ q.input_attrs.to_html() | safe }}>
     {% for opt in q.options %}
-    {{ opt._render(q, loop.index) | safe }}
+    {{ opt._render(q, loop.index-1) | safe }}
     {% endfor %}
 </select>
 {% endblock %}

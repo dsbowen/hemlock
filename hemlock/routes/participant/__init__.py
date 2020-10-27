@@ -35,14 +35,14 @@ def index():
         return redirect(url_for('hemlock.screenout'))
     
     in_progress = current_user.is_authenticated
-    duplicate = is_duplicate(meta)
     if in_progress:
-        # DON'T UNDERSTAND THIS LOGIC
-        # if duplicate or not current_app.restart_option:
+        if current_user.current_page.first_page():
+            # no need to restart if on first page
+            return redirect(url_for('hemlock.'+bp.default_route))
         if not current_app.settings['restart_option']:
             return redirect(url_for('hemlock.'+bp.default_route))
         return redirect(url_for('hemlock.restart', **meta))
-    if duplicate:
+    if is_duplicate(meta):
         return redirect(url_for('hemlock.screenout'))
 
     initialize_participant(meta)
@@ -71,6 +71,7 @@ def initialize_participant(meta):
     if current_user.is_authenticated:
         logout_user()
     part = Participant(meta=meta)
+    db.session.add(part)
     db.session.commit()
     login_user(part)
     
@@ -170,5 +171,8 @@ def restart():
             initialize_participant(get_metadata())
         return redirect(url_for('hemlock.'+bp.default_route))
         
-    p = Page(Label(current_app.settings['restart_text']), back=True)
+    p = Page(
+        Label(current_app.settings['restart_text']), 
+        back=True
+    )
     return p._compile()._render()

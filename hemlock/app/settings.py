@@ -117,7 +117,7 @@ PASSWORD = os.environ.get('PASSWORD', '')
 PASSWORD_HASH = generate_password_hash(PASSWORD)
 
 RESTART_TXT = """
-<p>Click << to return to your in progress survey. Click >> to restart the survey.</p>
+<p>Click << to resume your in progress survey. Click >> to restart the survey.</p>
 <p>If you choose to restart the survey, your responses will not be saved.</p>
 """
 
@@ -157,8 +157,7 @@ settings = {
     },
     'DownloadBtnManager': {},
     'Manager': {
-        'loading_img_blueprint': 'hemlock',
-        'loading_img_filename': 'img/worker_loading.gif'
+        'loading_img_src': '/hemlock/static/img/worker_loading.gif'
     },
     'Talisman': {
         'content_security_policy': {

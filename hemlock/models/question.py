@@ -12,7 +12,8 @@ from flask import render_template, request
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import validates
 from sqlalchemy_mutable import (
-    HTMLAttrsType, MutableType, MutableListType, MutableListJSONType
+    HTMLAttrsType, MutableType, MutableJSONType, MutableListType, 
+    MutableListJSONType
 )
 
 import html
@@ -113,8 +114,8 @@ class Question(Data):
     submit = db.Column(MutableListType, default=[])
 
     # Additional attributes
-    default = db.Column(db.Text)
-    response = db.Column(db.Text)
+    default = db.Column(MutableJSONType)
+    response = db.Column(MutableJSONType)
     has_responded = db.Column(db.Boolean, default=False)
 
     def __init__(
@@ -268,7 +269,7 @@ class ChoiceQuestion(Question):
         The response is a single choice or a list of choices (if multiple 
         choices are allowed).
         """
-        self._has_responded = True
+        self.has_responded = True
         idx = request.form.getlist(self.key)
         self.response = [self.choices[int(i)].value for i in idx]
         if not self.multiple:

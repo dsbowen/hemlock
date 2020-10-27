@@ -127,12 +127,13 @@ class ChoiceBase(InputBase, Base):
 
 class ChoiceListTypeBase(TypeDecorator):
     impl = JSON
+    choice_cls = None # must be implemented by ChoiceListType
 
     def process_bind_param(self, choices, dialect):
         return [choice.dump() for choice in choices]
 
     def process_result_value(self, state_dicts, dialect):
-        return [Choice.load(state) for state in state_dicts]
+        return [self.choice_cls.load(state) for state in state_dicts]
 
 
 class ChoiceListBase(ConvertList, MutableList):
@@ -242,7 +243,7 @@ class Choice(ChoiceBase):
         )
 
 class ChoiceListType(ChoiceListTypeBase):
-    pass
+    choice_cls = Choice
 
 class ChoiceList(ChoiceListBase):
     choice_cls = Choice
@@ -327,7 +328,7 @@ class Option(ChoiceBase):
 
 
 class OptionListType(ChoiceListTypeBase):
-    pass
+    choice_cls = Option
 
 class OptionList(ChoiceListBase):
     choice_cls = Option

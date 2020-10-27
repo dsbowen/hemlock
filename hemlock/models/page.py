@@ -31,7 +31,7 @@ from ..app import db, settings
 from ..tools import img
 from .bases import BranchingBase
 from .embedded import Timer
-from .worker import _set_worker
+from .worker import Worker
 from .functions import Compile, Validate, Submit, Debug
 
 from bs4 import BeautifulSoup
@@ -402,53 +402,30 @@ class Page(BranchingBase, db.Model):
         timer = [self.timer] if self.timer else []
         return self.embedded + timer + self.questions
 
-    _compile_worker = db.relationship(
+    compile_worker = db.relationship(
         'Worker', uselist=False, foreign_keys='Worker._compile_id'
     )
-
-    @property
-    def compile_worker(self):
-        return self._compile_worker
-
-    @compile_worker.setter
-    def compile_worker(self, val):
-        _set_worker(self, val, self._compile, '_compile_worker')
-
-    _validate_worker = db.relationship(
+    validate_worker = db.relationship(
         'Worker', uselist=False, foreign_keys='Worker._validate_id'
     )
-
-    @property
-    def validate_worker(self):
-        return self._validate_worker
-
-    @validate_worker.setter
-    def validate_worker(self, val):
-        _set_worker(self, val, self._validate, '_validate_worker')
-
-    _submit_worker = db.relationship(
+    submit_worker = db.relationship(
         'Worker', uselist=False, foreign_keys='Worker._submit_id'
     )
-
-    @property
-    def submit_worker(self):
-        return self._submit_worker
-
-    @submit_worker.setter
-    def submit_worker(self, val):
-        _set_worker(self, val, self._submit, '_submit_worker')
-
-    _navigate_worker = db.relationship(
+    navigate_worker = db.relationship(
         'Worker', uselist=False, foreign_keys='Worker._navigate_page_id'
     )
 
-    @property
-    def navigate_worker(self):
-        return self._navigate_worker
-
-    @navigate_worker.setter
-    def navigate_worker(self, val):
-        _set_worker(self, val, self._navigate, '_navigate_worker')
+    @validates(
+        'compile_worker',
+        'hello_world_worker', 
+        'validate_worker', 
+        'submit_worker', 
+        'navigate_worker'
+    )
+    def set_worker(self, key, worker):
+        if not worker:
+            return
+        return worker if isinstance(worker, Worker) else Worker()
 
     # HTML attibutes
     template = db.Column(db.String)
@@ -659,10 +636,8 @@ class Page(BranchingBase, db.Model):
         -------
         self
         """
-        if inspect(self).detached:
-            # self will be detached if _compile is called from Redis
-            self = Page.query.get(self.id)
-        [f(self) for f in self.compile] # the page uses its compile functions to f itself
+        # the page uses its compile functions to f itself
+        [f(self) for f in self.compile]
         if self.cache_compile:
             self.compile = self.compile_worker = None
         if self.timer is not None:
@@ -692,8 +667,6 @@ class Page(BranchingBase, db.Model):
         message (i.e. error is not None), indicate the response was invalid 
         and return False. Otherwise, return True.
         """
-        if inspect(self).detached:
-            self = Page.query.get(self.id)
         self.clear_error()
         for f in self.validate:
             self.error = f(self)
@@ -704,8 +677,6 @@ class Page(BranchingBase, db.Model):
         return is_valid
     
     def _submit(self):
-        if inspect(self).detached:
-            self = Page.query.get(self.id)
         [q._record_data() for q in self.questions]
         [f(self) for f in self.submit]
         return self

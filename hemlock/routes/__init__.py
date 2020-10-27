@@ -4,7 +4,7 @@ from ..app import bp, db
 from ..models import Participant
 from ..models.private import DataStore
 from . import participant
-# from . import researcher
+from . import researcher
 
 from flask import current_app, session, request
 from flask_login import current_user, login_required
@@ -29,7 +29,9 @@ def route(path, default=False):
             if not part.branch_stack:
                 part._init_tree(gen_root)
             return part._router()
+
         return gen_root
+
     return register_view
 
 def get_part():
@@ -60,8 +62,9 @@ def init_app():
     
     Additionally, set a scheduler job to log the status periodically.
     """
+    print('before app first request')
     session.clear()
     db.create_all()
     if not DataStore.query.first():
-        DataStore()
+        db.session.add(DataStore())
     db.session.commit()

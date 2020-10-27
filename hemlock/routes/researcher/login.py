@@ -3,7 +3,6 @@
 from ...app import bp, db
 from ...models import Page
 from ...qpolymorphs import Input
-from .utils import LOGIN_REQUIRED, render, researcher_page, session_store
 
 from flask import current_app, redirect, request, session, url_for
 from werkzeug.security import check_password_hash
@@ -13,61 +12,57 @@ from functools import wraps
 @bp.route('/login', methods=['GET','POST'])
 def login():
     """Login view function"""
-    login_p = login_page()
-    if request.method == 'POST':
-        password = login_p._record_response().questions[0].response or ''
-        session_store('password', password)
-        if login_p._validate():
-            return login_successful()
-    return render(login_p)
+    def login_page():
+        error = None
+        if request.args.get('incorrect_password'):
+            error = 'The password you entered was incorrect.'
+        elif request.args.get('requested'):
+            error = 'Login required to access this page.'
+        return Page(
+            Input(
+                'Please enter your password.', 
+                type='password', key='password'
+            ),
+            error=error, forward='Login'
+        )._render()
 
-@researcher_page('login')
-def login_page():
-    """Create login page"""
-    return Page(
-        Input('<p>Please enter your password.</p>', type='password'), 
-        back=False, 
-        forward='Login',
-        validate=check_password
+    if request.method == 'GET':
+        return login_page()
+    # request method is POST
+    requested = request.args.get('requested', 'status')
+    session['password'] = request.form.get('password')
+    if password_is_correct():
+        return redirect(url_for('hemlock.{}'.format(requested)))
+    return redirect(
+        url_for('hemlock.login', requested=requested, incorrect_password=True)
     )
 
-def check_password(login_page):
-    """Check the input password against researcher password"""
-    if not password_correct():
-        return 'Incorrect password.'
-
-def password_correct():
+def password_is_correct():
     """Indicate that the session password is correct"""
     if not current_app.config.get('PASSWORD'):
-        return True
+        return not session.get('password')
     if 'password' not in session:
         return False
     return check_password_hash(
         current_app.config.get('PASSWORD_HASH'), session['password']
     )
 
-def login_successful():
-    """Process successful login
-
-    Clear login page and redirect to requested page.
-    """
-    login_page().clear_error().clear_response()
-    db.session.commit()
-    requested = request.args.get('requested') or 'status'
-    return redirect(url_for('hemlock.{}'.format(requested)))
-
 def researcher_login_required(func):
     """Decorator requiring researcher login"""
     @wraps(func)
-    def login_requirement():
-        if not password_correct():
-            login_page().error = LOGIN_REQUIRED
-            db.session.commit()
-            return redirect(url_for('hemlock.login', requested=func.__name__))
-        return func()
-    return login_requirement
+    def login_required():
+        if password_is_correct():
+            return func()
+        return redirect(url_for('hemlock.login', requested=func.__name__))
+
+    return login_required
 
 @bp.route('/logout')
 def logout():
+    if 'download-page-id' in session:
+        page = Page.query.get(session['download-page-id'])
+        if page:
+            db.session.delete(page)
+            db.session.commit()
     session.clear()
     return redirect(url_for('hemlock.login'))

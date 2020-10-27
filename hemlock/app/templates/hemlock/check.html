@@ -2,6 +2,6 @@
 
 {% block content %}
     {% for c in q.choices %}
-        {{ c._render(q, loop.index) | safe }}
+        {{ c._render(q, loop.index-1) | safe }}
     {% endfor %}
 {% endblock %}
