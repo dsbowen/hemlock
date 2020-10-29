@@ -2,11 +2,13 @@
 
 from ...app import settings
 
-from sqlalchemy import PickleType
+from sqlalchemy.types import JSON, TypeDecorator
 from sqlalchemy_mutable import MutableList, MutableDict
 
 import csv
+import json
 from copy import copy
+from datetime import datetime
 from io import StringIO
 
 
@@ -22,11 +24,11 @@ class Variable(MutableList):
         This is `True` if the `rows` parameter in the `add` method is negative 
         and `False` otherwise.
     """
-    def __init__(self, fill_rows=False):
+    def __init__(self, fill_rows=False, source=[]):
         # set _python_type to None to avoid validation for setattr
         self._python_type = None
         self.fill_rows = fill_rows
-        super().__init__()
+        super().__init__(source)
         
     def add(self, entry, rows=1):
         """
@@ -44,7 +46,13 @@ class Variable(MutableList):
         -------
         self
         """
-        self += entry if isinstance(entry, list) else [entry]*abs(rows)
+        def convert(item):
+            return str(item) if isinstance(item, datetime) else item
+
+        if isinstance(entry, list):
+            self += [convert(item) for item in entry]
+        else:
+            self += [convert(entry)]
         self.fill_rows = rows < 0
         return self
     
@@ -67,21 +75,13 @@ class DataFrame(MutableDict):
     filename : str
         Name of the download file associated with this dataframe.
     """
-
-    @classmethod
-    def coerce(cls, key, value):
-        if isinstance(value, cls):
-            return value
-        if isinstance(value, dict):
-            return cls(value)
-        return super().coerce(key, value)
-
-    def __init__(self, value={}):
+    def __init__(self, source={}):
         # set _python_type to None to avoid validation in setattr
         self._python_type = None
         self.filename = None
-        # initialize to empty dictionary
-        super().__init__(value)
+        super().__init__(
+            {key: Variable(source=value) for key, value in source.items()}
+        )
 
     def max_row(self, variables=None):
         """
@@ -193,9 +193,25 @@ class DataFrame(MutableDict):
         writer.writerows(zip(*data.values()))
         return self.filename, csv_str
 
+    def dump(self):
+        return json.dumps(dict(filename=self.filename, data=self))
 
-class DataFrameType(PickleType):
-    pass
+    @classmethod
+    def load(cls, state_dict):
+        state = json.loads(state_dict)
+        df = cls(state['data'])
+        df.filename = state['filename']
+        return df
+
+
+class DataFrameType(TypeDecorator):
+    impl = JSON
+
+    def process_bind_param(self, value, dialect):
+        return value.dump()
+
+    def process_result_value(self, value, dialect):
+        return DataFrame.load(value)
 
 
 DataFrame.associate_with(DataFrameType)

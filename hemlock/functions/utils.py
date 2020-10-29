@@ -1,7 +1,11 @@
 """Utilities"""
 
+from selenium_tools import get_datetime, send_datetime
+
+import math
 from datetime import MAXYEAR, MINYEAR, datetime, timedelta
-from random import randint, random
+from random import choice, randint, random, randrange, shuffle
+from string import ascii_letters, digits
 
 def convert(obj, type_, *args, **kwargs):
     """
@@ -63,46 +67,33 @@ def correct_choices(q, *values):
     )
     return set(data) == set(values) if q.multiple else data in values
 
-def gen_datetime():
-    try:
-        return datetime(
-            randint(MINYEAR, MAXYEAR),
-            randint(1,12),
-            randint(1,31),
-            randint(0,24),
-            randint(0,59),
-            randint(0,59),
-        )
-    except:
-        return gen_datetime()
+def random_datetime(inpt, min=datetime(1900, 1, 1), max=datetime(2100, 1, 1)):
+    def get_dt(attr):
+        val = inpt.get_attribute(attr)
+        if val:
+            return get_datetime(type_, val)
 
-def gen_number(mag_lb=0, mag_ub=10, max_decimals=5, p_int=.5, p_neg=.1):
-    """
-    Generate a random number.
+    type_ = inpt.get_attribute('type')
+    start = get_dt('min') or min
+    stop = get_dt('max') or max
+    delta = int((stop - start).days * 24* 60 * 60) # resolution in seconds
+    send_datetime(inpt, start + timedelta(seconds=randint(0, delta)))
 
-    Parameters
-    ----------
-    magn_lb : int, default=0
-        Lower bound for the magnitude of the number.
+def random_num(inpt, min=-1000, max=1000, step=.001, p_int=.5):
+    start = inpt.get_attribute('min')
+    start = min if start == '' else float(start)
+    stop = inpt.get_attribute('max')
+    stop = max if stop == '' else float(stop)
+    step_ = inpt.get_attribute('step')
+    step_ = step if step_ in ('', 'any') else float(step_)
+    x = start + random() * (stop - start)
+    x = round(x / step) * step_
+    inpt.send_keys(str(int(x) if random() < p_int else x))
 
-    mag_ub : int, default=10
-        Upper bound for the magnitude of the number.
-
-    max_decimals : int, default=5
-        Maximum number of decimals to which the number can be rounded.
-
-    p_int : float, default=.5
-        Probability that the number is an integer.
-
-    p_neg : float, default=.1
-        Probability that the number is negative.
-
-    Returns
-    -------
-    n : float or int
-        Randomly generated number.
-    """
-    n = random() * 10**randint(mag_lb, mag_ub)
-    n = -n if random() < p_neg else n
-    n = int(n) if random() < p_int else n
-    return round(n, randint(0, max_decimals))
+def random_str(inpt, maxlength=100, p_whitespace=.2):
+    chars = ascii_letters + digits
+    chars = list(chars) + [' '] * int(p_whitespace*len(chars))
+    # response length follows exponential distribution
+    magnitude = math.log(inpt.get_attribute('maxlength') or maxlength)
+    length = int(random() * 10**randint(1,magnitude))
+    inpt.send_keys(''.join([choice(chars) for i in range(length)]))

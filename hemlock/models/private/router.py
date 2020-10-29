@@ -29,15 +29,17 @@ class RouterMixin(RouterMixinBase):
 
         Parameters
         ----------
-        func : callable
-            Function to run before navigating to the next route if there is no 
-            worker.
+        obj : Page or Branch
+            Object whose method should be run.
+
+        method_name : str
+            Name of the object's method to run. e.g. '_compile'
 
         worker : hemlock.WorkerMixin or None
-            Worker which executes `func`, if applicable.
+            Worker which executes the method, if applicable.
 
         next_route : router method
-            The next route to navigate to after executing `func`.
+            The next route to navigate to after executing the method.
 
         \*args, \*\*kwargs :
             Arguments and keyword arguments for `next_route`.
@@ -137,11 +139,14 @@ class Router(RouterMixin, db.Model):
             ViewingPage(page_html, first_presentation=not self.page.viewed)
         )
         self.page.viewed = True
+        if self.page.timer is not None:
+            self.page.timer.start()
         return page_html
     
     """Submit track"""
-    @set_route
     def record_response(self):
+        if self.page.timer is not None:
+            self.page.timer.pause()
         self.part.end_time = datetime.utcnow()
         self.part.completed, self.part.updated = False, True
         self.page._record_response()
@@ -165,7 +170,7 @@ class Router(RouterMixin, db.Model):
             # will redirect to the same page with error messages
             return self.redirect()
         return self.run_worker(
-            self.page, '_submit', self.page.submit_worker, self.forward_prep, 
+            self.page, '_submit', self.page.submit_worker, self.forward_prep,
         )
 
     @set_route
@@ -178,7 +183,10 @@ class Router(RouterMixin, db.Model):
         """
         if self.page.direction_from == 'back':
             self.navigator.back(self.page.back_to)
-        if self.page.direction_from in ('back', 'invalid'):
+        if (
+            self.page.direction_from in ('back', 'invalid')
+            or self.page.last_page()
+        ):
             return self.redirect()
         self.navigator.reset()
         return self.forward(self.page.forward_to)

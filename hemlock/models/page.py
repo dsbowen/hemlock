@@ -35,8 +35,7 @@ from .worker import Worker
 from .functions import Compile, Validate, Submit, Debug
 
 from bs4 import BeautifulSoup
-from flask import Markup, current_app, render_template, request
-from sqlalchemy import inspect
+from flask import current_app, render_template, request
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import validates
 from sqlalchemy_mutable import (
@@ -44,9 +43,8 @@ from sqlalchemy_mutable import (
 )
 
 import os
-import re
 import webbrowser
-from random import shuffle, random
+from random import random, shuffle
 from tempfile import NamedTemporaryFile
 from time import sleep
 
@@ -509,13 +507,46 @@ class Page(BranchingBase, db.Model):
         is_first_page : bool
             Indicator that this is the first page in its participant's survey.
         """
-        if self.part is None:
+        if self.branch is None or self.index > 0:
             return False
-        for b in self.part.branch_stack:
-            if b.pages:
-                first_nonempty_branch = b
+        for branch in self.part.branch_stack:
+            if branch.pages:
+                first_nonempty_branch = branch
                 break
-        return self.branch == first_nonempty_branch and self.index == 0
+        return self.branch == first_nonempty_branch
+
+    def last_page(self):
+        """
+        Returns
+        -------
+        is_last_page : bool
+            Indicator that this is the last page in its participant's survey.
+
+        Notes
+        -----
+        This method assumes that if this page or its branch have a navigate
+        function or next branch that this page is not the last (i.e. that the
+        next branch will have pages). Avoid relying on this method if e.g. 
+        this page's navigate function may return an empty branch.
+        """
+        if (
+            self.branch is None 
+            # not last page on the branch
+            or self.index < len(self.branch.pages) - 1
+            or self.navigate is not None
+            or self.next_branch is not None
+            or self.branch.navigate is not None
+            or self.branch.next_branch is not None
+        ):
+            return False
+        for branch in self.part.branch_stack:
+            if self.branch == branch:
+                return True
+            if (
+                branch.current_page is not None 
+                and branch.current_page.last_page()
+            ):
+                return False
 
     def is_valid(self):
         """
@@ -640,8 +671,6 @@ class Page(BranchingBase, db.Model):
         [f(self) for f in self.compile]
         if self.cache_compile:
             self.compile = self.compile_worker = None
-        if self.timer is not None:
-            self.timer.start()
         return self
     
     def _render(self):
@@ -654,8 +683,6 @@ class Page(BranchingBase, db.Model):
         participant requested for navigation (forward or back). Finally, 
         record the participant's response to each question.
         """
-        if self.timer is not None:
-            self.timer.pause()
         self.direction_from = request.form.get('direction')
         [q._record_response() for q in self.questions]
         return self

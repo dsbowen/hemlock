@@ -21,8 +21,7 @@ class Base(OrderingItem, ModelIdBase):
     """
     Base for all Hemlock models.
 
-    Interits from 
-    [`sqlalchemy_function.FunctionRelator`](https://dsbowen.github.io/sqlalchemy-function/), 
+    Interits from  
     [`sqlalchemy_orderingitem.Orderingitem`](https://dsbowen.github.io/sqlalchemy-orderingitem/) and 
     [`sqlalchemy_modelid.ModelIdBase`](https://dsbowen.github.io/sqlalchemy-modelid/).
 
@@ -72,8 +71,6 @@ class BranchingBase(Base):
                 next_branch.origin_branch = None
                 next_branch.origin_page = self
 
-        if inspect(self).detached:
-            self = self.__class__.query.get(self.id)
         next_branch = self.navigate(self)
         assert isinstance(next_branch, Branch)
         set_relationships()
@@ -160,7 +157,7 @@ class Data(Base, MutableModelBase, db.Model):
         if self.var is None:
             return {}
         if data is None:
-            data = {self.var: None if self.data is None else str(self.data)}
+            data = {self.var: None if self.data is None else self.data}
         if hasattr(self, 'order') and self.record_order:
             data[self.var+'Order'] = self.order
         if hasattr(self, 'index') and self.record_index:

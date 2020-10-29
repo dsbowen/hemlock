@@ -15,15 +15,18 @@ By default, the last debug function of a page navigates. To remove this, run
 
 from ..app import settings
 from ..models import Debug
-from .utils import gen_datetime, gen_number
+from .utils import random_datetime, random_num, random_str
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
-from selenium_tools import drag_range as drag_range_, send_datetime as send_datetime_
+from selenium_tools import (
+    drag_range as drag_range_, send_datetime as send_datetime_
+)
 
+import math
 from datetime import datetime, timedelta
-from random import choice, randint, random, randrange, shuffle
-from string import ascii_letters, digits
+from random import randint, random, randrange, shuffle
+
 from time import sleep
 
 def _is_displayed(element, max_wait=1, wait_interval=1):
@@ -113,7 +116,7 @@ def back(driver, page, max_wait=30, wait_interval=1):
     else:
         raise TimeoutError('Back button not displayed')
 
-# Textarea and text input debugging
+# Textarea and input debugging
 
 @Debug.register
 def send_keys(driver, question, *keys, p_num=.5):
@@ -152,106 +155,28 @@ def send_keys(driver, question, *keys, p_num=.5):
     p.preview(driver)._debug(driver)
     ```
     """
-    try:
-        inpt = question.textarea_from_driver(driver)
-    except:
-        inpt = question.input_from_driver(driver)
+    def random_keys():
+        html_datetime_types = (
+            'date', 'datetime-local', 'month', 'time', 'week'
+        )
+        type_ = inpt.get_attribute('type')
+        if inpt.tag_name == 'textarea' or not type_ or type_ == 'text':
+            if random() < p_num:
+                random_num(inpt)
+            else:
+                random_str(inpt)
+        elif type_ == 'number':
+            random_num(inpt)
+        elif type_ in html_datetime_types:
+            random_datetime(inpt)
+
+    inpt = question.input_from_driver(driver)
     if _is_displayed(inpt):
         inpt.clear()
         if keys:
             [inpt.send_keys(key) for key in keys]
-        elif random() < p_num:
-            random_number(driver, question)
         else:
-            random_str(driver, question)
-
-@Debug.register
-def random_str(driver, question, magnitude=2, p_whitespace=.2):
-    """
-    Send a random string to the textarea.
-
-    Parameters
-    ----------
-    driver : selenium.webdriver.chrome.webdriver.WebDriver
-
-    question : hemlock.Question
-
-    magnitude : int, default=2
-        Maximum magnitude of the length of the string. e.g. the default
-        magnitude of 2 means that the maximum length is 10^2=100 characters.
-
-    p_whitespace : float, default=.2
-        Frequency with which whitespace characters appear in the string.
-
-    Notes
-    -----
-    This debug function is skipped if the question is not displayed.
-
-    Examples
-    --------
-    ```python
-    from hemlock import Debug as D, Input, Page, push_app_context
-    from hemlock.tools import chromedriver
-
-    app = push_app_context()
-
-    driver = chromedriver()
-
-    p = Page(Input(debug=D.random_str()))
-    p.preview(driver)._debug(driver)
-    ```
-    """
-    chars = ascii_letters + digits
-    chars = list(chars) + [' '] * int(p_whitespace*len(chars))
-    length = int(random() * 10**randint(1,magnitude))
-    keys = ''.join([choice(chars) for i in range(length)])
-    send_keys(driver, question, keys)
-
-@Debug.register
-def random_number(driver, question, *args, **kwargs):
-    """
-    Send a random number to the textarea or input.
-
-    Parameters
-    ----------
-    driver : selenium.webdriver.chrome.webdriver.WebDriver
-
-    question : hemlock.Question
-
-    magn_lb : int, default=0
-        Lower bound for the magnitude of the number.
-
-    mag_ub : int, default=10
-        Upper bound for the magnitude of the number.
-
-    max_decimals : int, default=5
-        Maximum number of decimals to which the number can be rounded.
-
-    p_int : float, default=.5
-        Probability that the number is an integer.
-
-    p_neg : float, default=.1
-        Probability that the number is negative.
-
-    Notes
-    -----
-    This debug function is skipped if the question is not displayed.
-
-    Examples
-    --------
-    ```python
-    from hemlock import Debug as D, Input, Page, push_app_context
-    from hemlock.tools import chromedriver
-
-    app = push_app_context()
-
-    driver = chromedriver()
-
-    p = Page(Input(debug=D.random_number()))
-    p.preview(driver)._debug(driver)
-    ```
-    """
-    send_keys(driver, question, str(gen_number(*args, **kwargs)))
+            random_keys()
 
 # Date and time input
 @Debug.register
@@ -293,8 +218,7 @@ def send_datetime(driver, question, datetime_=None):
     inpt = question.input_from_driver(driver)
     if _is_displayed(inpt):
         inpt.clear()
-        datetime_ = datetime_ or gen_datetime()
-        send_datetime_(inpt, datetime_)
+        random_datetime(inpt)
 
 # Range debugger
 
@@ -339,7 +263,8 @@ def drag_range(driver, range_, target=None, tol=0, max_iter=10):
     ```
     """
     if target is None:
-        target = randrange(range_.min, range_.max, range_.step)
+        target = randint(range_.min, range_.max)
+        target = round(target / range_.step) * range_.step
     inpt = range_.input_from_driver(driver)
     if _is_displayed(inpt):
         drag_range_(
@@ -352,7 +277,7 @@ def drag_range(driver, range_, target=None, tol=0, max_iter=10):
 # Choice question debugger
 
 @Debug.register
-def click_choices(driver, question, *values, if_selected=None):
+def click_choices(driver, question, *values, if_selected=None, max_clicks=5):
     """
     Click on choices or options.
 
@@ -397,7 +322,7 @@ def click_choices(driver, question, *values, if_selected=None):
     def choose_values():
         order = list(range(len(question.choices)))
         shuffle(order)
-        n_values = randint(0, len(question.choices))
+        n_values = max(randint(0, len(question.choices)), max_clicks)
         return [question.choices[i].value for i in order[:n_values]]
 
     values = values if values else choose_values()
