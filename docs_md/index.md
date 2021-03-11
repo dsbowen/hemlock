@@ -10,7 +10,7 @@ If you're an intermediate-level programmer (e.g., comfortable with R, new to pyt
 
 First, check out <a href="https://hemlock-tutorial.herokuapp.com" target="_blank">this demo</a>. This is the survey you'll build in the hemlock tutorial. In just over 200 lines of code, we build a survey that collects demographic information, gives participants instructions and tests their comprehension, and pairs participants with one another to play an ultimatum game.
 
-Second, check out this binder <a href="https://mybinder.org/v2/gh/dsbowen/hemlock-demo/HEAD/?urlpath=lab" target="_blank">![Binder](https://mybinder.org/badge_logo.svg)</a>. The binder is a sandbox which shows how easy it is to create beautiful hemlock survey pages. Unfortunately, it can't create a full survey. For that, you'll need to run through the hemlock tutorial.
+Second, check out this binder <a href="https://mybinder.org/v2/gh/dsbowen/hemlock-demo/HEAD?urlpath=lab/tree/START_HERE.ipynb" target="_blank">![Binder](https://mybinder.org/badge_logo.svg)</a>. The binder is a sandbox which shows how easy it is to create beautiful hemlock survey pages. Unfortunately, it can't create a full survey. For that, you'll need to run through the hemlock tutorial.
 
 Third, read [this article](manifesto.md) about my vision for hemlock and how it can advance your research.
 
