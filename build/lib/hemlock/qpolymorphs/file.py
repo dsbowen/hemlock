@@ -92,7 +92,7 @@ class File(InputBase, Question):
     def start():
     \    return Branch(
     \        Page(File(
-    \            '<p>Upload a .png</p>', 
+    \            'Upload a .png', 
     \            filename='upload',
     \            allowed_extensions=['.png']
     \        )),

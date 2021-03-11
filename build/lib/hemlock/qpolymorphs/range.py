@@ -69,8 +69,6 @@ def likert(label=None, choices=5, default=0, **kwargs):
             choices = choices_7
         elif choices == 9:
             choices = choices_9
-        if kwargs.get('reversed'):
-            choices.reverse()
         return choices
 
     choices = get_choices(choices)
@@ -125,7 +123,7 @@ class Range(InputBase, Question):
 
     app = push_app_context()
 
-    Page(Range('<p>This is a range slider.</p>')).preview()
+    Page(Range('This is a range slider.')).preview()
     ```
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
@@ -175,7 +173,7 @@ class RangeInput(InputBase, Question):
 
     app = push_app_context()
 
-    Page(RangeInput('<p>This is a range slider.</p>')).preview()
+    Page(RangeInput('This is a range slider.')).preview()
     ```
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
@@ -214,6 +212,30 @@ class Slider(InputBase, Question):
     1. Javascript function (str). <a href="https://seiyria.com/bootstrap-slider/#example-1" target="_blank">See here</a>.
     2. List of formatted values, one for each tick.
     3. Dictionary mapping tick values to formatted values. Any ticks not mapped to a formatted value are displayed as the tick value.
+
+    Examples
+    --------
+    ```python
+    from hemlock import Page, Slider, push_app_context
+
+    app = push_app_context()
+
+    Page(
+    \    Slider(
+    \        'This is a fancy Bootstrap slider',
+    \        ticks=[0, 2, 4],
+    \        ticks_labels=['very low', 'medium', 'high'],
+    \        ticks_positions=[0, 50, 100],
+    \        formatter=[
+    \            'very low',
+    \            'low',
+    \            'medium',
+    \            'high',
+    \            'very high'
+    \        ]
+    \    )
+    ).preview()
+    ```
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)
     __mapper_args__ = {'polymorphic_identity': 'slider'}

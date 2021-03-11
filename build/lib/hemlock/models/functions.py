@@ -23,12 +23,13 @@ class Compile(partial):
 
     @C.register
     def greet(greet_q, name_q):
-    \    greet_q.label = '<p>Hello {}!</p>'.format(name_q.response)
+    \    greet_q.label = f'Hello {name_q.response}!'
 
-    name_q = Input("<p>What's your name?</p>")
+    name_q = Input("What's your name?")
     p = Page(Label(compile=C.greet(name_q)))
     name_q.response = 'World'
-    p._compile().preview()
+    p._compile()
+    p.preview()
     ```
     """
 
@@ -53,9 +54,10 @@ class Debug(partial):
     \    inpt.clear()
     \    inpt.send_keys('Hello World!')
 
-    p = Page(Input('<p>Enter a greeting.</p>', debug=D.greet()))
+    p = Page(Input('Enter a greeting.', debug=D.greet()))
     p.debug.pop(-1) # so the page won't navigate
-    p.preview(driver)._debug(driver)
+    p.preview(driver)
+    p._debug(driver)
     ```
     """
     def __init__(self, func, *args, p_exec=1., **kwargs):
@@ -89,7 +91,7 @@ class Validate(partial):
     @V.register
     def match(inpt, pattern):
     \    if inpt.response != pattern:
-    \        return '<p>You entered "{}", not "{}"</p>'.format(inpt.response, pattern)
+    \        return f'You entered "{inpt.response}", not "{pattern}"'
 
     pattern = 'hello world'
     inpt = Input(validate=V.match(pattern))
@@ -130,7 +132,7 @@ class Submit(partial):
     \    names = name_q.response.split()
     \    name_q.data = '.'.join([name[0] for name in names]) + '.'
 
-    inpt = Input("<p>What's your name?</p>", submit=S.get_initials())
+    inpt = Input("What's your name?", submit=S.get_initials())
     inpt.response = 'Andrew Yang'
     inpt._submit().data
     ```

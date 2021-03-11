@@ -20,7 +20,7 @@ Welcome to the 21st century
 
 **I invented Hemlock to increase the speed and quality of social science research.**
 
-During the first year of my Ph.D., I spent hundreds of hours creating behavior experiments in Qualtrics. I remember the tediousness of copying and pasting blocks of questions, the struggle of implementing branching logic, and the frustration of updating hundreds of nearly-identical questions whenever my advisor wanted to modify the phrasing.
+During the first year of my Ph.D., I spent hundreds of hours creating behavioral experiments in Qualtrics. I remember the tediousness of copying and pasting blocks of questions, the struggle of implementing branching logic, and the frustration of updating hundreds of nearly-identical questions whenever my advisor wanted to modify the phrasing.
 
 My experience wasn't unique. Every social science Ph.D. student, research assistant, and professor spends hundreds of hours, year after year, mired in a monotonous struggle with a GUI that looks like it was downloaded from a bootlegged floppy disk.
 

@@ -23,7 +23,7 @@ class Compile(partial):
 
     @C.register
     def greet(greet_q, name_q):
-    \    greet_q.label = 'Hello {}!'.format(name_q.response)
+    \    greet_q.label = f'Hello {name_q.response}!'
 
     name_q = Input("What's your name?")
     p = Page(Label(compile=C.greet(name_q)))
@@ -91,7 +91,7 @@ class Validate(partial):
     @V.register
     def match(inpt, pattern):
     \    if inpt.response != pattern:
-    \        return 'You entered "{}", not "{}"'.format(inpt.response, pattern)
+    \        return f'You entered "{inpt.response}", not "{pattern}"'
 
     pattern = 'hello world'
     inpt = Input(validate=V.match(pattern))

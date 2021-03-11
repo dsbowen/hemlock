@@ -1,10 +1,18 @@
-from hemlock import Branch, Page, Label, route, Input
+from hemlock import Branch, Page, Label, route
 
 @route('/survey')
 def start():
     return Branch(
         Page(
-            Input(prepend='**$**', append='**.00**'),
+            Label(
+                'Start'
+            )
+        ),
+        Page(
+            Label(
+                'The end'
+            ),
+            compile_worker=True,
             terminal=True
         )
     )

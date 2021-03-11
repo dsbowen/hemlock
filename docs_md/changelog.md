@@ -4,6 +4,8 @@
 
 - Fixed bug in `make_list` tool
 - Added break in `Slider` template to leave space for tooltip by default
+- Moved static resources to github.io CDN
+- Fixed bug in `likert` when items are reversed
 
 ## 0.0.50
 

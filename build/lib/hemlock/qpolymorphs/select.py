@@ -54,7 +54,12 @@ class Select(InputBase, ChoiceQuestion):
 
     app = push_app_context()
 
-    Page(Select('<p>Select one.</p>', ['World','Moon','Star'])).preview()
+    Page(
+    \    Select(
+    \        'Select one.', 
+    \        ['World','Moon','Star']
+    \    )
+    ).preview()
     ```
 
     Notes

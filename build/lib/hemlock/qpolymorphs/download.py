@@ -35,7 +35,7 @@ class Download(DownloadBtnMixin, Question):
     app = push_app_context()
 
     Page(Download(
-    \    '<p>Click here to download a file.</p>',
+    \    'Click here to download a file.',
     \    downloads=('HELLO_WORLD_URL', 'hello_world.txt')
     )).preview()
     ```

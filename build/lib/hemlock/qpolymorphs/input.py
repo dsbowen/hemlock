@@ -32,7 +32,7 @@ class Input(InputBase, Question):
 
     app = push_app_context()
 
-    Page(Input('<p>Input text here.</p>')).preview()
+    Page(Input('Input text here.')).preview()
     ```
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)

@@ -3,7 +3,7 @@
 from .settings import settings
 
 import pandas as pd
-from flask import Flask, Blueprint, current_app
+from flask import Flask, Blueprint, current_app, send_from_directory
 # from flask_apscheduler import APScheduler
 from flask_download_btn import DownloadBtnManager
 from flask_login import LoginManager
@@ -118,7 +118,7 @@ def create_app(settings=settings):
     _set_bucket(app)
     _set_redis(app)
     _init_extensions(app, settings)
-    app.tmpfiles = []   
+    app.tmpfiles = []
     return app
 
 def _create_app(settings):

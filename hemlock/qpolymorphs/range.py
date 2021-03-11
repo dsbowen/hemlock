@@ -69,8 +69,6 @@ def likert(label=None, choices=5, default=0, **kwargs):
             choices = choices_7
         elif choices == 9:
             choices = choices_9
-        if kwargs.get('reversed'):
-            choices.reverse()
         return choices
 
     choices = get_choices(choices)

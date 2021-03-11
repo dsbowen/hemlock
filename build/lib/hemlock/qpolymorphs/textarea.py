@@ -38,7 +38,7 @@ class Textarea(InputBase, Question):
 
     app = push_app_context()
 
-    Page(Textarea('<p>This is a textarea.</p>')).preview()
+    Page(Textarea('This is a textarea.')).preview()
     ```
     """
     id = db.Column(db.Integer, db.ForeignKey('question.id'), primary_key=True)

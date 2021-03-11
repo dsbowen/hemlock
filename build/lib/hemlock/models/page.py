@@ -169,7 +169,7 @@ settings['Page'] = dict(
         'value': 'forward'
     },
     banner=img(
-        '/hemlock/static/img/hemlock_banner.png',
+        'https://dsbowen.github.io/assets/images/hemlock_banner.png',
         img_align='center', 
         img_attrs={'style': 'max-width:200px;', 'alt': 'Hemlock banner'}
     ),
@@ -353,7 +353,7 @@ class Page(BranchingBase, db.Model):
     app = push_app_context()
 
     Page(
-        Label('Hello World')
+    \    Label('Hello World')
     ).preview()
     ```
 

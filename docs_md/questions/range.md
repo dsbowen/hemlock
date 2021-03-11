@@ -77,7 +77,7 @@ Create a Likert slider.
 ##hemlock.**Range**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Range</b>(<i>label=None, template='hemlock/range.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L99">[source]</a>
+    <i>class</i> hemlock.<b>Range</b>(<i>label=None, template='hemlock/range.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L97">[source]</a>
 </p>
 
 Range sliders can be dragged between minimum and maximum values in step
@@ -125,7 +125,7 @@ Page(Range('This is a range slider.')).preview()
 ##hemlock.**RangeInput**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>RangeInput</b>(<i>label=None, template='hemlock/rangeinput.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L147">[source]</a>
+    <i>class</i> hemlock.<b>RangeInput</b>(<i>label=None, template='hemlock/rangeinput.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L145">[source]</a>
 </p>
 
 Range slider with an input field.
@@ -176,7 +176,7 @@ Page(RangeInput('This is a range slider.')).preview()
 ##hemlock.**Slider**
 
 <p class="func-header">
-    <i>class</i> hemlock.<b>Slider</b>(<i>label=None, template='hemlock/slider.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L195">[source]</a>
+    <i>class</i> hemlock.<b>Slider</b>(<i>label=None, template='hemlock/slider.html', **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L193">[source]</a>
 </p>
 
 Bootstrap slider.
@@ -240,7 +240,7 @@ Page(
 
 
 <p class="func-header">
-    <i></i> <b>get_max</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L276">[source]</a>
+    <i></i> <b>get_max</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L274">[source]</a>
 </p>
 
 
@@ -264,7 +264,7 @@ Page(
 
 
 <p class="func-header">
-    <i></i> <b>get_min</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L287">[source]</a>
+    <i></i> <b>get_min</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L285">[source]</a>
 </p>
 
 
@@ -288,7 +288,7 @@ Page(
 
 
 <p class="func-header">
-    <i></i> <b>get_values</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L298">[source]</a>
+    <i></i> <b>get_values</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L296">[source]</a>
 </p>
 
 
@@ -312,7 +312,7 @@ Page(
 
 
 <p class="func-header">
-    <i></i> <b>get_midpoint</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L308">[source]</a>
+    <i></i> <b>get_midpoint</b>(<i>self</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/range.py#L306">[source]</a>
 </p>
 
 

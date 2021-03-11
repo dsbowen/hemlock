@@ -45,6 +45,6 @@ def status():
         navbar=navbar.render(), back=False, forward=False,
         extra_js=[
             {'src': current_app.settings['socket_js_src']},
-            {'src': url_for('hemlock.static', filename='js/status.js')}
+            {'src': 'https://dsbowen.github.io/assets/js/hemlock-status-0.0.51.js'}
         ]
     )._render()

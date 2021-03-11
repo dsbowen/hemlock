@@ -94,7 +94,7 @@ class Check(InputBase, ChoiceQuestion):
 
     app = push_app_context()
 
-    Page(Check('<p>Check one.</p>', ['Yes','No','Maybe'])).preview()
+    Page(Check('Check one.', ['Yes','No','Maybe'])).preview()
     ```
 
     Notes

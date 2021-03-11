@@ -5,10 +5,15 @@ from ..models import Participant
 from . import participant
 from . import researcher
 
-from flask import current_app, session, request
+from flask import current_app, session, redirect, request
 from flask_login import current_user, login_required
 
+import os
 from functools import wraps
+
+@bp.route('/favicon.ico')
+def favicon():
+    return redirect('https://dsbowen.github.io/assets/images/hemlock_favicon.png')
 
 @bp.errorhandler(500)
 def internal_server_error(e):

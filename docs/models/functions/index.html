@@ -337,7 +337,7 @@ to a participant.</p>
 
 <span class="nd">@C</span><span class="o">.</span><span class="n">register</span>
 <span class="k">def</span> <span class="nf">greet</span><span class="p">(</span><span class="n">greet_q</span><span class="p">,</span> <span class="n">name_q</span><span class="p">):</span>
-    <span class="n">greet_q</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Hello </span><span class="si">{}</span><span class="s1">!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name_q</span><span class="o">.</span><span class="n">response</span><span class="p">)</span>
+    <span class="n">greet_q</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Hello </span><span class="si">{</span><span class="n">name_q</span><span class="o">.</span><span class="n">response</span><span class="si">}</span><span class="s1">!&#39;</span>
 
 <span class="n">name_q</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;What&#39;s your name?&quot;</span><span class="p">)</span>
 <span class="n">p</span> <span class="o">=</span> <span class="n">Page</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="nb">compile</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="n">greet</span><span class="p">(</span><span class="n">name_q</span><span class="p">)))</span>
@@ -419,7 +419,7 @@ to a participant.</p>
 <span class="nd">@V</span><span class="o">.</span><span class="n">register</span>
 <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="n">inpt</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">inpt</span><span class="o">.</span><span class="n">response</span> <span class="o">!=</span> <span class="n">pattern</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;You entered &quot;</span><span class="si">{}</span><span class="s1">&quot;, not &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inpt</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;You entered &quot;</span><span class="si">{</span><span class="n">inpt</span><span class="o">.</span><span class="n">response</span><span class="si">}</span><span class="s1">&quot;, not &quot;</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
 
 <span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;hello world&#39;</span>
 <span class="n">inpt</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">validate</span><span class="o">=</span><span class="n">V</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">))</span>

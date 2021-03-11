@@ -95,13 +95,12 @@ def make_list(items, ordered=False):
 
     Returns
     -------
-    markdown : str
-        Markdown-formatted list.
+    HTML list : str
+        HTML-formatted list.
     """
-    if not ordered:
-        return '\n'.join(['-'+item for item in items])
-    return '\n'.join(
-        ['{}. {}'.format(i+1, item) for i, item in enumerate(items)]
+    template = '<ol>{}</ol>' if ordered else '<ul>{}</ul>'
+    return template.format(
+        ''.join(['<li>{}</li>'.format(str(item)) for item in items])
     )
 
 def make_table(table, extra_classes=[]):
@@ -181,12 +180,11 @@ def show_on_event(
         The question whose value determines whether the target is shown.
 
     value : str or hemlock.Choice
-        1. If the condition is an input, the target is shown when the input 
-        value matches this value.
-        2. If the condition has choices, the target is shown when the choice
-        with this value is checked.
+        If the condition is an input, the target is shown when the input 
+        value matches this value. If the condition has choices, the target is
+        shown when the choice with this value is checked.
 
-    init_hidden : bool, defualt=True
+    init_hidden : bool, default=True
         Indicates that the initial state of the target should be hidden.
 
     regex : bool, default=False

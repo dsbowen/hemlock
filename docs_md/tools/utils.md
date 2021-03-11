@@ -243,11 +243,9 @@ Show the target question when a condition is met.
 </p>
 <b>value : <i>str or hemlock.Choice</i></b>
 <p class="attr">
-    >
-<li>If the condition is an input, the target is shown when the input value matches this value. 2. If the condition has choices, the target is shown when the choice with this value is checked.</li>
-<
+    If the condition is an input, the target is shown when the input value matches this value. If the condition has choices, the target is shown when the choice with this value is checked.
 </p>
-<b>init_hidden : <i>bool, defualt=True</i></b>
+<b>init_hidden : <i>bool, default=True</i></b>
 <p class="attr">
     Indicates that the initial state of the target should be hidden.
 </p>
@@ -295,7 +293,7 @@ Page(name, greet).preview()
 ##hemlock.tools.**url_for**
 
 <p class="func-header">
-    <i>def</i> hemlock.tools.<b>url_for</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L293">[source]</a>
+    <i>def</i> hemlock.tools.<b>url_for</b>(<i>*args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/utils.py#L292">[source]</a>
 </p>
 
 Attempt to return `flask.url_for(*args, **kwargs)`. However, this method

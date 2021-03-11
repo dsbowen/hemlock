@@ -1,7 +1,14 @@
-{% extends 'hemlock/input-group.html' %}
+{% extends 'hemlock/form-group.html' %}
 
-{% block input %}
-    <div class="text-center w-100">
-        <input id="{{ q.key }}" name="{{ q.key }}" data-slider-id="{{ q.key }}Slider">
-    </div>
+{% block label %}
+<label class="w-100" for="{{ q.model_id }}">
+    {{ label | safe }}
+    <br/> <!-- add breat to leave space for slider tooltip -->
+</label>
+{% endblock %}
+
+{% block content %}
+<div class="text-center w-100">
+    <input id="{{ q.key }}" name="{{ q.key }}" data-slider-id="{{ q.key }}Slider">
+</div>
 {% endblock %}

@@ -95,7 +95,7 @@ DownloadBtnManager
 
 Manager
 -------
-loading_img_src : str, default='/hemlock/static/img/worker_loading.gif'
+loading_img_src : str, default='https://dsbowen.github.io/assets/images/worker_loading.gif'
     Name of the loading image file.
 
 Notes
@@ -220,7 +220,7 @@ settings = dict(
         REDIS_URL=os.environ.get('REDIS_URL'),
     ),
     DownloadBtnManager={},
-    Manager=dict(loading_img_src='/hemlock/static/img/worker_loading.gif'),
+    Manager=dict(loading_img_src='https://dsbowen.github.io/assets/images/worker_loading.gif'),
     # Talisman=dict(
     #     content_security_policy={
     #         'default-src': ['\'self\'', '\'unsafe-inline\'', 'data:'],
