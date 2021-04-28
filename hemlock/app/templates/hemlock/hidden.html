@@ -1,1 +1,5 @@
+{% set value = q.response if q.has_responded else q.default %}
+{% if value is none %}
+    {% set value = "" %}
+{% endif %}
 <input id="{{ q.key }}" name="{{ q.key }}" {{ q.input_attrs.to_html() | safe }} value="{{ value }}"/>

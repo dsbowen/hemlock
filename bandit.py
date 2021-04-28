@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from flask_login import current_user
 from hemlock import Participant
 from hemlock.tools import get_data
 
@@ -56,9 +57,11 @@ class SuccessiveRejectionsAssigner:
         assignment = {
             key: val for key, val in zip(self.keys, next(self.arms_cycle))
         }
-        try:
-            participant = participant or current_user
-            participant.meta.update(assignment)
-        except:
-            print('Unable to update participant metadata.')
+        participant = participant or current_user
+        participant.meta.update(assignment)
+        # try:
+        #     participant = participant or current_user
+        #     participant.meta.update(assignment)
+        # except:
+        #     print('Unable to update participant metadata.')
         return assignment
