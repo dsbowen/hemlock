@@ -3,7 +3,7 @@
         "heroku-postgresql:hobby-dev"
     ],
     "formation": {
-        "web": {"quantity": 1, "size": "hobby-basic"}
+        "web": {"quantity": 1, "size": "hobby"}
     },
     "env": {
         "APP_IMPORT": {
