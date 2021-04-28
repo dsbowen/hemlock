@@ -184,7 +184,7 @@ Set the choice's label, name, and value.
 
 
 <p class="func-header">
-    <i></i> <b>load</b>(<i>cls, state_dict</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/choice.py#L124">[source]</a>
+    <i></i> <b>load</b>(<i>cls, state_dict</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/choice.py#L123">[source]</a>
 </p>
 
 
@@ -274,7 +274,7 @@ Converts items in a list of choices to the choice class.
 
 
 <p class="func-header">
-    <i></i> <b>convert</b>(<i>cls, item</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/choice.py#L146">[source]</a>
+    <i></i> <b>convert</b>(<i>cls, item</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/choice.py#L145">[source]</a>
 </p>
 
 

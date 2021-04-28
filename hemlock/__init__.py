@@ -6,7 +6,7 @@ from .models import (
     Page, Participant, Question, ChoiceQuestion, Worker
 )
 from .qpolymorphs import (
-    Binary, Blank, Check, Choice, Dashboard, Download, File, Input, Label, 
+    Binary, Blank, Check, Choice, Dashboard, Download, File, Hidden, Input, Label, 
     Range, RangeInput, Select, Slider, Option, Textarea, binary, likert
 )
 from .routes import route

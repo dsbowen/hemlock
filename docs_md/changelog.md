@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.53
+
+- allow attention check answers to have spaces
+
+## 0.0.52
+
+- added the `attention_check` tool
+
 ## 0.0.51
 
 - Fixed bug in `make_list` tool

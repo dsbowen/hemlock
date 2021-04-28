@@ -34,7 +34,7 @@
 ##hemlock.functions.submit.**correct_choices**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>correct_choices</b>(<i>question, *values</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L10">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>correct_choices</b>(<i>question, *values</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L9">[source]</a>
 </p>
 
 Convert the question's data to a 0-1 indicator that the participant
@@ -88,7 +88,7 @@ Out:
 ##hemlock.functions.submit.**data_type**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>data_type</b>(<i>question, new_type, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L52">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>data_type</b>(<i>question, new_type, *args, **kwargs</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L51">[source]</a>
 </p>
 
 Convert the quesiton's data to a new type. If the question's data cannot
@@ -137,7 +137,7 @@ Out:
 ##hemlock.functions.submit.**match**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>match</b>(<i>question, pattern</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L89">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>match</b>(<i>question, pattern</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L88">[source]</a>
 </p>
 
 Convert the question's data to a 0-1 indicator that the data matches the
@@ -181,7 +181,7 @@ Out:
 ##hemlock.functions.submit.**eq**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>eq</b>(<i>question, value, data_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L124">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>eq</b>(<i>question, value, data_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L123">[source]</a>
 </p>
 
 Convert the question's data to a 0-1 indicator that the question's data
@@ -230,7 +230,7 @@ Out:
 ##hemlock.functions.submit.**neq**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>neq</b>(<i>question, value, data_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L162">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>neq</b>(<i>question, value, data_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L161">[source]</a>
 </p>
 
 Convert the question's data to a 0-1 indicator that the question's data
@@ -279,7 +279,7 @@ Out:
 ##hemlock.functions.submit.**max**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>max</b>(<i>question, max, data_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L200">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>max</b>(<i>question, max, data_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L199">[source]</a>
 </p>
 
 Convert the question's data to a 0-1 indicator that the question's data
@@ -328,7 +328,7 @@ Out:
 ##hemlock.functions.submit.**min**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>min</b>(<i>question, min, data_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L237">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>min</b>(<i>question, min, data_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L236">[source]</a>
 </p>
 
 Convert the question's data to a 0-1 indicator that the question's data
@@ -377,7 +377,7 @@ Out:
 ##hemlock.functions.submit.**range**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.submit.<b>range</b>(<i>question, min, max, data_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L274">[source]</a>
+    <i>def</i> hemlock.functions.submit.<b>range</b>(<i>question, min, max, data_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/submit.py#L273">[source]</a>
 </p>
 
 Convert the question's data to a 0-1 indicator that the question's data

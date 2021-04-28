@@ -140,7 +140,7 @@ All navigation models inherit from this base.
 
 
 <p class="func-header">
-    <i></i> <b>convert</b>(<i>cls, item</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L99">[source]</a>
+    <i></i> <b>convert</b>(<i>cls, item</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L98">[source]</a>
 </p>
 
 
@@ -288,7 +288,7 @@ Navigation item *without* dropdown items.
 
 
 <p class="func-header">
-    <i></i> <b>convert</b>(<i>cls, item</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L201">[source]</a>
+    <i></i> <b>convert</b>(<i>cls, item</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/tools/navbar.py#L200">[source]</a>
 </p>
 
 

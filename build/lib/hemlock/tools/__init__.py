@@ -1,5 +1,6 @@
 """Tools"""
 
+from .attention import attention_check
 from .comprehension import comprehension_check
 from .lang import indef_article, join, markdown, plural, pronouns
 from .mturk import (

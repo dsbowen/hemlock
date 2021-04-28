@@ -60,7 +60,7 @@ originating from this page.
 ##hemlock.**compile_questions**
 
 <p class="func-header">
-    <i>def</i> hemlock.<b>compile_questions</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L54">[source]</a>
+    <i>def</i> hemlock.<b>compile_questions</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L53">[source]</a>
 </p>
 
 Execute the page's questions' compile methods in index order.
@@ -84,7 +84,7 @@ Execute the page's questions' compile methods in index order.
 ##hemlock.**validate_questions**
 
 <p class="func-header">
-    <i>def</i> hemlock.<b>validate_questions</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L65">[source]</a>
+    <i>def</i> hemlock.<b>validate_questions</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L64">[source]</a>
 </p>
 
 Execute the page's questions' validate methods in index order.
@@ -108,7 +108,7 @@ Execute the page's questions' validate methods in index order.
 ##hemlock.**submit_questions**
 
 <p class="func-header">
-    <i>def</i> hemlock.<b>submit_questions</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L76">[source]</a>
+    <i>def</i> hemlock.<b>submit_questions</b>(<i>page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L75">[source]</a>
 </p>
 
 Execute the page's questions' submit methods in index order.
@@ -132,7 +132,7 @@ Execute the page's questions' submit methods in index order.
 ##hemlock.**debug_questions**
 
 <p class="func-header">
-    <i>def</i> hemlock.<b>debug_questions</b>(<i>driver, page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L87">[source]</a>
+    <i>def</i> hemlock.<b>debug_questions</b>(<i>driver, page</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L86">[source]</a>
 </p>
 
 Execute the page's questions' debug methods in  *random* order.
@@ -160,7 +160,7 @@ Execute the page's questions' debug methods in  *random* order.
 ##hemlock.**navigate**
 
 <p class="func-header">
-    <i>def</i> hemlock.<b>navigate</b>(<i>driver, page, p_forward=0.8, p_back=0.1, sleep_time=3</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L102">[source]</a>
+    <i>def</i> hemlock.<b>navigate</b>(<i>driver, page, p_forward=0.8, p_back=0.1, sleep_time=3</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/models/page.py#L101">[source]</a>
 </p>
 
 Randomly navigate forward or backward, or refresh the page. By default, it

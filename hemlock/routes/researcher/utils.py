@@ -3,7 +3,7 @@ from ...tools import Navbar, Navitem, Navitemdd, Dropdownitem
 
 navbar = Navbar(
     '''
-    <img src="/hemlock/static/img/hemlock_favicon.svg" class="d-inline-block align-top" alt="" style="max-height:30px;">
+    <img src="https://dsbowen.github.io/assets/images/hemlock_icon.png" class="d-inline-block align-top" alt="" style="max-height:30px;">
     <span style="font-family:'Josefin Sans';">HEMLOCK</span>
     ''',
     href='https://dsbowen.github.io/hemlock',

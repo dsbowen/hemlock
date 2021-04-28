@@ -44,7 +44,7 @@ By default, the last debug function of a page navigates. To remove this, run
 ##hemlock.functions.debug.**forward**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>forward</b>(<i>driver, page, max_wait=30, wait_interval=3</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L60">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>forward</b>(<i>driver, page, max_wait=30, wait_interval=3</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L59">[source]</a>
 </p>
 
 Click the forward button.
@@ -87,7 +87,7 @@ p._debug(driver)
 ##hemlock.functions.debug.**back**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>back</b>(<i>driver, page, max_wait=30, wait_interval=1</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L94">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>back</b>(<i>driver, page, max_wait=30, wait_interval=1</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L93">[source]</a>
 </p>
 
 Click the back button.
@@ -130,7 +130,7 @@ p._debug(driver)
 ##hemlock.functions.debug.**send_keys**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>send_keys</b>(<i>driver, question, *keys, p_num=0.5</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L130">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>send_keys</b>(<i>driver, question, *keys, p_num=0.5</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L129">[source]</a>
 </p>
 
 Send the specified keys to the `<textarea>` or `<input>`.
@@ -186,7 +186,7 @@ p._debug(driver)
 ##hemlock.functions.debug.**send_datetime**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>send_datetime</b>(<i>driver, question, datetime_=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L195">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>send_datetime</b>(<i>driver, question, datetime_=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L194">[source]</a>
 </p>
 
 Send a `datetime.datetime` object to an input. Inputs should be of type
@@ -241,7 +241,7 @@ p._debug(driver)
 ##hemlock.functions.debug.**random_input**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>random_input</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L240">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>random_input</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L239">[source]</a>
 </p>
 
 Default debug function for input questions. This function sends a random
@@ -271,7 +271,7 @@ object if the input takes dates or times.
 ##hemlock.functions.debug.**click_slider_range**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>click_slider_range</b>(<i>driver, slider, target=None, tol=0, max_iter=10, max_wait=3, wait_interval=1</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L267">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>click_slider_range</b>(<i>driver, slider, target=None, tol=0, max_iter=10, max_wait=3, wait_interval=1</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L266">[source]</a>
 </p>
 
 Click a Bootstrap-slider input.
@@ -335,7 +335,7 @@ p._debug(driver)
 ##hemlock.functions.debug.**drag_range**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>drag_range</b>(<i>driver, range_, target=None, tol=0, max_iter=10</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L334">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>drag_range</b>(<i>driver, range_, target=None, tol=0, max_iter=10</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L333">[source]</a>
 </p>
 
 Drag a range slider to specified target value.
@@ -395,7 +395,7 @@ p._debug(driver)
 ##hemlock.functions.debug.**click_choices**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>click_choices</b>(<i>driver, question, *values, if_selected=None, max_clicks=5</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L392">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>click_choices</b>(<i>driver, question, *values, if_selected=None, max_clicks=5</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L391">[source]</a>
 </p>
 
 Click on choices or options.
@@ -455,7 +455,7 @@ p._debug(driver)
 ##hemlock.functions.debug.**clear_choices**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.debug.<b>clear_choices</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L450">[source]</a>
+    <i>def</i> hemlock.functions.debug.<b>clear_choices</b>(<i>driver, question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/debug.py#L449">[source]</a>
 </p>
 
 Clear selected choices.

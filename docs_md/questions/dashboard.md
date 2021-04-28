@@ -157,7 +157,7 @@ Then open your browser and navigate to <http://localhost:5000/>.
 
 
 <p class="func-header">
-    <i></i> <b>get</b>(<i>cls, search</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/dashboard.py#L149">[source]</a>
+    <i></i> <b>get</b>(<i>cls, search</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/dashboard.py#L148">[source]</a>
 </p>
 
 Utility for retrieving a dashboard question in a dash callback.
@@ -206,7 +206,7 @@ def my_callback(search, ...):
 
 
 <p class="func-header">
-    <i></i> <b>record_response</b>(<i>cls, search, response</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/dashboard.py#L189">[source]</a>
+    <i></i> <b>record_response</b>(<i>cls, search, response</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/qpolymorphs/dashboard.py#L188">[source]</a>
 </p>
 
 Utility for writing the `response` attribute of the dashboard

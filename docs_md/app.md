@@ -34,7 +34,7 @@
 ##hemlock.app.**init_app**
 
 <p class="func-header">
-    <i>def</i> hemlock.app.<b>init_app</b>(<i></i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L40">[source]</a>
+    <i>def</i> hemlock.app.<b>init_app</b>(<i></i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/app/__init__.py#L39">[source]</a>
 </p>
 
 Create database tables and initialize data storage models

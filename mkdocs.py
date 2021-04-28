@@ -101,6 +101,7 @@ for filename in qpolymorph_filenames:
 
 # tools
 tools_filenames = [
+    'attention',
     'comprehension',
     'lang',
     'mturk',

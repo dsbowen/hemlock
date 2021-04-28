@@ -38,7 +38,7 @@ the repsonse is invalid.
 ##hemlock.functions.validate.**response_type**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>response_type</b>(<i>question, resp_type</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L23">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>response_type</b>(<i>question, resp_type</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L22">[source]</a>
 </p>
 
 Validate that the response can be converted to a given type.
@@ -82,7 +82,7 @@ Please enter a number.
 ##hemlock.functions.validate.**require**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>require</b>(<i>question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L65">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>require</b>(<i>question</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L64">[source]</a>
 </p>
 
 Require a response to this question.
@@ -122,7 +122,7 @@ Please respond to this question.
 ##hemlock.functions.validate.**is_in**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>is_in</b>(<i>question, valid_set, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L98">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>is_in</b>(<i>question, valid_set, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L97">[source]</a>
 </p>
 
 Validate that the question response is in a set of valid responses.
@@ -170,7 +170,7 @@ Please enter wind or fire.
 ##hemlock.functions.validate.**is_not_in**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>is_not_in</b>(<i>question, invalid_set, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L138">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>is_not_in</b>(<i>question, invalid_set, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L137">[source]</a>
 </p>
 
 Validate that the question response is *not* in a set of invalid
@@ -222,7 +222,7 @@ Please do not enter earth, wind, or fire.
 ##hemlock.functions.validate.**eq**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>eq</b>(<i>question, value, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L182">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>eq</b>(<i>question, value, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L181">[source]</a>
 </p>
 
 Validate that the response equals the given value.
@@ -270,7 +270,7 @@ Out:
 ##hemlock.functions.validate.**neq**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>neq</b>(<i>question, value, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L224">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>neq</b>(<i>question, value, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L223">[source]</a>
 </p>
 
 Validate that the response does not equal the given value.
@@ -318,7 +318,7 @@ Out:
 ##hemlock.functions.validate.**max**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>max</b>(<i>question, max, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L266">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>max</b>(<i>question, max, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L265">[source]</a>
 </p>
 
 Validate that the response does not exceed a maximum value.
@@ -366,7 +366,7 @@ Please enter a response less than 100.
 ##hemlock.functions.validate.**min**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>min</b>(<i>question, min, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L306">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>min</b>(<i>question, min, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L305">[source]</a>
 </p>
 
 Validate that the response does not deceed a minumum value.
@@ -414,7 +414,7 @@ Please enter a response greater than 0.
 ##hemlock.functions.validate.**range**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>range</b>(<i>question, min, max, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L346">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>range</b>(<i>question, min, max, resp_type=None</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L345">[source]</a>
 </p>
 
 Validate that the response is in a given range.
@@ -466,7 +466,7 @@ Please enter a response between 0 and 100.
 ##hemlock.functions.validate.**exact_len**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>exact_len</b>(<i>question, len_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L400">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>exact_len</b>(<i>question, len_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L399">[source]</a>
 </p>
 
 Validates the exact length of the repsonse. For a string response, this is
@@ -512,7 +512,7 @@ Please enter exactly 5 characters.
 ##hemlock.functions.validate.**max_len**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>max_len</b>(<i>question, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L444">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>max_len</b>(<i>question, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L443">[source]</a>
 </p>
 
 Validates the maximum length of the response. For a string response, this
@@ -563,7 +563,7 @@ Please enter at most 5 characters.
 ##hemlock.functions.validate.**min_len**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>min_len</b>(<i>question, min_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L492">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>min_len</b>(<i>question, min_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L491">[source]</a>
 </p>
 
 Valiadates the minimum length of the response. For a string response, this
@@ -609,7 +609,7 @@ Please enter at least 15 characters.
 ##hemlock.functions.validate.**range_len**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>range_len</b>(<i>question, min_, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L538">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>range_len</b>(<i>question, min_, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L537">[source]</a>
 </p>
 
 Validates the range of the response length. For a string response, this is
@@ -659,7 +659,7 @@ Please enter 5 to 10 characters.
 ##hemlock.functions.validate.**exact_words**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>exact_words</b>(<i>question, nwords</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L588">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>exact_words</b>(<i>question, nwords</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L587">[source]</a>
 </p>
 
 Validate the exact number of words in the response.
@@ -703,7 +703,7 @@ Please enter exactly 1 word.
 ##hemlock.functions.validate.**max_words**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>max_words</b>(<i>question, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L628">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>max_words</b>(<i>question, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L627">[source]</a>
 </p>
 
 Validates the maximum number of words in the response.
@@ -747,7 +747,7 @@ Please enter at most 1 word.
 ##hemlock.functions.validate.**min_words**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>min_words</b>(<i>question, min_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L666">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>min_words</b>(<i>question, min_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L665">[source]</a>
 </p>
 
 Validates the minimum number of words in the repsonse.
@@ -791,7 +791,7 @@ Please enter at least 3 words.
 ##hemlock.functions.validate.**range_words**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>range_words</b>(<i>question, min_, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L707">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>range_words</b>(<i>question, min_, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L706">[source]</a>
 </p>
 
 Validates the number of words falls in a given range.
@@ -839,7 +839,7 @@ Please enter between 3 and 5 words.
 ##hemlock.functions.validate.**exact_decimals**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>exact_decimals</b>(<i>question, ndec</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L757">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>exact_decimals</b>(<i>question, ndec</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L756">[source]</a>
 </p>
 
 Validates the exact number of decimals.
@@ -883,7 +883,7 @@ Please enter a number with exactly 2 decimals.
 ##hemlock.functions.validate.**max_decimals**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>max_decimals</b>(<i>question, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L795">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>max_decimals</b>(<i>question, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L794">[source]</a>
 </p>
 
 Validates the maximum number of decimals.
@@ -927,7 +927,7 @@ Please enter a number with at most 2 decimals.
 ##hemlock.functions.validate.**min_decimals**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>min_decimals</b>(<i>question, min_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L833">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>min_decimals</b>(<i>question, min_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L832">[source]</a>
 </p>
 
 Validates the minumum number of decimals.
@@ -971,7 +971,7 @@ Please enter a number with at least 2 decimals.
 ##hemlock.functions.validate.**range_decimals**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>range_decimals</b>(<i>question, min_, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L871">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>range_decimals</b>(<i>question, min_, max_</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L870">[source]</a>
 </p>
 
 Validates the number of decimals are in a given range.
@@ -1019,7 +1019,7 @@ Please enter a number with 0 to 2 decimals.
 ##hemlock.functions.validate.**match**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>match</b>(<i>question, pattern</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L927">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>match</b>(<i>question, pattern</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L926">[source]</a>
 </p>
 
 Validate that the response matches the regex pattern.
@@ -1063,7 +1063,7 @@ Please enter a response with the correct pattern.
 ##hemlock.functions.validate.**correct_choices**
 
 <p class="func-header">
-    <i>def</i> hemlock.functions.validate.<b>correct_choices</b>(<i>question, *values</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L962">[source]</a>
+    <i>def</i> hemlock.functions.validate.<b>correct_choices</b>(<i>question, *values</i>) <a class="src-href" target="_blank" href="https://github.com/dsbowen/hemlock/blob/master/hemlock/functions/validate.py#L961">[source]</a>
 </p>
 
 Validate that selected choice(s) is correct.

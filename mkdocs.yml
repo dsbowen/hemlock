@@ -28,6 +28,7 @@ nav:
     - Deployment: tutorial/deploy.md
     - Bells and whistles: tutorial/extra.md
   - Setup:
+    - Setup: setup.md
     - Windows: setup/win.md
     - Windows Subsystem for Linux: setup/wsl.md
     - Mac: setup/mac.md
@@ -63,6 +64,7 @@ nav:
     - Select: questions/select.md
     - Textarea: questions/textarea.md
   - Tools:
+    - Attention check: tools/attention.md
     - Comprehension check: tools/comprehension.md
     - Language: tools/lang.md
     - MTurk: tools/mturk.md
@@ -87,3 +89,4 @@ markdown_extensions:
   - mdx_math
   - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.tabbed
