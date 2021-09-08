@@ -1,0 +1,16 @@
+image: python:3.9
+
+ports:
+  - port: 8000
+    onOpen: open-preview
+
+tasks:
+  - init: pip install -r ./requirements.txt
+    command: export TOXENV=py39
+
+vscode:
+  extensions:
+    - almenon.arepl@1.0.20:Uu7lIOwyLgmNWpTwCl/iqQ==
+    - coenraads.bracket-pair-colorizer@1.0.61:+jQByqALW0iXkhpd2yzYzQ==
+    - littlefoxteam.vscode-python-test-adapter@0.3.16:tZ/6xOSSdKUaq6JCUVkD+A==
+    - njpwerner.autodocstring@0.5.4:TKRAH5+nBrBnq+ysTYA86Q==

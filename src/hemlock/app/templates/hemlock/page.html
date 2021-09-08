@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        {% block head %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {{ page.html_settings.get_css() | safe}}
+        {% for question in page.questions %}
+            {{ question.html_settings.get_css() | safe }}
+        {% endfor %}
+        <style>
+            body {
+                background-color: whitesmoke;
+                /* background-color: transparent; */
+            }
+            @media (prefers-color-scheme: dark) {
+                body {
+                    background-color: black;
+                    color: white;
+                }
+                .card {
+                    background-color: #4A4A4A;
+                }
+            }
+        </style>
+        {% if display is defined and display is sameas true %}
+        <style>
+            body{
+                background-color: transparent;
+            }
+        </style>
+        {% endif %}
+        {% endblock %}
+    </head>
+    <body>
+        {% block body %}
+        {% if navbar is not none %}
+        {{ navbar | safe }}
+        {% endif %}
+
+        <div {{ page.html_settings["div"].get_attrs() | safe }}>
+            <form method="POST" class="w-100" enctype="multipart/form-data">
+            {% block form %}
+                {% if error is not none %}
+                <div {{ page.html_settings["error"].get_attrs() | safe }}>
+                    {{ error | safe }}
+                </div>
+                {% endif %}
+                
+                {% for question in page.questions %}
+                    {{ question.render() | safe}}
+                {% endfor %}
+    
+                {% if page.forward is not none and not page.terminal %}
+                <button {{ page.html_settings["forward-button"].get_attrs() | safe }}>
+                    {{ page.forward }}
+                </button>
+                {% endif %}
+                {% if page.back is not none and not page.is_first_page() %}
+                <button {{ page.html_settings["back-button"].get_attrs() | safe }}>
+                    {{ page.back }}
+                </button>
+                {% endif %}
+                <p style="clear:both;"><br></p>
+    
+                {% if page.banner is not none %}
+                <div id="banner">{{ page.banner | safe }}</div>
+                {% endif %}
+            {% endblock %}
+            </form>
+        </div>
+
+        {{ page.html_settings.get_js() | safe }}
+        {% for question in page.questions %}
+            {{ question.html_settings.get_js() | safe }}
+        {% endfor %}
+    {% endblock %}
+    </body>
+</html>
