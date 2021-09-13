@@ -82,12 +82,8 @@ class Page(db.Model):
         },
     )
 
-    @property
-    def user(self):
-        return None if self.branch is None else self.branch.user
-
+    _user_head_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     _branch_id = db.Column(db.Integer, db.ForeignKey("branch.id"))
-    _branch_head_id = db.Column(db.Integer, db.ForeignKey("branch.id"))
 
     next_branch = db.relationship(
         "Branch",
@@ -159,7 +155,9 @@ class Page(db.Model):
         navbar=None,
         error: str = None,
         back: Union[bool, str] = False,
+        prev_page: Page = None,
         forward: Union[bool, str] = True,
+        next_page: Page = None,
         template: str = "hemlock/page.html",
         compile: Union[Callable, List[Callable]] = compile_questions,
         validate: Union[Callable, List[Callable]] = validate_questions,
@@ -187,7 +185,9 @@ class Page(db.Model):
         set_attribute("error", error)
         set_attribute("navbar", navbar, True)
         set_attribute("back", back)
+        self.prev_page = prev_page
         set_attribute("forward", forward)
+        self.next_page = next_page
         set_attribute("template", template)
 
         set_attribute("compile", compile, True)
@@ -211,19 +211,10 @@ class Page(db.Model):
             question_text = ""
         else:
             question_text = "\n".join([str(question) for question in self.questions])
-            question_text = textwrap.indent(question_text, subsequent_indent)
-
-        if not self.next_branch:
-            branch_text = ""
-        else:
-            branch_text = "\n" + textwrap.indent(
-                str(self.next_branch), subsequent_indent
-            )
-
-        newline = "\n" if question_text and branch_text else ""
+            question_text = f"\n{textwrap.indent(question_text, subsequent_indent)}"
 
         return textwrap.indent(
-            f"<{self.__class__.__qualname__} id: {self.id}>\n{question_text}{newline}{branch_text}",
+            f"<{self.__class__.__qualname__} id: {self.id}>{question_text}",
             initial_indent,
         )
 
@@ -270,49 +261,43 @@ class Page(db.Model):
         return self
 
     def is_first_page(self):
-        """
-        Returns
-        -------
-        is_first_page : bool
-            Indicator that this is the first page in its participant's survey.
-        """
-        if self.branch is None or self.index > 0:
-            return False
-        for branch in self.part.branch_stack:
-            if branch.pages:
-                first_nonempty_branch = branch
-                break
-        return self.branch == first_nonempty_branch
+        return (
+            self.branch is not None
+            and self.branch.prev_page is None
+            and self.branch.prev_branch is None
+            and self.index == 0
+        )
 
     def is_last_page(self):
-        """
-        Returns
-        -------
-        is_last_page : bool
-            Indicator that this is the last page in its participant's survey.
+        def subtree_has_pages(next_branch):
+            while next_branch is not None:
+                if next_branch.pages:
+                    return True
+                next_branch = next_branch.next_branch
 
-        Notes
-        -----
-        This method assumes that if this page or its branch have a navigate
-        function or next branch that this page is not the last (i.e. that the
-        next branch will have pages). Avoid relying on this method if e.g.
-        this page's navigate function may return an empty branch.
-        """
-        if (
-            self.branch is None
-            # not last page on the branch
-            or self.index < len(self.branch.pages) - 1
-            or self.navigate is not None
-            or self.next_branch is not None
-            or self.branch.navigate is not None
-            or self.branch.next_branch is not None
-        ):
             return False
-        for branch in self.part.branch_stack:
-            if self.branch == branch:
-                return True
-            if branch.current_page is not None and branch.current_page.is_last_page():
+
+        if self.branch is None or self is not self.branch.pages[-1]:
+            return False
+
+        # if this page's next branch or this page's branch's next branch have pages in
+        # their subtree, this is not the last page
+        for next_branch in (self.next_branch, self.branch.next_branch):
+            if subtree_has_pages(next_branch):
                 return False
+
+        # look for the next page on a previous branch
+        branch = self.branch
+        while branch is not None:
+            prev_page = branch.prev_page
+            if prev_page is not None:
+                branch = prev_page.branch
+                if prev_page is not branch.pages[-1] or subtree_has_pages(branch.next_branch):
+                    return False
+            else:
+                branch = branch.prev_branch
+
+        return True
 
     def is_valid(self):
         """
@@ -325,7 +310,6 @@ class Page(db.Model):
         """
         return not (self.error or any([question.error for question in self.questions]))
 
-    # methods executed during study
     def run_compile_functions(self):
         """
         Run the page's compile functions. If `self.cache_compile`, the page's

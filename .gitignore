@@ -123,3 +123,5 @@ dmypy.json
 data/
 tmp/
 temp/
+*.db
+*.db-journal
