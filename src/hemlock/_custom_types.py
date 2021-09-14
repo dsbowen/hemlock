@@ -1,5 +1,6 @@
 from sqlalchemy_mutable import MutableList as MutableListBase
 from sqlalchemy_mutable.types import MutableJSONType, MutablePickleType
+from sqlalchemy_mutable.utils import is_instance
 
 
 class MutableList(MutableListBase):
@@ -7,9 +8,9 @@ class MutableList(MutableListBase):
     def convert_object(obj, root):
         if obj is None:
             return []
-        if not isinstance(obj, list):
+        if not is_instance(obj, list):
             return [obj]
-        return super().convert_object(obj, root)
+        return MutableListBase.convert_object(obj, root)
 
 
 class MutableListJSONType(MutableJSONType):

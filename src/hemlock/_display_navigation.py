@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 
-Y_INCREMENT = .015
+Y_INCREMENT = 0.015
 
 DEFAULT_NODE_COLOR = "#cfe2ff"
 CURRENT_NODE_COLOR = "#d1e7dd"
@@ -26,9 +26,8 @@ class Node:
         if page.terminal:
             self.edgecolor = TERMINAL_EDGE_COLOR
 
-        next_branch = page.next_branch
-        if next_branch:
-            self.subgraph = Graph(next_branch, self)
+        if page.branch:
+            self.subgraph = Graph(page.branch, self)
         else:
             self.subgraph = None
 
@@ -45,14 +44,22 @@ class Node:
             self.connect(prev_node.subgraph.nodes[-1])
 
     def get_attributes(self):
+        indices = []
+        page = self.page
+        while page is not None:
+            indices.append(str(page.index))
+            page = page.root
+        indices.reverse()
+        label = ".".join(indices)
+
         attrs = dict(
             pages=[self.page],
             nodes=[self.page.hash],
-            labels={self.page.hash: f"{self.page.branch.id}.{self.page.index}"},
+            labels={self.page.hash: label},
             pos={self.page.hash: self.pos},
             node_color=[self.color],
             edgecolors=[self.edgecolor],
-            edges=[(self.page.hash, child.page.hash) for child in self.children]
+            edges=[(self.page.hash, child.page.hash) for child in self.children],
         )
         if self.subgraph is not None:
             for key, value in self.subgraph.get_attributes().items():
@@ -75,35 +82,32 @@ class Graph:
             start_y = origin_node.pos[1] + Y_INCREMENT
 
         i = 0
-        for page in branch.pages:
+        for page in branch:
             node = Node(page, (start_x + i, start_y))
             i += len(node)
             if self.nodes:
                 node.connect(self.nodes[-1])
             self.nodes.append(node)
-        
+
         if origin_node is not None:
             if origin_node.page.forward:
                 origin_node.children.append(self.nodes[0])
-            if branch.pages[0].back:
+            if branch[0].back:
                 self.nodes[0].children.append(origin_node)
-
-        next_branch = branch.next_branch
-        while next_branch is not None and not next_branch.pages:
-            next_branch = next_branch.next_branch
-
-        if next_branch is not None:
-            last_node = self.nodes[-1]
-            while last_node.subgraph is not None:
-                last_node = last_node.subgraph.nodes[-1]
-            last_node.subgraph = Graph(next_branch, last_node)
-
 
     def __len__(self):
         return sum([len(node) for node in self.nodes])
 
     def get_attributes(self):
-        attrs = dict(pages=[], nodes=[], labels={}, pos={}, node_color=[], edgecolors=[], edges=[])
+        attrs = dict(
+            pages=[],
+            nodes=[],
+            labels={},
+            pos={},
+            node_color=[],
+            edgecolors=[],
+            edges=[],
+        )
         for node in self.nodes:
             for key, value in node.get_attributes().items():
                 if key in ("labels", "pos"):
@@ -114,25 +118,17 @@ class Graph:
         return attrs
 
 
-def display_navigation(user, node_size=1200, **subplots_kwargs):
-    # find the root branch
-    branch = user.page.branch
-    while branch.prev_branch or branch.prev_page:
-        if branch.prev_branch:
-            branch = branch.prev_branch
-        else:
-            branch = branch.prev_page.branch
-    
-    graph = Graph(branch)
+def display_navigation(tree, node_size=1200, **subplots_kwargs):
+    graph = Graph(tree.branch)
     attrs = graph.get_attributes()
     for i, page in enumerate(attrs["pages"]):
-        if page is user.page:
+        if page is tree.page:
             attrs["node_color"][i] = CURRENT_NODE_COLOR
             if not page.terminal:
                 attrs["edgecolors"][i] = CURRENT_EDGE_COLOR
 
     # TODO: account for next_page going to a page that came before and prev_page going to a page that comes after
-    positive_rad_edges, negative_rad_edges  = [], []
+    positive_rad_edges, negative_rad_edges = [], []
     for page in attrs["pages"]:
         if page.forward and page.next_page is not None:
             edge = (page.hash, page.next_page.hash)
@@ -151,7 +147,7 @@ def display_navigation(user, node_size=1200, **subplots_kwargs):
     edgelist_connectionstyle = (
         (attrs["edges"], "arc3"),
         (positive_rad_edges, "arc3,rad=.4"),
-        (negative_rad_edges, "arc3,rad=-.4")
+        (negative_rad_edges, "arc3,rad=-.4"),
     )
 
     G = nx.DiGraph()
@@ -159,9 +155,25 @@ def display_navigation(user, node_size=1200, **subplots_kwargs):
     G.add_edges_from(attrs["edges"] + positive_rad_edges + negative_rad_edges)
 
     fig, ax = plt.subplots(**subplots_kwargs)
-    nx.draw_networkx_nodes(G, attrs["pos"], ax=ax, node_color=attrs["node_color"], edgecolors=attrs["edgecolors"], linewidths=3, node_size=node_size)
+    nx.draw_networkx_nodes(
+        G,
+        attrs["pos"],
+        ax=ax,
+        node_color=attrs["node_color"],
+        edgecolors=attrs["edgecolors"],
+        linewidths=3,
+        node_size=node_size,
+    )
     for edgelist, connectionstyle in edgelist_connectionstyle:
-        nx.draw_networkx_edges(G, attrs["pos"], edgelist=edgelist, connectionstyle=connectionstyle, ax=ax, arrowsize=20, node_size=node_size)
+        nx.draw_networkx_edges(
+            G,
+            attrs["pos"],
+            edgelist=edgelist,
+            connectionstyle=connectionstyle,
+            ax=ax,
+            arrowsize=20,
+            node_size=node_size,
+        )
     nx.draw_networkx_labels(G, attrs["pos"], ax=ax, labels=attrs["labels"])
     ax.set_facecolor("whitesmoke")
 

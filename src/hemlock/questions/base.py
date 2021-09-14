@@ -40,10 +40,10 @@ class Question(Data):
         template="hemlock/question.html",
         prepend=None,
         append=None,
-        compile=None,
-        validate=None,
-        submit=None,
-        debug=None,
+        compile=[],
+        validate=[],
+        submit=[],
+        debug=[],
         default=None,
         params=None,
         html_settings={
@@ -132,6 +132,9 @@ class Question(Data):
         self.html_settings = copy.deepcopy(self.defaults["html_settings"])
         if extra_html_settings is not None:
             self.html_settings.update_settings(extra_html_settings)
+
+    def __hash__(self):
+        return self.hash
 
     def __repr__(self):
         label = None if self.label is None else textwrap.shorten(self.label, 40)

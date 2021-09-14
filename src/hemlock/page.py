@@ -4,7 +4,7 @@ import copy
 import os
 import textwrap
 from random import sample
-from typing import Any, Callable, List, Mapping, Union
+from typing import Any, Callable, Collection, List, Mapping, Union
 
 from IPython import display
 from flask import render_template, request
@@ -24,19 +24,22 @@ DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 def compile_questions(page):
-    [question.compile() for question in page.questions]
+    [question.run_compile_functions() for question in page.questions]
 
 
 def validate_questions(page):
-    [question.validate() for question in page.questions]
+    [question.run_validate_functions() for question in page.questions]
 
 
 def submit_questions(page):
-    [question.submit() for question in page.questions]
+    [question.run_submit_functions() for question in page.questions]
 
 
 def debug_questions(page):
-    [question.debug() for question in sample(page.questions, k=len(page.questions))]
+    [
+        question.fun_debug_functions()
+        for question in sample(page.questions, k=len(page.questions))
+    ]
 
 
 class Page(db.Model):
@@ -53,6 +56,7 @@ class Page(db.Model):
         submit=submit_questions,
         navigate=None,
         debug=debug_questions,
+        rerun_compile_functions=False,
         params=None,
         html_settings={
             "css": open(os.path.join(DIR_PATH, "_page_css.html"), "r")
@@ -82,14 +86,16 @@ class Page(db.Model):
         },
     )
 
-    _user_head_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    _branch_id = db.Column(db.Integer, db.ForeignKey("branch.id"))
+    _tree_id = db.Column(db.Integer, db.ForeignKey("tree.id"))
+    _tree_head_id = db.Column(db.Integer, db.ForeignKey("tree.id"))
 
-    next_branch = db.relationship(
-        "Branch",
-        back_populates="prev_page",
-        uselist=False,
-        foreign_keys="Branch._prev_page_id",
+    _branch_id = db.Column(db.Integer, db.ForeignKey("page.id"))
+    branch = db.relationship(
+        "Page",
+        backref=db.backref("root", remote_side=[id]),
+        order_by="Page.index",
+        collection_class=ordering_list("index"),
+        foreign_keys=_branch_id,
     )
 
     _prev_page_id = db.Column(db.Integer, db.ForeignKey("page.id"))
@@ -109,7 +115,7 @@ class Page(db.Model):
 
     questions = db.relationship(
         "Question",
-        backref="Page",
+        backref="page",
         order_by="Question.index",
         collection_class=ordering_list("index"),
     )
@@ -148,18 +154,20 @@ class Page(db.Model):
     direction_to = db.Column(db.String(8))
     index = db.Column(db.Integer)
     terminal = db.Column(db.Boolean, default=False)
+    rerun_compile_functions = db.Column(db.Boolean)
 
     def __init__(
         self,
         *questions: questions.base.Question,
         navbar=None,
         error: str = None,
-        back: Union[bool, str] = False,
+        back: Union[bool, str] = None,
         prev_page: Page = None,
-        forward: Union[bool, str] = True,
+        forward: Union[bool, str] = None,
         next_page: Page = None,
         template: str = "hemlock/page.html",
         compile: Union[Callable, List[Callable]] = compile_questions,
+        rerun_compile_functions: bool = None,
         validate: Union[Callable, List[Callable]] = validate_questions,
         submit: Union[Callable, List[Callable]] = submit_questions,
         navigate: Callable = None,
@@ -191,6 +199,7 @@ class Page(db.Model):
         set_attribute("template", template)
 
         set_attribute("compile", compile, True)
+        set_attribute("rerun_compile_functions", rerun_compile_functions)
         set_attribute("validate", validate, True)
         set_attribute("submit", submit, True)
         set_attribute("navigate", navigate, True)
@@ -218,9 +227,13 @@ class Page(db.Model):
             initial_indent,
         )
 
+    @property
+    def root_branch(self):
+        return (self.tree or self.root).branch
+
     def display(self):
         # we remove the vh-100 class from the div tag wrapping the form and add it back
-        # after displaying
+        # after displaying in a notebook.
         # the vh-100 class makes sure the form extends from the top to the botton of
         # the screen, but we don't want this when displaying in Jupyter
         div_class = self.html_settings["div"]["class"]
@@ -229,7 +242,7 @@ class Page(db.Model):
             div_class = self.html_settings["div"]["class"].copy()
             self.html_settings["div"]["class"].remove("vh-100")
 
-        return_value = display.HTML(self.render(display=True))
+        return_value = display.HTML(self.render(for_notebook_display=True))
 
         if vh_100:
             self.html_settings["div"]["class"] = div_class
@@ -261,43 +274,26 @@ class Page(db.Model):
         return self
 
     def is_first_page(self):
-        return (
-            self.branch is not None
-            and self.branch.prev_page is None
-            and self.branch.prev_branch is None
-            and self.index == 0
-        )
+        # this page is the zeroth of the pages directly connected to the tree
+        return self.tree is not None and self.index == 0
 
     def is_last_page(self):
-        def subtree_has_pages(next_branch):
-            while next_branch is not None:
-                if next_branch.pages:
-                    return True
-                next_branch = next_branch.next_branch
-
+        if self.tree is None and self.root is None:
             return False
 
-        if self.branch is None or self is not self.branch.pages[-1]:
+        if self is self.root_branch[-1] and self.root is None:
+            return True
+
+        if self.branch or self is not self.root_branch[-1]:
             return False
 
-        # if this page's next branch or this page's branch's next branch have pages in
-        # their subtree, this is not the last page
-        for next_branch in (self.next_branch, self.branch.next_branch):
-            if subtree_has_pages(next_branch):
-                return False
+        page = self.root
+        while page is page.root_branch[-1]:
+            page = page.root
+            if page is None:
+                return True
 
-        # look for the next page on a previous branch
-        branch = self.branch
-        while branch is not None:
-            prev_page = branch.prev_page
-            if prev_page is not None:
-                branch = prev_page.branch
-                if prev_page is not branch.pages[-1] or subtree_has_pages(branch.next_branch):
-                    return False
-            else:
-                branch = branch.prev_branch
-
-        return True
+        return False
 
     def is_valid(self):
         """
@@ -310,68 +306,43 @@ class Page(db.Model):
         """
         return not (self.error or any([question.error for question in self.questions]))
 
-    def run_compile_functions(self):
-        """
-        Run the page's compile functions. If `self.cache_compile`, the page's
-        compile functions and compile worker are removed.
-
-        Returns
-        -------
-        self
-        """
-        if self.run_compile:
-            [func(self) for func in self.compile]
-            if self.cache_compile:
-                self.compile = self.compile_worker = None
-            self.run_compile = False
-        return self
-
-    def render(self, display=False):
+    def render(self, for_notebook_display=False):
         return render_template(
             self.template,
             page=self,
             navbar=None,
             error=None if self.error is None else convert_markdown(self.error),
-            display=display,
+            for_notebook_display=for_notebook_display,
         )
 
-    def record_response(self):
-        """Record participant response
+    def get(self, for_notebook_display=False):
+        if self.direction_to not in ("back", "invalid") or self.rerun_compile_functions:
+            [func(self) for func in self.compile]
+        return self.render(for_notebook_display)
 
-        Begin by updating the total time. Then get the direction the
-        participant requested for navigation (forward or back). Finally,
-        record the participant's response to each question.
-        """
+    def post(self):
+        # record form data
         self.direction_from = request.form.get("direction")
         [question.record_response() for question in self.questions]
-        return self
 
-    def run_validate_functions(self):
-        """Validate response
+        if self.direction_from == "forward":
+            # validate user responses
+            self.clear_errors()
+            for func in self.validate:
+                self.error = func(self)
+                if self.error:
+                    break
 
-        Check validate functions one at a time. If any returns an error
-        message (i.e. error is not None), indicate the response was invalid
-        and return False. Otherwise, return True.
-        """
-        self.clear_errors()
-        for func in self.validate:
-            self.error = func(self)
-            if self.error:
-                break
+            if self.is_valid():
+                # record data and run submit and navigate functions
+                [question.record_data() for question in self.questions]
+                [func(self) for func in self.submit]
+                if self.navigate is not None:
+                    branch = self.navigate(self)
+                    if not isinstance(branch, list):
+                        branch = [branch]
+                    self.branch = branch
+            else:
+                self.direction_from = "invalid"
 
-        is_valid = self.is_valid()
-        self.direction_from = "forward" if is_valid else "invalid"
-        return is_valid
-
-    def run_submit_functions(self):
-        [question.record_data() for question in self.questions]
-        [func(self) for func in self.submit]
-        return self
-
-    def run_navigate_function(self):
-        self.next_branch = self.navigate(self)
-        return self
-
-    def run_debug_functions(self):
-        [func(self) for func in self.debug]
-        return self
+        return self.direction_from
