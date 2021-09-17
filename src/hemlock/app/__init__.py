@@ -54,12 +54,12 @@ def init_blueprint():
 def create_app(settings=settings):
     app = Flask(
         __name__,
-        static_folder=settings.pop("static_folder"),
-        template_folder=settings.pop("template_folder"),
+        static_folder=settings["static_folder"],
+        template_folder=settings["template_folder"],
     )
 
     # TODO get screenouts
-    app.config.update(settings.pop("config"))
+    app.config.update(settings["config"])
     app.settings = settings
     app.register_blueprint(bp)
 
@@ -74,7 +74,9 @@ def create_app(settings=settings):
 def create_test_app(use_in_memory_database=True, settings=settings):
     if use_in_memory_database:
         settings["config"]["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
+
     app = create_app()
     app.app_context().push()
     db.create_all()
+    
     return app

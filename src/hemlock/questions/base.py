@@ -17,7 +17,7 @@ from sqlalchemy_mutable.utils import is_instance
 
 from .._custom_types import MutableListJSONType, MutableListPickleType
 from ..app import db
-from ..base import Data
+from ..data import Data
 from ..page import Page
 from ..utils.format import convert_markdown
 from ..utils.random import make_hash
@@ -61,7 +61,7 @@ class Question(Data):
     def branch(self):
         return None if self.page is None else self.page.branch
 
-    _page_id = db.Column(db.Integer, db.ForeignKey("page.id"))
+    _page_question_id = db.Column(db.Integer, db.ForeignKey("page.id"))
 
     # HTML attributes
     hash = db.Column(db.String(HASH_LENGTH))
@@ -110,6 +110,7 @@ class Question(Data):
         default: Any = None,
         params: Any = None,
         extra_html_settings: Mapping[str, HTMLSettingType] = None,
+        **kwargs
     ):
         def set_attribute(name, value, copy_default=False):
             if value is None:
@@ -139,6 +140,8 @@ class Question(Data):
 
         set_attribute("default", default, True)
         set_attribute("params", params, True)
+
+        super().__init__(**kwargs)
 
     def __hash__(self):
         return self.hash

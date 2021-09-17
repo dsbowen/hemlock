@@ -4,7 +4,7 @@ import copy
 import os
 import textwrap
 from random import sample
-from typing import Any, Callable, Collection, List, Mapping, Union
+from typing import Any, Callable, Collection, List, Mapping, Tuple, Union
 
 from IPython import display
 from flask import render_template, request
@@ -16,7 +16,8 @@ from sqlalchemy_mutable.utils import is_instance
 
 from ._custom_types import MutableListPickleType
 from .app import db
-from .utils.format import convert_markdown
+from .data import Data
+from .timer import Timer
 from .utils.random import make_hash
 
 HASH_LENGTH = 10
@@ -83,20 +84,25 @@ class Page(db.Model):
     _next_page_id = db.Column(db.Integer, db.ForeignKey("page.id"))
     next_page = db.relationship("Page", foreign_keys=_next_page_id, remote_side=[id])
 
-    # embedded = db.relationship(
-    #     "Embedded",
-    #     backref="page",
-    #     order_by="Embedded.index",
-    #     collection_class=ordering_list("index")
-    # )
+    data = db.relationship(
+        "Data",
+        order_by="Data.index",
+        collection_class=ordering_list("index"),
+        foreign_keys="Data._page_id"
+    )
 
-    # TODO add relationship for timer
+    timer = db.relationship(
+        "Timer",
+        uselist=False,
+        foreign_keys="Timer._page_timer_id"
+    )
 
     questions = db.relationship(
         "Question",
         backref="page",
         order_by="Question.index",
         collection_class=ordering_list("index"),
+        foreign_keys="Question._page_question_id"
     )
 
     # HTML attributes
@@ -136,6 +142,8 @@ class Page(db.Model):
     def __init__(
         self,
         *questions: questions.base.Question,
+        timer: Union[str, Timer]=None,
+        data: List[Data]=None,
         navbar=None,
         back: Union[bool, str] = None,
         prev_page: Page = None,
@@ -162,6 +170,8 @@ class Page(db.Model):
         self.hash = make_hash(HASH_LENGTH)
 
         self.questions = list(questions)
+        self.timer = Timer(variable=timer) if is_instance(timer, str) else Timer()
+        self.data = [] if data is None else data
 
         set_attribute("navbar", navbar, True)
         set_attribute("back", back)
@@ -293,9 +303,13 @@ class Page(db.Model):
         if self.direction_to not in ("back", "invalid") or self.rerun_compile_functions:
             [func(self) for func in self.compile]
             [question.run_compile_functions() for question in self.questions]
+
+        self.timer.start()
         return self.render(for_notebook_display)
 
     def post(self):
+        self.timer.pause()
+
         # record form data
         self.direction_from = request.form.get("direction")
         [question.record_response() for question in self.questions]
