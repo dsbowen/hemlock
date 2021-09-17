@@ -23,14 +23,25 @@ class Tree(db.Model):
 
     page = db.relationship("Page", uselist=False, foreign_keys="Page._tree_head_id")
 
-    view_function_name = db.Column(db.String)
+    _seed_func_name = db.Column(db.String)
+    _url_rule = db.Column(db.String)
     request_in_progress = db.Column(db.Boolean, default=False)
     prev_request_method = db.Column(db.String(4))
     cached_page_html = db.Column(db.Text)
+    index = db.Column(db.Integer)
 
-    def __init__(self, view_func):
-        self.view_function_name = view_func.__name__
-        self.branch = view_func()
+    @property
+    def url_rule(self):
+        if self._url_rule is not None:
+            return self._url_rule
+        
+        return url_for(f"hemlock.{self._seed_func_name}")
+
+    def __init__(self, seed_func, url_rule:str=None):
+        self._seed_func_name = seed_func.__name__
+        self._url_rule = url_rule
+        branch = seed_func()
+        self.branch = branch if isinstance(branch, list) else [branch]
         self.page = self.branch[0]
 
     def __repr__(self):
@@ -48,8 +59,12 @@ class Tree(db.Model):
             initial_indent,
         )
 
-    def display(self):
-        display_navigation(self)
+    def display(self, ax=None, node_size=1200, **subplots_kwargs):
+        if ax is None:
+            _, ax = plt.subplots(**subplots_kwargs)
+            ax.set_facecolor("whitesmoke")
+
+        display_navigation(self, ax, node_size)
         plt.show()
         return self.page.display()
 
@@ -120,29 +135,5 @@ class Tree(db.Model):
         self.page.direction_to = direction_from
 
         self.request_in_progress = False
-        return redirect(url_for(f"hemlock.{self.view_function_name}"))
-
-    def test_request(self, responses=None, direction="forward"):
-        self.test_post(responses, direction)
-        self.test_get()
-        return self
-
-    def test_get(self):
-        with current_app.test_request_context():
-            self.process_request()
-        return self
-
-    def test_post(self, responses=None, direction="forward"):
-        data = {}
-        if isinstance(responses, dict):
-            data = {key.hash: item for key, item in responses.items()}
-        elif isinstance(responses, (list, tuple)):
-            data = {
-                question.hash: item
-                for question, item in zip(self.page.questions, responses)
-            }
-        data["direction"] = direction
-
-        with current_app.test_request_context(method="POST", data=data):
-            self.process_request()
-        return self
+        db.session.commit()
+        return redirect(self.url_rule)

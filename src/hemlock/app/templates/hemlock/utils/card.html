@@ -1,0 +1,10 @@
+<div id="{{ question.hash }}-card" {{ question.html_settings["card"].get_attrs() | safe }}>
+    <div class="card-body">
+        {% block card_body %}
+            {% include "hemlock/utils/label.html" %}
+            {% block content %}{% endblock %}
+            {% include "hemlock/utils/feedback.html" %}
+            {% include "hemlock/utils/form_text.html" %}
+        {% endblock %}
+    </div>
+</div>

@@ -12,9 +12,8 @@
         <style>
             body {
                 background-color: whitesmoke;
-                /* background-color: transparent; */
             }
-            @media (prefers-color-scheme: dark) {
+            /* @media (prefers-color-scheme: dark) {
                 body {
                     background-color: black;
                     color: white;
@@ -22,7 +21,7 @@
                 .card {
                     background-color: #4A4A4A;
                 }
-            }
+            } */
         </style>
         {% if for_notebook_display is defined and for_notebook_display is sameas true %}
         <style>
@@ -41,23 +40,17 @@
 
         <div {{ page.html_settings["div"].get_attrs() | safe }}>
             <form method="POST" class="w-100" enctype="multipart/form-data">
-            {% block form %}
-                {% if error is not none %}
-                <div {{ page.html_settings["error"].get_attrs() | safe }}>
-                    {{ error | safe }}
-                </div>
-                {% endif %}
-                
+            {% block form %}                
                 {% for question in page.questions %}
                     {{ question.render() | safe}}
                 {% endfor %}
     
-                {% if page.forward is not none and not page.terminal %}
+                {% if page.forward is not none and not page.terminal and not page.is_last_page %}
                 <button {{ page.html_settings["forward-button"].get_attrs() | safe }}>
                     {{ page.forward }}
                 </button>
                 {% endif %}
-                {% if page.back is not none and not page.is_first_page() %}
+                {% if page.back is not none and not page.is_first_page %}
                 <button {{ page.html_settings["back-button"].get_attrs() | safe }}>
                     {{ page.back }}
                 </button>

@@ -1,0 +1,35 @@
+{% extends "hemlock/utils/card.html" %}
+
+{% block card_body %}
+{% include "hemlock/utils/label.html" %}
+<div class="input-group">
+    {% if question.prepend is not none %}
+        {% for prepend_text in question.prepend %}
+        <span class="input-group-text">{{ prepend_text }}</span>
+        {% endfor %}
+    {% endif %}
+
+    {% if question.floating_label is not none %}
+    <div class="form-floating flex-grow-1">
+        <input id="{{ question.hash }}" name="{{ question.hash }}" {{ question.html_settings["input"].get_attrs() | safe }} value="{{ question.get_default() }}" placeholder="placeholder"> 
+        <label for="{{ question.hash }}">
+            {{ question.floating_label | safe}}
+        </label>
+        {% include "hemlock/utils/feedback.html" %}
+    </div>
+    {% else %}
+        <input id="{{ question.hash }}" name="{{ question.hash }}" {{ question.html_settings["input"].get_attrs() | safe }} value="{{ question.get_default() }}">
+    {% endif %}
+
+    {% if question.append is not none %}
+        {% for append_text in question.append %}
+        <span class="input-group-text">{{ append_text }}</span>
+        {% endfor %}
+    {% endif %}
+
+    {% if question.floating_label is none %}
+    {% include "hemlock/utils/feedback.html" %}
+    {% endif %}
+</div>
+{% include "hemlock/utils/form_text.html" %}
+{% endblock %}

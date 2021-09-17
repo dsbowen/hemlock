@@ -23,25 +23,6 @@ HASH_LENGTH = 10
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
-def compile_questions(page):
-    [question.run_compile_functions() for question in page.questions]
-
-
-def validate_questions(page):
-    [question.run_validate_functions() for question in page.questions]
-
-
-def submit_questions(page):
-    [question.run_submit_functions() for question in page.questions]
-
-
-def debug_questions(page):
-    [
-        question.fun_debug_functions()
-        for question in sample(page.questions, k=len(page.questions))
-    ]
-
-
 class Page(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
@@ -51,11 +32,10 @@ class Page(db.Model):
         back=False,
         forward=True,
         template="hemlock/page.html",
-        compile=compile_questions,
-        validate=validate_questions,
-        submit=submit_questions,
+        compile=[],
+        submit=[],
         navigate=None,
-        debug=debug_questions,
+        debug=[],
         rerun_compile_functions=False,
         params=None,
         html_settings={
@@ -66,7 +46,6 @@ class Page(db.Model):
             .read()
             .splitlines(),
             "div": {"class": ["container", "vh-100", "d-flex", "align-items-center"]},
-            "error": {"class": ["alert", "alert-danger", "w-100"]},
             "back-button": {
                 "id": "back-button",
                 "class": ["btn", "btn-primary"],
@@ -123,7 +102,6 @@ class Page(db.Model):
     # HTML attributes
     hash = db.Column(db.String(HASH_LENGTH))
     navbar = db.Column(db.Text)
-    error = db.Column(db.Text)
     back = db.Column(db.String)
     forward = db.Column(db.String)
     template = db.Column(db.String)
@@ -143,7 +121,6 @@ class Page(db.Model):
 
     # Function attributes
     compile = db.Column(MutableListPickleType)
-    validate = db.Column(MutableListPickleType)
     submit = db.Column(MutableListPickleType)
     navigate = db.Column(MutablePickleType)
     debug = db.Column(MutableListPickleType)
@@ -160,18 +137,16 @@ class Page(db.Model):
         self,
         *questions: questions.base.Question,
         navbar=None,
-        error: str = None,
         back: Union[bool, str] = None,
         prev_page: Page = None,
         forward: Union[bool, str] = None,
         next_page: Page = None,
         template: str = "hemlock/page.html",
-        compile: Union[Callable, List[Callable]] = compile_questions,
+        compile: Union[Callable, List[Callable]] = None,
         rerun_compile_functions: bool = None,
-        validate: Union[Callable, List[Callable]] = validate_questions,
-        submit: Union[Callable, List[Callable]] = submit_questions,
+        submit: Union[Callable, List[Callable]] = None,
         navigate: Callable = None,
-        debug: Union[Callable, List[Callable]] = debug_questions,
+        debug: Union[Callable, List[Callable]] = None,
         terminal: bool = False,
         params: Any = None,
         extra_html_settings: Mapping[str, HTMLSettingType] = None,
@@ -188,9 +163,6 @@ class Page(db.Model):
 
         self.questions = list(questions)
 
-        if is_instance(error, str):
-            error = textwrap.dedent(error).strip()
-        set_attribute("error", error)
         set_attribute("navbar", navbar, True)
         set_attribute("back", back)
         self.prev_page = prev_page
@@ -200,7 +172,6 @@ class Page(db.Model):
 
         set_attribute("compile", compile, True)
         set_attribute("rerun_compile_functions", rerun_compile_functions)
-        set_attribute("validate", validate, True)
         set_attribute("submit", submit, True)
         set_attribute("navigate", navigate, True)
         set_attribute("debug", debug, True)
@@ -222,14 +193,60 @@ class Page(db.Model):
             question_text = "\n".join([str(question) for question in self.questions])
             question_text = f"\n{textwrap.indent(question_text, subsequent_indent)}"
 
+        terminal = " terminal" if self.terminal else ""
         return textwrap.indent(
-            f"<{self.__class__.__qualname__} id: {self.id}>{question_text}",
+            f"<{self.__class__.__qualname__} {self.get_position()}{terminal}>{question_text}",
             initial_indent,
         )
 
     @property
     def root_branch(self):
         return (self.tree or self.root).branch
+
+    @property
+    def is_first_page(self):
+        # this page is the zeroth of the pages directly connected to the tree
+        return self.tree is not None and self.index == 0
+
+    @property
+    def is_last_page(self):
+        if self.tree is None and self.root is None:
+            return False
+
+        if self is self.root_branch[-1] and self.root is None:
+            return True
+
+        if self.branch or self is not self.root_branch[-1]:
+            return False
+
+        page = self.root
+        while page is page.root_branch[-1]:
+            page = page.root
+            if page is None:
+                return True
+
+        return False
+
+    @property
+    def is_valid(self):
+        """
+        Returns
+        -------
+        valid : bool
+            Indicator that all of the participant's responses are valid. That
+            is, that there are no error messages on the page or any of its
+            questions.
+        """
+        return all([question.is_valid in (True, None) for question in self.questions])
+
+    def get_position(self):
+        indices = []
+        page = self
+        while page is not None:
+            indices.append(str(page.index))
+            page = page.root
+        indices.reverse()
+        return ".".join(indices)
 
     def display(self):
         # we remove the vh-100 class from the div tag wrapping the form and add it back
@@ -249,17 +266,8 @@ class Page(db.Model):
 
         return return_value
 
-    def clear_errors(self):
-        """
-        Clear the error message from this page and all of its questions.
-
-        Returns
-        -------
-        self : hemlock.Page
-        """
-        self.error = None
-        for question in self.questions:
-            question.error = None
+    def clear_feedback(self):
+        [question.clear_feedback() for question in self.questions]
         return self
 
     def clear_responses(self):
@@ -270,54 +278,21 @@ class Page(db.Model):
         -------
         self : hemlock.Page
         """
-        [question.clear_response() for question in self.questions]
+        [question.clear_responses() for question in self.questions]
         return self
-
-    def is_first_page(self):
-        # this page is the zeroth of the pages directly connected to the tree
-        return self.tree is not None and self.index == 0
-
-    def is_last_page(self):
-        if self.tree is None and self.root is None:
-            return False
-
-        if self is self.root_branch[-1] and self.root is None:
-            return True
-
-        if self.branch or self is not self.root_branch[-1]:
-            return False
-
-        page = self.root
-        while page is page.root_branch[-1]:
-            page = page.root
-            if page is None:
-                return True
-
-        return False
-
-    def is_valid(self):
-        """
-        Returns
-        -------
-        valid : bool
-            Indicator that all of the participant's responses are valid. That
-            is, that there are no error messages on the page or any of its
-            questions.
-        """
-        return not (self.error or any([question.error for question in self.questions]))
 
     def render(self, for_notebook_display=False):
         return render_template(
             self.template,
             page=self,
             navbar=None,
-            error=None if self.error is None else convert_markdown(self.error),
             for_notebook_display=for_notebook_display,
         )
 
     def get(self, for_notebook_display=False):
         if self.direction_to not in ("back", "invalid") or self.rerun_compile_functions:
             [func(self) for func in self.compile]
+            [question.run_compile_functions() for question in self.questions]
         return self.render(for_notebook_display)
 
     def post(self):
@@ -327,19 +302,19 @@ class Page(db.Model):
 
         if self.direction_from == "forward":
             # validate user responses
-            self.clear_errors()
-            for func in self.validate:
-                self.error = func(self)
-                if self.error:
-                    break
+            self.clear_feedback()
+            [question.run_validate_functions() for question in self.questions]
 
-            if self.is_valid():
+            if self.is_valid:
                 # record data and run submit and navigate functions
                 [question.record_data() for question in self.questions]
+
                 [func(self) for func in self.submit]
+                [question.run_submit_functions() for question in self.questions]
+
                 if self.navigate is not None:
                     branch = self.navigate(self)
-                    if not isinstance(branch, list):
+                    if not is_instance(branch, list):
                         branch = [branch]
                     self.branch = branch
             else:

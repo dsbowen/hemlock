@@ -44,22 +44,13 @@ class Node:
             self.connect(prev_node.subgraph.nodes[-1])
 
     def get_attributes(self):
-        indices = []
-        page = self.page
-        while page is not None:
-            indices.append(str(page.index))
-            page = page.root
-        indices.reverse()
-        label = ".".join(indices)
-
         attrs = dict(
-            pages=[self.page],
-            nodes=[self.page.hash],
-            labels={self.page.hash: label},
-            pos={self.page.hash: self.pos},
+            nodes=[self.page],
+            labels={self.page: self.page.get_position()},
+            pos={self.page: self.pos},
             node_color=[self.color],
             edgecolors=[self.edgecolor],
-            edges=[(self.page.hash, child.page.hash) for child in self.children],
+            edges=[(self.page, child.page) for child in self.children],
         )
         if self.subgraph is not None:
             for key, value in self.subgraph.get_attributes().items():
@@ -100,7 +91,6 @@ class Graph:
 
     def get_attributes(self):
         attrs = dict(
-            pages=[],
             nodes=[],
             labels={},
             pos={},
@@ -118,45 +108,33 @@ class Graph:
         return attrs
 
 
-def display_navigation(tree, node_size=1200, **subplots_kwargs):
+def display_navigation(tree, ax, node_size):
     graph = Graph(tree.branch)
     attrs = graph.get_attributes()
-    for i, page in enumerate(attrs["pages"]):
+    for i, page in enumerate(attrs["nodes"]):
         if page is tree.page:
             attrs["node_color"][i] = CURRENT_NODE_COLOR
             if not page.terminal:
                 attrs["edgecolors"][i] = CURRENT_EDGE_COLOR
 
-    # TODO: account for next_page going to a page that came before and prev_page going to a page that comes after
-    positive_rad_edges, negative_rad_edges = [], []
-    for page in attrs["pages"]:
+    curved_edges = []
+    for page in attrs["nodes"]:
         if page.forward and page.next_page is not None:
-            edge = (page.hash, page.next_page.hash)
-            if page.branch.id <= page.next_page.branch.id:
-                negative_rad_edges.append(edge)
-            else:
-                positive_rad_edges.append(edge)
+            curved_edges.append((page, page.next_page))
 
         if page.back and page.prev_page is not None:
-            edge = (page.hash, page.prev_page.hash)
-            if page.branch.id >= page.prev_page.branch.id:
-                negative_rad_edges.append(edge)
-            else:
-                positive_rad_edges.append(edge)
+            curved_edges.append((page, page.prev_page))
 
     edgelist_connectionstyle = (
         (attrs["edges"], "arc3"),
-        (positive_rad_edges, "arc3,rad=.4"),
-        (negative_rad_edges, "arc3,rad=-.4"),
+        (curved_edges, "arc3,rad=-.4"),
     )
 
-    G = nx.DiGraph()
-    G.add_nodes_from(attrs["nodes"])
-    G.add_edges_from(attrs["edges"] + positive_rad_edges + negative_rad_edges)
-
-    fig, ax = plt.subplots(**subplots_kwargs)
+    nx_graph = nx.DiGraph()
+    nx_graph.add_nodes_from(attrs["nodes"])
+    nx_graph.add_edges_from(attrs["edges"] + curved_edges)
     nx.draw_networkx_nodes(
-        G,
+        nx_graph,
         attrs["pos"],
         ax=ax,
         node_color=attrs["node_color"],
@@ -166,7 +144,7 @@ def display_navigation(tree, node_size=1200, **subplots_kwargs):
     )
     for edgelist, connectionstyle in edgelist_connectionstyle:
         nx.draw_networkx_edges(
-            G,
+            nx_graph,
             attrs["pos"],
             edgelist=edgelist,
             connectionstyle=connectionstyle,
@@ -174,7 +152,6 @@ def display_navigation(tree, node_size=1200, **subplots_kwargs):
             arrowsize=20,
             node_size=node_size,
         )
-    nx.draw_networkx_labels(G, attrs["pos"], ax=ax, labels=attrs["labels"])
-    ax.set_facecolor("whitesmoke")
+    nx.draw_networkx_labels(nx_graph, attrs["pos"], ax=ax, labels=attrs["labels"])
 
     return ax

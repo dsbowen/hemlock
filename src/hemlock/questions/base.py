@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import html
 import textwrap
 from typing import Any, Callable, List, Mapping, Union
 
@@ -16,7 +15,7 @@ from sqlalchemy_mutable.types import (
 )
 from sqlalchemy_mutable.utils import is_instance
 
-from .._custom_types import MutableListPickleType
+from .._custom_types import MutableListJSONType, MutableListPickleType
 from ..app import db
 from ..base import Data
 from ..page import Page
@@ -36,10 +35,11 @@ class Question(Data):
 
     defaults = dict(
         label=None,
-        error=None,
-        template="hemlock/question.html",
+        floating_label=None,
+        template=None,
         prepend=None,
         append=None,
+        form_text=None,
         compile=[],
         validate=[],
         submit=[],
@@ -47,9 +47,9 @@ class Question(Data):
         default=None,
         params=None,
         html_settings={
-            "card": {"class": ["card", "my-4"]},
+            "card": {"class": ["card", "shadow-sm", "my-4"]},
             "label": {"class": ["form-label", "w-100"]},
-            "error": {"class": ["alert", "alert-danger"]},
+            "feedback": {"class": []},
         },
     )
 
@@ -66,11 +66,22 @@ class Question(Data):
     # HTML attributes
     hash = db.Column(db.String(HASH_LENGTH))
     label = db.Column(db.Text)
-    error = db.Column(db.Text)
+    floating_label = db.Column(db.String)
     template = db.Column(db.String)
-    prepend = db.Column(db.String)
-    append = db.Column(db.String)
+    prepend = db.Column(MutableListJSONType)
+    append = db.Column(MutableListJSONType)
+    feedback = db.Column(db.Text)
+    _is_valid = db.Column(db.Boolean)
+    form_text = db.Column(db.Text)
     html_settings = db.Column(HTMLSettingsType)
+
+    @validates("label", "form_text", "feedback")
+    def validates_text(self, key, value):
+        return None if value is None else textwrap.dedent(value).strip()
+
+    @property
+    def is_valid(self) -> bool:
+        return self._is_valid
 
     # Function attributes
     compile = db.Column(MutableListPickleType)
@@ -87,10 +98,11 @@ class Question(Data):
     def __init__(
         self,
         label: str = None,
-        error: str = None,
+        floating_label: str = None,
         template: str = None,
         prepend: str = None,
         append: str = None,
+        form_text: str = None,
         compile: Union[Callable, List[Callable]] = None,
         validate: Union[Callable, List[Callable]] = None,
         submit: Union[Callable, List[Callable]] = None,
@@ -109,17 +121,16 @@ class Question(Data):
 
         self.hash = make_hash(HASH_LENGTH)
 
-        if is_instance(label, str):
-            label = textwrap.dedent(label).strip()
+        self.html_settings = copy.deepcopy(self.defaults["html_settings"])
+        if extra_html_settings is not None:
+            self.html_settings.update_settings(extra_html_settings)
+
         set_attribute("label", label)
-
-        if is_instance(error, str):
-            error = textwrap.dedent(error).strip()
-        set_attribute("error", error)
-
+        set_attribute("floating_label", floating_label)
         set_attribute("template", template)
-        set_attribute("prepend", prepend)
-        set_attribute("append", append)
+        set_attribute("prepend", prepend, True)
+        set_attribute("append", append, True)
+        set_attribute("form_text", form_text)
 
         set_attribute("compile", compile, True)
         set_attribute("validate", validate, True)
@@ -128,10 +139,6 @@ class Question(Data):
 
         set_attribute("default", default, True)
         set_attribute("params", params, True)
-
-        self.html_settings = copy.deepcopy(self.defaults["html_settings"])
-        if extra_html_settings is not None:
-            self.html_settings.update_settings(extra_html_settings)
 
     def __hash__(self):
         return self.hash
@@ -153,6 +160,11 @@ class Question(Data):
     def display(self):
         return Page(self, forward=False).display()
 
+    def clear_feedback(self):
+        self.feedback = None
+        self.set_is_valid(None)
+        return self
+
     def clear_response(self):
         """
         Clear the response.
@@ -163,7 +175,20 @@ class Question(Data):
         """
         self.response = None
         self.has_responded = False
+        self.clear_feedback()
         return self
+
+    def get_default(self):
+        if self.response is None:
+            if self.default is None:
+                return ""
+
+            return self.default
+
+        return self.response
+
+    def set_is_valid(self, is_valid: bool = None):
+        self._is_valid = is_valid
 
     def run_compile_functions(self):
         [func(self) for func in self.compile]
@@ -174,7 +199,8 @@ class Question(Data):
             self.template,
             question=self,
             label=None if self.label is None else convert_markdown(self.label),
-            error=None if self.error is None else convert_markdown(self.error),
+            feedback=None if self.feedback is None else convert_markdown(self.feedback, strip_last_paragraph=True),
+            form_text=None if self.form_text is None else convert_markdown(self.form_text, strip_last_paragraph=True),
         )
 
     def record_response(self):
@@ -185,19 +211,29 @@ class Question(Data):
             self.response = None
         return self
 
-    def run_validate_functions(self):
+    def run_validate_functions(self) -> bool:
         """Validate Participant response
 
         Check validate functions one at a time. If any yields an error
         message (i.e. error is not None), indicate the response was invalid
         and return False. Otherwise, return True.
         """
-        for func in self.validate:
-            self.error = func(self)
-            if self.error:
-                return False
+        if self.validate:
+            for func in self.validate:
+                result = func(self)
+                if is_instance(result, tuple):
+                    # result is (is_valid: Optional[bool], feedback: str)
+                    is_valid, self.feedback = result
+                else:
+                    # result is is_valid: Optional[bool]
+                    is_valid, self.feedback = result, None
 
-        self.error = None
+                if is_valid is False:
+                    self.set_is_valid(False)
+                    return False
+
+            self.set_is_valid(is_valid)
+
         return True
 
     def record_data(self):
