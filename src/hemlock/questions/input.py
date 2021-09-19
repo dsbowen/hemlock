@@ -15,7 +15,7 @@ datetime_input_types = {
     "datetime": ("yyyy-mm-ddTHH:MM", "%Y-%m-%dT%H:%M"),
     "datetime-local": ("yyyy-mm-ddTHH:MM", "%Y-%m-%dT%H:%M"),
     "month": ("yyyy-mm", "%Y-%m"),
-    "time": ("HH:MM", "%H:%M")
+    "time": ("HH:MM", "%H:%M"),
 }
 
 
@@ -25,10 +25,7 @@ class Input(Question):
 
     defaults = copy.deepcopy(Question.defaults)
     defaults["template"] = "hemlock/input.html"
-    defaults["html_settings"]["input"] = {
-        "type": "text",
-        "class": ["form-control"]
-    }
+    defaults["html_settings"]["input"] = {"type": "text", "class": ["form-control"]}
 
     @property
     def input_tag(self):
@@ -43,7 +40,7 @@ class Input(Question):
 
             self.input_tag.update_attrs(input_tag)
 
-    def set_is_valid(self, is_valid: bool=None):
+    def set_is_valid(self, is_valid: bool = None):
         def add_and_remove_classes(html_attr, remove, add=None):
             classes = self.html_settings[html_attr]["class"]
 
@@ -59,16 +56,31 @@ class Input(Question):
                 classes.append(add)
 
         input_valid_class, input_invalid_class = "is-valid", "is-invalid"
-        feedback_valid_class, feedback_invalid_class = "valid-feedback", "invalid-feedback"
+        feedback_valid_class, feedback_invalid_class = (
+            "valid-feedback",
+            "invalid-feedback",
+        )
         if is_valid is None:
-            add_and_remove_classes("input", remove=[input_valid_class, input_invalid_class])
-            add_and_remove_classes("feedback", remove=[feedback_valid_class, feedback_invalid_class])
+            add_and_remove_classes(
+                "input", remove=[input_valid_class, input_invalid_class]
+            )
+            add_and_remove_classes(
+                "feedback", remove=[feedback_valid_class, feedback_invalid_class]
+            )
         elif is_valid:
-            add_and_remove_classes("input", add=input_valid_class, remove=input_invalid_class)
-            add_and_remove_classes("feedback", add=feedback_valid_class, remove=feedback_invalid_class)
+            add_and_remove_classes(
+                "input", add=input_valid_class, remove=input_invalid_class
+            )
+            add_and_remove_classes(
+                "feedback", add=feedback_valid_class, remove=feedback_invalid_class
+            )
         else:
-            add_and_remove_classes("input", add=input_invalid_class, remove=input_valid_class)
-            add_and_remove_classes("feedback", add=feedback_invalid_class, remove=feedback_valid_class)
+            add_and_remove_classes(
+                "input", add=input_invalid_class, remove=input_valid_class
+            )
+            add_and_remove_classes(
+                "feedback", add=feedback_invalid_class, remove=feedback_valid_class
+            )
 
         return super().set_is_valid(is_valid)
 
@@ -76,19 +88,22 @@ class Input(Question):
         # set the placeholder as the input format for browsers that don't support
         # datetime input types
         self.input_tag["type"] = input_type
-        if input_type in datetime_input_types and self.input_tag.get("placeholder") is None:
+        if (
+            input_type in datetime_input_types
+            and self.input_tag.get("placeholder") is None
+        ):
             self.input_tag["placeholder"] = datetime_input_types[input_type][0]
         return self
 
     def convert_response(self):
         if self.response is None:
             return None
-            
+
         input_type = self.input_tag.get("type", "text")
 
         if input_type == "number":
             return float(self.response)
-        
+
         if input_type in datetime_input_types:
             _, datetime_format = datetime_input_types[input_type]
             return datetime.strptime(self.response.get_object(), datetime_format)
@@ -101,7 +116,7 @@ class Input(Question):
         except ValueError:
             self.set_is_valid(False)
             input_type = self.input_tag.get("type", "text")
-            
+
             if input_type == "number":
                 self.feedback = "Please enter a number."
                 return False
@@ -110,7 +125,7 @@ class Input(Question):
                 html_format, datetime_format = datetime_input_types[input_type]
                 self.feedback = f"Please use the format {html_format}. For example, right now it is {datetime.utcnow().strftime(datetime_format)}."
                 return False
-            
+
             self.feedback = "Please enter the correct type of response."
             return False
 

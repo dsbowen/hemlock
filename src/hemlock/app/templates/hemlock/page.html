@@ -25,7 +25,7 @@
         </style>
         {% if for_notebook_display is defined and for_notebook_display is sameas true %}
         <style>
-            body{
+            body {
                 background-color: transparent;
             }
         </style>
@@ -45,7 +45,7 @@
                     {{ question.render() | safe}}
                 {% endfor %}
     
-                {% if page.forward is not none and not page.terminal and not page.is_last_page %}
+                {% if page.forward is not none and not page.is_last_page %}
                 <button {{ page.html_settings["forward-button"].get_attrs() | safe }}>
                     {{ page.forward }}
                 </button>

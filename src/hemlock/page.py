@@ -88,21 +88,17 @@ class Page(db.Model):
         "Data",
         order_by="Data.index",
         collection_class=ordering_list("index"),
-        foreign_keys="Data._page_id"
+        foreign_keys="Data._page_id",
     )
 
-    timer = db.relationship(
-        "Timer",
-        uselist=False,
-        foreign_keys="Timer._page_timer_id"
-    )
+    timer = db.relationship("Timer", uselist=False, foreign_keys="Timer._page_timer_id")
 
     questions = db.relationship(
         "Question",
         backref="page",
         order_by="Question.index",
         collection_class=ordering_list("index"),
-        foreign_keys="Question._page_question_id"
+        foreign_keys="Question._page_question_id",
     )
 
     # HTML attributes
@@ -142,8 +138,8 @@ class Page(db.Model):
     def __init__(
         self,
         *questions: questions.base.Question,
-        timer: Union[str, Timer]=None,
-        data: List[Data]=None,
+        timer: Union[str, Timer] = None,
+        data: List[Data] = None,
         navbar=None,
         back: Union[bool, str] = None,
         prev_page: Page = None,
@@ -220,16 +216,20 @@ class Page(db.Model):
 
     @property
     def is_last_page(self):
-        if self.tree is None and self.root is None:
-            return False
-
-        if self is self.root_branch[-1] and self.root is None:
+        if self.terminal:
             return True
 
-        if self.branch or self is not self.root_branch[-1]:
+        if self.tree is None and self.root is None:
+            # this page is not connected to a tree or root page
+            # this will most often occur during testing
             return False
 
-        page = self.root
+        if self.branch or self.navigate is not None:
+            # this page either already has a branch
+            # or will get a new branch when submitted
+            return False
+
+        page = self
         while page is page.root_branch[-1]:
             page = page.root
             if page is None:

@@ -34,10 +34,10 @@ class Tree(db.Model):
     def url_rule(self):
         if self._url_rule is not None:
             return self._url_rule
-        
+
         return url_for(f"hemlock.{self._seed_func_name}")
 
-    def __init__(self, seed_func, url_rule:str=None):
+    def __init__(self, seed_func, url_rule: str = None):
         self._seed_func_name = seed_func.__name__
         self._url_rule = url_rule
         branch = seed_func()

@@ -110,7 +110,7 @@ class Question(Data):
         default: Any = None,
         params: Any = None,
         extra_html_settings: Mapping[str, HTMLSettingType] = None,
-        **kwargs
+        **kwargs,
     ):
         def set_attribute(name, value, copy_default=False):
             if value is None:
@@ -202,8 +202,12 @@ class Question(Data):
             self.template,
             question=self,
             label=None if self.label is None else convert_markdown(self.label),
-            feedback=None if self.feedback is None else convert_markdown(self.feedback, strip_last_paragraph=True),
-            form_text=None if self.form_text is None else convert_markdown(self.form_text, strip_last_paragraph=True),
+            feedback=None
+            if self.feedback is None
+            else convert_markdown(self.feedback, strip_last_paragraph=True),
+            form_text=None
+            if self.form_text is None
+            else convert_markdown(self.form_text, strip_last_paragraph=True),
         )
 
     def record_response(self):

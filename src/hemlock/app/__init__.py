@@ -78,5 +78,5 @@ def create_test_app(use_in_memory_database=True, settings=settings):
     app = create_app()
     app.app_context().push()
     db.create_all()
-    
+
     return app

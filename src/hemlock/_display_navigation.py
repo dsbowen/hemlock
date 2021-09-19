@@ -19,11 +19,11 @@ class Node:
         self.pos = pos
 
         self.color = DEFAULT_NODE_COLOR
-        if page.terminal:
+        if page.is_last_page:
             self.color = TERMINAL_NODE_COLOR
 
         self.edgecolor = DEFAULT_EDGE_COLOR
-        if page.terminal:
+        if page.is_last_page:
             self.edgecolor = TERMINAL_EDGE_COLOR
 
         if page.branch:
@@ -114,7 +114,7 @@ def display_navigation(tree, ax, node_size):
     for i, page in enumerate(attrs["nodes"]):
         if page is tree.page:
             attrs["node_color"][i] = CURRENT_NODE_COLOR
-            if not page.terminal:
+            if not page.is_last_page:
                 attrs["edgecolors"][i] = CURRENT_EDGE_COLOR
 
     curved_edges = []

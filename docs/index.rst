@@ -13,7 +13,7 @@ A software development kit for creating online surveys and experiments.
 .. image:: https://gitlab.com/dsbowen/hemlock/badges/master/coverage.svg
    :target: https://gitlab.com/dsbowen/hemlock/-/commits/master
 .. image:: https://badge.fury.io/py/hemlock.svg
-   :target: https://badge.fury.io/py/hemlock
+   :target: https://badge.fury.io/py/hemlock-survey
 .. image:: https://img.shields.io/badge/License-MIT-brightgreen.svg
    :target: https://gitlab.com/dsbowen/hemlock/-/blob/master/LICENSE
 .. image:: https://mybinder.org/badge_logo.svg

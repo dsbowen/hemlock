@@ -1,17 +1,22 @@
+from __future__ import annotations
+
 import functools
-from datetime import date, datetime
+from datetime import datetime
+from typing import Mapping, Optional
 
 from flask import current_app, request
 from flask_login import UserMixin, current_user, login_required
 from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy.orm import validates
+from sqlalchemy.types import JSON
 from sqlalchemy_mutable.types import MutablePickleType, MutableDictJSONType
 
+from ._data_frame import DataFrame
 from .app import bp, db, login_manager
 from .tree import Tree
 from .utils.random import make_hash
 
 HASH_LENGTH = 90
-IPV4_LENGTH = 4 * 3 + 3  # 4 sets of 3 characters each plus 3 . delimiters
 
 
 @login_manager.user_loader
@@ -52,8 +57,9 @@ class User(UserMixin, db.Model):
 
     @classmethod
     def make_test_user(cls, seed_func=None, url_rule="/test"):
-        with current_app.test_request_context():
-            user = cls()
+        user = cls()
+        db.session.add(user)
+        db.session.commit()
 
         if seed_func is not None:
             index = 0
@@ -63,25 +69,47 @@ class User(UserMixin, db.Model):
             user._seed_funcs[url_rule] = index, seed_func
             user.default_url_rule = url_rule
             user.trees.append(Tree(seed_func, url_rule))
-        
+
         return user
 
     hash = db.Column(db.String(HASH_LENGTH))
-    completed = db.Column(db.Boolean, default=False)
-    failed = db.Column(db.Boolean, default=False)
     start_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
-    ipv4 = db.Column(db.String(IPV4_LENGTH))
     params = db.Column(MutablePickleType)
     meta_data = db.Column(MutableDictJSONType, default={})
-    cached_data = db.Column(MutableDictJSONType)
+    _cached_data = db.Column(JSON)
 
-    def __init__(self):
+    _completed = db.Column(db.Boolean)
+
+    @property
+    def completed(self) -> Optional[bool]:
+        return self._completed
+
+    @completed.setter
+    def completed(self, completed: bool):
+        self._completed = completed
+        if completed:
+            self._cached_data = self.get_data(use_cached_data=False)
+
+    _failed = db.Column(db.Boolean)
+
+    @property
+    def failed(self) -> Optional[bool]:
+        return self._failed
+
+    @failed.setter
+    def failed(self, failed: bool):
+        self._failed = failed
+        if failed:
+            self._cached_data = self.get_data(use_cached_data=False)
+
+    def __init__(self, meta_data: Mapping = None):
         self.hash = make_hash(HASH_LENGTH)
         self.start_time = self.end_time = datetime.utcnow()
         self.completed = self.failed = False
-        self.ipv4 = request.remote_addr
-        self.meta_data = request.args
+        self.meta_data = meta_data or {}
+        # self.ipv4 = request.remote_addr
+        # self.meta_data = request.args
         self.trees = [Tree(func) for _, func in self._seed_funcs.values()]
 
     def __repr__(self):
@@ -104,13 +132,46 @@ class User(UserMixin, db.Model):
         if convert_datetime_to_string:
             metadata["start_time"] = str(self.start_time)
             metadata["end_time"] = str(self.end_time)
+
         metadata.update(self.meta_data)
         return metadata
 
+    def get_data(
+        self, use_cached_data: bool = True) -> DataFrame:
+        if use_cached_data and self._cached_data is not None:
+            return  self._cached_data
+            
+        meta_data = self.get_meta_data(convert_datetime_to_string=True)
+        meta_data = {key: [item] for key, item in meta_data.items()}
+        df = DataFrame(meta_data, fill_rows=True)
+        [df.add_branch(tree.branch) for tree in self.trees]
+        df.pad()
+
+        return df
+
+    @staticmethod
+    def get_all_data(cached_data_only: bool = True) -> DataFrame:
+        if cached_data_only:
+            users = User.query.filter(User._cached_data != None).all()
+        else:
+            users = User.query.all()
+
+        df = DataFrame()
+        [df.add_data(user.get_data()) for user in users]
+
+        return df
+
     def process_request(self, url_rule):
-        # TODO: cache data when user has completed or failed the survey
-        self.end_time = datetime.utcnow()
-        return self.get_tree(url_rule).process_request()
+        if request.method == "POST":
+            self.end_time = datetime.utcnow()
+
+        current_tree = self.get_tree(url_rule)
+        if current_tree.page.is_last_page and [
+            tree.page.is_last_page for tree in self.trees
+        ]:
+            self.completed = True
+
+        return current_tree.process_request()
 
     def test_request(self, responses=None, direction="forward", url_rule=None):
         self.test_post(responses, direction, url_rule)

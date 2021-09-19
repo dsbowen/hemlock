@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Dict
 
 from .app import db
 from .data import Data
@@ -15,22 +14,21 @@ class Timer(Data):
 
     is_running = db.Column(db.Boolean)
     start_time = db.Column(db.DateTime)
-    _total_seconds = db.Column(db.Float)
 
     @property
     def total_seconds(self):
         if self.is_running:
-            return self._total_seconds + (datetime.utcnow() - self.start_time).total_seconds()
-        return self._total_seconds
+            return self.data + (datetime.utcnow() - self.start_time).total_seconds()
+        return self.data
 
     @total_seconds.setter
     def total_seconds(self, total_seconds):
-        self._total_seconds = total_seconds
+        self.data = total_seconds
 
     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.is_running = False
         self.total_seconds = 0
-        super().__init__(*args, **kwargs)
 
     def __repr__(self):
         running = "running" if self.is_running else "paused"
@@ -47,6 +45,3 @@ class Timer(Data):
             self.total_seconds += (datetime.utcnow() - self.start_time).total_seconds()
         self.is_running = False
         return self
-
-    def _pack_data(self, data: Dict = None) -> Dict:
-        return super()._pack_data(data or {self.variable: self.total_seconds})

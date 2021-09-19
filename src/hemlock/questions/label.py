@@ -23,5 +23,7 @@ class Label(Question):
         return render_template(
             self.template,
             question=self,
-            label=None if self.label is None else convert_markdown(self.label, strip_last_paragraph=True)
+            label=None
+            if self.label is None
+            else convert_markdown(self.label, strip_last_paragraph=True),
         )
