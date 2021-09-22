@@ -1,0 +1,3 @@
+include src/hemlock/*.html
+include src/hemlock/app/templates/hemlock/*.html
+inlcude src/hemlock/app/templates/hemlock/*.js
