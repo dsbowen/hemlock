@@ -2,10 +2,11 @@
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Mapping, Tuple, Union
+from typing import Any, Dict, List
 
+from sqlalchemy_mutable import Mutable
 from sqlalchemy_mutable.utils import is_instance
-from sqlalchemy_mutable.types import MutablePickleType, MutableListJSONType
+from sqlalchemy_mutable.types import MutablePickleType
 
 from .app import db
 
@@ -16,22 +17,35 @@ class Data(db.Model):
     Args:
         variable (str, optional): Name of the variable. Defaults to None.
         data (Any, optional): Value of the data. Defaults to None.
-        n_rows (int, optional): Number of rows over which this data will be repeated. 
+        n_rows (int, optional): Number of rows over which this data will be repeated.
             Defaults to 1.
-        fill_rows (bool, optional): Indicates that empty rows in the data frame 
+        fill_rows (bool, optional): Indicates that empty rows in the data frame
             following this data should be filled in with this data. Defaults to False.
-        record_index (bool, optional): Indicates that this data object's index should 
+        record_index (bool, optional): Indicates that this data object's index should
             be recorded in the data frame. Defaults to False.
 
     Attributes:
         variable (str): Name of the variable.
         data (Any): Value of the data.
         n_rows (int): Number of rows over which this data will be repeated.
-        fill_rows (bool): Indicates that empty rows in the data frame following this 
+        fill_rows (bool): Indicates that empty rows in the data frame following this
             data should be filled in with this data.
-        record_index (bool): Indicates that this data object's index should be recorded 
+        record_index (bool): Indicates that this data object's index should be recorded
             in the data frame.
+
+    Examples:
+
+        .. doctest::
+
+            >>> from hemlock import Data
+            >>> Data("variable_name", 1).pack_data()
+            {'variable_name': [1]}
+            >>> Data("variable_name", 1, n_rows=3).pack_data()
+            {'variable_name': [1, 1, 1]}
+            >>> Data("variable_name", [0, 1, 2]).pack_data()
+            {'variable_name': [0, 1, 2]}
     """
+
     id = db.Column(db.Integer, primary_key=True)
     data_type = db.Column(db.String)
     __mapper_args__ = {"polymorphic_identity": "data", "polymorphic_on": data_type}
@@ -71,9 +85,9 @@ class Data(db.Model):
         if self.variable is None:
             return {}
 
-        data = self.data
+        data = self.data.get_object() if isinstance(self.data, Mutable) else self.data
         if not is_instance(data, list):
-            data = self.n_rows * [None if data is None else data.get_object()]
+            data = self.n_rows * [None if data is None else data]
 
         packed_data = {self.variable: data}
 

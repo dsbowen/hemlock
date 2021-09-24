@@ -1,3 +1,5 @@
+"""Label.
+"""
 from __future__ import annotations
 
 import copy
@@ -10,16 +12,23 @@ from .base import Question
 
 
 class Label(Question):
+    """A label question contains only text and does not permit a user response.
+
+    Subclasses :class:`hemlock.questions.base.Question`.
+    """
+
     id = db.Column(db.Integer, db.ForeignKey("question.id"), primary_key=True)
     __mapper_args__ = {"polymorphic_identity": "label"}
 
     defaults = copy.deepcopy(Question.defaults)
-    defaults["template"] = "hemlock/label.html"
+    defaults["template"] = "hemlock/label.html"  # type: ignore
     # form-label adds a margin after the text, which we don't want unless there's a
     # question below to respond to
-    defaults["html_settings"]["label"]["class"].remove("form-label")
+    defaults["html_settings"]["label"]["class"].remove("form-label")  # type: ignore
 
-    def render(self):
+    def render(self):  # pylint disable=missing-function-docstring
+        # renders the label, stripping the last <p> tag from the label text for a
+        # cleaner look
         return render_template(
             self.template,
             question=self,

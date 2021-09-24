@@ -1,8 +1,10 @@
+"""Mixin for question objects.
+"""
 from __future__ import annotations
 
 import copy
 import textwrap
-from typing import Any, Callable, List, Mapping, Union
+from typing import Any, Callable, Dict, List, Mapping, Union
 
 from flask import render_template, request
 from sqlalchemy.orm import validates
@@ -26,6 +28,58 @@ HASH_LENGTH = 10
 
 
 class Question(Data):
+    """Mixin for question objects.
+
+    Args:
+        label (str, optional): Question label, prompt, or instructions. Defaults to None.
+        floating_label (str, optional): Label that floats in the input tag. Defaults
+            to None.
+        template (str, optional): Path to a jinja template. Defaults to None.
+        prepend (Union[str, List[str]], optional): Text prepended to the input tag.
+            Defaults to None.
+        append (Union[str, List[str]], optional): Text appended to the input tag.
+            Defaults to None.
+        form_text (str, optional): Form text which usually appears below an input.
+            Defaults to None.
+        compile (Union[Callable, List[Callable]], optional): Functions run before this
+            question renders its HTML. Defaults to None.
+        validate (Union[Callable, List[Callable]], optional): Functions run to
+            validate the user's response. Defaults to None.
+        submit (Union[Callable, List[Callable]], optional): Functions run after the
+            user has submitted his response. Defaults to None.
+        debug (Union[Callable, List[Callable]], optional): Functions run during
+            debugging. Defaults to None.
+        default (Any, optional): Default response value. Defaults to None.
+        params (Any, optional): Additional parameters. Defaults to None.
+        extra_html_settings (Mapping[str, HTMLSettingType], optional): Additional HTML
+            settings used to update the defaults. Defaults to None.
+
+    Attributes:
+        id (int): Unique question identity.
+        hash (str): Unique hash.
+        page (Page): Page on which this question appears.
+        label (str): Question label, prompt, or instructions.
+        floating_label (str): Label that floats in the input tag.
+        template (str): Path to a jinja template.
+        prepend (List[str]): Text prepended to the input tag.
+        append (List[str]): Text appended to the input tag.
+        form_text (str): Form text which usually appears below an input.
+        compile (List[Callable]): Functions run before this question renders its HTML.
+        validate (List[Callable]): Functions run to validate the user's response.
+        submit (List[Callable]): Functions run after the user has submitted his
+            response.
+        debug (List[Callable]): Functions run during debugging.
+        default (Any): Default response value.
+        params (Any): Additional parameters.
+        raw_response (Any): User's raw response to the question.
+        response (Any): User's repsonse to the question. By default, this is the same
+            as the raw response. However, subclasses may convert the raw response to a
+            different format or data type for validation and other purposes. Read only.
+        feedback (str): Feedback on the user's response.
+        is_valid (bool): Indicates that the user's response was valid.
+        html_settings (HTMLSettings): HTML settings used by the jinja template.
+    """
+
     id = db.Column(db.Integer, db.ForeignKey("data.id"), primary_key=True)
     question_type = db.Column(db.String)
     __mapper_args__ = {
@@ -33,7 +87,7 @@ class Question(Data):
         "polymorphic_on": question_type,
     }
 
-    defaults = dict(
+    defaults: Dict[str, Any] = dict(
         label=None,
         floating_label=None,
         template=None,
@@ -52,14 +106,6 @@ class Question(Data):
             "feedback": {"class": []},
         },
     )
-
-    @property
-    def user(self):
-        return None if self.page is None else self.page.user
-
-    @property
-    def branch(self):
-        return None if self.page is None else self.page.branch
 
     _page_question_id = db.Column(db.Integer, db.ForeignKey("page.id"))
 
@@ -91,17 +137,20 @@ class Question(Data):
 
     # Additional attributes
     default = db.Column(MutableJSONType)
-    response = db.Column(MutableJSONType)
-    has_responded = db.Column(db.Boolean, default=False)
+    raw_response = db.Column(MutableJSONType)
     params = db.Column(MutablePickleType)
+
+    @property
+    def response(self):
+        return None if self.raw_response == "" else self.raw_response
 
     def __init__(
         self,
         label: str = None,
         floating_label: str = None,
         template: str = None,
-        prepend: str = None,
-        append: str = None,
+        prepend: Union[str, List[str]] = None,
+        append: Union[str, List[str]] = None,
         form_text: str = None,
         compile: Union[Callable, List[Callable]] = None,
         validate: Union[Callable, List[Callable]] = None,
@@ -124,7 +173,7 @@ class Question(Data):
 
         self.html_settings = copy.deepcopy(self.defaults["html_settings"])
         if extra_html_settings is not None:
-            self.html_settings.update_settings(extra_html_settings)
+            self.html_settings.update_settings(extra_html_settings)  # type: ignore
 
         set_attribute("label", label)
         set_attribute("floating_label", floating_label)
@@ -148,82 +197,91 @@ class Question(Data):
 
     def __repr__(self):
         label = None if self.label is None else textwrap.shorten(self.label, 40)
+        prefix = "default" if self.raw_response is None else "response"
+        default = self.get_default() or None
+        if is_instance(default, str):
+            default = textwrap.shorten(default, 40)
 
-        if self.has_responded:
-            prefix = "response"
-            response = self.response
-        else:
-            prefix = "default"
-            response = self.default
-        if is_instance(response, str):
-            response = textwrap.shorten(response, 40)
-
-        return f"<{self.__class__.__qualname__} {label} - {prefix}: {response}>"
+        return f"<{self.__class__.__qualname__} {label} - {prefix}: {default}>"
 
     def display(self):
-        return Page(self, forward=False).display()
+        """Display this question in a notebook."""
+        return Page(self, back=False, forward=False).display()
 
     def clear_feedback(self):
+        """Clear the feedback."""
         self.feedback = None
         self.set_is_valid(None)
-        return self
 
     def clear_response(self):
-        """
-        Clear the response.
-
-        Returns
-        -------
-        self : hemlock.Question
-        """
-        self.response = None
-        self.has_responded = False
+        """Clear the feedback and response."""
+        self.raw_response = None
         self.clear_feedback()
-        return self
 
-    def get_default(self):
-        if self.response is None:
+    def get_default(self) -> Any:
+        """Get the default value.
+
+        If the user has not yet responded, this method returns the default value.
+        Otherwise, it returns the user's response.
+
+        Returns:
+            Any: Default value.
+        """
+        if self.raw_response is None:
             if self.default is None:
                 return ""
 
             return self.default
 
-        return self.response
+        return self.raw_response
 
     def set_is_valid(self, is_valid: bool = None):
+        """Set the indicator that the user's response was valid.
+
+        Args:
+            is_valid (bool, optional): Indicates that the response was valid. Defaults
+                to None.
+        """
         self._is_valid = is_valid
 
     def run_compile_functions(self):
+        """Run the compile functions."""
         [func(self) for func in self.compile]
-        return self
 
-    def render(self):
+    def render(self) -> str:
+        """Render the HTML
+
+        Returns:
+            str: HTML.
+        """
+
+        def render_markdown(text, strip_last_paragraph=False):
+            if text is None:
+                return None
+
+            return convert_markdown(text, strip_last_paragraph=strip_last_paragraph)
+
         return render_template(
             self.template,
             question=self,
-            label=None if self.label is None else convert_markdown(self.label),
-            feedback=None
-            if self.feedback is None
-            else convert_markdown(self.feedback, strip_last_paragraph=True),
-            form_text=None
-            if self.form_text is None
-            else convert_markdown(self.form_text, strip_last_paragraph=True),
+            label=render_markdown(self.label),
+            feedback=render_markdown(self.feedback, True),
+            form_text=render_markdown(self.form_text, True),
         )
 
     def record_response(self):
-        self.has_responded = True
-        self.response = request.form.get(self.hash)
-        if self.response == "":
-            # participant did not respond
-            self.response = None
-        return self
+        """Record the user's response."""
+        self.raw_response = request.form.get(self.hash)
 
     def run_validate_functions(self) -> bool:
-        """Validate Participant response
+        """Run the validate functions to check the user's response.
 
-        Check validate functions one at a time. If any yields an error
-        message (i.e. error is not None), indicate the response was invalid
-        and return False. Otherwise, return True.
+        This method runs the validate functions one at a time to check for errors. If
+        a validate function indicates that the response is invalid, this method sets
+        the question's feedback (if given) and validity status and returns.
+
+        Returns:
+            bool: Indicates that the response was valid.
         """
         if self.validate:
             for func in self.validate:
@@ -244,13 +302,13 @@ class Question(Data):
         return True
 
     def record_data(self):
+        """Record the question's data based on the user's response."""
         self.data = self.response
-        return self
 
     def run_submit_functions(self):
+        """Run submit functions."""
         [func(self) for func in self.submit]
-        return self
 
     def run_debug_functions(self):
+        """Run debugging functions."""
         [func(self) for func in self.debug]
-        return self

@@ -1,11 +1,8 @@
 import time
 
-from hemlock.app import create_test_app
 from hemlock.timer import Timer
 
 VARIABLE_NAME = "timer_variable"
-
-app = create_test_app()
 
 
 def test_repr():
@@ -22,24 +19,24 @@ def test_start():
     timer.start()
     assert timer.is_running
     total_seconds = timer.total_seconds
-    time.sleep(.1)
-    assert total_seconds < timer.total_seconds < total_seconds + .2
+    time.sleep(0.1)
+    assert total_seconds < timer.total_seconds < total_seconds + 0.2
 
 
 def test_pause():
     timer = Timer(VARIABLE_NAME)
     timer.start()
-    time.sleep(.1)
+    time.sleep(0.1)
     timer.pause()
     assert not timer.is_running
     total_seconds = timer.total_seconds
-    time.sleep(.1)
+    time.sleep(0.1)
     assert timer.total_seconds == total_seconds
 
 
 def test_pack_data():
     timer = Timer(VARIABLE_NAME)
     timer.start()
-    time.sleep(.1)
+    time.sleep(0.1)
     timer.pause()
     assert timer.pack_data() == {VARIABLE_NAME: [timer.total_seconds]}

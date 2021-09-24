@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import functools
 from datetime import datetime
-from typing import Mapping, Optional
+from typing import Mapping, Optional, Union
 
+import pandas as pd
 from flask import current_app, request
 from flask_login import UserMixin, current_user, login_required
 from sqlalchemy.ext.orderinglist import ordering_list
@@ -89,7 +90,7 @@ class User(UserMixin, db.Model):
     def completed(self, completed: bool):
         self._completed = completed
         if completed:
-            self._cached_data = self.get_data(use_cached_data=False)
+            self._cached_data = self.get_data(to_pandas=False, use_cached_data=False)
 
     _failed = db.Column(db.Boolean)
 
@@ -101,7 +102,7 @@ class User(UserMixin, db.Model):
     def failed(self, failed: bool):
         self._failed = failed
         if failed:
-            self._cached_data = self.get_data(use_cached_data=False)
+            self._cached_data = self.get_data(to_pandas=False, use_cached_data=False)
 
     def __init__(self, meta_data: Mapping = None):
         self.hash = make_hash(HASH_LENGTH)
@@ -137,29 +138,32 @@ class User(UserMixin, db.Model):
         return metadata
 
     def get_data(
-        self, use_cached_data: bool = True) -> DataFrame:
+        self, to_pandas: bool = True, use_cached_data: bool = True
+    ) -> Union[pd.DataFrame, DataFrame]:
         if use_cached_data and self._cached_data is not None:
-            return  self._cached_data
-            
-        meta_data = self.get_meta_data(convert_datetime_to_string=True)
-        meta_data = {key: [item] for key, item in meta_data.items()}
-        df = DataFrame(meta_data, fill_rows=True)
-        [df.add_branch(tree.branch) for tree in self.trees]
-        df.pad()
+            df = self._cached_data
+        else:
+            meta_data = self.get_meta_data(convert_datetime_to_string=True)
+            meta_data = {key: [item] for key, item in meta_data.items()}
+            df = DataFrame(meta_data, fill_rows=True)
+            [df.add_branch(tree.branch) for tree in self.trees]
+            df.pad()
 
-        return df
+        return pd.DataFrame(df) if to_pandas else df
 
     @staticmethod
-    def get_all_data(cached_data_only: bool = True) -> DataFrame:
+    def get_all_data(
+        to_pandas: bool = True, cached_data_only: bool = True
+    ) -> Union[pd.DataFrame, DataFrame]:
         if cached_data_only:
             users = User.query.filter(User._cached_data != None).all()
         else:
             users = User.query.all()
 
         df = DataFrame()
-        [df.add_data(user.get_data()) for user in users]
+        [df.add_data(user.get_data(to_pandas=False)) for user in users]
 
-        return df
+        return pd.DataFrame(df) if to_pandas else df
 
     def process_request(self, url_rule):
         if request.method == "POST":

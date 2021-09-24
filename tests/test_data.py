@@ -1,20 +1,19 @@
 from hemlock import Data
-from hemlock.app import create_test_app
 
 VARIABLE_NAME = "variable_name"
 DATA = 1
 
-app = create_test_app()
-
 
 def test_repr():
-    data = Data(VARIABLE_NAME, DATA)
-    assert repr(data) == f"<Data {VARIABLE_NAME} {DATA}>"
+    assert repr(Data(VARIABLE_NAME, DATA)) == f"<Data {VARIABLE_NAME} {DATA}>"
 
 
 def test_basic_packing():
-    data = Data(VARIABLE_NAME, DATA)
-    assert data.pack_data() == {VARIABLE_NAME: [DATA]}
+    assert Data(VARIABLE_NAME, DATA).pack_data() == {VARIABLE_NAME: [DATA]}
+
+
+def test_no_variable():
+    assert Data().pack_data() == {}
 
 
 def test_nrows_packing():
@@ -34,5 +33,5 @@ def test_index_packing():
     data = Data(VARIABLE_NAME, DATA, n_rows=n_rows, record_index=True)
     assert data.pack_data() == {
         VARIABLE_NAME: n_rows * [DATA],
-        f"{VARIABLE_NAME}_index": n_rows * [None]
+        f"{VARIABLE_NAME}_index": n_rows * [None],
     }

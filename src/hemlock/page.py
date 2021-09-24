@@ -4,7 +4,7 @@ import copy
 import os
 import textwrap
 from random import sample
-from typing import Any, Callable, Collection, List, Mapping, Tuple, Union
+from typing import Any, Callable, List, Mapping, Union
 
 from IPython import display
 from flask import render_template, request
@@ -304,8 +304,9 @@ class Page(db.Model):
             [func(self) for func in self.compile]
             [question.run_compile_functions() for question in self.questions]
 
+        html = self.render(for_notebook_display)
         self.timer.start()
-        return self.render(for_notebook_display)
+        return html
 
     def post(self):
         self.timer.pause()

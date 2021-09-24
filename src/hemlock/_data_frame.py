@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from datetime import datetime
 from typing import Mapping
 
-import pandas as pd
 from sqlalchemy_mutable.utils import is_instance
 
 
@@ -39,9 +39,6 @@ class DataFrame(defaultdict):
             pad_to_row = max([len(item) for item in self.values()])
             [item.pad(pad_to_row) for item in self.values()]
 
-    def to_pandas(self) -> pd.DataFrame:
-        return pd.DataFrame(self)
-
 
 class Variable(list):
     def __init__(self, *args, **kwargs):
@@ -51,7 +48,7 @@ class Variable(list):
     def add_data(self, data, fill_rows=False, pad_to_row=None):
         if pad_to_row is not None:
             self.pad(pad_to_row)
-        self += data
+        self += [str(item) if isinstance(item, datetime) else item for item in data]
         self.fill_rows = fill_rows
 
     def pad(self, pad_to_row):

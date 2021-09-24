@@ -1,7 +1,12 @@
+"""Input.
+"""
 from __future__ import annotations
 
 import copy
 from datetime import datetime
+from typing import Mapping
+
+from sqlalchemy_mutable.html import HTMLAttrType
 
 from ..app import db
 from .base import Question
@@ -20,27 +25,77 @@ datetime_input_types = {
 
 
 class Input(Question):
+    """An input question allows user to enter a free text response.
+
+    Subclasses :class:`hemlock.questions.base.Question`.
+
+    Args:
+        input_tag (Mapping[str, HTMLAttrType], optional): Additional attributes of the
+            HTML input tag. Defaults to None.
+
+    Attributes:
+        input_tag (HTMLAttrsType): Attributes of the HTML input tag.
+
+    Examples:
+        The most common use of the `input_tag` attribute is for setting the input type.
+        For example, let's require users to enter a number.
+
+        .. doctest::
+
+            >>> from hemlock.questions import Input
+            >>> question = Input(input_tag={"type": "number"})
+            >>> question.input_tag["type"]
+            'number'
+
+        Let's require users to enter a number between 0 and 10.
+
+        .. doctest::
+
+            >>> from hemlock.questions import Input
+            >>> question = Input(input_tag={"type": "number", "min": 0, "max": 10})
+            >>> question.input_tag["min"], question.input_tag["max"]
+            (0, 10)
+    """
+
     id = db.Column(db.Integer, db.ForeignKey("question.id"), primary_key=True)
     __mapper_args__ = {"polymorphic_identity": "input"}
 
     defaults = copy.deepcopy(Question.defaults)
-    defaults["template"] = "hemlock/input.html"
-    defaults["html_settings"]["input"] = {"type": "text", "class": ["form-control"]}
+    defaults["template"] = "hemlock/input.html"  # type: ignore
+    defaults["html_settings"]["input"] = {"type": "text", "class": ["form-control"]}  # type: ignore
 
     @property
     def input_tag(self):
         return self.html_settings["input"]
 
-    def __init__(self, *args, input_tag=None, **kwargs):
+    @property
+    def response(self):
+        """Converts the raw response to the appropriate type based on the input type."""
+        if self.raw_response in ("", None):
+            return None
+
+        input_type = self.input_tag.get("type", "text")
+
+        if input_type == "number":
+            return float(self.raw_response)
+
+        if input_type in datetime_input_types:
+            _, datetime_format = datetime_input_types[input_type]
+            return datetime.strptime(self.raw_response.get_object(), datetime_format)
+
+        return str(self.raw_response)
+
+    def __init__(self, *args, input_tag: Mapping[str, HTMLAttrType] = None, **kwargs):
         super().__init__(*args, **kwargs)
         if input_tag is not None:
-            input_type = input_tag.pop("type", None)
-            if input_type is not None:
-                self.set_input_type(input_type)
-
             self.input_tag.update_attrs(input_tag)
 
     def set_is_valid(self, is_valid: bool = None):
+        """See :meth:`hemlock.questions.base.Question.set_is_valid`.
+
+        Additionally adds appropriate validation classes to the input and feedback tags.
+        """
+
         def add_and_remove_classes(html_attr, remove, add=None):
             classes = self.html_settings[html_attr]["class"]
 
@@ -84,49 +139,25 @@ class Input(Question):
 
         return super().set_is_valid(is_valid)
 
-    def set_input_type(self, input_type="text"):
-        # set the placeholder as the input format for browsers that don't support
-        # datetime input types
-        self.input_tag["type"] = input_type
-        if (
-            input_type in datetime_input_types
-            and self.input_tag.get("placeholder") is None
-        ):
-            self.input_tag["placeholder"] = datetime_input_types[input_type][0]
-        return self
+    def run_validate_functions(self) -> bool:
+        """See :meth:`hemlock.questions.base.Question.run_validate_functions`.
 
-    def convert_response(self):
-        if self.response is None:
-            return None
-
-        input_type = self.input_tag.get("type", "text")
-
-        if input_type == "number":
-            return float(self.response)
-
-        if input_type in datetime_input_types:
-            _, datetime_format = datetime_input_types[input_type]
-            return datetime.strptime(self.response.get_object(), datetime_format)
-
-        return self.response
-
-    def run_validate_functions(self):
+        Additionally validates that the user's response matches the input type.
+        """
         try:
-            self.convert_response()
+            # tests if the raw response can be converted to the expected type
+            self.response
         except ValueError:
-            self.set_is_valid(False)
             input_type = self.input_tag.get("type", "text")
-
             if input_type == "number":
                 self.feedback = "Please enter a number."
-                return False
-
-            if input_type in datetime_input_types:
+            elif input_type in datetime_input_types:
                 html_format, datetime_format = datetime_input_types[input_type]
                 self.feedback = f"Please use the format {html_format}. For example, right now it is {datetime.utcnow().strftime(datetime_format)}."
-                return False
+            else:
+                self.feedback = "Please enter the correct type of response."
 
-            self.feedback = "Please enter the correct type of response."
+            self.set_is_valid(False)
             return False
 
         return super().run_validate_functions()

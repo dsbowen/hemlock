@@ -17,7 +17,27 @@ class Timer(Data):
         is_running (bool): Indicates that the timer is running.
         start_time (datetime): The most recent time the timer was started.
         total_seconds (float): The total number of seconds the timer has been running.
+
+    Examples:
+
+        .. code-block::
+
+            >>> import time
+            >>> from hemlock.timer import Timer
+            >>> timer = Timer("my_timer_variable")
+            >>> timer
+            <Timer my_timer_variable paused 0 seconds>
+            >>> timer.start()
+            >>> time.sleep(1)
+            >>> timer
+            <Timer my_timer_variable running 1.015078 seconds>
+            >>> timer.pause()
+            >>> timer
+            <Timer my_timer_variable paused 5.425622 seconds>
+            >>> timer.pack_data()
+            {'my_timer_variable': [5.425622]}
     """
+
     id = db.Column(db.Integer, db.ForeignKey("data.id"), primary_key=True)
     __mapper_args__ = {"polymorphic_identity": "timer"}
 
@@ -46,15 +66,13 @@ class Timer(Data):
         return f"<{self.__class__.__qualname__} {self.variable} {running} {self.total_seconds} seconds>"
 
     def start(self):
-        """Start the timer.
-        """
+        """Start the timer."""
         if not self.is_running:
             self.is_running = True
             self.start_time = datetime.utcnow()
 
     def pause(self):
-        """Pause the timer.
-        """
+        """Pause the timer."""
         if self.is_running:
             self.total_seconds += (datetime.utcnow() - self.start_time).total_seconds()
-        self.is_running = False
+            self.is_running = False
