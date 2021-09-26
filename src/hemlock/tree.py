@@ -1,14 +1,44 @@
+"""Tree.
+"""
+from __future__ import annotations
+
 import textwrap
+from typing import Any, Callable, List, Union, TypeVar
 
 import matplotlib.pyplot as plt
 from flask import current_app, redirect, request, url_for
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.orderinglist import ordering_list
+from werkzeug.wrappers.response import Response
 
 from ._display_navigation import display_navigation
 from .app import db
 
+TreeType = TypeVar("TreeType", bound="Tree")
+
 
 class Tree(db.Model):
+    """Tree.
+
+    The tree contains a main branch of pages. (Pages may also have their own branches).
+    Trees control which page the user navigates to next in response to a request.
+
+    Args:
+        seed_func (Callable[[], List[Page]]): The "seed function" initializes the 
+            tree's branch.
+
+    Attributes:
+        user (User): The user to which this tree belongs.
+        index (int): Position of this tree relative to other trees belonging to the 
+            same user.
+        branch (List[Page]): A list of pages returned by the seed function.
+        page (Page): The page this tree is currently on.
+        request_in_progress (bool): Indicates that this tree is currently processing 
+            its user's request.
+        prev_request_method (str): The request method of the user's previous request. 
+            Either "GET" or "POST".
+        cached_page_html (str): Cached HTML from the user's last GET request.
+    """
     id = db.Column(db.Integer, primary_key=True)
 
     _user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -30,14 +60,23 @@ class Tree(db.Model):
     cached_page_html = db.Column(db.Text)
     index = db.Column(db.Integer)
 
-    @property
-    def url_rule(self):
+    @hybrid_property
+    def url_rule(self) -> str:
+        """Get the URL rule associated with requests to this tree.
+
+        Returns:
+            str: URL rule.
+        """
         if self._url_rule is not None:
             return self._url_rule
 
         return url_for(f"hemlock.{self._seed_func_name}")
 
-    def __init__(self, seed_func, url_rule: str = None):
+    def __init__(
+        self,
+        seed_func: Callable[[], List["hemlock.page.Page"]],  # type: ignore
+        url_rule: str = None
+    ):
         self._seed_func_name = seed_func.__name__
         self._url_rule = url_rule
         branch = seed_func()
@@ -48,27 +87,37 @@ class Tree(db.Model):
         initial_indent = ""
         subsequent_indent = 4 * " "
 
-        if not self.branch:
-            branch_text = ""
-        else:
-            branch_text = "\n".join([str(page) for page in self.branch])
-            branch_text = f"\n{textwrap.indent(branch_text, subsequent_indent)}"
+        branch_text = "\n".join([str(page) for page in self.branch])
+        branch_text = f"\n{textwrap.indent(branch_text, subsequent_indent)}"
 
         return textwrap.indent(
             f"<{self.__class__.__qualname__} id: {self.id}>{branch_text}",
             initial_indent,
         )
 
-    def display(self, ax=None, node_size=1200, **subplots_kwargs):
-        if ax is None:
-            _, ax = plt.subplots(**subplots_kwargs)
-            ax.set_facecolor("whitesmoke")
+    def display(self, ax: plt.axes._subplots.AxesSubplot=None, node_size: int=1200, **subplots_kwargs: Any):
+        """Display the tree's navigation graph and its current page.
 
-        display_navigation(self, ax, node_size)
+        Args:
+            ax (plt.axes._subplots.AxesSubplot, optional): Plot on which to write the 
+                tree's navigation graph. Defaults to None.
+            node_size (int, optional): Size of nodes in the navigation graph. Defaults 
+                to 1200.
+            **subplots_kwargs (Any): Keyword arguments for ``plt.subplots``.
+        """
+        display_navigation(self, ax, node_size, **subplots_kwargs)
         plt.show()
         return self.page.display()
 
-    def go_forward(self):
+    def go_forward(self: TreeType) -> TreeType:
+        """Go forward from the current page.
+
+        Raises:
+            RuntimeError: Users cannot go forward from the last page.
+
+        Returns:
+            TreeType: self.
+        """
         if self.page.next_page is not None:
             self.page = self.page.next_page
             return self
@@ -87,7 +136,15 @@ class Tree(db.Model):
         self.page = page.root_branch[page.index + 1]
         return self
 
-    def go_back(self):
+    def go_back(self: TreeType) -> TreeType:
+        """Go back from the current page.
+
+        Raises:
+            RuntimeError: Users cannot go back from the first page.
+
+        Returns:
+            TreeType: self.
+        """
         if self.page.prev_page is not None:
             self.page = self.page.prev_page
             return self
@@ -105,10 +162,15 @@ class Tree(db.Model):
             self.page = self.page.branch[-1]
         return self
 
-    def process_request(self):
+    def process_request(self) -> Union[str, Response]:
+        """Process a user's request and navigate in the appropriate direction.
+
+        Returns:
+            Union[str, Response]: HTML of the next page.
+        """
         # return a loading page if a request is in progress
         if self.request_in_progress:
-            return current_app.settings.get("loading_page", "TODO: CREATE LOADING PAGE")
+            return current_app.settings["loading_page"]  # type: ignore
 
         # return the HTML for the current page if the user refreshed the page
         if request.method == self.prev_request_method == "GET":

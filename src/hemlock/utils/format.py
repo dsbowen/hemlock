@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from markdown import markdown
+from markdown import markdown  # type: ignore
 
 
 def convert_markdown(value: str, strip_last_paragraph: bool = False) -> str:

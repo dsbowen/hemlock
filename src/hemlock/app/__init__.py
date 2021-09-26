@@ -42,6 +42,7 @@ settings = {
             else dict(pool_size=1, pool_recycle=10, max_overflow=0)
         ),
     },
+    "loading_page": "TODO: CREATE LOADING PAGE",
 }
 
 

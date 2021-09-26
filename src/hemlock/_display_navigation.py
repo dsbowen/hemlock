@@ -108,7 +108,11 @@ class Graph:
         return attrs
 
 
-def display_navigation(tree, ax, node_size):
+def display_navigation(tree, ax, node_size, **subplots_kwargs):
+    if ax is None:
+        _, ax = plt.subplots(**subplots_kwargs)
+        ax.set_facecolor("whitesmoke")
+
     graph = Graph(tree.branch)
     attrs = graph.get_attributes()
     for i, page in enumerate(attrs["nodes"]):

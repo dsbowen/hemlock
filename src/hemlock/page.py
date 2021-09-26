@@ -34,6 +34,9 @@ NavigateType = Callable[["Page"], List["Page"]]
 class Page(db.Model):
     """Page.
 
+    A page's primary function is to present users with a list of questions then allow
+    them to navigate to other pages in the survey.
+
     Args:
         *questions (Question): Questions for the user.
         timer (Union[str, Timer], optional): Records the amount of time the user spent
@@ -288,7 +291,7 @@ class Page(db.Model):
 
     def __init__(
         self,
-        *questions: hemlock.questions.base.Question,
+        *questions: hemlock.questions.base.Question,  # type: ignore
         timer: Union[str, Timer] = None,
         data: List[Data] = None,
         navbar=None,  # TODO: typehint for navbar
