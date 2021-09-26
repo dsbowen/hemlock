@@ -1,13 +1,16 @@
+"""Page.
+"""
 from __future__ import annotations
 
 import copy
 import os
 import textwrap
 from random import sample
-from typing import Any, Callable, List, Mapping, Union
+from typing import Any, Callable, Dict, List, Mapping, Optional, Union
 
 from IPython import display
 from flask import render_template, request
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import validates
 from sqlalchemy_mutable.html import HTMLSettingType
@@ -23,11 +26,100 @@ from .utils.random import make_hash
 HASH_LENGTH = 10
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
+CompileType = Callable[["Page"], None]
+SubmitType = Callable[["Page"], None]
+NavigateType = Callable[["Page"], List["Page"]]
+
 
 class Page(db.Model):
+    """Page.
+
+    Args:
+        *questions (Question): Questions for the user.
+        timer (Union[str, Timer], optional): Records the amount of time the user spent
+            on this page. A string is interpreted as the timer's variable name.
+            Defaults to None.
+        data (List[Data], optional): Additional data items. Defaults to None.
+        navbar ([type], optional): Navigation bar. Defaults to None.
+        back (Union[bool, str], optional): If a bool, indicates that the user can go
+            back. If a string, this is the text of the back button. Defaults to None.
+        prev_page (Page, optional): The page to which the back button takes the user.
+            If None, the back button takes the user to the previous page. Defaults to
+            None.
+        forward (Union[bool, str], optional): If a bool, indicates that the user can
+            go forward. If a string, this is the text of the forward button. Defaults
+            to None.
+        next_page (Page, optional): The page to which the forward button takes the
+            user. If None, the forward button takes the user to the next page.
+            Defaults to None.
+        template (str, optional): Template used to render the page. Defaults to
+            "hemlock/page.html".
+        compile (Union[CompileType, List[CompileType]], optional): Functions run
+            before this page renders its HTML. Defaults to None.
+        rerun_compile_functions (bool, optional): Indicates that compile functions
+            should be rerun when the user goes back to this page or if the user's
+            responses to this page were invalid. By default, the compile functions are
+            only run when the user goes forward to this page. Defaults to None.
+        submit (Union[SubmitType, List[SubmitType]], optional): Functions run after
+            the user submits his responses. Defaults to None.
+        navigate (NavigateType, optional): This function runs after the submit
+            functions and creates a branch off of this page. Defaults to None.
+        terminal (bool, optional): Indicates that this is the last page of the survey.
+            Defaults to False.
+        params (Any, optional): Additional parameters. Defaults to None.
+        extra_html_settings (Mapping[str, HTMLSettingType], optional): Additional HTML
+            settings. Defaults to None.
+
+    Attributes:
+        tree (Tree): Tree to which this page belongs.
+        branch (List[Page]): Pages that branch off of the current page.
+        root (Page): The page to whose branch this page belongs.
+        index (int): This page's position on its root's branch.
+        questions (List[Question]): Questions for the user.
+        timer (Timer): Records the amount of time the user spent on this page.
+        data (List[Data], optional): Additional data items.
+        navbar ([type], optional): Navigation bar.
+        back (Optional[str]): The text of the back button. If None, the user cannot go
+            back from this page.
+        prev_page (Page): The page to which the back button takes the user.
+        forward (Optional[str]): The text of the forward button. If None, the user
+            cannot go forward from this page.
+        next_page (Page, optional): The page to which the forward button takes the
+            user.
+        template (str): Template used to render the page.
+        compile (List[CompileType]): Functions run before this page renders its HTML.
+        rerun_compile_functions (bool): Indicates that compile functions should be
+            rerun when the user goes back to this page or if the user's responses to
+            this page were invalid.
+        submit (List[SubmitType]): Functions run after the user submits his responses.
+        navigate (NavigateType): This function runs after the submit functions and
+            creates a branch off of this page.
+        terminal (bool): Indicates that this is the last page of the survey.
+        params (Any): Additional parameters.
+        html_settings (Mapping[str, HTMLSettingType]): HTML settings.
+        direction_from (Optional[str]): Direction which the user is navigating from
+            this page. Either "forward", "back", or "invalid".
+        direction_to (Optional[str]): Direction which the user navigated to this page.
+            Either "forward", "back", or "invalid".
+
+    Examples:
+
+        .. doctest::
+
+            >>> from hemlock import Page
+            >>> from hemlock.questions import Input, Label
+            >>> Page(
+            ...     Label("Hello, world!"),
+            ...     Input("What's your name?")
+            ... )
+            <Page None>
+                <Label Hello, world! - default: None>
+                <Input What's your name? - default: None>
+    """
+
     id = db.Column(db.Integer, primary_key=True)
 
-    defaults = dict(
+    defaults: Dict[str, Any] = dict(
         navbar=None,
         error=None,
         back=False,
@@ -78,6 +170,14 @@ class Page(db.Model):
         foreign_keys=_branch_id,
     )
 
+    questions = db.relationship(
+        "Question",
+        backref="page",
+        order_by="Question.index",
+        collection_class=ordering_list("index"),
+        foreign_keys="Question._page_question_id",
+    )
+
     _prev_page_id = db.Column(db.Integer, db.ForeignKey("page.id"))
     prev_page = db.relationship("Page", foreign_keys=_prev_page_id, remote_side=[id])
 
@@ -93,14 +193,6 @@ class Page(db.Model):
 
     timer = db.relationship("Timer", uselist=False, foreign_keys="Timer._page_timer_id")
 
-    questions = db.relationship(
-        "Question",
-        backref="page",
-        order_by="Question.index",
-        collection_class=ordering_list("index"),
-        foreign_keys="Question._page_question_id",
-    )
-
     # HTML attributes
     hash = db.Column(db.String(HASH_LENGTH))
     navbar = db.Column(db.Text)
@@ -112,20 +204,20 @@ class Page(db.Model):
     @validates("back", "forward")
     def _validate_direction(
         self, key: str, value: Union[str, bool, None]
-    ) -> Union[str, None]:
+    ) -> Optional[str]:
         if not value:
             return None
 
         if value is True:
             return ">>" if key == "forward" else "<<"
 
-        return value
+        # value is str
+        return value  # type: ignore
 
     # Function attributes
     compile = db.Column(MutableListPickleType)
     submit = db.Column(MutableListPickleType)
     navigate = db.Column(MutablePickleType)
-    debug = db.Column(MutableListPickleType)
 
     # Additional attributes
     params = db.Column(MutablePickleType)
@@ -135,22 +227,80 @@ class Page(db.Model):
     terminal = db.Column(db.Boolean, default=False)
     rerun_compile_functions = db.Column(db.Boolean)
 
+    @hybrid_property
+    def root_branch(self) -> List[Page]:
+        """Get the branch to which this page belongs.
+
+        The root branch is this page's root's branch (implying that this page is on the
+        returned branch). The root is either a tree or a root page.
+
+        Returns:
+            List[Page]: Branch.
+        """
+        return (self.tree or self.root).branch
+
+    @hybrid_property
+    def is_first_page(self) -> bool:
+        """Indicates that this page is the first page (of its tree).
+
+        Returns:
+            bool: Indicator.
+        """
+        # this page is the zeroth of the pages directly connected to the tree
+        return self.tree is not None and self.index == 0
+
+    @hybrid_property
+    def is_last_page(self) -> bool:
+        """Indicates that this page is the last page (of its tree).
+
+        Returns:
+            bool: Indicator.
+        """
+        if self.terminal:
+            return True
+
+        if self.tree is None and self.root is None:
+            # this page is not connected to a tree or root page
+            # this will most often occur during testing
+            return False
+
+        if self.branch or self.navigate is not None:
+            # this page either already has a branch
+            # or will get a new branch when submitted
+            return False
+
+        page = self
+        while page is page.root_branch[-1]:
+            page = page.root
+            if page is None:
+                return True
+
+        return False
+
+    @hybrid_property
+    def is_valid(self) -> bool:
+        """Indicates that the user's responses to all questions on this page are valid.
+
+        Returns:
+            bool: Indicator.
+        """
+        return all([question.is_valid in (True, None) for question in self.questions])
+
     def __init__(
         self,
-        *questions: questions.base.Question,
+        *questions: hemlock.questions.base.Question,
         timer: Union[str, Timer] = None,
         data: List[Data] = None,
-        navbar=None,
+        navbar=None,  # TODO: typehint for navbar
         back: Union[bool, str] = None,
         prev_page: Page = None,
         forward: Union[bool, str] = None,
         next_page: Page = None,
         template: str = "hemlock/page.html",
-        compile: Union[Callable, List[Callable]] = None,
+        compile: Union[CompileType, List[CompileType]] = None,
         rerun_compile_functions: bool = None,
-        submit: Union[Callable, List[Callable]] = None,
-        navigate: Callable = None,
-        debug: Union[Callable, List[Callable]] = None,
+        submit: Union[SubmitType, List[SubmitType]] = None,
+        navigate: NavigateType = None,
         terminal: bool = False,
         params: Any = None,
         extra_html_settings: Mapping[str, HTMLSettingType] = None,
@@ -180,14 +330,13 @@ class Page(db.Model):
         set_attribute("rerun_compile_functions", rerun_compile_functions)
         set_attribute("submit", submit, True)
         set_attribute("navigate", navigate, True)
-        set_attribute("debug", debug, True)
 
         self.terminal = terminal
         set_attribute("params", params, True)
 
         self.html_settings = copy.deepcopy(self.defaults["html_settings"])
         if extra_html_settings is not None:
-            self.html_settings.update_settings(extra_html_settings)
+            self.html_settings.update_settings(extra_html_settings)  # type: ignore
 
     def __repr__(self):
         initial_indent = ""
@@ -199,57 +348,18 @@ class Page(db.Model):
             question_text = "\n".join([str(question) for question in self.questions])
             question_text = f"\n{textwrap.indent(question_text, subsequent_indent)}"
 
-        terminal = " terminal" if self.terminal else ""
+        terminal = " terminal" if self.is_last_page else ""
         return textwrap.indent(
             f"<{self.__class__.__qualname__} {self.get_position()}{terminal}>{question_text}",
             initial_indent,
         )
 
-    @property
-    def root_branch(self):
-        return (self.tree or self.root).branch
+    def get_position(self) -> str:
+        """Get this page's position on its tree.
 
-    @property
-    def is_first_page(self):
-        # this page is the zeroth of the pages directly connected to the tree
-        return self.tree is not None and self.index == 0
-
-    @property
-    def is_last_page(self):
-        if self.terminal:
-            return True
-
-        if self.tree is None and self.root is None:
-            # this page is not connected to a tree or root page
-            # this will most often occur during testing
-            return False
-
-        if self.branch or self.navigate is not None:
-            # this page either already has a branch
-            # or will get a new branch when submitted
-            return False
-
-        page = self
-        while page is page.root_branch[-1]:
-            page = page.root
-            if page is None:
-                return True
-
-        return False
-
-    @property
-    def is_valid(self):
+        Returns:
+            str: Position.
         """
-        Returns
-        -------
-        valid : bool
-            Indicator that all of the participant's responses are valid. That
-            is, that there are no error messages on the page or any of its
-            questions.
-        """
-        return all([question.is_valid in (True, None) for question in self.questions])
-
-    def get_position(self):
         indices = []
         page = self
         while page is not None:
@@ -276,22 +386,20 @@ class Page(db.Model):
 
         return return_value
 
-    def clear_feedback(self):
+    def clear_feedback(self) -> None:
+        """Clear feedback on all of this page's questions."""
         [question.clear_feedback() for question in self.questions]
-        return self
 
-    def clear_responses(self):
+    def clear_responses(self) -> None:
+        """Clear the user's responses (and feedback) to all of this page's questions."""
+        [question.clear_response() for question in self.questions]
+
+    def render(self, for_notebook_display=False) -> str:
+        """Render the HTML.
+
+        Returns:
+            str: HTML.
         """
-        Clear the response from all of this page's questions.
-
-        Returns
-        -------
-        self : hemlock.Page
-        """
-        [question.clear_responses() for question in self.questions]
-        return self
-
-    def render(self, for_notebook_display=False):
         return render_template(
             self.template,
             page=self,
@@ -299,8 +407,18 @@ class Page(db.Model):
             for_notebook_display=for_notebook_display,
         )
 
-    def get(self, for_notebook_display=False):
-        if self.direction_to not in ("back", "invalid") or self.rerun_compile_functions:
+    def get(self, for_notebook_display=False) -> str:
+        """Process a GET request.
+
+        Args:
+            for_notebook_display (bool, optional): Indicates that this is a test
+                user's request and the output will displayed in a notebook. Defaults
+                to False.
+
+        Returns:
+            str: Rendered HTML.
+        """
+        if self.direction_to in ("forward", None) or self.rerun_compile_functions:
             [func(self) for func in self.compile]
             [question.run_compile_functions() for question in self.questions]
 
@@ -308,11 +426,17 @@ class Page(db.Model):
         self.timer.start()
         return html
 
-    def post(self):
+    def post(self) -> str:
+        """Process a POST request.
+
+        Returns:
+            str: The direction the user should go from this page ("forward", "back",
+                or "invalid").
+        """
         self.timer.pause()
 
         # record form data
-        self.direction_from = request.form.get("direction")
+        self.direction_from = request.form["direction"]
         [question.record_response() for question in self.questions]
 
         if self.direction_from == "forward":

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
+from sqlalchemy.ext.hybrid import hybrid_property
+
 from .app import db
 from .data import Data
 
@@ -46,13 +48,13 @@ class Timer(Data):
     is_running = db.Column(db.Boolean)
     start_time = db.Column(db.DateTime)
 
-    @property
+    @hybrid_property
     def total_seconds(self):
         if self.is_running:
             return self.data + (datetime.utcnow() - self.start_time).total_seconds()
         return self.data
 
-    @total_seconds.setter
+    @total_seconds.setter  # type: ignore
     def total_seconds(self, total_seconds):
         self.data = total_seconds
 

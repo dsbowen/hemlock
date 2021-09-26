@@ -8,6 +8,7 @@ from hemlock.app import create_test_app
 from hemlock.questions import Input, Label
 from hemlock.questions.base import Question
 
+question_classes = [Input, Label]
 create_test_app()
 
 
@@ -19,6 +20,13 @@ def test_repr():
 
     question.raw_response = "user response"
     assert repr(question) == "<Question Hello, world! - response: user response>"
+
+
+@pytest.mark.parametrize("question_cls", question_classes)
+def test_display(question_cls):
+    # Note: this function simply tests that the display method runs without error.
+    # Run the display method in a notebook to verify expected behavior.
+    question_cls().display()
 
 
 def test_clear_feedback():
@@ -58,7 +66,7 @@ def test_get_default(response):
     assert question.get_default() == expected_result
 
 
-@pytest.mark.parametrize("question_cls", (Input, Label))
+@pytest.mark.parametrize("question_cls", question_classes)
 def test_render(question_cls):
     # Note: this test simply tests that the render method runs without error
     # it does not verify that the resulting HTML gives expected behavior
@@ -170,17 +178,18 @@ class TestValidation:
             assert question.feedback == TestValidation.invalid_feedback0
 
 
-def seed():
-    return [Page(Question()), Page()]
+class TestRecordResponseAndGetData:
+    @staticmethod
+    def seed():
+        return [Page(Question()), Page()]
 
+    @pytest.mark.parametrize("response_is_none", (True, False))
+    def test(self, response_is_none):
+        test_response = "" if response_is_none else "test response"
+        user = User.make_test_user(self.seed)
+        user.test_request([test_response])
 
-@pytest.mark.parametrize("response_is_none", (True, False))
-def test_record_response_and_data(response_is_none):
-    test_response = "" if response_is_none else "test response"
-    user = User.make_test_user(seed)
-    user.test_request([test_response])
-
-    question = user.trees[0].branch[0].questions[0]
-    expected_result = None if response_is_none else test_response
-    assert question.response == expected_result
-    assert question.data == expected_result
+        question = user.trees[0].branch[0].questions[0]
+        expected_result = None if response_is_none else test_response
+        assert question.response == expected_result
+        assert question.data == expected_result

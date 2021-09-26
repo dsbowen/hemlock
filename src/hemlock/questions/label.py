@@ -26,7 +26,7 @@ class Label(Question):
     # question below to respond to
     defaults["html_settings"]["label"]["class"].remove("form-label")  # type: ignore
 
-    def render(self):  # pylint disable=missing-function-docstring
+    def render(self) -> str:  # pylint disable=missing-function-docstring
         # renders the label, stripping the last <p> tag from the label text for a
         # cleaner look
         return render_template(

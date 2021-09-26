@@ -11,12 +11,10 @@ now = datetime.utcnow()
 
 class TestResponseConversion:
     # maps input type to (raw response, expected response type)
-    type_response_mapping = {
-        "text": ("text response", str),
-        "number": ("1", float)
-    }
+    type_response_mapping = {"text": ("text response", str), "number": ("1", float)}
     datetime_response_mapping = {
-        key: (now.strftime(item[1]), datetime) for key, item in datetime_input_types.items()
+        key: (now.strftime(item[1]), datetime)
+        for key, item in datetime_input_types.items()
     }
     type_response_mapping.update(datetime_response_mapping)
 
@@ -69,8 +67,7 @@ class TestSetIsValid:
     )
 
     @pytest.mark.parametrize(
-        "is_valid0, is_valid1", 
-        combinations_with_replacement((None, True, False), r=2)
+        "is_valid0, is_valid1", combinations_with_replacement((None, True, False), r=2)
     )
     def test_set_is_valid(self, is_valid0, is_valid1):
         question = Input()

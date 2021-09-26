@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import copy
 import textwrap
-from typing import Any, Callable, Dict, List, Mapping, Union
+from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple, Union
 
 from flask import render_template, request
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates
-from hemlock.page import HASH_LENGTH
 from sqlalchemy_mutable.html import HTMLSettingType
 from sqlalchemy_mutable.types import (
     HTMLSettingsType,
@@ -26,6 +26,12 @@ from ..utils.random import make_hash
 
 HASH_LENGTH = 10
 
+CompileType = Callable[["Question"], None]
+SubmitType = Callable[["Question"], None]
+ValidateReturnType = Union[Optional[bool], Tuple[Optional[bool], str]]
+ValidateType = Callable[["Question"], ValidateReturnType]
+DebugType = Callable[["Question"], Any]
+
 
 class Question(Data):
     """Mixin for question objects.
@@ -41,14 +47,13 @@ class Question(Data):
             Defaults to None.
         form_text (str, optional): Form text which usually appears below an input.
             Defaults to None.
-        compile (Union[Callable, List[Callable]], optional): Functions run before this
-            question renders its HTML. Defaults to None.
-        validate (Union[Callable, List[Callable]], optional): Functions run to
+        compile (Union[CompileType, List[CompileType]], optional): Functions run
+            before this question renders its HTML. Defaults to None.
+        validate (Union[ValidateType, List[ValidateType]], optional): Functions run to
             validate the user's response. Defaults to None.
-        submit (Union[Callable, List[Callable]], optional): Functions run after the
+        submit (Union[SubmitType, List[SubmitType]], optional): Functions run after the
             user has submitted his response. Defaults to None.
-        debug (Union[Callable, List[Callable]], optional): Functions run during
-            debugging. Defaults to None.
+        debug (DebugType, optional): Functions run during debugging. Defaults to None.
         default (Any, optional): Default response value. Defaults to None.
         params (Any, optional): Additional parameters. Defaults to None.
         extra_html_settings (Mapping[str, HTMLSettingType], optional): Additional HTML
@@ -64,11 +69,12 @@ class Question(Data):
         prepend (List[str]): Text prepended to the input tag.
         append (List[str]): Text appended to the input tag.
         form_text (str): Form text which usually appears below an input.
-        compile (List[Callable]): Functions run before this question renders its HTML.
-        validate (List[Callable]): Functions run to validate the user's response.
-        submit (List[Callable]): Functions run after the user has submitted his
+        compile (List[CompileType]): Functions run before this question renders its
+            HTML.
+        validate (List[ValidateType]): Functions run to validate the user's response.
+        submit (List[SubmitType]): Functions run after the user has submitted his
             response.
-        debug (List[Callable]): Functions run during debugging.
+        debug (DebugType): Functions run during debugging.
         default (Any): Default response value.
         params (Any): Additional parameters.
         raw_response (Any): User's raw response to the question.
@@ -122,10 +128,10 @@ class Question(Data):
     html_settings = db.Column(HTMLSettingsType)
 
     @validates("label", "form_text", "feedback")
-    def validates_text(self, key, value):
+    def _validates_text(self, key: str, value: Optional[str]) -> Optional[str]:
         return None if value is None else textwrap.dedent(value).strip()
 
-    @property
+    @hybrid_property
     def is_valid(self) -> bool:
         return self._is_valid
 
@@ -133,14 +139,14 @@ class Question(Data):
     compile = db.Column(MutableListPickleType)
     validate = db.Column(MutableListPickleType)
     submit = db.Column(MutableListPickleType)
-    debug = db.Column(MutableListPickleType)
+    debug = db.Column(MutablePickleType)
 
     # Additional attributes
     default = db.Column(MutableJSONType)
     raw_response = db.Column(MutableJSONType)
     params = db.Column(MutablePickleType)
 
-    @property
+    @hybrid_property
     def response(self):
         return None if self.raw_response == "" else self.raw_response
 
@@ -152,10 +158,10 @@ class Question(Data):
         prepend: Union[str, List[str]] = None,
         append: Union[str, List[str]] = None,
         form_text: str = None,
-        compile: Union[Callable, List[Callable]] = None,
-        validate: Union[Callable, List[Callable]] = None,
-        submit: Union[Callable, List[Callable]] = None,
-        debug: Union[Callable, List[Callable]] = None,
+        compile: Union[CompileType, List[CompileType]] = None,
+        validate: Union[ValidateType, List[ValidateType]] = None,
+        submit: Union[SubmitType, List[SubmitType]] = None,
+        debug: DebugType = None,
         default: Any = None,
         params: Any = None,
         extra_html_settings: Mapping[str, HTMLSettingType] = None,
@@ -208,12 +214,12 @@ class Question(Data):
         """Display this question in a notebook."""
         return Page(self, back=False, forward=False).display()
 
-    def clear_feedback(self):
+    def clear_feedback(self) -> None:
         """Clear the feedback."""
         self.feedback = None
         self.set_is_valid(None)
 
-    def clear_response(self):
+    def clear_response(self) -> None:
         """Clear the feedback and response."""
         self.raw_response = None
         self.clear_feedback()
@@ -235,7 +241,7 @@ class Question(Data):
 
         return self.raw_response
 
-    def set_is_valid(self, is_valid: bool = None):
+    def set_is_valid(self, is_valid: bool = None) -> None:
         """Set the indicator that the user's response was valid.
 
         Args:
@@ -244,12 +250,12 @@ class Question(Data):
         """
         self._is_valid = is_valid
 
-    def run_compile_functions(self):
+    def run_compile_functions(self) -> None:
         """Run the compile functions."""
         [func(self) for func in self.compile]
 
     def render(self) -> str:
-        """Render the HTML
+        """Render the HTML.
 
         Returns:
             str: HTML.
@@ -269,7 +275,7 @@ class Question(Data):
             form_text=render_markdown(self.form_text, True),
         )
 
-    def record_response(self):
+    def record_response(self) -> None:
         """Record the user's response."""
         self.raw_response = request.form.get(self.hash)
 
@@ -301,14 +307,10 @@ class Question(Data):
 
         return True
 
-    def record_data(self):
+    def record_data(self) -> None:
         """Record the question's data based on the user's response."""
         self.data = self.response
 
-    def run_submit_functions(self):
+    def run_submit_functions(self) -> None:
         """Run submit functions."""
         [func(self) for func in self.submit]
-
-    def run_debug_functions(self):
-        """Run debugging functions."""
-        [func(self) for func in self.debug]

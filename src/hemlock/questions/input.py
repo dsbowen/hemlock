@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import copy
 from datetime import datetime
-from typing import Mapping
+from typing import Any, Mapping
 
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_mutable.html import HTMLAttrType
 
 from ..app import db
@@ -65,11 +66,11 @@ class Input(Question):
     defaults["html_settings"]["input"] = {"type": "text", "class": ["form-control"]}  # type: ignore
 
     @property
-    def input_tag(self):
+    def input_tag(self) -> HTMLAttrType:
         return self.html_settings["input"]
 
-    @property
-    def response(self):
+    @hybrid_property
+    def response(self) -> Any:
         """Converts the raw response to the appropriate type based on the input type."""
         if self.raw_response in ("", None):
             return None
