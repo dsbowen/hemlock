@@ -21,7 +21,7 @@ def test_repr():
         assert str(page) in repr_tree
 
 
-class TestNavigationErrors:
+class TestNavigation:
     def test_back_error(self):
         # test that you cannot go back from the first page
         tree = Tree(seed)
@@ -35,21 +35,18 @@ class TestNavigationErrors:
         with pytest.raises(RuntimeError):
             tree.go_forward()
 
+    def test_easy_navigation(self):
+        def seed():
+            branch = [
+                Page(),
+                first_page := Page(),
+                Page(back=True),
+                Page(back=True, prev_page=first_page),
+            ]
+            branch[0].next_page = branch[2]
+            return branch
 
-class TestNavigationEasy:
-    @staticmethod
-    def seed():
-        branch = [
-            Page(),
-            first_page := Page(),
-            Page(back=True),
-            Page(back=True, prev_page=first_page),
-        ]
-        branch[0].next_page = branch[2]
-        return branch
-
-    def test(self):
-        tree = Tree(self.seed)
+        tree = Tree(seed)
         assert tree.page.get_position() == "0"
         assert tree.go_forward().page.get_position() == "2"
         assert tree.go_forward().page.get_position() == "3"
@@ -57,24 +54,21 @@ class TestNavigationEasy:
         assert tree.go_forward().page.get_position() == "2"
         assert tree.go_back().page.get_position() == "1"
 
+    def test_hard_navigation(self):
+        def seed():
+            branch = [Page(), Page()]
 
-class TestNavigationHard:
-    @staticmethod
-    def seed():
-        branch = [Page(), Page()]
+            first_branch = [Page(), Page()]
+            branch[0].branch = first_branch
 
-        first_branch = [Page(), Page()]
-        branch[0].branch = first_branch
+            first_branch[0].branch = [Page(next_page=branch[1])]
+            first_branch[1].branch = [Page()]
 
-        first_branch[0].branch = [Page(next_page=branch[1])]
-        first_branch[1].branch = [Page()]
+            branch[1].prev_page = first_branch[1]
 
-        branch[1].prev_page = first_branch[1]
+            return branch
 
-        return branch
-
-    def test(self):
-        tree = Tree(self.seed)
+        tree = Tree(seed)
         assert tree.page.get_position() == "0"
 
         assert tree.go_forward().page.get_position() == "0.0"

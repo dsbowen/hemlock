@@ -1,3 +1,11 @@
+"""Navigation display.
+
+Displays possible user navigation through a tree.
+"""
+from __future__ import annotations
+
+from typing import Any, Dict, List, Tuple
+
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -11,11 +19,32 @@ DEFAULT_EDGE_COLOR = "#b6d4fe"
 CURRENT_EDGE_COLOR = "#badbcc"
 TERMINAL_EDGE_COLOR = "#f5c2c7"
 
+EdgeType = Tuple["hemlock.page.Page", "hemlock.page.Page"]  # type: ignore
+# tuple of (list of edges), connection style (str)
+EdgelistType = Tuple[List[EdgeType], str]
+
 
 class Node:
-    def __init__(self, page, pos):
+    """Node of the navigation graph.
+
+    Args:
+        page (hemlock.page.Page): Page represented by this node.
+        pos (Tuple[float, float]): Position of the node in graph.
+
+    Attributes:
+        page (hemlock.page.Page): Page represented by this node.
+        pos (Tuple[float, float]): Position of the node in graph.
+        children (List[Node]): Nodes to which the user can navigate from this node.
+        color (str): Color of this node.
+        edgecolor (str): Color of the edge of this node.
+        subgraph (Graph): Graph representing this page's branch.
+    """
+
+    def __init__(
+        self, page: "hemlock.page.Page", pos: Tuple[float, float]  # type: ignore
+    ):
         self.page = page
-        self.children = []
+        self.children: List[Node] = []
         self.pos = pos
 
         self.color = DEFAULT_NODE_COLOR
@@ -29,12 +58,17 @@ class Node:
         if page.branch:
             self.subgraph = Graph(page.branch, self)
         else:
-            self.subgraph = None
+            self.subgraph = None  # type: ignore
 
     def __len__(self):
         return 1 + (0 if self.subgraph is None else len(self.subgraph))
 
-    def connect(self, prev_node):
+    def connect(self, prev_node: Node) -> None:
+        """Draw a connection from the prev_node to this node.
+
+        Args:
+            prev_node (Node): Node to connect.
+        """
         if prev_node.subgraph is None:
             if prev_node.page.forward and prev_node.page.next_page is None:
                 prev_node.children.append(self)
@@ -43,7 +77,12 @@ class Node:
         else:
             self.connect(prev_node.subgraph.nodes[-1])
 
-    def get_attributes(self):
+    def get_attributes(self) -> Dict[str, Any]:
+        """Get attributes of this node and its subgraph.
+
+        Returns:
+            Dict[str, Any]: Attributes.
+        """
         attrs = dict(
             nodes=[self.page],
             labels={self.page: self.page.get_position()},
@@ -55,7 +94,7 @@ class Node:
         if self.subgraph is not None:
             for key, value in self.subgraph.get_attributes().items():
                 if key in ("labels", "pos"):
-                    attrs[key].update(value)
+                    attrs[key].update(value)  # type: ignore
                 else:
                     attrs[key] += value
 
@@ -63,11 +102,24 @@ class Node:
 
 
 class Graph:
-    def __init__(self, branch, origin_node=None):
-        self.branch = branch
-        self.nodes = []
+    """Graph representing a branch.
 
-        start_x, start_y = 0, 0
+    Args:
+        branch (hemlock.branch.Branch): Branch represented by this graph.
+        origin_node (Node, optional): Root node for this branch. Defaults to None.
+
+    Attributes:
+        branch (hemlock.branch.Branch): Branch represented by this graph.
+        nodes (List[Node]): Nodes representing the pages of this branch.
+    """
+
+    def __init__(
+        self, branch: "hemlock.branch.Branch", origin_node: Node = None  # type: ignore
+    ):
+        self.branch = branch
+        self.nodes: List[Node] = []
+
+        start_x, start_y = 0.0, 0.0
         if origin_node is not None:
             start_x = origin_node.pos[0] + 1
             start_y = origin_node.pos[1] + Y_INCREMENT
@@ -89,8 +141,13 @@ class Graph:
     def __len__(self):
         return sum([len(node) for node in self.nodes])
 
-    def get_attributes(self):
-        attrs = dict(
+    def get_attributes(self) -> Dict[str, Any]:
+        """Get attributes of this graph's nodes and their subgraphs.
+
+        Returns:
+            Dict[str, Any]: Attributes.
+        """
+        attrs: Dict[str, Any] = dict(
             nodes=[],
             labels={},
             pos={},
@@ -101,18 +158,30 @@ class Graph:
         for node in self.nodes:
             for key, value in node.get_attributes().items():
                 if key in ("labels", "pos"):
-                    attrs[key].update(value)
+                    attrs[key].update(value)  # type: ignore
                 else:
                     attrs[key] += value
 
         return attrs
 
 
-def display_navigation(tree, ax, node_size, **subplots_kwargs):
-    if ax is None:
-        _, ax = plt.subplots(**subplots_kwargs)
-        ax.set_facecolor("whitesmoke")
+def make_digraph(
+    tree: "hemlock.tree.Tree",  # type: ignore
+) -> Tuple[
+    nx.classes.digraph.DiGraph, Dict[str, Any], Tuple[EdgelistType, EdgelistType]
+]:
+    """Create a networkx digraph based on a tree.
 
+    Args:
+        tree (hemlock.tree.Tree): Tree to represent as a graph.
+
+    Returns:
+        Tuple[
+            nx.classes.digraph.DiGraph,
+            Dict[str, Any],
+            Tuple[EdgelistType, EdgelistType]
+        ]: Digraph, graph attributes, tuple of straight and curved edges.
+    """
     graph = Graph(tree.branch)
     attrs = graph.get_attributes()
     for i, page in enumerate(attrs["nodes"]):
@@ -137,6 +206,31 @@ def display_navigation(tree, ax, node_size, **subplots_kwargs):
     nx_graph = nx.DiGraph()
     nx_graph.add_nodes_from(attrs["nodes"])
     nx_graph.add_edges_from(attrs["edges"] + curved_edges)
+
+    return nx_graph, attrs, edgelist_connectionstyle
+
+
+def display_navigation(
+    tree: "hemlock.tree.Tree",  # type: ignore
+    ax=None,
+    node_size: int = 1200,
+    **subplots_kwargs: Any
+):
+    """Display the navigation graph of a given tree.
+
+    Args:
+        tree (hemlock.tree.Tree): Tree to display.
+        ax (AxesSubplot): Axis on which to draw the graph.
+        node_size (int, optional): Size of the nodes in the graph. Defaults to 1200.
+
+    Returns:
+        AxesSubplot: Graph.
+    """
+    if ax is None:
+        _, ax = plt.subplots(**subplots_kwargs)
+        ax.set_facecolor("whitesmoke")
+
+    nx_graph, attrs, edgelist_connectionstyle = make_digraph(tree)
     nx.draw_networkx_nodes(
         nx_graph,
         attrs["pos"],

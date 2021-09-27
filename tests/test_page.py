@@ -9,29 +9,30 @@ from hemlock.questions import Input, Label
 from hemlock.questions.base import Question
 
 
-class TestRootBranch:
-    @staticmethod
+@pytest.mark.parametrize("root_is_tree", (True, False))
+def test_root_branch(root_is_tree):
     def seed():
         return Page()
 
-    @pytest.mark.parametrize("root_is_tree", (True, False))
-    def test_root_branch(self, root_is_tree):
-        if root_is_tree:
-            root = Tree(TestRootBranch.seed)
-            page = root.branch[0]
-        else:
-            root = Page()
-            root.branch = [page := Page()]
+    if root_is_tree:
+        root = Tree(seed)
+        page = root.branch[0]
+    else:
+        root = Page()
+        root.branch = [page := Page()]
 
-        assert page.root_branch is root.branch
+    assert page.root_branch is root.branch
 
 
 class TestPosition:
     n_pages = 6  # number of pages in test survey
 
-    @staticmethod
-    def seed():
-        return [Page(navigate=TestPosition.make_next_branch), Page()]
+    def get_user(self):
+        def seed():
+            return [Page(navigate=self.make_next_branch), Page()]
+
+        create_test_app()
+        return User.make_test_user(seed)
 
     @staticmethod
     def make_next_branch(root):
@@ -43,10 +44,6 @@ class TestPosition:
     @staticmethod
     def make_next_next_branch(root):
         return Page()
-
-    def get_user(self):
-        create_test_app()
-        return User.make_test_user(self.seed)
 
     def test_is_first_page(self):
         user = self.get_user()
@@ -107,12 +104,11 @@ class TestRepr:
     def test_unattached(self):
         assert repr(Page()) == "<Page None>"
 
-    @staticmethod
-    def seed():
-        return [Page(), Page()]
-
     def test_page_on_tree(self):
-        tree = Tree(self.seed)
+        def seed():
+            return [Page(), Page()]
+
+        tree = Tree(seed)
         assert repr(tree.branch[0] == "<Page 0>")
         assert repr(tree.branch[1] == "<Page 1 terminal>")
 
@@ -203,10 +199,6 @@ class TestPost:
     invalid_feedback = "Invalid feedback."
 
     @staticmethod
-    def seed():
-        return [Page(), Page(Input(validate=TestPost.response_is_valid)), Page()]
-
-    @staticmethod
     def response_is_valid(question):
         if question.response == TestPost.valid_response:
             return True
@@ -219,8 +211,11 @@ class TestPost:
         product(("forward", "back"), (True, False), (True, False)),
     )
     def test_post(self, direction, enter_valid_response, zeroeth_try_is_invalid):
+        def seed():
+            return [Page(), Page(Input(validate=self.response_is_valid)), Page()]
+
         # create test user and go to first page
-        user = User.make_test_user(self.seed)
+        user = User.make_test_user(seed)
         user.test_get()
         user.test_request()
         if zeroeth_try_is_invalid:

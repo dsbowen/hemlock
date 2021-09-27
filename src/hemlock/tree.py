@@ -24,21 +24,22 @@ class Tree(db.Model):
     Trees control which page the user navigates to next in response to a request.
 
     Args:
-        seed_func (Callable[[], List[Page]]): The "seed function" initializes the 
+        seed_func (Callable[[], List[Page]]): The "seed function" initializes the
             tree's branch.
 
     Attributes:
         user (User): The user to which this tree belongs.
-        index (int): Position of this tree relative to other trees belonging to the 
+        index (int): Position of this tree relative to other trees belonging to the
             same user.
         branch (List[Page]): A list of pages returned by the seed function.
         page (Page): The page this tree is currently on.
-        request_in_progress (bool): Indicates that this tree is currently processing 
+        request_in_progress (bool): Indicates that this tree is currently processing
             its user's request.
-        prev_request_method (str): The request method of the user's previous request. 
+        prev_request_method (str): The request method of the user's previous request.
             Either "GET" or "POST".
         cached_page_html (str): Cached HTML from the user's last GET request.
     """
+
     id = db.Column(db.Integer, primary_key=True)
 
     _user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -75,7 +76,7 @@ class Tree(db.Model):
     def __init__(
         self,
         seed_func: Callable[[], List["hemlock.page.Page"]],  # type: ignore
-        url_rule: str = None
+        url_rule: str = None,
     ):
         self._seed_func_name = seed_func.__name__
         self._url_rule = url_rule
@@ -95,13 +96,18 @@ class Tree(db.Model):
             initial_indent,
         )
 
-    def display(self, ax: plt.axes._subplots.AxesSubplot=None, node_size: int=1200, **subplots_kwargs: Any):
+    def display(
+        self,
+        ax: plt.axes._subplots.AxesSubplot = None,
+        node_size: int = 1200,
+        **subplots_kwargs: Any,
+    ):
         """Display the tree's navigation graph and its current page.
 
         Args:
-            ax (plt.axes._subplots.AxesSubplot, optional): Plot on which to write the 
+            ax (plt.axes._subplots.AxesSubplot, optional): Plot on which to write the
                 tree's navigation graph. Defaults to None.
-            node_size (int, optional): Size of nodes in the navigation graph. Defaults 
+            node_size (int, optional): Size of nodes in the navigation graph. Defaults
                 to 1200.
             **subplots_kwargs (Any): Keyword arguments for ``plt.subplots``.
         """
