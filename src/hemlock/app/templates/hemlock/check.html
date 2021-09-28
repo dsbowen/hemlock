@@ -1,0 +1,38 @@
+{% extends "hemlock/utils/card.html" %}
+
+{% block card_body %}
+{% include "hemlock/utils/label.html" %}
+
+{% if question.multiple %}
+    {% set type = "checkbox" %}
+{% else %}
+    {% set type = "radio" %}
+{% endif %}
+
+{% for choice in question.choices %}
+    {% set index = loop.index | string() %}
+    {% set id = question.hash + index %}
+
+    {% if question.is_default(choice) %}
+        {% set checked = " checked" %}
+    {% else %}
+        {% set checked = "" %}
+    {% endif %}
+
+    {% if choice.get("disabled") %}
+        {% set disabled = " disabled" %}
+    {% else %}
+        {% set disabled = "" %}
+    {% endif %}
+
+    <div class="form-check">
+        <input id="{{ id }}" name="{{ question.hash }}" class="form-check-input" type="{{ type }}" value="{{ loop.index }}"{{ disabled }}{{ checked }}>
+        <label class="form-check-label custom-check-label w-100" for="{{ id }}">
+            {{ choice["label"] | safe }}
+        </label>
+    </div>
+{% endfor %}
+
+{% include "hemlock/utils/feedback.html" %}
+{% include "hemlock/utils/form_text.html" %}
+{% endblock %}

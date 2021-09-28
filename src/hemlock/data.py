@@ -2,12 +2,11 @@
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
-from sqlalchemy_mutable import Mutable
-from sqlalchemy_mutable.utils import is_instance
 from sqlalchemy_mutable.types import MutablePickleType
 
+from ._data_frame import DataFrame
 from .app import db
 
 
@@ -38,12 +37,14 @@ class Data(db.Model):
         .. doctest::
 
             >>> from hemlock import Data
-            >>> Data("variable_name", 1).pack_data()
+            >>> dict(Data("variable_name", 1).pack_data())
             {'variable_name': [1]}
-            >>> Data("variable_name", 1, n_rows=3).pack_data()
+            >>> dict(Data("variable_name", 1, n_rows=3).pack_data())
             {'variable_name': [1, 1, 1]}
-            >>> Data("variable_name", [0, 1, 2]).pack_data()
+            >>> dict(Data("variable_name", [0, 1, 2]).pack_data())
             {'variable_name': [0, 1, 2]}
+            >>> dict(Data("prefix", {"suffix0": 0, "suffix1": [1, 2]}).pack_data())
+            {'prefix_suffix0': [0, 0], 'prefix_suffix1': [1, 2]}
     """
 
     id = db.Column(db.Integer, primary_key=True)
@@ -76,22 +77,23 @@ class Data(db.Model):
     def __repr__(self):
         return f"<{self.__class__.__qualname__} {self.variable} {self.data}>"
 
-    def pack_data(self) -> Dict[str, List[Any]]:
+    def pack_data(self) -> DataFrame:
         """Package the data for insertion into a data frame.
 
         Returns:
-            Dict[str, List[Any]]: Mapping of variable names to values.
+            DataFrame: Mapping of variable names to values.
         """
         if self.variable is None:
-            return {}
+            return DataFrame()
 
-        data = self.data.get_object() if isinstance(self.data, Mutable) else self.data
-        if not is_instance(data, list):
-            data = self.n_rows * [None if data is None else data]
-
-        packed_data = {self.variable: data}
-
+        data = self.data.get_object()
+        if isinstance(data, dict):
+            packed_data = {f"{self.variable}_{key}": item for key, item in data.items()}
+        else:
+            packed_data = {self.variable: self.data.get_object()}
         if self.record_index:
-            packed_data[f"{self.variable}_index"] = len(data) * [self.index]
+            packed_data[f"{self.variable}_index"] = self.index
 
-        return packed_data
+        dataframe = DataFrame(packed_data, fill_rows=True)
+        dataframe.pad(min_rows=self.n_rows)
+        return dataframe

@@ -5,8 +5,22 @@ from sqlalchemy_mutable.utils import partial
 
 from hemlock import User, Tree, Page
 from hemlock.app import create_test_app
+from hemlock.data import Data
 from hemlock.questions import Input, Label
 from hemlock.questions.base import Question
+
+
+@pytest.mark.parametrize("as_data", (True, False))
+def test_data_validation(as_data):
+    # test that data can be input as Data object or tuple of arguments to Data
+    # constructor
+    variable_name, variable_data = "variable", "data"
+    data = (variable_name, variable_data)
+    if as_data:
+        data = Data(*data)
+    page = Page(data=[data])
+    assert page.data[0].variable == variable_name
+    assert page.data[0].data == variable_data
 
 
 @pytest.mark.parametrize("root_is_tree", (True, False))

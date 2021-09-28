@@ -94,49 +94,15 @@ class Input(Question):
     def set_is_valid(self, is_valid: bool = None):
         """See :meth:`hemlock.questions.base.Question.set_is_valid`.
 
-        Additionally adds appropriate validation classes to the input and feedback tags.
+        Additionally adds appropriate validation classes to the input tag.
         """
-
-        def add_and_remove_classes(html_attr, remove, add=None):
-            classes = self.html_settings[html_attr]["class"]
-
-            if not isinstance(remove, list):
-                remove = [remove]
-            for class_name in remove:
-                try:
-                    classes.remove(class_name)
-                except ValueError:
-                    pass
-
-            if add is not None and add not in classes:
-                classes.append(add)
-
-        input_valid_class, input_invalid_class = "is-valid", "is-invalid"
-        feedback_valid_class, feedback_invalid_class = (
-            "valid-feedback",
-            "invalid-feedback",
-        )
+        valid_class, invalid_class = "is-valid", "is-invalid"
         if is_valid is None:
-            add_and_remove_classes(
-                "input", remove=[input_valid_class, input_invalid_class]
-            )
-            add_and_remove_classes(
-                "feedback", remove=[feedback_valid_class, feedback_invalid_class]
-            )
+            self._add_and_remove_classes("input", remove=[valid_class, invalid_class])
         elif is_valid:
-            add_and_remove_classes(
-                "input", add=input_valid_class, remove=input_invalid_class
-            )
-            add_and_remove_classes(
-                "feedback", add=feedback_valid_class, remove=feedback_invalid_class
-            )
+            self._add_and_remove_classes("input", add=valid_class, remove=invalid_class)
         else:
-            add_and_remove_classes(
-                "input", add=input_invalid_class, remove=input_valid_class
-            )
-            add_and_remove_classes(
-                "feedback", add=feedback_invalid_class, remove=feedback_valid_class
-            )
+            self._add_and_remove_classes("input", add=invalid_class, remove=valid_class)
 
         return super().set_is_valid(is_valid)
 

@@ -6,7 +6,7 @@ import copy
 import os
 import textwrap
 from random import sample
-from typing import Any, Callable, Dict, List, Mapping, Optional, Union
+from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple, Union
 
 from IPython import display
 from flask import render_template, request
@@ -42,7 +42,9 @@ class Page(db.Model):
         timer (Union[str, Timer], optional): Records the amount of time the user spent
             on this page. A string is interpreted as the timer's variable name.
             Defaults to None.
-        data (List[Data], optional): Additional data items. Defaults to None.
+        data (List[Union[Data, Tuple]], optional): Additional data items. Tuple inputs
+            are used as arguments to the :class:`hemlock.data.Data` constructor.
+            Defaults to None.
         navbar ([type], optional): Navigation bar. Defaults to None.
         back (Union[bool, str], optional): If a bool, indicates that the user can go
             back. If a string, this is the text of the back button. Defaults to None.
@@ -118,6 +120,24 @@ class Page(db.Model):
             <Page None>
                 <Label Hello, world! - default: None>
                 <Input What's your name? - default: None>
+
+    Notes:
+
+        Data can be input as :class:`hemlock.data.Data` objects or as tuples. Tuple
+        inputs are used as arguments for the ``Data`` constructor.
+
+        .. doctest::
+
+            >>> from hemlock import User, Page, create_test_app
+            >>> from hemlock.data import Data
+            >>> app = create_test_app()
+            >>> def seed():
+            ...     return Page(data=[("variable0", 0), Data("variable1", 1)])
+            ...
+            >>> user = User.make_test_user(seed)
+            >>> user.get_data()[["variable0", "variable1"]]
+               variable0  variable1
+            0          0          1
     """
 
     id = db.Column(db.Integer, primary_key=True)
@@ -193,6 +213,14 @@ class Page(db.Model):
         collection_class=ordering_list("index"),
         foreign_keys="Data._page_id",
     )
+
+    @validates("data")
+    def _validate_data(self, key: str, data: Union[Data, Tuple]) -> Data:
+        """Data can be input as a :class:`hemlock.data.Data` object or a tuple.
+
+        Tuple inputs are used as arguments for the ``Data`` constructor.
+        """
+        return data if isinstance(data, Data) else Data(*data)
 
     timer = db.relationship("Timer", uselist=False, foreign_keys="Timer._page_timer_id")
 
@@ -308,7 +336,7 @@ class Page(db.Model):
         params: Any = None,
         extra_html_settings: Mapping[str, HTMLSettingType] = None,
     ):
-        def set_attribute(name, value, copy_default=False):
+        def set_default_attribute(name, value, copy_default=False):
             if value is None:
                 value = self.defaults[name]
                 if copy_default:
@@ -322,20 +350,20 @@ class Page(db.Model):
         self.timer = Timer(variable=timer) if is_instance(timer, str) else Timer()
         self.data = [] if data is None else data
 
-        set_attribute("navbar", navbar, True)
-        set_attribute("back", back)
+        set_default_attribute("navbar", navbar, True)
+        set_default_attribute("back", back)
         self.prev_page = prev_page
-        set_attribute("forward", forward)
+        set_default_attribute("forward", forward)
         self.next_page = next_page
-        set_attribute("template", template)
+        set_default_attribute("template", template)
 
-        set_attribute("compile", compile, True)
-        set_attribute("rerun_compile_functions", rerun_compile_functions)
-        set_attribute("submit", submit, True)
-        set_attribute("navigate", navigate, True)
+        set_default_attribute("compile", compile, True)
+        set_default_attribute("rerun_compile_functions", rerun_compile_functions)
+        set_default_attribute("submit", submit, True)
+        set_default_attribute("navigate", navigate, True)
 
         self.terminal = terminal
-        set_attribute("params", params, True)
+        set_default_attribute("params", params, True)
 
         self.html_settings = copy.deepcopy(self.defaults["html_settings"])
         if extra_html_settings is not None:

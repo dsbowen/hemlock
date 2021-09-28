@@ -13,6 +13,21 @@
             body {
                 background-color: whitesmoke;
             }
+            input:hover + label {
+                background-color: lightgray;
+            }
+            input:checked + label {
+                background-color: darkgray;
+            }
+            input[type="checkbox"]:checked:hover + label {
+                background-color: #BEBEBE;
+            }
+            .custom-check-label {
+                padding-left: 3px;
+                padding-right: 3px;
+                border-radius: 3px;
+                background-clip: padding-box;
+            }
             /* @media (prefers-color-scheme: dark) {
                 body {
                     background-color: black;

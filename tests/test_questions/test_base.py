@@ -58,7 +58,7 @@ def test_clear_response():
 @pytest.mark.parametrize("response", (None, "", "response"))
 def test_get_default(response):
     question = Question()
-    assert question.get_default() == ""
+    assert question.get_default() == None
 
     question.default = "default"
     question.raw_response = response

@@ -29,6 +29,7 @@ from werkzeug.wrappers.response import Response
 
 from ._data_frame import DataFrame
 from .app import bp, db, login_manager
+from .questions.base import ChoiceQuestion
 from .tree import Tree
 from .utils.random import make_hash
 
@@ -80,8 +81,7 @@ class User(UserMixin, db.Model):
 
         .. doctest::
 
-            >>> from hemlock import User, Page
-            >>> from hemlock.app import create_test_app
+            >>> from hemlock import User, Page, create_test_app
             >>> from hemlock.questions import Input, Label
             >>> from sqlalchemy_mutable.utils import partial
             >>> def greet_user(greeting_label, name_input):
@@ -90,10 +90,10 @@ class User(UserMixin, db.Model):
             >>> def seed():
             ...     return [
             ...         Page(
-            ...                 name_input:=Input("What's your name?")
+            ...             name_input:=Input("What's your name?")
             ...         ),
             ...         Page(
-            ...                 Label(compile=partial(greet_user, name_input))
+            ...             Label(compile=partial(greet_user, name_input))
             ...         )
             ...     ]
             ...
@@ -134,8 +134,7 @@ class User(UserMixin, db.Model):
 
             .. doctest::
 
-                >>> from hemlock import User, Page
-                >>> from hemlock.app import create_test_app
+                >>> from hemlock import User, Page, create_test_app
                 >>> @User.route("/survey")
                 ... def seed():
                 ...     return Page(
@@ -198,8 +197,7 @@ class User(UserMixin, db.Model):
 
             .. doctest::
 
-                >>> from hemlock import User, Page
-                >>> from hemlock.app import create_test_app
+                >>> from hemlock import User, Page, create_test_app
                 >>> from hemlock.questions import Label
                 >>> app = create_test_app()
                 >>> def seed():
@@ -359,7 +357,9 @@ class User(UserMixin, db.Model):
             users = User.query.all()
 
         df = DataFrame()
-        [df.add_data(user.get_data(to_pandas=False)) for user in users]
+        for user in users:
+            df.add_data(user.get_data(to_pandas=False))
+            df.pad()
 
         return pd.DataFrame(df) if to_pandas else df
 
@@ -441,16 +441,35 @@ class User(UserMixin, db.Model):
         url_rule = url_rule or self.default_url_rule
         tree = self.get_tree(url_rule)
 
+        # Get responses from debug functions and manually entered responses
+        # TODO: change the initial data to the output of the debug function
         data = {
             question.hash: question.get_default() for question in tree.page.questions
         }
         if isinstance(responses, dict):
-            data.update({key.hash: item for key, item in responses.items()})
+            data.update(
+                {question.hash: response for question, response in responses.items()}
+            )
         elif isinstance(responses, (list, tuple)):
             data = {
-                question.hash: item
-                for question, item in zip(tree.page.questions, responses)
+                question.hash: response
+                for question, response in zip(tree.page.questions, responses)
             }
+
+        # Convert responses for choice questions (choice values) to choice indices
+        for question in tree.page.questions:
+            if isinstance(question, ChoiceQuestion):
+                response_values = data[question.hash]
+                if response_values is None:
+                    response_values = []
+                elif not isinstance(response_values, (list, tuple)):
+                    response_values = [response_values]
+
+                choice_values = [choice["value"] for choice in question.choices]
+                data[question.hash] = [
+                    choice_values.index(value) for value in response_values
+                ]
+
         data["direction"] = direction
 
         with current_app.test_request_context(method="POST", data=data):

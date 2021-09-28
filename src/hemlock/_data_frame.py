@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from datetime import datetime
-from typing import Mapping
+from typing import Any, Mapping
 
 from sqlalchemy_mutable.utils import is_instance
 
@@ -34,9 +34,11 @@ class DataFrame(defaultdict):
         for key, item in data.items():
             self[key].add_data(item, fill_rows, pad_to_row)
 
-    def pad(self):
+    def pad(self, min_rows: int = None) -> None:
         if self:
             pad_to_row = max([len(item) for item in self.values()])
+            if min_rows is not None:
+                pad_to_row = max(min_rows, pad_to_row)
             [item.pad(pad_to_row) for item in self.values()]
 
 
@@ -45,13 +47,19 @@ class Variable(list):
         super().__init__(*args, **kwargs)
         self.fill_rows = False
 
-    def add_data(self, data, fill_rows=False, pad_to_row=None):
+    def add_data(
+        self, data: Any, fill_rows: bool = False, pad_to_row: int = None
+    ) -> None:
         if pad_to_row is not None:
             self.pad(pad_to_row)
+
+        if not is_instance(data, list):
+            data = [data]
         self += [str(item) if isinstance(item, datetime) else item for item in data]
+
         self.fill_rows = fill_rows
 
-    def pad(self, pad_to_row):
+    def pad(self, pad_to_row: int) -> None:
         n_additional_rows = pad_to_row - len(self)
         if n_additional_rows < 0:
             raise ValueError(

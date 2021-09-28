@@ -156,16 +156,20 @@ class TestGetData:
     variable_name = "variable_name"
     response = "user_response{}"
 
-    @staticmethod
-    def seed(n_rows=1):
-        return [
-            Page(Input(variable=TestGetData.variable_name, n_rows=n_rows)),
-            Page(),
-            Page(),
-        ]
+    def create_test_app(self):
+        create_test_app()
+        [db.session.delete(user) for user in User.query.all()]
+        db.session.commit()
 
     def make_user(self, n_rows=1, complete_survey=True):
-        user = User.make_test_user(partial(self.seed, n_rows))
+        def seed(n_rows=1):
+            return [
+                Page(Input(variable=TestGetData.variable_name, n_rows=n_rows)),
+                Page(),
+                Page(),
+            ]
+
+        user = User.make_test_user(partial(seed, n_rows))
         response = self.response.format(user.id)
         user.test_request([response])  # user is now on page 1 of 2
         if complete_survey:
@@ -181,10 +185,7 @@ class TestGetData:
 
     @pytest.mark.parametrize("n_rows", (1, 3))
     def test_single_user(self, n_rows):
-        create_test_app()
-        [db.session.delete(user) for user in User.query.all()]
-        db.session.commit()
-
+        self.create_test_app()
         user = self.make_user(n_rows)
         df = user.get_data()
         assert len(df) == n_rows
@@ -195,10 +196,7 @@ class TestGetData:
         product((1, 2), (True, False), (True, False)),
     )
     def test_multiple_users(self, n_users, complete_survey, cached_data_only):
-        create_test_app()
-        [db.session.delete(user) for user in User.query.all()]
-        db.session.commit()
-
+        self.create_test_app()
         [self.make_user(complete_survey=complete_survey) for _ in range(n_users)]
         df = User.get_all_data(cached_data_only=cached_data_only)
 
@@ -212,3 +210,18 @@ class TestGetData:
                 self.assert_expected_data(
                     user_df.reset_index(drop=True), complete_survey
                 )
+
+    def test_users_with_different_variables(self):
+        self.create_test_app()
+        User.make_test_user(meta_data={"variable0": "data0"})
+        User.make_test_user(meta_data={"variable1": "data1"})
+        User.make_test_user(meta_data={"variable0": "data2"})
+        df = User.get_all_data(cached_data_only=False)
+
+        expected_variable0 = ["data0", None, "data2"]
+        for value, expected_value in zip(df["variable0"], expected_variable0):
+            assert value == expected_value
+
+        expected_variable1 = [None, "data1", None]
+        for value, expected_value in zip(df["variable1"], expected_variable1):
+            assert value == expected_value

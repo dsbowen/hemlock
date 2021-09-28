@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import copy
 import textwrap
-from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, List, Mapping, Optional, Tuple, Union
 
 from flask import render_template, request
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -17,7 +17,11 @@ from sqlalchemy_mutable.types import (
 )
 from sqlalchemy_mutable.utils import is_instance
 
-from .._custom_types import MutableListJSONType, MutableListPickleType
+from .._custom_types import (
+    MutableListJSONType,
+    MutableListPickleType,
+    MutableChoiceListType,
+)
 from ..app import db
 from ..data import Data
 from ..page import Page
@@ -167,44 +171,47 @@ class Question(Data):
         extra_html_settings: Mapping[str, HTMLSettingType] = None,
         **kwargs,
     ):
-        def set_attribute(name, value, copy_default=False):
-            if value is None:
-                value = self.defaults[name]
-                if copy_default:
-                    value = copy.deepcopy(value)
-
-            setattr(self, name, value)
-
         self.hash = make_hash(HASH_LENGTH)
 
         self.html_settings = copy.deepcopy(self.defaults["html_settings"])
         if extra_html_settings is not None:
             self.html_settings.update_settings(extra_html_settings)  # type: ignore
 
-        set_attribute("label", label)
-        set_attribute("floating_label", floating_label)
-        set_attribute("template", template)
-        set_attribute("prepend", prepend, True)
-        set_attribute("append", append, True)
-        set_attribute("form_text", form_text)
+        self._set_default_attribute("label", label)
+        self._set_default_attribute("floating_label", floating_label)
+        self._set_default_attribute("template", template)
+        self._set_default_attribute("prepend", prepend, True)
+        self._set_default_attribute("append", append, True)
+        self._set_default_attribute("form_text", form_text)
 
-        set_attribute("compile", compile, True)
-        set_attribute("validate", validate, True)
-        set_attribute("submit", submit, True)
-        set_attribute("debug", debug, True)
+        self._set_default_attribute("compile", compile, True)
+        self._set_default_attribute("validate", validate, True)
+        self._set_default_attribute("submit", submit, True)
+        self._set_default_attribute("debug", debug, True)
 
-        set_attribute("default", default, True)
-        set_attribute("params", params, True)
+        self._set_default_attribute("default", default, True)
+        self._set_default_attribute("params", params, True)
 
         super().__init__(**kwargs)
+
+    def _set_default_attribute(self, name, value, copy_default=True):
+        if value is None:
+            value = self.defaults[name]
+            if copy_default:
+                value = copy.deepcopy(value)
+
+        setattr(self, name, value)
 
     def __hash__(self):
         return self.hash
 
     def __repr__(self):
         label = None if self.label is None else textwrap.shorten(self.label, 40)
+
         prefix = "default" if self.raw_response is None else "response"
-        default = self.get_default() or None
+        default = self.get_default()
+        if default in ("", []):
+            default = None
         if is_instance(default, str):
             default = textwrap.shorten(default, 40)
 
@@ -233,22 +240,63 @@ class Question(Data):
         Returns:
             Any: Default value.
         """
-        if self.raw_response is None:
-            if self.default is None:
-                return ""
-
-            return self.default
-
-        return self.raw_response
+        return self.default if self.raw_response is None else self.raw_response
 
     def set_is_valid(self, is_valid: bool = None) -> None:
         """Set the indicator that the user's response was valid.
+
+        Additionally adds appropriate validation classes to the feedback tag.
 
         Args:
             is_valid (bool, optional): Indicates that the response was valid. Defaults
                 to None.
         """
+        valid_class, invalid_class = "valid-feedback", "invalid-feedback"
+        if is_valid is None:
+            self._add_and_remove_classes(
+                "feedback", remove=[valid_class, invalid_class]
+            )
+        elif is_valid:
+            self._add_and_remove_classes(
+                "feedback", add=valid_class, remove=invalid_class
+            )
+        else:
+            self._add_and_remove_classes(
+                "feedback", add=invalid_class, remove=valid_class
+            )
         self._is_valid = is_valid
+
+    def _add_and_remove_classes(
+        self,
+        tag_name: str,
+        add: Union[str, List[str]] = None,
+        remove: Union[str, List[str]] = None,
+    ) -> None:
+        """Add and remove classes from a given HTML tag.
+
+        Args:
+            tag_name (str): Name of the HTML tag.
+            add (Union[str, Iterable[str]], optional): Classes to add. Defaults to None.
+            remove (Union[str, Iterable[str]], optional): Classes to remove. Defaults to
+                None.
+        """
+        classes = self.html_settings[tag_name]["class"]
+
+        if remove is not None:
+            if not isinstance(remove, list):
+                remove = [remove]
+            for class_name in remove:
+                try:
+                    classes.remove(class_name)
+                except ValueError:
+                    pass
+
+        if add is not None:
+            if not isinstance(add, list):
+                add = [add]
+            for class_name in add:
+                if class_name not in classes:
+                    classes.append(class_name)
 
     def run_compile_functions(self) -> None:
         """Run the compile functions."""
@@ -314,3 +362,84 @@ class Question(Data):
     def run_submit_functions(self) -> None:
         """Run submit functions."""
         [func(self) for func in self.submit]
+
+
+class ChoiceQuestion(Question):
+    defaults = copy.deepcopy(Question.defaults)
+    defaults.update({"choices": [], "multiple": False, "record_choice_indices": False})
+
+    choices = db.Column(MutableChoiceListType)
+    choice_template = db.Column(db.String)
+    multiple = db.Column(db.Boolean)
+    record_choice_indices = db.Column(db.Boolean)
+
+    @hybrid_property
+    def response(self):
+        if not self.raw_response:
+            return None
+
+        return self.raw_response if self.multiple else self.raw_response[0]
+
+    def __init__(
+        self,
+        label=None,
+        choices=None,
+        multiple=None,
+        record_choice_indices=None,
+        **kwargs,
+    ):
+        super().__init__(label, **kwargs)
+        self._set_default_attribute("choices", choices, True)
+        self._set_default_attribute("multiple", multiple)
+        self._set_default_attribute("record_choice_indices", record_choice_indices)
+
+    def __repr__(self):
+        initial_indent = ""
+        subsequent_indent = 4 * " "
+        question_text = super().__repr__()
+
+        if not self.choices:
+            choice_text = ""
+        else:
+            choice_text = "\n".join([str(choice["value"]) for choice in self.choices])
+            choice_text = f"\n{textwrap.indent(choice_text, subsequent_indent)}"
+
+        return textwrap.indent(question_text + choice_text, initial_indent)
+
+    def is_default(self, choice: Dict[Any, Any]) -> bool:
+        default = self.get_default()
+
+        if default is None:
+            return False
+
+        if is_instance(default, list):
+            return choice["value"] in default
+
+        return choice["value"] == default
+
+    def record_response(self) -> None:
+        self.raw_response = [
+            self.choices[int(i)]["value"] for i in request.form.getlist(self.hash)
+        ]
+
+    def record_data(self) -> None:
+        if self.response is not None and self.multiple:
+            self.data = {
+                choice["value"]: int(choice["value"] in self.response)
+                for choice in self.choices
+            }
+            return
+
+        return super().record_data()
+
+    def pack_data(self) -> "hemlock._data_frame.DataFrame":  # type: ignore
+        dataframe = super().pack_data()
+        if self.data is None or not self.record_choice_indices:
+            return dataframe
+
+        choice_indices = {}
+        for i, choice in enumerate(self.choices):
+            choice_indices[f"{self.variable}_{choice['value']}_index"] = i
+        dataframe.add_data(choice_indices, fill_rows=True)
+        dataframe.pad()
+        return dataframe
