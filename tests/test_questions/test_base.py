@@ -1,15 +1,14 @@
-from itertools import product
+from itertools import combinations_with_replacement, product
 
 import pytest
 from sqlalchemy_mutable.utils import partial
 
 from hemlock import User, Page
 from hemlock.app import create_test_app
-from hemlock.questions import Input, Label
+from hemlock.questions import Check, Input, Label
 from hemlock.questions.base import Question
 
-question_classes = [Input, Label]
-create_test_app()
+question_classes = [Check, Input, Label]
 
 
 def test_repr():
@@ -26,6 +25,7 @@ def test_repr():
 def test_display(question_cls):
     # Note: this function simply tests that the display method runs without error.
     # Run the display method in a notebook to verify expected behavior.
+    create_test_app()
     question_cls().display()
 
 
@@ -64,6 +64,30 @@ def test_get_default(response):
     question.raw_response = response
     expected_result = question.default if response is None else response
     assert question.get_default() == expected_result
+
+
+class TestSetIsValid:
+    valid_class, invalid_class = "valid-feedback", "invalid-feedback"
+
+    @pytest.mark.parametrize(
+        "is_valid0, is_valid1", combinations_with_replacement((None, True, False), r=2)
+    )
+    def test_set_is_valid(self, is_valid0, is_valid1):
+        question = Input()
+        question.set_is_valid(is_valid0)
+        question.set_is_valid(is_valid1)
+        classes = question.html_settings["feedback"]["class"]
+
+        if is_valid1 is None:
+            assert self.valid_class not in classes
+            assert self.invalid_class not in classes
+        elif is_valid1:
+            assert self.valid_class in classes
+            assert self.invalid_class not in classes
+        else:
+            # is_valid1 is False
+            assert self.valid_class not in classes
+            assert self.invalid_class in classes
 
 
 @pytest.mark.parametrize("question_cls", question_classes)
@@ -178,15 +202,14 @@ class TestValidation:
             assert question.feedback == TestValidation.invalid_feedback0
 
 
-class TestRecordResponseAndGetData:
-    @staticmethod
-    def seed():
-        return [Page(Question()), Page()]
-
+class TestRecordResponseAndData:
     @pytest.mark.parametrize("response_is_none", (True, False))
     def test(self, response_is_none):
+        def seed():
+            return [Page(Question()), Page()]
+
         test_response = "" if response_is_none else "test response"
-        user = User.make_test_user(self.seed)
+        user = User.make_test_user(seed)
         user.test_request([test_response])
 
         question = user.trees[0].branch[0].questions[0]

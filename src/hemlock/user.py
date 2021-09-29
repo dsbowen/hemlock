@@ -29,7 +29,7 @@ from werkzeug.wrappers.response import Response
 
 from ._data_frame import DataFrame
 from .app import bp, db, login_manager
-from .questions.base import ChoiceQuestion
+from .questions.choice_base import ChoiceQuestion
 from .tree import Tree
 from .utils.random import make_hash
 

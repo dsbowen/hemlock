@@ -14,7 +14,7 @@ from .base import Question
 class Label(Question):
     """A label question contains only text and does not permit a user response.
 
-    Subclasses :class:`hemlock.questions.base.Question`.
+    Subclasses :class:`Question`.
     """
 
     id = db.Column(db.Integer, db.ForeignKey("question.id"), primary_key=True)

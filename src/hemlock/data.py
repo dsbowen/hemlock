@@ -86,11 +86,13 @@ class Data(db.Model):
         if self.variable is None:
             return DataFrame()
 
-        data = self.data.get_object()
+        # if self.data is None it won't have a `get_object` method
+        data = None if self.data is None else self.data.get_object()
         if isinstance(data, dict):
             packed_data = {f"{self.variable}_{key}": item for key, item in data.items()}
         else:
-            packed_data = {self.variable: self.data.get_object()}
+            packed_data = {self.variable: data}
+
         if self.record_index:
             packed_data[f"{self.variable}_index"] = self.index
 

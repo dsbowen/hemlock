@@ -16,7 +16,7 @@ class Mixin:
     def assert_correct_digraph(
         self, nodes, positions, node_colors, edge_colors, straight_edges, curved_edges
     ):
-        # the arguments for this function are the expected values against which to 
+        # the arguments for this function are the expected values against which to
         # test the networkx graph, graph attributes, and edge lists
         nx_graph, attrs, edgelist_connectionstyle = make_digraph(self.tree)
 

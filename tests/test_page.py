@@ -23,6 +23,19 @@ def test_data_validation(as_data):
     assert page.data[0].data == variable_data
 
 
+@pytest.mark.parametrize("value", ("", None, False, True, "Button text"))
+def test_direction_validation(value):
+    page = Page()
+    page.forward = page.back = value
+    if value in ("", None, False):
+        assert page.forward is None and page.back is None
+    elif value is True:
+        assert page.forward == ">>"
+        assert page.back == "<<"
+    else:
+        assert page.forward == page.back == value
+
+
 @pytest.mark.parametrize("root_is_tree", (True, False))
 def test_root_branch(root_is_tree):
     def seed():

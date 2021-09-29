@@ -28,7 +28,7 @@ datetime_input_types = {
 class Input(Question):
     """An input question allows user to enter a free text response.
 
-    Subclasses :class:`hemlock.questions.base.Question`.
+    Subclasses :class:`Question`.
 
     Args:
         input_tag (Mapping[str, HTMLAttrType], optional): Additional attributes of the
