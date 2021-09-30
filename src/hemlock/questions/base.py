@@ -30,7 +30,6 @@ CompileType = Callable[["Question"], None]
 SubmitType = Callable[["Question"], None]
 ValidateReturnType = Union[Optional[bool], Tuple[Optional[bool], str]]
 ValidateType = Callable[["Question"], ValidateReturnType]
-DebugType = Callable[["Question"], Any]
 
 
 class Question(Data):
@@ -53,7 +52,10 @@ class Question(Data):
             validate the user's response. Defaults to None.
         submit (Union[SubmitType, List[SubmitType]], optional): Functions run after the
             user has submitted his response. Defaults to None.
-        debug (DebugType, optional): Functions run during debugging. Defaults to None.
+        test_response (Any, optional): A response to this question used for testing.
+            This may also be a function that takes the question object and returns a
+            response. Defaults to None.
+        Functions run during debugging. Defaults to None.
         default (Any, optional): Default response value. Defaults to None.
         params (Any, optional): Additional parameters. Defaults to None.
         extra_html_settings (Mapping[str, HTMLSettingType], optional): Additional HTML
@@ -74,7 +76,8 @@ class Question(Data):
         validate (List[ValidateType]): Functions run to validate the user's response.
         submit (List[SubmitType]): Functions run after the user has submitted his
             response.
-        debug (DebugType): Functions run during debugging.
+        test_response (Any): A response to this question used for testing. This may also
+            be a function that takes the question object and returns a response.
         default (Any): Default response value.
         params (Any): Additional parameters.
         raw_response (Any): User's raw response to the question.
@@ -103,7 +106,7 @@ class Question(Data):
         compile=[],
         validate=[],
         submit=[],
-        debug=[],
+        test_response=None,
         default=None,
         params=None,
         html_settings={
@@ -139,7 +142,7 @@ class Question(Data):
     compile = db.Column(MutableListPickleType)
     validate = db.Column(MutableListPickleType)
     submit = db.Column(MutableListPickleType)
-    debug = db.Column(MutablePickleType)
+    test_response = db.Column(MutablePickleType)
 
     # Additional attributes
     default = db.Column(MutableJSONType)
@@ -161,7 +164,7 @@ class Question(Data):
         compile: Union[CompileType, List[CompileType]] = None,
         validate: Union[ValidateType, List[ValidateType]] = None,
         submit: Union[SubmitType, List[SubmitType]] = None,
-        debug: DebugType = None,
+        test_response: Any = None,
         default: Any = None,
         params: Any = None,
         extra_html_settings: Mapping[str, HTMLSettingType] = None,
@@ -183,7 +186,7 @@ class Question(Data):
         self._set_default_attribute("compile", compile, True)
         self._set_default_attribute("validate", validate, True)
         self._set_default_attribute("submit", submit, True)
-        self._set_default_attribute("debug", debug, True)
+        self._set_default_attribute("test_response", test_response, True)
 
         self._set_default_attribute("default", default, True)
         self._set_default_attribute("params", params, True)
@@ -209,17 +212,13 @@ class Question(Data):
         setattr(self, name, value)
 
     def __hash__(self):
-        return self.hash
+        return hash(self.hash)
 
     def __repr__(self):
         label = None if self.label is None else textwrap.shorten(self.label, 40)
 
         prefix = "default" if self.raw_response is None else "response"
-        default = self.get_default()
-        if default in ("", []):
-            default = None
-        if is_instance(default, str):
-            default = textwrap.shorten(default, 40)
+        default = textwrap.shorten(str(self.get_default()), 40)
 
         return f"<{self.__class__.__qualname__} {label} - {prefix}: {default}>"
 
@@ -368,3 +367,18 @@ class Question(Data):
     def run_submit_functions(self) -> None:
         """Run submit functions."""
         [func(self) for func in self.submit]
+
+    def make_raw_test_response(self, response: Any) -> Any:
+        """Create a raw rest response from a given test response.
+
+        This is the inverse operation of the :meth:`Question.response` property. It
+        converts test responses input by programmers to raw responses used in test
+        request contexts.
+
+        Args:
+            response (Any): Test response.
+
+        Returns:
+            Any: Raw test response.
+        """
+        return "" if response is None else response

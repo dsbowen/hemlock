@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import functools
+import logging
 import warnings
+from collections import defaultdict
 from datetime import datetime
 from typing import (
     Any,
@@ -25,11 +27,11 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.types import JSON
 from sqlalchemy_mutable.types import MutablePickleType, MutableDictJSONType
+from sqlalchemy_mutable.utils import is_callable
 from werkzeug.wrappers.response import Response
 
 from ._data_frame import DataFrame
 from .app import bp, db, login_manager
-from .questions.choice_base import ChoiceQuestion
 from .tree import Tree
 from .utils.random import make_hash
 
@@ -39,6 +41,8 @@ BranchType = List["hemlock.page.Page"]  # type: ignore
 SeedFunctionType = Callable[[], BranchType]
 UserType = TypeVar("UserType", bound="User")
 ResponsesType = Union[List[Any], Dict["hemlock.questions.base.Question", Any]]  # type: ignore
+
+logging.basicConfig(level=logging.INFO)
 
 
 @login_manager.user_loader
@@ -174,56 +178,6 @@ class User(UserMixin, db.Model):
             cls.default_url_rule = url_rule
 
         return register
-
-    @classmethod
-    def make_test_user(
-        cls: Type[UserType],
-        seed_func: SeedFunctionType = None,
-        url_rule: str = "/test",
-        **kwargs: Any,
-    ) -> UserType:
-        """Create a user object for testing.
-
-        Args:
-            seed_func (SeedFunctionType, optional): Function that returns the user's
-                first branch. Defaults to None.
-            url_rule (str, optional): Default URL rule for the test user. Defaults to
-                "/test".
-
-        Returns:
-            UserType: Test user object.
-
-        Examples:
-
-            .. doctest::
-
-                >>> from hemlock import User, Page, create_test_app
-                >>> from hemlock.questions import Label
-                >>> app = create_test_app()
-                >>> def seed():
-                ...     return Page(
-                ...         Label("Hello, world!")
-                ...     )
-                ...
-                >>> user = User.make_test_user(seed)
-                >>> user.test_get().page
-                <Page 0 terminal>
-                    <Label Hello, world! - default: None>
-        """
-        user = cls(**kwargs)
-        db.session.add(user)
-        db.session.commit()
-
-        if seed_func is not None:
-            index = 0
-            if user._seed_funcs:
-                index = list(user._seed_funcs.values())[-1][0] + 1
-            user._seed_funcs = user._seed_funcs.copy()
-            user._seed_funcs[url_rule] = index, seed_func
-            user.default_url_rule = url_rule
-            user.trees.append(Tree(seed_func, url_rule))
-
-        return user
 
     hash = db.Column(db.String(HASH_LENGTH))
     start_time = db.Column(db.DateTime)
@@ -383,29 +337,202 @@ class User(UserMixin, db.Model):
 
         return current_tree.process_request()
 
+    @classmethod
+    def make_test_user(
+        cls: Type[UserType],
+        seed_func: SeedFunctionType = None,
+        url_rule: str = "/test",
+        **kwargs: Any,
+    ) -> UserType:
+        """Create a user object for testing.
+
+        Args:
+            seed_func (SeedFunctionType, optional): Function that returns the user's
+                first branch. Defaults to None.
+            url_rule (str, optional): Default URL rule for the test user. Defaults to
+                "/test".
+            kwargs (Any): Passed to :class:`User` constructor.
+
+        Returns:
+            UserType: Test user object.
+
+        Examples:
+
+            .. doctest::
+
+                >>> from hemlock import User, Page, create_test_app
+                >>> from hemlock.questions import Label
+                >>> app = create_test_app()
+                >>> def seed():
+                ...     return Page(
+                ...         Label("Hello, world!")
+                ...     )
+                ...
+                >>> user = User.make_test_user(seed)
+                >>> user.test_get().page
+                <Page 0 terminal>
+                    <Label Hello, world! - default: None>
+        """
+        user = cls(**kwargs)
+        db.session.add(user)
+        db.session.commit()
+
+        if seed_func is not None:
+            index = 0
+            if user._seed_funcs:
+                index = list(user._seed_funcs.values())[-1][0] + 1
+            user._seed_funcs = user._seed_funcs.copy()
+            user._seed_funcs[url_rule] = index, seed_func
+            user.default_url_rule = url_rule
+            user.trees.append(Tree(seed_func, url_rule))
+
+        return user
+
+    @classmethod
+    def test_multiple_users(
+        cls,
+        seed_func: SeedFunctionType = None,
+        n_users: int = 1,
+        user_kwargs: Mapping[str, Any] = None,
+        test_kwargs: Mapping[str, Any] = None,
+    ) -> None:
+        """Run multiple test users through a study.
+
+        Args:
+            seed_func (SeedFunctionType, optional): Function that returns the user's
+                first branch. Defaults to None.
+            n_users (int, optional): Number of users to run. Defaults to 1.
+            user_kwargs (Mapping[str, Any], optional): Passed to
+                :meth:`User.make_test_user`. Defaults to None.
+            test_kwargs (Mapping[str, Any], optional): Passed to :meth:`User.test`.
+                Defaults to None.
+
+        Examples:
+
+            .. doctest::
+
+                >>> from hemlock import User, Page, create_test_app
+                >>> from hemlock.questions import Label
+                >>> def seed():
+                ...     return [
+                ...         Page(
+                ...             Label("Hello, world!")
+                ...         ),
+                ...         Page()
+                ...     ]
+                ...
+                >>> app = create_test_app()
+                >>> User.test_multiple_users(seed, n_users=2)
+                INFO:root:TESTING USER 1
+                INFO:root:<Page 0>
+                    <Label Hello, world! - default: None>
+                        test response: None
+                    test direction: 'forward'
+                INFO:root:<Page 1 terminal>
+                INFO:root:FINISHED TESTING USER 1
+
+                INFO:root:TESTING USER 2
+                INFO:root:<Page 0>
+                    <Label Hello, world! - default: None>
+                        test response: None
+                    test direction: 'forward'
+                INFO:root:<Page 1 terminal>
+                INFO:root:FINISHED TESTING USER 2
+        """
+        user_kwargs = dict(user_kwargs or {})
+        user_kwargs["seed_func"] = seed_func
+        test_kwargs = dict(test_kwargs or {})
+        test_kwargs.setdefault("verbosity", 1)
+
+        for _ in range(n_users):
+            user = cls.make_test_user(**user_kwargs)
+            logging.info(f"TESTING USER {user.id}")
+            user.test(**test_kwargs)
+            logging.info(f"FINISHED TESTING USER {user.id}\n")
+
+    def test(
+        self, url_rule: str = None, verbosity: int = 2, max_page_visits: int = 10
+    ) -> None:
+        """Run the test user through the entire study.
+
+        Args:
+            url_rule (str, optional): URL rule to test. Defaults to None.
+            verbosity (int, optional): Verbosity 0 gives no output. Verbosity 1
+                displays pages and test responses as text. Verbosity 2 additionally
+                displays the navigation graph and pages as HTML. Defaults to 2.
+            max_page_visits (int, optional): Maximum number of times the user can visit
+                the same page before an error is raised. Defaults to 10.
+
+        Raises:
+            RuntimeError: If the user visits the same page more times than allowed.
+                Likely causes include validate functions that always return False and
+                infinite loops.
+
+        Examples:
+
+            .. doctest::
+
+                >>> from hemlock import User, Page, create_test_app
+                >>> from hemlock.questions import Label
+                >>> def seed():
+                ...     return [
+                ...         Page(
+                ...             Label("Hello, world!")
+                ...         ),
+                ...         Page()
+                ...     ]
+                ...
+                >>> app = create_test_app()
+                >>> User.make_test_user(seed).test(verbosity=1)
+                INFO:root:<Page 0>
+                    <Label Hello, world! - default: None>
+                        test response: None
+                    test direction: 'forward'
+                INFO:root:<Page 1 terminal>
+        """
+        page_visits: defaultdict[str, int] = defaultdict(int)
+
+        tree = self.test_get(url_rule=url_rule)
+        page_visits[tree.page.get_position()] += 1
+        if verbosity == 2:
+            tree.display()
+
+        while not tree.page.is_last_page:
+            tree = self.test_request(url_rule=url_rule, verbose=verbosity >= 1)
+            page_visits[tree.page.get_position()] += 1
+            if page_visits[tree.page.get_position()] > max_page_visits:
+                raise RuntimeError(
+                    f"The test user has visited the same page more than {max_page_visits} times. Check that your validate functions don't always return False and that your survey doesn't contain an infinite loop. The page is\n{tree.page}"
+                )
+            if verbosity == 2:
+                tree.display()
+
+        if verbosity >= 1:
+            logging.info(tree.page.print())
+
     def test_request(
         self,
         responses: ResponsesType = None,
-        direction: str = "forward",
+        direction: str = None,
         url_rule: str = None,
+        **kwargs,
     ) -> Tree:
         """Test a request.
 
         This simulates posting responses for the current page and getting the next page.
 
         Args:
-            responses (ResponsesType, optional): Test responses. A list of responses is
-                interpreted as responses to each question on the current page in the
-                order the questions appear. A dictionary maps questions on the page to
-                responses. Defaults to None.
-            direction (str, optional): Requested direction ("forward" or "back").
-                Defaults to "forward".
+            responses (ResponsesType, optional): Test responses. Defaults to None.
+            direction (str, optional): Requested direction. Defaults to "forward".
             url_rule (str, optional): URL rule of the request. Defaults to None.
+            **kwargs (Any): Passed to :meth:`User.test_post`.
 
         Returns:
             Tree: Tree associated with the URL rule.
         """
-        self.test_post(responses, direction, url_rule)
+        self.test_post(
+            responses=responses, direction=direction, url_rule=url_rule, **kwargs
+        )
         return self.test_get(url_rule)
 
     def test_get(self, url_rule: str = None) -> Tree:
@@ -425,8 +552,9 @@ class User(UserMixin, db.Model):
     def test_post(
         self,
         responses: ResponsesType = None,
-        direction: str = "forward",
+        direction: str = None,
         url_rule: str = None,
+        verbose: bool = True,
     ) -> Tree:
         """Test a post request.
 
@@ -434,43 +562,56 @@ class User(UserMixin, db.Model):
             responses (ResponsesType, optional): Test responses. Defaults to None.
             direction (str, optional): Requested direction. Defaults to "forward".
             url_rule (str, optional): URL rule of the request. Defaults to None.
+            verbose (bool, optional): When True, logs the current page and responses.
+                Defaults to True.
 
         Returns:
             Tree: Tree associated with the URL rule.
         """
         url_rule = url_rule or self.default_url_rule
         tree = self.get_tree(url_rule)
+        page = tree.page
 
-        # Get responses from debug functions and manually entered responses
-        # TODO: change the initial data to the output of the debug function
-        data = {
-            question.hash: question.get_default() for question in tree.page.questions
-        }
-        if isinstance(responses, dict):
-            data.update(
-                {question.hash: response for question, response in responses.items()}
-            )
+        # collect manually input responses
+        if responses is None:
+            responses = {}
         elif isinstance(responses, (list, tuple)):
-            data = {
-                question.hash: response
-                for question, response in zip(tree.page.questions, responses)
+            responses = {
+                question: response
+                for question, response in zip(page.questions, responses)
             }
+        elif isinstance(responses, Mapping):
+            responses = dict(responses)
+        else:
+            raise ValueError(
+                f"Responses should be a list, tuple, or mapping, got {repr(responses)}."
+            )
 
-        # Convert responses for choice questions (choice values) to choice indices
-        for question in tree.page.questions:
-            if isinstance(question, ChoiceQuestion):
-                response_values = data[question.hash]
-                if response_values is None:
-                    response_values = []
-                elif not isinstance(response_values, (list, tuple)):
-                    response_values = [response_values]
+        # add automatic responses
+        for question in page.questions:
+            if question not in responses:
+                if is_callable(question.test_response):
+                    responses[question] = question.test_response(question)
+                else:
+                    responses[question] = question.test_response
 
-                choice_values = [choice["value"] for choice in question.choices]
-                data[question.hash] = [
-                    choice_values.index(value) for value in response_values
-                ]
+        # convert responses to raw responses
+        data = {
+            question.hash: question.make_raw_test_response(response)
+            for question, response in responses.items()
+        }
 
+        # set the requested direction
+        if direction is None:
+            if is_callable(page.test_direction):
+                direction = page.test_direction(page)
+            else:
+                direction = page.test_direction
         data["direction"] = direction
+
+        # log the page and planned responses
+        if verbose:
+            logging.info(page.print(responses, direction))
 
         with current_app.test_request_context(method="POST", data=data):
             self.process_request(url_rule)  # type: ignore

@@ -92,6 +92,7 @@ class TestRoute:
 
         self.clear_routes()
 
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     def test_overwrite(self):
         url_rule = "/test_overwrite_rule"
 
@@ -225,3 +226,69 @@ class TestGetData:
         expected_variable1 = [None, "data1", None]
         for value, expected_value in zip(df["variable1"], expected_variable1):
             assert value == expected_value
+
+
+class TestTestPost:
+    test_response = "test response"
+
+    @staticmethod
+    def make_test_user(test_response=None, test_direction=None):
+        def seed():
+            return [
+                Page(Input(test_response=test_response), test_direction=test_direction),
+                Page(),
+            ]
+
+        return User.make_test_user(seed)
+
+    @staticmethod
+    def get_response(user):
+        return user.get_tree().branch[0].questions[0].response
+
+    def test_auto_response(self):
+        user = self.make_test_user()
+        user.test_post()
+        response = self.get_response(user)
+        assert isinstance(response, str) or response is None
+
+    def test_literal_response(self):
+        user = self.make_test_user(self.test_response)
+        user.test_post()
+        assert self.get_response(user) == self.test_response
+
+    def test_list_response(self):
+        user = self.make_test_user()
+        user.test_post([self.test_response])
+        assert self.get_response(user) == self.test_response
+
+    def test_mapping_response(self):
+        user = self.make_test_user()
+        question = user.get_tree().page.questions[0]
+        user.test_post({question: self.test_response})
+        assert self.get_response(user) == self.test_response
+
+    def test_literal_direction(self):
+        user = self.make_test_user(test_direction="forward")
+        user.test_post()
+        assert user.get_tree().page is user.get_tree().branch[1]
+
+
+class TestTest:
+    def test_basic_tree(self):
+        User.make_test_user(seed).test(verbosity=1)
+
+    @staticmethod
+    def validate(question):
+        return False
+
+    def test_max_visits(self):
+        # test that an error is raised when the user gets stuck
+        # e.g., if a validate function always returns False
+        def seed():
+            return [Page(Input(validate=self.validate)), Page()]
+
+        with pytest.raises(RuntimeError):
+            User.make_test_user(seed).test(verbosity=1)
+
+    def test_multiple_users(self):
+        User.test_multiple_users(seed, n_users=3)

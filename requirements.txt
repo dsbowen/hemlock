@@ -2,7 +2,7 @@ black
 build
 coverage
 mypy
+pydata-sphinx-theme
 pylint
 sphinx
-sphinx-rtd-theme
 tox

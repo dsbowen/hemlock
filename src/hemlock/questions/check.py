@@ -13,6 +13,7 @@ class Check(ChoiceQuestion):
 
     Subclasses :class:`ChoiceQuestion`.
     """
+
     id = db.Column(db.Integer, db.ForeignKey("question.id"), primary_key=True)
     __mapper_args__ = {"polymorphic_identity": "check"}
 

@@ -6,6 +6,7 @@ import textwrap
 from typing import Any, Callable, List, Union, TypeVar
 
 import matplotlib.pyplot as plt
+from IPython import display
 from flask import current_app, redirect, request, url_for
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.orderinglist import ordering_list
@@ -101,7 +102,7 @@ class Tree(db.Model):
         ax: plt.axes._subplots.AxesSubplot = None,
         node_size: int = 1200,
         **subplots_kwargs: Any,
-    ):
+    ) -> None:
         """Display the tree's navigation graph and its current page.
 
         Args:
@@ -111,9 +112,9 @@ class Tree(db.Model):
                 to 1200.
             **subplots_kwargs (Any): Keyword arguments for ``plt.subplots``.
         """
-        display_navigation(self, ax, node_size, **subplots_kwargs)
+        ax = display_navigation(self, ax, node_size, **subplots_kwargs)
         plt.show()
-        return self.page.display()
+        display.display(self.page.display())
 
     def go_forward(self: TreeType) -> TreeType:
         """Go forward from the current page.

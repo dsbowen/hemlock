@@ -1,4 +1,5 @@
 from itertools import combinations_with_replacement, product
+from random import random
 
 import pytest
 from sqlalchemy_mutable.utils import partial
@@ -8,6 +9,40 @@ from hemlock.app import create_test_app
 from hemlock.data import Data
 from hemlock.questions import Input, Label
 from hemlock.questions.base import Question
+
+from hemlock.page import random_direction
+
+
+class TestRandomDirection:
+    def test_no_direction(self):
+        with pytest.raises(ValueError):
+            random_direction(Page(forward=False, back=False))
+
+    def test_forward_only(self):
+        # even with back probability == 1, go forward if back is not an option
+        assert random_direction(Page(), pr_back=1) == "forward"
+
+    def test_back_only(self):
+        # even with back probability == 0, go back if forward is not an option
+        assert random_direction(Page(forward=False, back=True), pr_back=0) == "back"
+
+    def test_any_direction(self):
+        def seed():
+            return [Page(back=True), Page(back=True), Page(back=True)]
+
+        create_test_app()
+        user = User.make_test_user(seed)
+        page = user.get_tree().page
+        assert random_direction(page, pr_back=0) == "forward"
+        assert random_direction(page, pr_back=1) == "forward"
+
+        page = user.test_request().page
+        assert random_direction(page, pr_back=0) == "forward"
+        assert random_direction(page, pr_back=1) == "back"
+
+        page = user.test_request(direction="forward").page
+        assert random_direction(page, pr_back=0) == "back"
+        assert random_direction(page, pr_back=1) == "back"
 
 
 @pytest.mark.parametrize("as_data", (True, False))
@@ -142,6 +177,13 @@ class TestRepr:
     def test_page_with_questions(self):
         page = Page(question := Question())
         assert str(question) in repr(page)
+
+    def test_with_test_responses(self):
+        test_response, direction = "test response", "forward"
+        page = Page(question := Question())
+        string = page.print({question: test_response}, direction=direction)
+        assert test_response in string
+        assert direction in string
 
 
 def test_display():

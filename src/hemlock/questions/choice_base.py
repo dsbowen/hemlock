@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import random
 import textwrap
 from typing import Any, Dict, List, Mapping, Tuple, Union
 
@@ -17,31 +18,76 @@ from .base import Question
 ChoiceType = Union[str, Tuple[Any, str], Mapping[Any, Any]]
 
 
+def random_choices(
+    question: ChoiceQuestion,
+    pr_no_response: float = 0.2,
+    min_choices: int = 0,
+    max_choices: int = None,
+) -> Any:
+    """Select random choices as a test response.
+
+    Args:
+        question (ChoiceQuestion): Choice question.
+        pr_no_response (float, optional): Probability that the user selects none of the
+            choices. Defaults to 0.2.
+        min_choices (int, optional): Minimum number of choices the user selects. Only
+            relevant if the user can select multiple choices. Defaults to 0.
+        max_choices (int, optional): Maximum number of choices the user selects. Only
+            relevant if the user can select multiple choices. Defaults to None.
+
+    Returns:
+        Any: Choice value or list of choice values.
+    """
+    if random.random() < pr_no_response:
+        return [] if question.multiple else None
+
+    choice_values = [
+        choice["value"] for choice in question.choices if not choice.get("disabled")
+    ]
+
+    if question.multiple:
+        if max_choices is None:
+            max_choices = len(choice_values)
+
+        n_choices = random.randint(min_choices, max_choices)
+        return random.sample(choice_values, k=n_choices)
+
+    return random.choice(choice_values)
+
+
 class ChoiceQuestion(Question):
     """Mixin for questions with choices.
 
     Subclasses :class:`Question`.
 
     Args:
-        label (str, optional): Question label, prompt, or instructions. Defaults to 
+        label (str, optional): Question label, prompt, or instructions. Defaults to
             None.
-        choices (List[ChoiceType], optional): Choices that the user can select. 
+        choices (List[ChoiceType], optional): Choices that the user can select.
             Defaults to None.
-        multiple (bool, optional): Indicates that the user can select multiple 
+        multiple (bool, optional): Indicates that the user can select multiple
             choices. Defaults to None.
         record_choice_indices (bool, optional): Indicates that the choice order should
         be recorded in the data frame. Defaults to None.
-        **kwargs (Any): Additional keyword arguments passed to :class:`Question` 
+        **kwargs (Any): Additional keyword arguments passed to :class:`Question`
             constructor.
 
     Attributes:
         choices (List[Dict[Any, Any]]): Choices that the user can select.
         multiple (bool): Indicates that the user can select multiple choices.
-        record_choice_indices (bool): Indicates that the choice order should be recorded 
+        record_choice_indices (bool): Indicates that the choice order should be recorded
             in the data frame.
     """
+
     defaults = copy.deepcopy(Question.defaults)
-    defaults.update({"choices": [], "multiple": False, "record_choice_indices": False})
+    defaults.update(
+        {
+            "choices": [],
+            "multiple": False,
+            "test_response": random_choices,
+            "record_choice_indices": False,
+        }
+    )
 
     choices = db.Column(MutableChoiceListType)
     choice_template = db.Column(db.String)
@@ -84,7 +130,7 @@ class ChoiceQuestion(Question):
             choice_text = ""
         else:
             choice_values = [
-                str(choice["value"]) for choice in self.choices[:max_choices]
+                f"- {choice['value']}" for choice in self.choices[:max_choices]
             ]
             if len(choice_values) == max_choices:
                 choice_values.append(placeholder)
@@ -124,15 +170,13 @@ class ChoiceQuestion(Question):
         return choice["value"] == default
 
     def record_response(self) -> None:
-        """Record the user's raw response.
-        """
+        """Record the user's raw response."""
         self.raw_response = [
             self.choices[int(i)]["value"] for i in request.form.getlist(self.hash)
         ]
 
     def record_data(self) -> None:
-        """Record data based on the user's response.
-        """
+        """Record data based on the user's response."""
         if self.multiple:
             self.data = {
                 choice["value"]: int(choice["value"] in self.raw_response)
@@ -143,8 +187,7 @@ class ChoiceQuestion(Question):
         return super().record_data()
 
     def pack_data(self) -> "hemlock._data_frame.DataFrame":  # type: ignore
-        """Pack the data for insertion into a data frame.
-        """
+        """Pack the data for insertion into a data frame."""
         dataframe = super().pack_data()
         if self.variable is None or not self.record_choice_indices:
             return dataframe
@@ -155,3 +198,22 @@ class ChoiceQuestion(Question):
         dataframe.add_data(choice_indices, fill_rows=True)
         dataframe.pad()
         return dataframe
+
+    def make_raw_test_response(self, response: Any) -> List[Any]:
+        """Create a raw rest response from a given test response.
+
+        Args:
+            response (Any): Test response. Must be either a choice value or list of
+                choice values.
+
+        Returns:
+            List[Any]: List of indices of given choice values.
+        """
+        if response is None:
+            return []
+
+        if not isinstance(response, (list, tuple)):
+            response = [response]
+
+        choice_values = [choice["value"] for choice in self.choices]
+        return [str(choice_values.index(value)) for value in response]

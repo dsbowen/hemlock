@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from itertools import combinations_with_replacement
 
 import pytest
@@ -7,6 +7,25 @@ from hemlock.questions import Input
 from hemlock.questions.input import datetime_input_types
 
 now = datetime.utcnow()
+
+from itertools import product
+
+from hemlock.questions.input import random_input
+
+INPUT_TYPES = ["text", "number"] + list(datetime_input_types.keys())
+
+
+@pytest.mark.parametrize("input_type, pr_no_response", product(INPUT_TYPES, (0, 1)))
+def test_random_input(input_type, pr_no_response):
+    expected_response_types = {key: datetime for key in datetime_input_types.keys()}
+    expected_response_types.update({"text": str, "number": (int, float)})
+
+    input = Input(input_tag={"type": input_type})
+    response = random_input(input, pr_no_response=pr_no_response)
+    if pr_no_response == 1:
+        assert response is None
+    else:
+        assert isinstance(response, expected_response_types[input_type])
 
 
 class TestResponseConversion:
@@ -92,3 +111,43 @@ class TestSetIsValid:
             assert self.input_invalid_class in input_classes
             assert self.feedback_valid_class not in feedback_classes
             assert self.feedback_invalid_class in feedback_classes
+
+
+class TestMakeRawTestResponse:
+    def test_none(self):
+        assert Input().make_raw_test_response(None) == ""
+
+    valid_responses = [
+        ("text", ["test response"], ["test response"]),
+        ("number", [1, "2.0"], ["1", "2.0"]),
+    ]
+    for key, item in datetime_input_types.items():
+        expected_response = now.strftime(item[1])
+        valid_responses.append(
+            (
+                key,
+                [
+                    now,
+                    expected_response,
+                ],  # test both the datetime and string formatted version
+                2 * [expected_response],
+            )
+        )
+
+    @pytest.mark.parametrize(
+        "input_type, responses, expected_raw_responses", valid_responses
+    )
+    def test_valid_response(self, input_type, responses, expected_raw_responses):
+        input = Input(input_tag={"type": input_type})
+        for response, raw_response in zip(responses, expected_raw_responses):
+            assert input.make_raw_test_response(response) == raw_response
+
+    invalid_responses = [
+        (key, "invalid response") for key in datetime_input_types.keys()
+    ]
+    invalid_responses.append(("number", "invalid response"))
+
+    @pytest.mark.parametrize("input_type, response", invalid_responses)
+    def test_invalid_response(self, input_type, response):
+        with pytest.raises(ValueError):
+            Input(input_tag={"type": input_type}).make_raw_test_response(response)

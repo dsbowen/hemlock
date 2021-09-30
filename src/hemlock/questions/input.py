@@ -3,14 +3,24 @@
 from __future__ import annotations
 
 import copy
-from datetime import datetime
+import math
+import random
+from datetime import datetime, timedelta
+from string import digits, ascii_letters
 from typing import Any, Mapping
 
+import numpy as np
 from sqlalchemy.ext.hybrid import hybrid_property
+from hemlock.utils.random import CHARACTERS
 from sqlalchemy_mutable.html import HTMLAttrType
+from sqlalchemy_mutable.utils import is_instance
 
 from ..app import db
 from .base import Question
+
+CHARACTERS = digits + ascii_letters
+TEXT_INPUT_TYPE = "text"
+NUMBER_INPUT_TYPE = "number"
 
 
 # map input types to (HTML format, datetime format)
@@ -24,9 +34,126 @@ datetime_input_types = {
     "time": ("HH:MM", "%H:%M"),
 }
 
+from typing import Optional
+
+
+def random_input(input: Question, **kwargs: Any) -> Any:
+    """Generate a random response for an input-like question.
+
+    Args:
+        input (Question): Input question.
+        **kwargs (Any): Passed to :func:`random_text`, :func:`random_number`, or
+            :func:`random_datetime`, depending on the input type.
+
+    Returns:
+        Any: Response.
+    """
+    input_type = input.input_tag.get("type", TEXT_INPUT_TYPE)
+
+    if input_type == NUMBER_INPUT_TYPE:
+        return random_number(input, **kwargs)
+
+    if input_type in datetime_input_types:
+        return random_datetime(input, **kwargs)
+
+    return random_text(input, **kwargs)
+
+
+def random_text(
+    input: Question, pr_no_response: float = 0.2, min_words: int = 1, max_words: int = 5
+) -> Optional[str]:
+    """Generate a random text response for an input-like question.
+
+    Args:
+        input (Question): Input question.
+        pr_no_response (float, optional): Probability that the user doesn't respond.
+            Defaults to .2.
+        min_words (int, optional): Minimum number of words. Defaults to 1.
+        max_words (int, optional): Maximum number of words. Defaults to 5.
+
+    Returns:
+        Optional[str]: Response.
+    """
+    if not input.input_tag.get("required") and random.random() < pr_no_response:
+        return None
+
+    length = random.randint(
+        input.input_tag.get("minlength", 1), input.input_tag.get("maxlength", 20)
+    )
+    n_words = random.randint(min_words, max_words)
+    n_words = min(n_words, math.ceil(length / 2))
+    n_whitespace_characters = n_words - 1
+    word_length = int((length - n_whitespace_characters) / n_words)
+
+    words = []
+    for _ in range(n_words):
+        words.append("".join(random.choices(CHARACTERS, k=word_length)))
+    response = " ".join(words)
+
+    if len(response) < length:
+        # add additional characters if the response is too short
+        response += "".join(random.choices(CHARACTERS, k=len(response) - length))
+    return response
+
+
+def random_number(input: Question, pr_no_response: float = 0.2) -> Optional[float]:
+    """Generate a random number response for an input-like question.
+
+    Args:
+        input (Question): Input question.
+        pr_no_response (float, optional): Probability that the user doesn't respond.
+            Defaults to .2.
+
+    Returns:
+        Optional[float]: Response.
+    """
+    if not input.input_tag.get("required") and random.random() < pr_no_response:
+        return None
+
+    input_tag = input.input_tag
+    start = input_tag.get("min", -10000)
+    stop = input_tag.get("max", 10000)
+    step = input_tag.get("step", 1)
+    value = np.random.choice(np.arange(start, stop, step))
+    if is_instance(start, int) and is_instance(stop, int) and is_instance(step, int):
+        return int(value)
+    # with a small step, you may encounter floating-point issues.
+    # this rounds the response to the correct number of decimal places.
+    return round(value, math.ceil(-math.log10(step)))
+
+
+def random_datetime(input: Question, pr_no_response: float = 0.2) -> Optional[datetime]:
+    """Generate a random datetime response for an input-like question.
+
+    Args:
+        input (Question): Input question.
+        pr_no_response (float, optional): Probability that the user doesn't respond.
+            Defaults to .2.
+
+    Returns:
+        Optional[datetime]: Response.
+    """
+    if not input.input_tag.get("required") and random.random() < pr_no_response:
+        return None
+
+    def get_datetime(key):
+        raw_value = input_tag.get(key)
+        if raw_value is None:
+            delta = timedelta(weeks=100 * 52)  # 100 years
+            if key == "min":
+                return datetime.utcnow() - delta
+            return datetime.utcnow() + delta
+        return datetime.strptime(raw_value, datetime_format)
+
+    input_tag = input.input_tag
+    input_type = input_tag["type"]
+    _, datetime_format = datetime_input_types[input_type]
+    start, stop = get_datetime("min"), get_datetime("max")
+    return start + timedelta(seconds=np.random.uniform((stop - start).total_seconds()))
+
 
 class Input(Question):
-    """An input question allows user to enter a free text response.
+    """An input question allows users to enter a free text response.
 
     Subclasses :class:`Question`.
 
@@ -63,7 +190,8 @@ class Input(Question):
 
     defaults = copy.deepcopy(Question.defaults)
     defaults["template"] = "hemlock/input.html"  # type: ignore
-    defaults["html_settings"]["input"] = {"type": "text", "class": ["form-control"]}  # type: ignore
+    defaults["html_settings"]["input"] = {"type": TEXT_INPUT_TYPE, "class": ["form-control"]}  # type: ignore
+    defaults["test_response"] = random_input
 
     @property
     def input_tag(self) -> HTMLAttrType:
@@ -75,9 +203,9 @@ class Input(Question):
         if self.raw_response in ("", None):
             return None
 
-        input_type = self.input_tag.get("type", "text")
+        input_type = self.input_tag.get("type", TEXT_INPUT_TYPE)
 
-        if input_type == "number":
+        if input_type == NUMBER_INPUT_TYPE:
             return float(self.raw_response)
 
         if input_type in datetime_input_types:
@@ -115,8 +243,8 @@ class Input(Question):
             # tests if the raw response can be converted to the expected type
             self.response
         except ValueError:
-            input_type = self.input_tag.get("type", "text")
-            if input_type == "number":
+            input_type = self.input_tag.get("type", TEXT_INPUT_TYPE)
+            if input_type == NUMBER_INPUT_TYPE:
                 self.feedback = "Please enter a number."
             elif input_type in datetime_input_types:
                 html_format, datetime_format = datetime_input_types[input_type]
@@ -128,3 +256,49 @@ class Input(Question):
             return False
 
         return super().run_validate_functions()
+
+    def make_raw_test_response(self, response: Any) -> str:
+        """Make a raw test response from the given response.
+
+        Args:
+            response (Any): Given response.
+
+        Raises:
+            ValueError: If the input is a number, the response must be convertible to
+                float.
+            ValueError: If the input is a date or time, the response must be in the
+                correct datetime format.
+
+        Returns:
+            str: Raw response
+        """
+        if response is None:
+            return ""
+
+        input_type = self.input_tag.get("type", TEXT_INPUT_TYPE)
+
+        # make sure the raw response is in the expected format
+        if input_type == NUMBER_INPUT_TYPE:
+            try:
+                float(response)
+            except ValueError:
+                raise ValueError(
+                    f"Response {repr(response)} to input {self} cannot be converted to a float."
+                )
+            return str(response)
+
+        if input_type in datetime_input_types:
+            # raw response can either be a string in HTML format or a datetime object
+            html_format, datetime_format = datetime_input_types[input_type]
+            if isinstance(response, datetime):
+                return response.strftime(datetime_format)
+
+            try:
+                datetime.strptime(response, datetime_format)
+            except ValueError:
+                raise ValueError(
+                    f"Response {repr(response)} to input {self} does not match format {html_format}. For example, right now it is {datetime.utcnow().strftime(datetime_format)}."
+                )
+            return response
+
+        return str(response)

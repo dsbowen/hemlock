@@ -65,6 +65,8 @@ class DataFrame(defaultdict):
         for item in data_items:
             if item.variable:
                 self.add_data(item.pack_data(), item.fill_rows)
+        if page.branch:
+            self.add_branch(page.branch)
 
     def add_data(self, data: Mapping, fill_rows: bool = False) -> None:
         """Add data from a mapping to the data frame.

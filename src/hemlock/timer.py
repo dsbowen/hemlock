@@ -49,7 +49,12 @@ class Timer(Data):
     start_time = db.Column(db.DateTime)
 
     @hybrid_property
-    def total_seconds(self):
+    def total_seconds(self) -> float:
+        """Get the total number of seconds the timer has been running.
+
+        Returns:
+            float: Total seconds.
+        """
         if self.is_running:
             return self.data + (datetime.utcnow() - self.start_time).total_seconds()
         return self.data

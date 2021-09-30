@@ -58,7 +58,7 @@ def test_clear_response():
 @pytest.mark.parametrize("response", (None, "", "response"))
 def test_get_default(response):
     question = Question()
-    assert question.get_default() == None
+    assert question.get_default() is None
 
     question.default = "default"
     question.raw_response = response
@@ -107,13 +107,6 @@ class TestValidation:
     valid_feedback1 = "valid feedback 1"
 
     @staticmethod
-    def seed(*args):
-        return [
-            Page(Input(validate=partial(TestValidation.validate_func, *args))),
-            Page(),
-        ]
-
-    @staticmethod
     def validate_func(question, return_feedback=True, return_invalid_only=False):
         if question.response != TestValidation.valid_response:
             if return_feedback:
@@ -131,18 +124,22 @@ class TestValidation:
         "enter_valid_response, return_feedback, return_invalid_only",
         product((True, False), (True, False), (True, False)),
     )
-    def test_validation(
+    def test_single_func(
         self, enter_valid_response, return_feedback, return_invalid_only
     ):
-        user = User.make_test_user(
-            partial(TestValidation.seed, return_feedback, return_invalid_only)
-        )
+        def seed(*args):
+            return [
+                Page(Input(validate=partial(self.validate_func, *args))),
+                Page(),
+            ]
+
+        user = User.make_test_user(partial(seed, return_feedback, return_invalid_only))
         question = user.trees[0].branch[0].questions[0]
 
         if enter_valid_response:
-            response = TestValidation.valid_response
+            response = self.valid_response
         else:
-            response = TestValidation.invalid_response
+            response = self.invalid_response
         user.test_request([response])
 
         if enter_valid_response:
@@ -152,29 +149,15 @@ class TestValidation:
             else:
                 assert question.is_valid
                 if return_feedback:
-                    assert question.feedback == TestValidation.valid_feedback0
+                    assert question.feedback == self.valid_feedback0
                 else:
                     assert question.feedback is None
         else:
             assert question.is_valid is False
             if return_feedback:
-                assert question.feedback == TestValidation.invalid_feedback0
+                assert question.feedback == self.invalid_feedback0
             else:
                 assert question.feedback is None
-
-    @staticmethod
-    def multiple_validate_funcs_seed():
-        return [
-            Page(
-                Input(
-                    validate=[
-                        TestValidation.validate_func,
-                        TestValidation.second_validation_func,
-                    ]
-                )
-            ),
-            Page(),
-        ]
 
     @staticmethod
     def second_validation_func(question):
@@ -183,36 +166,39 @@ class TestValidation:
         return True, TestValidation.valid_feedback1
 
     @pytest.mark.parametrize("enter_valid_response", (True, False))
-    def test_multiple_validate_funcs(self, enter_valid_response):
-        user = User.make_test_user(TestValidation.multiple_validate_funcs_seed)
+    def test_multiple_funcs(self, enter_valid_response):
+        def seed():
+            return [
+                Page(Input(validate=[self.validate_func, self.second_validation_func])),
+                Page(),
+            ]
+
+        user = User.make_test_user(seed)
         question = user.trees[0].branch[0].questions[0]
 
         if enter_valid_response:
-            response = TestValidation.valid_response
+            response = self.valid_response
         else:
-            response = TestValidation.invalid_response
+            response = self.invalid_response
         user.test_request([response])
 
         if enter_valid_response:
             # expecting feedback from the last validate function
             # note that both validate functions succeed
-            assert question.feedback == TestValidation.valid_feedback1
+            assert question.feedback == self.valid_feedback1
         else:
             # expecting feedback from the first validate function that fails
-            assert question.feedback == TestValidation.invalid_feedback0
+            assert question.feedback == self.invalid_feedback0
 
 
-class TestRecordResponseAndData:
-    @pytest.mark.parametrize("response_is_none", (True, False))
-    def test(self, response_is_none):
-        def seed():
-            return [Page(Question()), Page()]
+@pytest.mark.parametrize("test_response", (None, "test response"))
+def test_record_response_and_data(test_response):
+    def seed():
+        return [Page(Question()), Page()]
 
-        test_response = "" if response_is_none else "test response"
-        user = User.make_test_user(seed)
-        user.test_request([test_response])
+    user = User.make_test_user(seed)
+    user.test_request([test_response])
 
-        question = user.trees[0].branch[0].questions[0]
-        expected_result = None if response_is_none else test_response
-        assert question.response == expected_result
-        assert question.data == expected_result
+    question = user.trees[0].branch[0].questions[0]
+    assert question.response == test_response
+    assert question.data == test_response

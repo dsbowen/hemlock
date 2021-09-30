@@ -6,6 +6,8 @@ from hemlock import User, Page, create_test_app
 from hemlock.questions import Check
 from hemlock.questions.choice_base import ChoiceQuestion
 
+from hemlock.questions.choice_base import random_choices
+
 
 def make_question(default=None, response=None, multiple=False):
     question = ChoiceQuestion(
@@ -16,6 +18,29 @@ def make_question(default=None, response=None, multiple=False):
     )
     question.raw_response = response
     return question
+
+
+from itertools import product
+
+
+@pytest.mark.parametrize("multiple, pr_no_response", product((True, False), (0, 1)))
+def test_random_choices(multiple, pr_no_response):
+    choices = random_choices(
+        make_question(multiple=multiple), pr_no_response=pr_no_response
+    )
+    choice_values = (0, "value 1", 2)
+    if multiple:
+        if pr_no_response == 1:
+            assert choices == []
+        else:
+            assert isinstance(choices, list)
+            for choice in choices:
+                assert choice in choice_values
+    else:
+        if pr_no_response == 1:
+            assert choices is None
+        else:
+            assert choices in choice_values
 
 
 class TestResponse:
@@ -34,7 +59,7 @@ class TestResponse:
         question.raw_response = [choice_value]
         assert question.response == choice_value
 
-    @pytest.mark.parametrize("choice_values", ([0], [0, 1]))
+    @pytest.mark.parametrize("choice_values", ([0], [0, "value 1"]))
     def test_multi_choice(self, choice_values):
         question = ChoiceQuestion(multiple=True)
         question.raw_response = choice_values
