@@ -1,6 +1,7 @@
 from itertools import product
 
 import pytest
+from flask_login import current_user
 from sqlalchemy_mutable.utils import partial
 
 from hemlock import User, Page
@@ -228,6 +229,61 @@ class TestGetData:
             assert value == expected_value
 
 
+class TestProcessRequest:
+    @staticmethod
+    def set_terminal_to_true(page):
+        page.terminal = True
+
+    def test_edge_case(self):
+        # test an edge case where a page is set to terminal on compile
+        # the user should indicate as having completed the study
+        def seed():
+            return [Page(compile=self.set_terminal_to_true), Page()]
+
+        user = User.make_test_user(seed)
+        user.test_get()
+        assert user.completed
+
+    @staticmethod
+    def set_failed_to_true(page):
+        current_user.failed = True
+
+    def test_user_failed(self):
+        def seed():
+            return Page(compile=self.set_failed_to_true)
+
+        user = User.make_test_user(seed)
+        user.test_get()
+        assert user.failed
+        assert not user.completed
+        
+
+class TestUserAuthentication:
+    # test users should be authenticated during requests
+    def test_seed(self):
+        def seed():
+            assert current_user.is_authenticated
+            return Page()
+
+        User.make_test_user(seed)
+
+    @staticmethod
+    def assert_user_is_authenticated(page):
+        assert current_user.is_authenticated
+
+    def test_get(self):
+        def seed():
+            return Page(compile=self.assert_user_is_authenticated)
+
+        User.make_test_user(seed).test_get()
+
+    def test_post(self):
+        def seed():
+            return [Page(submit=self.assert_user_is_authenticated), Page()]
+
+        User.make_test_user(seed).test_post()
+
+
 class TestTestPost:
     test_response = "test response"
 
@@ -291,4 +347,4 @@ class TestTest:
             User.make_test_user(seed).test(verbosity=1)
 
     def test_multiple_users(self):
-        User.test_multiple_users(seed, n_users=3)
+        User.test_multiple_users(n_users=3, seed_func=seed)

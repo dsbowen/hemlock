@@ -22,7 +22,7 @@ from typing import (
 
 import pandas as pd
 from flask import current_app, request
-from flask_login import UserMixin, current_user, login_required
+from flask_login import UserMixin, current_user, login_required, login_user
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.types import JSON
@@ -183,7 +183,7 @@ class User(UserMixin, db.Model):
     start_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
     params = db.Column(MutablePickleType)
-    meta_data = db.Column(MutableDictJSONType, default={})
+    meta_data = db.Column(MutableDictJSONType)
     _cached_data = db.Column(JSON)
 
     _completed = db.Column(db.Boolean)
@@ -200,6 +200,8 @@ class User(UserMixin, db.Model):
         # has completed the survey when caching the metadata.
         self._completed = completed
         if completed:
+            if self.failed:
+                warnings.warn("Indicating that the user completed the study, but the user has already failed the study.", RuntimeWarning)
             self._cached_data = self.get_data(to_pandas=False, use_cached_data=False)
 
     _failed = db.Column(db.Boolean)
@@ -214,9 +216,17 @@ class User(UserMixin, db.Model):
         """Set the failed status. Cache the user's data when he fails the study."""
         self._failed = failed
         if failed:
+            if self.completed:
+                warnings.warn("Indicating that the user failed the study, but the user has already completed the study.", RuntimeWarning)
             self._cached_data = self.get_data(to_pandas=False, use_cached_data=False)
 
     def __init__(self, meta_data: Mapping = None):
+        # need to login user before initializing trees so that the current_user object 
+        # will be available in the seed functions
+        db.session.add(self)
+        db.session.commit()
+        login_user(self)
+
         self.hash = make_hash(HASH_LENGTH)
         self.start_time = self.end_time = datetime.utcnow()
         self.completed = self.failed = False  # type: ignore
@@ -330,12 +340,16 @@ class User(UserMixin, db.Model):
             self.end_time = datetime.utcnow()
 
         current_tree = self.get_tree(url_rule)
-        if current_tree.page.is_last_page and [
-            tree.page.is_last_page for tree in self.trees
-        ]:
+        return_value = current_tree.process_request()
+
+        if (
+            not self.failed
+            and current_tree.page.is_last_page
+            and [tree.page.is_last_page for tree in self.trees]
+        ):
             self.completed = True  # type: ignore
 
-        return current_tree.process_request()
+        return return_value
 
     @classmethod
     def make_test_user(
@@ -373,35 +387,34 @@ class User(UserMixin, db.Model):
                 <Page 0 terminal>
                     <Label Hello, world! - default: None>
         """
-        user = cls(**kwargs)
-        db.session.add(user)
-        db.session.commit()
+        with current_app.test_request_context():
+            user = cls(**kwargs)
 
-        if seed_func is not None:
-            index = 0
-            if user._seed_funcs:
-                index = list(user._seed_funcs.values())[-1][0] + 1
-            user._seed_funcs = user._seed_funcs.copy()
-            user._seed_funcs[url_rule] = index, seed_func
-            user.default_url_rule = url_rule
-            user.trees.append(Tree(seed_func, url_rule))
+            if seed_func is not None:
+                index = 0
+                if user._seed_funcs:
+                    index = list(user._seed_funcs.values())[-1][0] + 1
+                user._seed_funcs = user._seed_funcs.copy()
+                user._seed_funcs[url_rule] = index, seed_func
+                user.default_url_rule = url_rule
+                user.trees.append(Tree(seed_func, url_rule))
 
         return user
 
     @classmethod
     def test_multiple_users(
         cls,
-        seed_func: SeedFunctionType = None,
         n_users: int = 1,
+        seed_func: SeedFunctionType = None,
         user_kwargs: Mapping[str, Any] = None,
         test_kwargs: Mapping[str, Any] = None,
     ) -> None:
         """Run multiple test users through a study.
 
         Args:
+            n_users (int, optional): Number of users to run. Defaults to 1.
             seed_func (SeedFunctionType, optional): Function that returns the user's
                 first branch. Defaults to None.
-            n_users (int, optional): Number of users to run. Defaults to 1.
             user_kwargs (Mapping[str, Any], optional): Passed to
                 :meth:`User.make_test_user`. Defaults to None.
             test_kwargs (Mapping[str, Any], optional): Passed to :meth:`User.test`.
@@ -422,7 +435,7 @@ class User(UserMixin, db.Model):
                 ...     ]
                 ...
                 >>> app = create_test_app()
-                >>> User.test_multiple_users(seed, n_users=2)
+                >>> User.test_multiple_users(2, seed)
                 INFO:root:TESTING USER 1
                 INFO:root:<Page 0>
                     <Label Hello, world! - default: None>
@@ -546,6 +559,7 @@ class User(UserMixin, db.Model):
         """
         url_rule = url_rule or self.default_url_rule
         with current_app.test_request_context():
+            login_user(self)
             self.process_request(url_rule)  # type: ignore
         return self.get_tree(url_rule)
 
@@ -614,5 +628,6 @@ class User(UserMixin, db.Model):
             logging.info(page.print(responses, direction))
 
         with current_app.test_request_context(method="POST", data=data):
+            login_user(self)
             self.process_request(url_rule)  # type: ignore
         return tree

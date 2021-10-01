@@ -15,10 +15,10 @@ def test_repr():
     question = Question(
         "Hello, world!", variable="variable_name", default="default value"
     )
-    assert repr(question) == "<Question Hello, world! - default: default value>"
+    assert repr(question) == "<Question Hello, world! - default: 'default value'>"
 
     question.raw_response = "user response"
-    assert repr(question) == "<Question Hello, world! - response: user response>"
+    assert repr(question) == "<Question Hello, world! - response: 'user response'>"
 
 
 @pytest.mark.parametrize("question_cls", question_classes)

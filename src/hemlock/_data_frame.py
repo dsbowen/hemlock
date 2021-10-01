@@ -68,11 +68,11 @@ class DataFrame(defaultdict):
         if page.branch:
             self.add_branch(page.branch)
 
-    def add_data(self, data: Mapping, fill_rows: bool = False) -> None:
+    def add_data(self, data: Mapping[Any, Any], fill_rows: bool = False) -> None:
         """Add data from a mapping to the data frame.
 
         Args:
-            data (Mapping): Data.
+            data (Mapping[Any, Any]): Data.
             fill_rows (bool, optional): Indicates that rows should be filled. Defaults
                 to False.
         """

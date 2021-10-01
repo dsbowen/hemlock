@@ -15,7 +15,7 @@ from sqlalchemy_mutable.types import (
     MutableJSONType,
     MutablePickleType,
 )
-from sqlalchemy_mutable.utils import is_instance
+from sqlalchemy_mutable.utils import get_object, is_instance
 
 from .._custom_types import MutableListJSONType, MutableListPickleType
 from ..app import db
@@ -218,9 +218,10 @@ class Question(Data):
         label = None if self.label is None else textwrap.shorten(self.label, 40)
 
         prefix = "default" if self.raw_response is None else "response"
-        default = textwrap.shorten(str(self.get_default()), 40)
+        default_value = self.default if self.raw_response is None else self.response
+        default_text = textwrap.shorten(repr(get_object(default_value)), 40)
 
-        return f"<{self.__class__.__qualname__} {label} - {prefix}: {default}>"
+        return f"<{self.__class__.__qualname__} {label} - {prefix}: {default_text}>"
 
     def display(self):
         """Display this question in a notebook."""

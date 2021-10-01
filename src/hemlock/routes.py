@@ -19,7 +19,5 @@ def index():
     meta_data = dict(request.args)
     meta_data["ipv4"] = request.remote_addr
     user = User(meta_data=meta_data)
-    db.session.add(user)
     db.session.commit()
-    login_user(user)
-    return redirect(User.default_url_rule)
+    return redirect(user.default_url_rule)
