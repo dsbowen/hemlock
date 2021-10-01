@@ -110,7 +110,7 @@ class Question(Data):
         default=None,
         params=None,
         html_settings={
-            "card": {"class": ["card", "shadow-sm", "my-4"]},
+            "card": {"class": ["card", "my-4"]},
             "label": {"class": ["form-label", "w-100"]},
             "feedback": {"class": [], "style": {"display": "block"}},
         },

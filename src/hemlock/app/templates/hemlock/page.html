@@ -10,9 +10,6 @@
             {{ question.html_settings.get_css() | safe }}
         {% endfor %}
         <style>
-            body {
-                background-color: #F8F8F8;
-            }
             input:hover + label {
                 background-color: lightgray;
             }
@@ -84,6 +81,16 @@
         {% for question in page.questions %}
             {{ question.html_settings.get_js() | safe }}
         {% endfor %}
+        <script>
+            $("form").submit( function(e) {
+                if( $(this).hasClass("form-submitted") ){
+                    e.preventDefault();
+                    return;
+                }
+                $(this).addClass("form-submitted");
+                $("input.btn[name='direction']").attr("disabled", true);
+            });
+        </script>
     {% endblock %}
     </body>
 </html>

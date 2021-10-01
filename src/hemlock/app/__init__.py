@@ -1,4 +1,5 @@
 import os
+from collections import defaultdict
 
 from flask import Blueprint, Flask, current_app
 from flask_login import LoginManager
@@ -6,6 +7,13 @@ from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_mutable import Mutable
 from werkzeug.security import generate_password_hash
+
+from ._make_static_pages import (
+    make_loading_page,
+    make_restart_page,
+    make_screenout_page,
+    make_500_page,
+)
 
 # create blueprint and extensions
 bp = Blueprint(
@@ -28,6 +36,14 @@ sqlalchemy_database_uri = os.environ.get(
     "DATABASE_URL", f"sqlite:///{os.path.join(os.getcwd(), 'data.db')}"
 )
 settings = {
+    "loading_page": make_loading_page,
+    "restart_page": make_restart_page,
+    "allow_users_to_restart": os.environ.get("ALLOW_USERS_TO_RESTART", "true").lower()
+    == "true",
+    "screenout_page": make_screenout_page,
+    "screenout_records": {},
+    "block_duplicate_keys": [],
+    "internal_server_error_page": make_500_page,
     "static_folder": "static",
     "template_folder": os.path.join(os.getcwd(), "templates"),
     "config": {
@@ -42,14 +58,22 @@ settings = {
             else dict(pool_size=1, pool_recycle=10, max_overflow=0)
         ),
     },
-    "loading_page": "TODO: CREATE LOADING PAGE",
 }
 
 
 @bp.before_app_first_request
-def init_blueprint():
-    # TODO: cache static pages
+def init_app():
     db.create_all()
+    static_pages = [
+        "loading_page",
+        "restart_page",
+        "screenout_page",
+        "internal_server_error_page",
+    ]
+    for key in static_pages:
+        page = current_app.settings[key]
+        if callable(page):
+            current_app.settings[key] = page()
 
 
 def create_app(settings=settings):
@@ -59,9 +83,9 @@ def create_app(settings=settings):
         template_folder=settings["template_folder"],
     )
 
-    # TODO get screenouts
     app.config.update(settings["config"])
     app.settings = settings
+    app.user_metadata = defaultdict(list)
     app.register_blueprint(bp)
 
     # initialize extensions

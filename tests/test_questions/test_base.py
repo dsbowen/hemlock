@@ -134,7 +134,7 @@ class TestValidation:
             ]
 
         user = User.make_test_user(partial(seed, return_feedback, return_invalid_only))
-        question = user.trees[0].branch[0].questions[0]
+        question = user.get_tree().branch[0].questions[0]
 
         if enter_valid_response:
             response = self.valid_response
@@ -174,7 +174,7 @@ class TestValidation:
             ]
 
         user = User.make_test_user(seed)
-        question = user.trees[0].branch[0].questions[0]
+        question = user.get_tree().branch[0].questions[0]
 
         if enter_valid_response:
             response = self.valid_response
@@ -199,6 +199,6 @@ def test_record_response_and_data(test_response):
     user = User.make_test_user(seed)
     user.test_request([test_response])
 
-    question = user.trees[0].branch[0].questions[0]
+    question = user.get_tree().branch[0].questions[0]
     assert question.response == test_response
     assert question.data == test_response

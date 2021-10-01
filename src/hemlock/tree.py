@@ -192,7 +192,6 @@ class Tree(db.Model):
             page_html = self.page.get()
             self.cached_page_html = page_html
             self.request_in_progress = False
-            db.session.commit()
             return page_html
 
         # handle POST request
@@ -204,5 +203,4 @@ class Tree(db.Model):
         self.page.direction_to = direction_from
 
         self.request_in_progress = False
-        db.session.commit()
         return redirect(self.url_rule)

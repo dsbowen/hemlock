@@ -28,6 +28,7 @@ class TestRoute:
         User.default_url_rule = None
 
     def test_single(self):
+        self.clear_routes()
         url_rule = "/test_single_rule"
 
         @User.route(url_rule)
@@ -46,6 +47,7 @@ class TestRoute:
         self.clear_routes()
 
     def test_multiple(self):
+        self.clear_routes()
         url_rules = ("/test_multiple_rule0", "/test_multiple_rule1")
 
         @User.route(url_rules[0])
@@ -72,6 +74,7 @@ class TestRoute:
         self.clear_routes()
 
     def test_manual_seed(self):
+        self.clear_routes()
         url_rule = "/test_manual_seed_rule"
 
         @User.route(url_rule)
@@ -95,6 +98,7 @@ class TestRoute:
 
     @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     def test_overwrite(self):
+        self.clear_routes()
         url_rule = "/test_overwrite_rule"
 
         @User.route(url_rule)
@@ -256,7 +260,7 @@ class TestProcessRequest:
         user.test_get()
         assert user.failed
         assert not user.completed
-        
+
 
 class TestUserAuthentication:
     # test users should be authenticated during requests

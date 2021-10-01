@@ -201,7 +201,10 @@ class User(UserMixin, db.Model):
         self._completed = completed
         if completed:
             if self.failed:
-                warnings.warn("Indicating that the user completed the study, but the user has already failed the study.", RuntimeWarning)
+                warnings.warn(
+                    "Indicating that the user completed the study, but the user has already failed the study.",
+                    RuntimeWarning,
+                )
             self._cached_data = self.get_data(to_pandas=False, use_cached_data=False)
 
     _failed = db.Column(db.Boolean)
@@ -217,11 +220,14 @@ class User(UserMixin, db.Model):
         self._failed = failed
         if failed:
             if self.completed:
-                warnings.warn("Indicating that the user failed the study, but the user has already completed the study.", RuntimeWarning)
+                warnings.warn(
+                    "Indicating that the user failed the study, but the user has already completed the study.",
+                    RuntimeWarning,
+                )
             self._cached_data = self.get_data(to_pandas=False, use_cached_data=False)
 
     def __init__(self, meta_data: Mapping = None):
-        # need to login user before initializing trees so that the current_user object 
+        # need to login user before initializing trees so that the current_user object
         # will be available in the seed functions
         db.session.add(self)
         db.session.commit()
@@ -349,6 +355,7 @@ class User(UserMixin, db.Model):
         ):
             self.completed = True  # type: ignore
 
+        db.session.commit()
         return return_value
 
     @classmethod
