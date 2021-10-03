@@ -9,7 +9,9 @@ from .choice_base import ChoiceQuestion
 
 
 class Check(ChoiceQuestion):
-    """A check question allows users to select one or more choices by checking a box.
+    """Check.
+    
+    A check question allows users to select one or more choices by checking a box.
 
     Subclasses :class:`ChoiceQuestion`.
     """

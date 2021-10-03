@@ -234,6 +234,12 @@ class TestGetData:
 
 
 class TestProcessRequest:
+    def test_committed_changes(self):
+        # test that all changes have been committed after request
+        user = User.make_test_user(seed)
+        user.test_request()
+        assert user not in db.session.dirty
+
     @staticmethod
     def set_terminal_to_true(page):
         page.terminal = True

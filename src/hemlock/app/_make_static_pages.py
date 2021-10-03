@@ -4,23 +4,8 @@ from flask.templating import render_template
 def make_loading_page() -> str:
     """Loading page."""
     from ..page import Page
-    from ..questions import Label
 
-    return Page(
-        Label(
-            """
-            <div class="d-flex align-items-center">
-                <strong>Loading...</strong>
-                <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
-            </div> 
-            """
-        ),
-        back=False,
-        forward=False,
-        extra_html_settings={
-            "js": render_template("hemlock/utils/refresh_repeatedly.js", milliseconds=1000)
-        },
-    ).render()
+    return render_template("hemlock/utils/loading_page.html", page=Page())
 
 
 def make_restart_page() -> str:

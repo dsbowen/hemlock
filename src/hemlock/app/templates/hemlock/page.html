@@ -10,11 +10,14 @@
             {{ question.html_settings.get_css() | safe }}
         {% endfor %}
         <style>
-            input:hover + label {
+            input[type="checkbox"]:hover + label {
+                background-color: lightgray;
+            }
+            input[type="radio"]:hover + label {
                 background-color: lightgray;
             }
             input:checked + label {
-                background-color: darkgray;
+                background-color: rgb(84, 84, 84);
             }
             input[type="checkbox"]:checked:hover + label {
                 background-color: #BEBEBE;
@@ -24,6 +27,18 @@
                 padding-right: 3px;
                 border-radius: 3px;
                 background-clip: padding-box;
+            }
+            .loading {
+                display: none;
+                position: fixed;
+                align-items: center;
+                justify-content: center;
+                background: rgba(0, 0, 0, .2);
+                height: 100vh;
+                width: 100%;
+                top: 0;
+                left: 0;
+                z-index: 9999;
             }
             /* @media (prefers-color-scheme: dark) {
                 body {
@@ -46,6 +61,12 @@
         {% endblock %}
     </head>
     <body>
+        <div class="loading">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
         {% block body %}
         {% if navbar is not none %}
         {{ navbar | safe }}
@@ -83,12 +104,7 @@
         {% endfor %}
         <script>
             $("form").submit( function(e) {
-                if( $(this).hasClass("form-submitted") ){
-                    e.preventDefault();
-                    return;
-                }
-                $(this).addClass("form-submitted");
-                $("input.btn[name='direction']").attr("disabled", true);
+                $(".loading").css("display", "flex");
             });
         </script>
     {% endblock %}

@@ -11,7 +11,6 @@ from typing import Any, Mapping
 
 import numpy as np
 from sqlalchemy.ext.hybrid import hybrid_property
-from hemlock.utils.random import CHARACTERS
 from sqlalchemy_mutable.html import HTMLAttrType
 from sqlalchemy_mutable.utils import is_instance
 
@@ -153,7 +152,9 @@ def random_datetime(input: Question, pr_no_response: float = 0.2) -> Optional[da
 
 
 class Input(Question):
-    """An input question allows users to enter a free text response.
+    """Input.
+    
+    An input question allows users to enter a free text response.
 
     Subclasses :class:`Question`.
 
@@ -224,15 +225,9 @@ class Input(Question):
 
         Additionally adds appropriate validation classes to the input tag.
         """
-        valid_class, invalid_class = "is-valid", "is-invalid"
-        if is_valid is None:
-            self._add_and_remove_classes("input", remove=[valid_class, invalid_class])
-        elif is_valid:
-            self._add_and_remove_classes("input", add=valid_class, remove=invalid_class)
-        else:
-            self._add_and_remove_classes("input", add=invalid_class, remove=valid_class)
-
-        return super().set_is_valid(is_valid)
+        return_value = super().set_is_valid(is_valid)
+        self._set_validation_classes("input", "is-valid", "is-invalid")
+        return return_value
 
     def run_validate_functions(self) -> bool:
         """See :meth:`hemlock.questions.base.Question.run_validate_functions`.

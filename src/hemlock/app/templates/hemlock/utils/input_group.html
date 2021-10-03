@@ -1,0 +1,29 @@
+{% extends "hemlock/utils/card.html" %}
+
+{% macro input_group_text(texts) %}
+    {% if texts is not none %}
+        {% for text in texts %}
+            <span class="input-group-text">{{ text }}</span>
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro form_floating(content) %}
+    <div class="form-floating flex-grow-1">
+        {{ content }}
+        <label for="{{ question.hash }}">
+            {{ question.floating_label | safe}}
+        </label>
+    </div>
+{% endmacro %}
+
+{% block card_body %}
+    {% include "hemlock/utils/label.html" %}
+    <div class="input-group">
+        {{ input_group_text(question.prepend) }}
+        {% block content %}{% endblock %}
+        {{ input_group_text(question.append) }}
+        {% include "hemlock/utils/feedback.html" %}
+    </div>
+    {% include "hemlock/utils/form_text.html" %}
+{% endblock %}

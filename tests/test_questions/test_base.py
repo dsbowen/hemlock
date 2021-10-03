@@ -5,10 +5,10 @@ from sqlalchemy_mutable.utils import partial
 
 from hemlock import User, Page
 from hemlock.app import create_test_app
-from hemlock.questions import Check, Input, Label
+from hemlock.questions import Check, Input, Label, Select
 from hemlock.questions.base import Question
 
-question_classes = [Check, Input, Label]
+question_classes = [Check, Input, Label, Select]
 
 
 def test_repr():

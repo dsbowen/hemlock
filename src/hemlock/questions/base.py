@@ -110,7 +110,7 @@ class Question(Data):
         default=None,
         params=None,
         html_settings={
-            "card": {"class": ["card", "my-4"]},
+            "card": {"class": ["card", "shadow", "my-4"]},
             "label": {"class": ["form-label", "w-100"]},
             "feedback": {"class": [], "style": {"display": "block"}},
         },
@@ -257,52 +257,44 @@ class Question(Data):
             is_valid (bool, optional): Indicates that the response was valid. Defaults
                 to None.
         """
-        valid_class, invalid_class = "valid-feedback", "invalid-feedback"
-        if is_valid is None:
-            self._add_and_remove_classes(
-                "feedback", remove=[valid_class, invalid_class]
-            )
-        elif is_valid:
-            self._add_and_remove_classes(
-                "feedback", add=valid_class, remove=invalid_class
-            )
-        else:
-            self._add_and_remove_classes(
-                "feedback", add=invalid_class, remove=valid_class
-            )
         self._is_valid = is_valid
+        self._set_validation_classes("feedback", "valid-feedback", "invalid-feedback")
 
-    def _add_and_remove_classes(
+    def _set_validation_classes(
         self,
         tag_name: str,
-        add: Union[str, List[str]] = None,
-        remove: Union[str, List[str]] = None,
+        valid_class: str,
+        invalid_class: str
     ) -> None:
         """Add and remove classes from a given HTML tag.
 
         Args:
             tag_name (str): Name of the HTML tag.
-            add (Union[str, List[str]], optional): Classes to add. Defaults to None.
-            remove (Union[str, List[str]], optional): Classes to remove. Defaults to
-                None.
+            valid_class (str): Class the tag should have if the response is valid.
+            invalid_class (str): Class the tag should have if response is invalid.
         """
+        def add_class(class_name):
+            if class_name not in classes:
+                classes.append(class_name)
+
+        def remove_class(class_name):
+            try:
+                classes.remove(class_name)
+            except ValueError:
+                pass
+
         classes = self.html_settings[tag_name]["class"]
 
-        if remove is not None:
-            if not isinstance(remove, list):
-                remove = [remove]
-            for class_name in remove:
-                try:
-                    classes.remove(class_name)
-                except ValueError:
-                    pass
-
-        if add is not None:
-            if not isinstance(add, list):
-                add = [add]
-            for class_name in add:
-                if class_name not in classes:
-                    classes.append(class_name)
+        if self.is_valid is None:
+            remove_class(valid_class)
+            remove_class(invalid_class)
+        elif self.is_valid:
+            add_class(valid_class)
+            remove_class(invalid_class)
+        else:
+            # self.is_valid is False
+            add_class(invalid_class)
+            remove_class(valid_class)
 
     def run_compile_functions(self) -> None:
         """Run the compile functions."""

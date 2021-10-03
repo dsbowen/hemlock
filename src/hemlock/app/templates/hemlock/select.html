@@ -1,0 +1,34 @@
+{% extends "hemlock/utils/input_group.html" %}
+
+{% macro select() %}
+    {% if question.multiple %}
+        {% set multiple = " multiple" %}
+    {% else %}
+        {% set multiple = "" %}
+    {% endif %}
+
+    <select id="{{ question.hash }}" name="{{ question.hash }}" {{ question.select_tag.get_attrs() | safe }}{{ multiple }}>
+        {% for choice in question.choices %}
+            {% set index = loop.index | string() %}
+            {% set id = question.hash + index %}
+
+            {% if question.is_default(choice) %}
+                {% set selected = "selected" %}
+            {% else %}
+                {% set selected = "" %}
+            {% endif %}
+
+            <option id="{{ id }}" value="{{ loop.index }}"{{ selected }}>
+                {{ choice["label"] | safe }}
+            </option>
+        {% endfor %}
+    </select>
+{% endmacro %}
+
+{% block content %}
+    {% if question.floating_label is not none %}
+        {{ form_floating(select()) }}
+    {% else %}
+        {{ select() }}
+    {% endif %}
+{% endblock %}
