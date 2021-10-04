@@ -237,16 +237,22 @@ class Question(Data):
         self.raw_response = None
         self.clear_feedback()
 
-    def get_default(self) -> Any:
+    def get_default(self, alt_value: Any = None) -> Any:
         """Get the default value.
 
         If the user has not yet responded, this method returns the default value.
         Otherwise, it returns the user's response.
 
+        Args:
+            alt_value (Any, optional): Value to use if both the default and raw
+                response are None. Defaults to None.
+
         Returns:
             Any: Default value.
         """
-        return self.default if self.raw_response is None else self.raw_response
+        if self.raw_response is None:
+            return alt_value if self.default is None else self.default
+        return self.raw_response
 
     def set_is_valid(self, is_valid: bool = None) -> None:
         """Set the indicator that the user's response was valid.
@@ -258,43 +264,24 @@ class Question(Data):
                 to None.
         """
         self._is_valid = is_valid
-        self._set_validation_classes("feedback", "valid-feedback", "invalid-feedback")
+        self._add_or_remove_class("feedback", "valid-feedback", is_valid is True)
+        self._add_or_remove_class("feedback", "invalid-feedback", is_valid is False)
 
-    def _set_validation_classes(
-        self,
-        tag_name: str,
-        valid_class: str,
-        invalid_class: str
-    ) -> None:
-        """Add and remove classes from a given HTML tag.
+    def _add_or_remove_class(self, tag_name: str, class_name: str, add: bool) -> None:
+        """Add or remove class from HTML tag.
 
         Args:
             tag_name (str): Name of the HTML tag.
-            valid_class (str): Class the tag should have if the response is valid.
-            invalid_class (str): Class the tag should have if response is invalid.
+            class_name (str): Class to add.
+            add (bool): Indicates that the classes should be added.
         """
-        def add_class(class_name):
+        classes = self.html_settings[tag_name]["class"]
+        if add:
             if class_name not in classes:
                 classes.append(class_name)
-
-        def remove_class(class_name):
-            try:
-                classes.remove(class_name)
-            except ValueError:
-                pass
-
-        classes = self.html_settings[tag_name]["class"]
-
-        if self.is_valid is None:
-            remove_class(valid_class)
-            remove_class(invalid_class)
-        elif self.is_valid:
-            add_class(valid_class)
-            remove_class(invalid_class)
         else:
-            # self.is_valid is False
-            add_class(invalid_class)
-            remove_class(valid_class)
+            if class_name in classes:
+                classes.remove(class_name)
 
     def run_compile_functions(self) -> None:
         """Run the compile functions."""

@@ -10,7 +10,7 @@ from ._data_frame import DataFrame
 from .app import db
 
 
-class Data(db.Model):
+class Data(db.Model):  # type: ignore
     """Data containers record data from a user's survey.
 
     Args:

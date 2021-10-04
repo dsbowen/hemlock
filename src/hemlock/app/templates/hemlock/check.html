@@ -1,8 +1,6 @@
 {% extends "hemlock/utils/card.html" %}
 
-{% block card_body %}
-{% include "hemlock/utils/label.html" %}
-
+{% block content %}
 {% if question.multiple %}
     {% set type = "checkbox" %}
 {% else %}
@@ -25,14 +23,11 @@
         {% set disabled = "" %}
     {% endif %}
 
-    <div class="form-check">
+    <div {{ question.html_settings["div"].get_attrs() | safe }}>
         <input id="{{ id }}" name="{{ question.hash }}" class="form-check-input" type="{{ type }}" value="{{ loop.index }}"{{ disabled }}{{ checked }}>
         <label class="form-check-label custom-check-label w-100" for="{{ id }}">
             {{ choice["label"] | safe }}
         </label>
     </div>
 {% endfor %}
-
-{% include "hemlock/utils/feedback.html" %}
-{% include "hemlock/utils/form_text.html" %}
 {% endblock %}

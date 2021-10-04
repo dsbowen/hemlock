@@ -1,0 +1,15 @@
+{% extends "hemlock/utils/card.html" %}
+
+{% macro get_input_group_text(texts) %}
+    {%- if texts is not none -%}
+        {{- texts | join(", ") -}}
+    {%- endif -%}
+{% endmacro %}
+
+{% block content %}
+{% set default = question.get_default(alt_value="") %}
+<input id="{{ question.hash }}" name="{{ question.hash }}" {{ question.input_tag.get_attrs() | safe }} value="{{ default }}">
+<div class="form-text">
+    Value: {{ get_input_group_text(question.prepend) -}}<span id="{{ question.hash }}-value"></span>{{- get_input_group_text(question.append) }}
+</div>
+{% endblock %}

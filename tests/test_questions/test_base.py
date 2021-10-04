@@ -5,10 +5,12 @@ from sqlalchemy_mutable.utils import partial
 
 from hemlock import User, Page
 from hemlock.app import create_test_app
-from hemlock.questions import Check, Input, Label, Select
+from hemlock.questions import Check, Input, Label, Range, Select, Textarea
 from hemlock.questions.base import Question
 
-question_classes = [Check, Input, Label, Select]
+from . import utils
+
+question_classes = [Check, Input, Label, Range, Select, Textarea]
 
 
 def test_repr():
@@ -59,6 +61,8 @@ def test_clear_response():
 def test_get_default(response):
     question = Question()
     assert question.get_default() is None
+    alt_value = "alternative value"
+    assert question.get_default(alt_value) == alt_value
 
     question.default = "default"
     question.raw_response = response
@@ -66,28 +70,13 @@ def test_get_default(response):
     assert question.get_default() == expected_result
 
 
-class TestSetIsValid:
-    valid_class, invalid_class = "valid-feedback", "invalid-feedback"
-
-    @pytest.mark.parametrize(
-        "is_valid0, is_valid1", combinations_with_replacement((None, True, False), r=2)
+@pytest.mark.parametrize(
+    "is_valid0, is_valid1", combinations_with_replacement((None, True, False), r=2)
+)
+def test_set_is_valid(is_valid0, is_valid1):
+    utils.test_set_is_valid(
+        is_valid0, is_valid1, Question, "feedback", "valid-feedback", "invalid-feedback"
     )
-    def test_set_is_valid(self, is_valid0, is_valid1):
-        question = Input()
-        question.set_is_valid(is_valid0)
-        question.set_is_valid(is_valid1)
-        classes = question.html_settings["feedback"]["class"]
-
-        if is_valid1 is None:
-            assert self.valid_class not in classes
-            assert self.invalid_class not in classes
-        elif is_valid1:
-            assert self.valid_class in classes
-            assert self.invalid_class not in classes
-        else:
-            # is_valid1 is False
-            assert self.valid_class not in classes
-            assert self.invalid_class in classes
 
 
 @pytest.mark.parametrize("question_cls", question_classes)

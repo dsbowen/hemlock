@@ -12,7 +12,7 @@ from typing import Any, Mapping
 import numpy as np
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_mutable.html import HTMLAttrType
-from sqlalchemy_mutable.utils import is_instance
+from sqlalchemy_mutable.utils import get_object, is_instance
 
 from ..app import db
 from .base import Question
@@ -33,7 +33,7 @@ datetime_input_types = {
     "time": ("HH:MM", "%H:%M"),
 }
 
-from typing import Optional
+from typing import Dict, Optional
 
 
 def random_input(input: Question, **kwargs: Any) -> Any:
@@ -58,28 +58,30 @@ def random_input(input: Question, **kwargs: Any) -> Any:
     return random_text(input, **kwargs)
 
 
-def random_text(
-    input: Question, pr_no_response: float = 0.2, min_words: int = 1, max_words: int = 5
-) -> Optional[str]:
+def random_text(question: Question, pr_no_response: float = 0.2) -> Optional[str]:
     """Generate a random text response for an input-like question.
 
     Args:
-        input (Question): Input question.
+        input (Question): Question, usually a :class:`hemlock.questions.Input` or
+            :class:`hemlock.questions.Textarea`.
         pr_no_response (float, optional): Probability that the user doesn't respond.
             Defaults to .2.
-        min_words (int, optional): Minimum number of words. Defaults to 1.
-        max_words (int, optional): Maximum number of words. Defaults to 5.
 
     Returns:
         Optional[str]: Response.
     """
-    if not input.input_tag.get("required") and random.random() < pr_no_response:
+    # get the input or textarea HTML attributes
+    tag: Dict[Any, Any] = {}
+    if hasattr(question, "input_tag"):
+        tag = question.input_tag
+    elif hasattr(question, "textarea_tag"):
+        tag = question.textarea_tag
+
+    if not tag.get("required") and random.random() < pr_no_response:
         return None
 
-    length = random.randint(
-        input.input_tag.get("minlength", 1), input.input_tag.get("maxlength", 20)
-    )
-    n_words = random.randint(min_words, max_words)
+    length = random.randint(tag.get("minlength", 1), tag.get("maxlength", 20))
+    n_words = random.randint(tag.get("minwords", 1), tag.get("maxwords", 5))
     n_words = min(n_words, math.ceil(length / 2))
     n_whitespace_characters = n_words - 1
     word_length = int((length - n_whitespace_characters) / n_words)
@@ -151,19 +153,55 @@ def random_datetime(input: Question, pr_no_response: float = 0.2) -> Optional[da
     return start + timedelta(seconds=np.random.uniform((stop - start).total_seconds()))
 
 
+import re
+from typing import Tuple
+
+
+def word_count(
+    question: Question, minwords: int = None, maxwords: int = None
+) -> Optional[Tuple[bool, str]]:
+    """Validate that the number of words in the response.
+
+    Args:
+        question (Question): Question to validate.
+        minwords (int, optional): Minimum number of words. Defaults to None.
+        maxwords (int, optional): Maximum number of words. Defaults to None.
+
+    Returns:
+        Optional[Tuple[bool, str]]: None if the word count is valid, tuple of (False,
+            feedback) if the word count is invalid.
+    """
+    if minwords is None:
+        minwords = 0
+    if maxwords is None:
+        maxwords = np.inf  # type: ignore
+
+    response = get_object(question.response)
+    if response is None or minwords <= len(re.findall(r"\w+", response)) <= maxwords:  # type: ignore
+        return None
+
+    if minwords == 0:
+        feedback = f"Please shorten your response to {maxwords} words."
+    elif maxwords == np.inf:
+        feedback = f"Please write at least {minwords} words."
+    else:
+        # both minwords and maxwords are defined
+        feedback = f"Please write between {minwords} and {maxwords} words."
+    return False, feedback
+
+
 class Input(Question):
     """Input.
-    
+
     An input question allows users to enter a free text response.
 
     Subclasses :class:`Question`.
 
     Args:
+        *args (Any): Passed to :class:`Question` constructor.
         input_tag (Mapping[str, HTMLAttrType], optional): Additional attributes of the
             HTML input tag. Defaults to None.
-
-    Attributes:
-        input_tag (HTMLAttrsType): Attributes of the HTML input tag.
+        **kwargs (Any): Passed to :class:`Question` constructor.
 
     Examples:
         The most common use of the `input_tag` attribute is for setting the input type.
@@ -184,6 +222,15 @@ class Input(Question):
             >>> question = Input(input_tag={"type": "number", "min": 0, "max": 10})
             >>> question.input_tag["min"], question.input_tag["max"]
             (0, 10)
+
+        You can also require users to enter a certain number of words.
+
+        .. doctest::
+
+            >>> from hemlock.questions import Input
+            >>> question = Input(input_tag={"minwords": 5, "maxwords": 10})
+            >>> question.input_tag["minwords"], question.input_tag["maxwords"]
+            (5, 10)
     """
 
     id = db.Column(db.Integer, db.ForeignKey("question.id"), primary_key=True)
@@ -196,6 +243,11 @@ class Input(Question):
 
     @property
     def input_tag(self) -> HTMLAttrType:
+        """Attributes of the HTML input tag.
+
+        Returns:
+            HTMLAttrType: HTML attributes.
+        """
         return self.html_settings["input"]
 
     @hybrid_property
@@ -215,30 +267,37 @@ class Input(Question):
 
         return str(self.raw_response)
 
-    def __init__(self, *args, input_tag: Mapping[str, HTMLAttrType] = None, **kwargs):
+    def __init__(
+        self, *args: Any, input_tag: Mapping[str, HTMLAttrType] = None, **kwargs: Any
+    ):
         super().__init__(*args, **kwargs)
         if input_tag is not None:
             self.input_tag.update_attrs(input_tag)
 
-    def set_is_valid(self, is_valid: bool = None):
-        """See :meth:`hemlock.questions.base.Question.set_is_valid`.
+    def set_is_valid(self, is_valid: bool = None) -> None:
+        """See :meth:`Question.set_is_valid`.
 
         Additionally adds appropriate validation classes to the input tag.
         """
         return_value = super().set_is_valid(is_valid)
-        self._set_validation_classes("input", "is-valid", "is-invalid")
+        self._add_or_remove_class("input", "is-valid", is_valid is True)
+        self._add_or_remove_class("input", "is-invalid", is_valid is False)
         return return_value
 
     def run_validate_functions(self) -> bool:
-        """See :meth:`hemlock.questions.base.Question.run_validate_functions`.
+        """See :meth:`Question.run_validate_functions`.
 
-        Additionally validates that the user's response matches the input type.
+        Additionally, this method validates
+
+        1. That the user's response matches the input type, and
+        2. That the user's response has the correct word count.
         """
+        input_type = self.input_tag.get("type", TEXT_INPUT_TYPE)
+
+        # tests if the raw response can be converted to the expected type
         try:
-            # tests if the raw response can be converted to the expected type
             self.response
         except ValueError:
-            input_type = self.input_tag.get("type", TEXT_INPUT_TYPE)
             if input_type == NUMBER_INPUT_TYPE:
                 self.feedback = "Please enter a number."
             elif input_type in datetime_input_types:
@@ -249,6 +308,17 @@ class Input(Question):
 
             self.set_is_valid(False)
             return False
+
+        # validate the word count
+        if input_type == TEXT_INPUT_TYPE:
+            return_value = word_count(
+                self, self.input_tag.get("minwords"), self.input_tag.get("maxwords")
+            )
+            if return_value is not None:
+                is_valid, feedback = return_value
+                self.set_is_valid(is_valid)
+                self.feedback = feedback
+                return is_valid
 
         return super().run_validate_functions()
 

@@ -62,7 +62,7 @@ def random_direction(page: Page, pr_back: float = 0.2) -> str:
     return "back" if random.random() < pr_back else "forward"
 
 
-class Page(db.Model):
+class Page(db.Model):  # type: ignore
     """Page.
 
     A page's primary function is to present users with a list of questions then allow

@@ -62,5 +62,5 @@ def make_500_page() -> str:
             """
         ),
         back=False,
-        forward=False
+        forward=False,
     ).render()

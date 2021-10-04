@@ -1,10 +1,12 @@
-from datetime import date, datetime
+from datetime import datetime
 from itertools import combinations_with_replacement
 
 import pytest
 
 from hemlock.questions import Input
 from hemlock.questions.input import datetime_input_types
+
+from . import utils
 
 now = datetime.utcnow()
 
@@ -26,6 +28,39 @@ def test_random_input(input_type, pr_no_response):
         assert response is None
     else:
         assert isinstance(response, expected_response_types[input_type])
+
+
+from hemlock import User, Page
+from hemlock.questions import Input, Textarea
+
+import numpy as np
+
+
+@pytest.mark.parametrize(
+    "question_cls, minwords, maxwords, response",
+    product(
+        (Input, Textarea),
+        (None, 2),
+        (None, 2),
+        (None, "one", "two words", "three different words"),
+    ),
+)
+def test_word_count(question_cls, minwords, maxwords, response):
+    def seed():
+        tag_name = "input_tag" if issubclass(question_cls, Input) else "textarea_tag"
+        return [Page(question_cls(**{tag_name: tag})), Page()]
+
+    tag = {"minwords": minwords, "maxwords": maxwords}
+    user = User.make_test_user(seed)
+    user.test_request([response])
+    question = user.get_tree().branch[0].questions[0]
+
+    minwords = minwords or 0
+    maxwords = maxwords or np.inf
+    if response is None or minwords <= len(response.split(" ")) <= maxwords:
+        assert question.is_valid is None
+    else:
+        assert question.is_valid is False
 
 
 class TestResponseConversion:
@@ -78,39 +113,11 @@ class TestResponseConversion:
             assert question.feedback is not None
 
 
-class TestSetIsValid:
-    input_valid_class, input_invalid_class = "is-valid", "is-invalid"
-    feedback_valid_class, feedback_invalid_class = (
-        "valid-feedback",
-        "invalid-feedback",
-    )
-
-    @pytest.mark.parametrize(
-        "is_valid0, is_valid1", combinations_with_replacement((None, True, False), r=2)
-    )
-    def test_set_is_valid(self, is_valid0, is_valid1):
-        question = Input()
-        question.set_is_valid(is_valid0)
-        question.set_is_valid(is_valid1)
-        input_classes = question.input_tag["class"]
-        feedback_classes = question.html_settings["feedback"]["class"]
-
-        if is_valid1 is None:
-            assert self.input_valid_class not in input_classes
-            assert self.input_invalid_class not in input_classes
-            assert self.feedback_valid_class not in feedback_classes
-            assert self.feedback_invalid_class not in feedback_classes
-        elif is_valid1:
-            assert self.input_valid_class in input_classes
-            assert self.input_invalid_class not in input_classes
-            assert self.feedback_valid_class in feedback_classes
-            assert self.feedback_invalid_class not in feedback_classes
-        else:
-            # is_valid1 is False
-            assert self.input_valid_class not in input_classes
-            assert self.input_invalid_class in input_classes
-            assert self.feedback_valid_class not in feedback_classes
-            assert self.feedback_invalid_class in feedback_classes
+@pytest.mark.parametrize(
+    "is_valid0, is_valid1", combinations_with_replacement((None, True, False), r=2)
+)
+def test_set_is_valid(is_valid0, is_valid1):
+    utils.test_set_is_valid(is_valid0, is_valid1, Input, "input")
 
 
 class TestMakeRawTestResponse:

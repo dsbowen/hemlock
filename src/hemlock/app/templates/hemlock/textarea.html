@@ -1,0 +1,34 @@
+{% extends "hemlock/utils/input_group.html" %}
+
+{% macro textarea(add_placeholder) %}
+    {% set default = question.get_default(alt_value="") %}
+
+    {% if add_placeholder is sameas true %}
+        {% set placeholder = " placeholder='placeholder'" | safe %}
+    {% else %}
+        {% set placeholder = "" %}
+    {% endif %}
+
+    <textarea id="{{ question.hash }}" name="{{ question.hash }}" {{ question.html_settings["textarea"].get_attrs() | safe }}{{ placeholder }}>{{ default }}</textarea>
+{% endmacro %}
+
+{% block card_body %}
+    {% include "hemlock/utils/label.html" %}
+    <div class="input-group">
+        {{ input_group_text(question.prepend) }}
+        {% if question.floating_label is not none %}
+            {{ form_floating(textarea(true)) }}
+        {% else %}
+            {{ textarea(false) }}
+        {% endif %}
+        {{ input_group_text(question.append) }}
+        <div id="{{ question.hash }}-characters-parent" style="display:block;">
+            Characters: <span id="{{ question.hash }}-characters"></span>
+        </div>
+        <div id="{{ question.hash }}-words-parent" style="display:block;">
+            Words: <span id="{{ question.hash }}-words"></span>
+        </div>
+        {% include "hemlock/utils/feedback.html" %}
+    </div>
+    {% include "hemlock/utils/form_text.html" %}
+{% endblock %}

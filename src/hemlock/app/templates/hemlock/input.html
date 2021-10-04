@@ -1,10 +1,7 @@
 {% extends "hemlock/utils/input_group.html" %}
 
 {% macro input(add_placeholder) %}
-    {% set default = question.get_default() %}
-    {% if default is none %}
-        {% set default = "" %}
-    {% endif %}
+    {% set default = question.get_default(alt_value="") %}
 
     {% if add_placeholder is sameas true %}
         {% set placeholder = " placeholder='placeholder'" | safe %}
