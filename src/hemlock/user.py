@@ -8,6 +8,7 @@ import warnings
 from collections import defaultdict
 from datetime import datetime
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
@@ -26,6 +27,7 @@ from flask_login import UserMixin, current_user, login_required, login_user
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.types import JSON
+from hemlock.routes import internal_server_error
 from sqlalchemy_mutable.types import MutablePickleType, MutableDictJSONType
 from sqlalchemy_mutable.utils import is_callable
 from werkzeug.wrappers.response import Response
@@ -35,12 +37,16 @@ from .app import bp, db, login_manager
 from .tree import Tree
 from .utils.random import make_hash
 
+if TYPE_CHECKING:  # pragma: no cover
+    from .page import Page
+    from .questions.base import Question
+
 HASH_LENGTH = 90
 
-BranchType = List["hemlock.page.Page"]  # type: ignore
+BranchType = List["Page"]
 SeedFunctionType = Callable[[], BranchType]
 UserType = TypeVar("UserType", bound="User")
-ResponsesType = Union[List[Any], Dict["hemlock.questions.base.Question", Any]]  # type: ignore
+ResponsesType = Union[List[Any], Dict["Question", Any]]
 
 logging.basicConfig(level=logging.INFO)
 
@@ -184,6 +190,7 @@ class User(UserMixin, db.Model):
     end_time = db.Column(db.DateTime)
     params = db.Column(MutablePickleType)
     meta_data = db.Column(MutableDictJSONType)
+    errored = db.Column(db.Boolean)
     _cached_data = db.Column(JSON)
 
     _completed = db.Column(db.Boolean)
@@ -235,7 +242,7 @@ class User(UserMixin, db.Model):
 
         self.hash = make_hash(HASH_LENGTH)
         self.start_time = self.end_time = datetime.utcnow()
-        self.completed = self.failed = False  # type: ignore
+        self.completed = self.failed = self.errored = False  # type: ignore
         self.meta_data = meta_data or {}
         self.trees = [Tree(func) for _, func in self._seed_funcs.values()]
 

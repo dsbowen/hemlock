@@ -10,58 +10,6 @@ from . import utils
 
 now = datetime.utcnow()
 
-from itertools import product
-
-from hemlock.questions.input import random_input
-
-INPUT_TYPES = ["text", "number"] + list(datetime_input_types.keys())
-
-
-@pytest.mark.parametrize("input_type, pr_no_response", product(INPUT_TYPES, (0, 1)))
-def test_random_input(input_type, pr_no_response):
-    expected_response_types = {key: datetime for key in datetime_input_types.keys()}
-    expected_response_types.update({"text": str, "number": (int, float)})
-
-    input = Input(input_tag={"type": input_type})
-    response = random_input(input, pr_no_response=pr_no_response)
-    if pr_no_response == 1:
-        assert response is None
-    else:
-        assert isinstance(response, expected_response_types[input_type])
-
-
-from hemlock import User, Page
-from hemlock.questions import Input, Textarea
-
-import numpy as np
-
-
-@pytest.mark.parametrize(
-    "question_cls, minwords, maxwords, response",
-    product(
-        (Input, Textarea),
-        (None, 2),
-        (None, 2),
-        (None, "one", "two words", "three different words"),
-    ),
-)
-def test_word_count(question_cls, minwords, maxwords, response):
-    def seed():
-        tag_name = "input_tag" if issubclass(question_cls, Input) else "textarea_tag"
-        return [Page(question_cls(**{tag_name: tag})), Page()]
-
-    tag = {"minwords": minwords, "maxwords": maxwords}
-    user = User.make_test_user(seed)
-    user.test_request([response])
-    question = user.get_tree().branch[0].questions[0]
-
-    minwords = minwords or 0
-    maxwords = maxwords or np.inf
-    if response is None or minwords <= len(response.split(" ")) <= maxwords:
-        assert question.is_valid is None
-    else:
-        assert question.is_valid is False
-
 
 class TestResponseConversion:
     # maps input type to (raw response, expected response type)

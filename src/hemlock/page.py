@@ -7,7 +7,17 @@ import os
 import random
 import textwrap
 from random import sample
-from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+)
 
 from IPython import display
 from flask import render_template, request
@@ -23,6 +33,9 @@ from .app import db
 from .data import Data
 from .timer import Timer
 from .utils.random import make_hash
+
+if TYPE_CHECKING:  # pragma: no cover
+    from .questions.base import Question
 
 HASH_LENGTH = 10
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -358,7 +371,7 @@ class Page(db.Model):  # type: ignore
 
     def __init__(
         self,
-        *questions: hemlock.questions.base.Question,  # type: ignore
+        *questions: "Question",
         timer: Union[str, Timer] = None,
         data: List[Data] = None,
         navbar=None,  # TODO: typehint for navbar
@@ -415,9 +428,7 @@ class Page(db.Model):  # type: ignore
 
     def print(
         self,
-        test_responses: Dict[  #  type: ignore
-            "hemlock.questions.base.Question", Any
-        ] = None,
+        test_responses: Dict[Question, Any] = None,
         direction: str = None,
     ) -> str:
         """Print the page.
@@ -498,7 +509,7 @@ class Page(db.Model):  # type: ignore
         """Clear feedback on all of this page's questions."""
         [question.clear_feedback() for question in self.questions]
 
-    def clear_responses(self) -> None:
+    def clear_response(self) -> None:
         """Clear the user's responses (and feedback) to all of this page's questions."""
         [question.clear_response() for question in self.questions]
 

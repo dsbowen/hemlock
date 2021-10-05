@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import textwrap
-from typing import Any, Callable, List, Union, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, List, Union, TypeVar
 
 import matplotlib.pyplot as plt
 from IPython import display
@@ -14,6 +14,9 @@ from werkzeug.wrappers.response import Response
 
 from ._display_navigation import display_navigation
 from .app import db
+
+if TYPE_CHECKING:  # pragma: no cover
+    from .page import Page
 
 TreeType = TypeVar("TreeType", bound="Tree")
 
@@ -76,7 +79,7 @@ class Tree(db.Model):
 
     def __init__(
         self,
-        seed_func: Callable[[], List["hemlock.page.Page"]],  # type: ignore
+        seed_func: Callable[[], Union[Page, List[Page]]],
         url_rule: str = None,
     ):
         self._seed_func_name = seed_func.__name__

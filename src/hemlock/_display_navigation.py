@@ -4,10 +4,14 @@ Displays possible user navigation through a tree.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
 import matplotlib.pyplot as plt
 import networkx as nx
+
+if TYPE_CHECKING:  # pragma: no cover
+    from .tree import Tree
+    from .page import Page
 
 Y_INCREMENT = 0.015
 
@@ -19,7 +23,7 @@ DEFAULT_EDGE_COLOR = "#b6d4fe"
 CURRENT_EDGE_COLOR = "#badbcc"
 TERMINAL_EDGE_COLOR = "#f5c2c7"
 
-EdgeType = Tuple["hemlock.page.Page", "hemlock.page.Page"]  # type: ignore
+EdgeType = Tuple["Page", "Page"]
 # tuple of (list of edges), connection style (str)
 EdgelistType = Tuple[List[EdgeType], str]
 
@@ -28,11 +32,11 @@ class Node:
     """Node of the navigation graph.
 
     Args:
-        page (hemlock.page.Page): Page represented by this node.
+        page (Page): Page represented by this node.
         pos (Tuple[float, float]): Position of the node in graph.
 
     Attributes:
-        page (hemlock.page.Page): Page represented by this node.
+        page (Page): Page represented by this node.
         pos (Tuple[float, float]): Position of the node in graph.
         children (List[Node]): Nodes to which the user can navigate from this node.
         color (str): Color of this node.
@@ -40,9 +44,7 @@ class Node:
         subgraph (Graph): Graph representing this page's branch.
     """
 
-    def __init__(
-        self, page: "hemlock.page.Page", pos: Tuple[float, float]  # type: ignore
-    ):
+    def __init__(self, page: Page, pos: Tuple[float, float]):
         self.page = page
         self.children: List[Node] = []
         self.pos = pos
@@ -105,17 +107,15 @@ class Graph:
     """Graph representing a branch.
 
     Args:
-        branch (hemlock.branch.Branch): Branch represented by this graph.
+        branch (List[Page]): Branch represented by this graph.
         origin_node (Node, optional): Root node for this branch. Defaults to None.
 
     Attributes:
-        branch (hemlock.branch.Branch): Branch represented by this graph.
+        branch (List[Page]): Branch represented by this graph.
         nodes (List[Node]): Nodes representing the pages of this branch.
     """
 
-    def __init__(
-        self, branch: "hemlock.branch.Branch", origin_node: Node = None  # type: ignore
-    ):
+    def __init__(self, branch: List[Page], origin_node: Node = None):
         self.branch = branch
         self.nodes: List[Node] = []
 
@@ -166,14 +166,14 @@ class Graph:
 
 
 def make_digraph(
-    tree: "hemlock.tree.Tree",  # type: ignore
+    tree: Tree,
 ) -> Tuple[
     nx.classes.digraph.DiGraph, Dict[str, Any], Tuple[EdgelistType, EdgelistType]
 ]:
     """Create a networkx digraph based on a tree.
 
     Args:
-        tree (hemlock.tree.Tree): Tree to represent as a graph.
+        tree (Tree): Tree to represent as a graph.
 
     Returns:
         Tuple[
@@ -211,15 +211,12 @@ def make_digraph(
 
 
 def display_navigation(
-    tree: "hemlock.tree.Tree",  # type: ignore
-    ax=None,
-    node_size: int = 1200,
-    **subplots_kwargs: Any
+    tree: Tree, ax=None, node_size: int = 1200, **subplots_kwargs: Any
 ):
     """Display the navigation graph of a given tree.
 
     Args:
-        tree (hemlock.tree.Tree): Tree to display.
+        tree (Tree): Tree to display.
         ax (AxesSubplot): Axis on which to draw the graph.
         node_size (int, optional): Size of the nodes in the graph. Defaults to 1200.
 

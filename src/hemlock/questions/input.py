@@ -3,191 +3,19 @@
 from __future__ import annotations
 
 import copy
-import math
-import random
-from datetime import datetime, timedelta
-from string import digits, ascii_letters
+from datetime import datetime
+
 from typing import Any, Mapping
 
-import numpy as np
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_mutable.html import HTMLAttrType
-from sqlalchemy_mutable.utils import get_object, is_instance
 
 from ..app import db
+from ..functional.test_response import datetime_input_types, random_input
 from .base import Question
 
-CHARACTERS = digits + ascii_letters
 TEXT_INPUT_TYPE = "text"
 NUMBER_INPUT_TYPE = "number"
-
-
-# map input types to (HTML format, datetime format)
-# where HTML format is the raw format from the post request
-# and datetime format is the format expected by python's datetime module
-datetime_input_types = {
-    "date": ("yyyy-mm-dd", "%Y-%m-%d"),
-    "datetime": ("yyyy-mm-ddTHH:MM", "%Y-%m-%dT%H:%M"),
-    "datetime-local": ("yyyy-mm-ddTHH:MM", "%Y-%m-%dT%H:%M"),
-    "month": ("yyyy-mm", "%Y-%m"),
-    "time": ("HH:MM", "%H:%M"),
-}
-
-from typing import Dict, Optional
-
-
-def random_input(input: Question, **kwargs: Any) -> Any:
-    """Generate a random response for an input-like question.
-
-    Args:
-        input (Question): Input question.
-        **kwargs (Any): Passed to :func:`random_text`, :func:`random_number`, or
-            :func:`random_datetime`, depending on the input type.
-
-    Returns:
-        Any: Response.
-    """
-    input_type = input.input_tag.get("type", TEXT_INPUT_TYPE)
-
-    if input_type == NUMBER_INPUT_TYPE:
-        return random_number(input, **kwargs)
-
-    if input_type in datetime_input_types:
-        return random_datetime(input, **kwargs)
-
-    return random_text(input, **kwargs)
-
-
-def random_text(question: Question, pr_no_response: float = 0.2) -> Optional[str]:
-    """Generate a random text response for an input-like question.
-
-    Args:
-        input (Question): Question, usually a :class:`hemlock.questions.Input` or
-            :class:`hemlock.questions.Textarea`.
-        pr_no_response (float, optional): Probability that the user doesn't respond.
-            Defaults to .2.
-
-    Returns:
-        Optional[str]: Response.
-    """
-    # get the input or textarea HTML attributes
-    tag: Dict[Any, Any] = {}
-    if hasattr(question, "input_tag"):
-        tag = question.input_tag
-    elif hasattr(question, "textarea_tag"):
-        tag = question.textarea_tag
-
-    if not tag.get("required") and random.random() < pr_no_response:
-        return None
-
-    length = random.randint(tag.get("minlength", 1), tag.get("maxlength", 20))
-    n_words = random.randint(tag.get("minwords", 1), tag.get("maxwords", 5))
-    n_words = min(n_words, math.ceil(length / 2))
-    n_whitespace_characters = n_words - 1
-    word_length = int((length - n_whitespace_characters) / n_words)
-
-    words = []
-    for _ in range(n_words):
-        words.append("".join(random.choices(CHARACTERS, k=word_length)))
-    response = " ".join(words)
-
-    if len(response) < length:
-        # add additional characters if the response is too short
-        response += "".join(random.choices(CHARACTERS, k=len(response) - length))
-    return response
-
-
-def random_number(input: Question, pr_no_response: float = 0.2) -> Optional[float]:
-    """Generate a random number response for an input-like question.
-
-    Args:
-        input (Question): Input question.
-        pr_no_response (float, optional): Probability that the user doesn't respond.
-            Defaults to .2.
-
-    Returns:
-        Optional[float]: Response.
-    """
-    if not input.input_tag.get("required") and random.random() < pr_no_response:
-        return None
-
-    input_tag = input.input_tag
-    start = input_tag.get("min", -10000)
-    stop = input_tag.get("max", 10000)
-    step = input_tag.get("step", 1)
-    value = np.random.choice(np.arange(start, stop, step))
-    if is_instance(start, int) and is_instance(stop, int) and is_instance(step, int):
-        return int(value)
-    # with a small step, you may encounter floating-point issues.
-    # this rounds the response to the correct number of decimal places.
-    return round(value, math.ceil(-math.log10(step)))
-
-
-def random_datetime(input: Question, pr_no_response: float = 0.2) -> Optional[datetime]:
-    """Generate a random datetime response for an input-like question.
-
-    Args:
-        input (Question): Input question.
-        pr_no_response (float, optional): Probability that the user doesn't respond.
-            Defaults to .2.
-
-    Returns:
-        Optional[datetime]: Response.
-    """
-    if not input.input_tag.get("required") and random.random() < pr_no_response:
-        return None
-
-    def get_datetime(key):
-        raw_value = input_tag.get(key)
-        if raw_value is None:
-            delta = timedelta(weeks=100 * 52)  # 100 years
-            if key == "min":
-                return datetime.utcnow() - delta
-            return datetime.utcnow() + delta
-        return datetime.strptime(raw_value, datetime_format)
-
-    input_tag = input.input_tag
-    input_type = input_tag["type"]
-    _, datetime_format = datetime_input_types[input_type]
-    start, stop = get_datetime("min"), get_datetime("max")
-    return start + timedelta(seconds=np.random.uniform((stop - start).total_seconds()))
-
-
-import re
-from typing import Tuple
-
-
-def word_count(
-    question: Question, minwords: int = None, maxwords: int = None
-) -> Optional[Tuple[bool, str]]:
-    """Validate that the number of words in the response.
-
-    Args:
-        question (Question): Question to validate.
-        minwords (int, optional): Minimum number of words. Defaults to None.
-        maxwords (int, optional): Maximum number of words. Defaults to None.
-
-    Returns:
-        Optional[Tuple[bool, str]]: None if the word count is valid, tuple of (False,
-            feedback) if the word count is invalid.
-    """
-    if minwords is None:
-        minwords = 0
-    if maxwords is None:
-        maxwords = np.inf  # type: ignore
-
-    response = get_object(question.response)
-    if response is None or minwords <= len(re.findall(r"\w+", response)) <= maxwords:  # type: ignore
-        return None
-
-    if minwords == 0:
-        feedback = f"Please shorten your response to {maxwords} words."
-    elif maxwords == np.inf:
-        feedback = f"Please write at least {minwords} words."
-    else:
-        # both minwords and maxwords are defined
-        feedback = f"Please write between {minwords} and {maxwords} words."
-    return False, feedback
 
 
 class Input(Question):
@@ -287,10 +115,8 @@ class Input(Question):
     def run_validate_functions(self) -> bool:
         """See :meth:`Question.run_validate_functions`.
 
-        Additionally, this method validates
-
-        1. That the user's response matches the input type, and
-        2. That the user's response has the correct word count.
+        Additionally, this method validates that the user's response matches the input
+        type.
         """
         input_type = self.input_tag.get("type", TEXT_INPUT_TYPE)
 
@@ -308,17 +134,6 @@ class Input(Question):
 
             self.set_is_valid(False)
             return False
-
-        # validate the word count
-        if input_type == TEXT_INPUT_TYPE:
-            return_value = word_count(
-                self, self.input_tag.get("minwords"), self.input_tag.get("maxwords")
-            )
-            if return_value is not None:
-                is_valid, feedback = return_value
-                self.set_is_valid(is_valid)
-                self.feedback = feedback
-                return is_valid
 
         return super().run_validate_functions()
 

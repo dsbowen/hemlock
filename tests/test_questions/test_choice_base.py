@@ -6,8 +6,6 @@ from hemlock import User, Page, create_test_app
 from hemlock.questions import Check
 from hemlock.questions.choice_base import ChoiceQuestion
 
-from hemlock.questions.choice_base import random_choices
-
 
 def make_question(default=None, response=None, multiple=False):
     question = ChoiceQuestion(
@@ -18,29 +16,6 @@ def make_question(default=None, response=None, multiple=False):
     )
     question.raw_response = response
     return question
-
-
-from itertools import product
-
-
-@pytest.mark.parametrize("multiple, pr_no_response", product((True, False), (0, 1)))
-def test_random_choices(multiple, pr_no_response):
-    choices = random_choices(
-        make_question(multiple=multiple), pr_no_response=pr_no_response
-    )
-    choice_values = (0, "value 1", 2)
-    if multiple:
-        if pr_no_response == 1:
-            assert choices == []
-        else:
-            assert isinstance(choices, list)
-            for choice in choices:
-                assert choice in choice_values
-    else:
-        if pr_no_response == 1:
-            assert choices is None
-        else:
-            assert choices in choice_values
 
 
 class TestResponse:
@@ -152,7 +127,7 @@ class TestRecordResponseAndData:
     def test_response_is_none(self):
         response = None
         question = self.make_question(response)
-        assert question.raw_response == []
+        assert question.raw_response == set()
         assert question.response is None
         assert question.data is None
         self.assert_correct_packed_data(question, {self.variable: [response]})
@@ -160,15 +135,15 @@ class TestRecordResponseAndData:
     def test_single_response(self):
         response = 0
         question = self.make_question(response)
-        assert question.raw_response == [0]
+        assert question.raw_response == {0}
         assert question.response == 0
         assert question.data == 0
         self.assert_correct_packed_data(question, {self.variable: [response]})
 
     def test_multiple_response_is_none(self):
         question = self.make_question(None, multiple=True)
-        assert question.raw_response == []
-        assert question.response == []
+        assert question.raw_response == set()
+        assert question.response == set()
         assert question.data == {0: 0, "value 1": 0, 2: 0}
         self.assert_correct_packed_data(
             question,
@@ -180,9 +155,9 @@ class TestRecordResponseAndData:
         )
 
     def test_multiple_response(self):
-        question = self.make_question((0, "value 1"), multiple=True)
-        assert question.raw_response == [0, "value 1"]
-        assert question.response == [0, "value 1"]
+        question = self.make_question({0, "value 1"}, multiple=True)
+        assert question.raw_response == {0, "value 1"}
+        assert question.response == {0, "value 1"}
         assert question.data == {0: 1, "value 1": 1, 2: 0}
         self.assert_correct_packed_data(
             question,

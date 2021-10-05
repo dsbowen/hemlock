@@ -85,4 +85,6 @@ def restart() -> Union[str, Response]:
 
 @bp.errorhandler(500)
 def internal_server_error(error):
+    current_user.errored = True
+    db.session.commit()
     return current_app.settings["internal_server_error_page"], 500

@@ -1,5 +1,10 @@
+"""Application utilities.
+"""
+from __future__ import annotations
+
 import os
 from collections import defaultdict
+from typing import Any, Dict
 
 from flask import Blueprint, Flask, current_app
 from flask_login import LoginManager
@@ -63,6 +68,7 @@ settings = {
 
 @bp.before_app_first_request
 def init_app():
+    """Create database and cache static pages before app first request."""
     db.create_all()
     static_pages = [
         "loading_page",
@@ -76,7 +82,15 @@ def init_app():
             current_app.settings[key] = page()
 
 
-def create_app(settings=settings):
+def create_app(settings: Dict[Any, Any] = settings) -> Flask:
+    """Create application.
+
+    Args:
+        settings (Dict[Any, Any], optional): Applciation settings. Defaults to settings.
+
+    Returns:
+        Flask: Application.
+    """
     app = Flask(
         __name__,
         static_folder=settings["static_folder"],
@@ -84,8 +98,8 @@ def create_app(settings=settings):
     )
 
     app.config.update(settings["config"])
-    app.settings = settings
-    app.user_metadata = defaultdict(list)
+    app.settings = settings  # type: ignore
+    app.user_metadata = defaultdict(list)  # type: ignore
     app.register_blueprint(bp)
 
     # initialize extensions
@@ -96,7 +110,19 @@ def create_app(settings=settings):
     return app
 
 
-def create_test_app(use_in_memory_database=True, settings=settings):
+def create_test_app(
+    use_in_memory_database: bool = True, settings: Dict[Any, Any] = settings
+) -> Flask:
+    """Create a test application.
+
+    Args:
+        use_in_memory_database (bool, optional): Use an in-memory database for testing.
+            Defaults to True.
+        settings (Dict[Any, Any], optional): Application settings. Defaults to settings.
+
+    Returns:
+        Flask: Test application.
+    """
     if use_in_memory_database:
         settings["config"]["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
 

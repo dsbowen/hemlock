@@ -5,12 +5,14 @@ from __future__ import annotations
 import copy
 from typing import Any, Mapping
 
+import numpy as np
 from flask import render_template
 from sqlalchemy_mutable.html import HTMLAttrType
 
 from ..app import db
+from ..functional.test_response import random_text
+from ..functional.validate import response_in_range
 from .base import Question
-from .input import random_text, word_count
 
 
 class Textarea(Question):
@@ -74,13 +76,30 @@ class Textarea(Question):
         Additionally, this method validates that the user's response has the correct
         word count.
         """
-        return_value = word_count(
-            self, self.textarea_tag.get("minwords"), self.textarea_tag.get("maxwords")
-        )
-        if return_value is not None:
-            is_valid, feedback = return_value
-            self.set_is_valid(is_valid)
-            self.feedback = feedback
-            return is_valid
+        if self.response is not None:
+            minwords = self.textarea_tag.get("minwords")
+            if minwords is None:
+                minwords = 0
+
+            maxwords = self.textarea_tag.get("maxwords")
+            if maxwords is None:
+                maxwords = np.inf
+                
+            if (
+                response_in_range(self, minwords, maxwords, how="word count")
+                is not None
+            ):
+                if minwords == 0:
+                    self.feedback = f"Please shorten your response to {maxwords} words."
+                elif maxwords == np.inf:
+                    self.feedback = f"Please write at least {minwords} words."
+                else:
+                    # both minwords and maxwords are defined
+                    self.feedback = (
+                        f"Please write between {minwords} and {maxwords} words."
+                    )
+
+                self.set_is_valid(False)
+                return False
 
         return super().run_validate_functions()

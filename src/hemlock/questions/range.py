@@ -11,9 +11,8 @@ from sqlalchemy_mutable.html import HTMLAttrType
 from sqlalchemy_mutable.utils import partial
 
 from ..app import db
+from ..functional.test_response import random_number
 from .base import Question
-
-from .input import random_number
 
 
 class Range(Question):

@@ -208,7 +208,7 @@ def test_clear_feedback():
         assert question.feedback is None
 
 
-def test_clear_responses():
+def test_clear_response():
     page = Page(*[Question() for _ in range(3)])
 
     question = page.questions[0]
@@ -222,7 +222,7 @@ def test_clear_responses():
 
     page.questions[2].raw_response = "Raw response."
 
-    page.clear_responses()
+    page.clear_response()
     for question in page.questions:
         assert question.raw_response is None
         assert question.is_valid is None

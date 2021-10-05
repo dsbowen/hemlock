@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from collections import defaultdict
 from datetime import datetime
-from typing import Any, Mapping
+from typing import TYPE_CHECKING, Any, List, Mapping
+
+if TYPE_CHECKING:
+    from .page import Page
 
 from sqlalchemy_mutable.utils import is_instance
 
@@ -46,7 +49,7 @@ class DataFrame(defaultdict):
     def __setitem__(self, key, value):
         return super().__setitem__(key, Variable(value))
 
-    def add_branch(self, branch: List["hemlock.page.Page"]) -> None:  # type: ignore
+    def add_branch(self, branch: List["Page"]) -> None:
         """Add data from a given branch to the data frame.
 
         Args:
@@ -55,7 +58,7 @@ class DataFrame(defaultdict):
         for page in branch:
             self.add_page(page)
 
-    def add_page(self, page: "hemlock.page.Page") -> None:  # type: ignore
+    def add_page(self, page: "Page") -> None:
         """Add data from a given page to the data frame.
 
         Args:

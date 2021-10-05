@@ -146,7 +146,7 @@ class Question(Data):
 
     # Additional attributes
     default = db.Column(MutableJSONType)
-    raw_response = db.Column(MutableJSONType)
+    raw_response = db.Column(MutablePickleType)
     params = db.Column(MutablePickleType)
 
     @hybrid_property
