@@ -27,7 +27,6 @@ from flask_login import UserMixin, current_user, login_required, login_user
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.types import JSON
-from hemlock.routes import internal_server_error
 from sqlalchemy_mutable.types import MutablePickleType, MutableDictJSONType
 from sqlalchemy_mutable.utils import is_callable
 from werkzeug.wrappers.response import Response

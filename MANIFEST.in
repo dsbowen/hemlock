@@ -1,5 +1,7 @@
 include src/hemlock/*.html
 include src/hemlock/app/templates/hemlock/*.html
 include src/hemlock/app/templates/hemlock/*.js
+include src/hemlock/app/templates/hemlock/statics/*.html
+include src/hemlock/app/templates/hemlock/statics/*.js
 include src/hemlock/app/templates/hemlock/utils/*.html
 include src/hemlock/app/templates/hemlock/utils/*.js

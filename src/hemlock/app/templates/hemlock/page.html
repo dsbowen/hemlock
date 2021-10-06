@@ -68,8 +68,13 @@
         </div>
 
         {% block body %}
-        {% if navbar is not none %}
-        {{ navbar | safe }}
+        {% if for_notebook_display is not defined or for_notebook_display is sameas false %}
+            {% block navbar %}
+                {% if page.navbar is not none %}
+                    {% set navbar = page.navbar %}
+                    {% include "hemlock/utils/navbar.html" %}
+                {% endif %}
+            {% endblock %}
         {% endif %}
 
         <div {{ page.html_settings["div"].get_attrs() | safe }}>

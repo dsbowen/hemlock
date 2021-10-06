@@ -1,0 +1,52 @@
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light shadow">
+    <div class="container-fluid">
+        {% if navbar["brand"]["raw_html"] == "" %}
+            <a class="navbar-brand" href="{{ navbar['brand']['href'] }}">
+                {{ navbar["brand"]["label"] | safe }}
+            </a>
+        {% else %}
+            {{ navbar["brand"]["raw_html"] | safe }}
+        {% endif %}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#{{ navbar['hash'] }}">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="{{ navbar['hash'] }}">
+            <div class="navbar-nav">
+                {% for navitem in navbar["navitems"] %}
+                    {% if navitem["dropdown_items"] | length %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                {{ navitem["label"] | safe }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% for item in navitem["dropdown_items"] %}
+                                    {% if item["href"] == url_for(request.endpoint) %}
+                                        {% set active = " active" %}
+                                    {% else %}
+                                        {% set active = "" %}
+                                    {% endif %}
+                                    <li>
+                                        <a class="dropdown-item{{ active }} {{ item['disabled'] }}" href="{{ item['href'] }}">
+                                            {{ item["label"] | safe }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% else %}
+                        {% if navitem["href"] == url_for(request.endpoint) %}
+                            {% set active = " active" %}
+                        {% else %}
+                            {% set active = "" %}
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link{{ active }} {{ navitem['disabled'] }}" href="{{ navitem['href'] }}">
+                                {{ navitem["label"] | safe }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</nav>

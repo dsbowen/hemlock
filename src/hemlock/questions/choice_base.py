@@ -140,8 +140,9 @@ class ChoiceQuestion(Question):
 
         The raw response is a set of choice values.
         """
+        # Note: jinja template loop indices start at 1, so we need to subtract 1 for 0 indexing
         self.raw_response = {
-            self.choices[int(i)]["value"] for i in request.form.getlist(self.hash)
+            self.choices[int(i) - 1]["value"] for i in request.form.getlist(self.hash)
         }
 
     def record_data(self) -> None:
@@ -184,8 +185,9 @@ class ChoiceQuestion(Question):
         if not is_instance(response, (list, set)):
             response = {response}
 
+        # Note: jinja template loop indices start at 1, so we need to add 1 for 1 indexing
         return [
-            str(i)
+            str(i + 1)
             for i, choice in enumerate(self.choices)
             if choice["value"] in response
         ]

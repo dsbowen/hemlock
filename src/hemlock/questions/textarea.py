@@ -84,7 +84,7 @@ class Textarea(Question):
             maxwords = self.textarea_tag.get("maxwords")
             if maxwords is None:
                 maxwords = np.inf
-                
+
             if (
                 response_in_range(self, minwords, maxwords, how="word count")
                 is not None

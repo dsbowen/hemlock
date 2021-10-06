@@ -37,9 +37,7 @@ Mutable.set_session(db.session)
 
 # create default settings
 password = os.environ.get("PASSWORD", "")
-sqlalchemy_database_uri = os.environ.get(
-    "DATABASE_URL", f"sqlite:///{os.path.join(os.getcwd(), 'data.db')}"
-)
+sqlalchemy_database_uri = os.environ.get("DATABASE_URL", "sqlite://")
 settings = {
     "loading_page": make_loading_page,
     "restart_page": make_restart_page,
@@ -110,24 +108,17 @@ def create_app(settings: Dict[Any, Any] = settings) -> Flask:
     return app
 
 
-def create_test_app(
-    use_in_memory_database: bool = True, settings: Dict[Any, Any] = settings
-) -> Flask:
+def create_test_app(settings: Dict[Any, Any] = settings) -> Flask:
     """Create a test application.
 
     Args:
-        use_in_memory_database (bool, optional): Use an in-memory database for testing.
-            Defaults to True.
         settings (Dict[Any, Any], optional): Application settings. Defaults to settings.
 
     Returns:
         Flask: Test application.
     """
-    if use_in_memory_database:
-        settings["config"]["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
-
-    app = create_app()
+    app = create_app(settings)
     app.app_context().push()
-    db.create_all()
+    init_app()
 
     return app

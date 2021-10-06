@@ -40,7 +40,12 @@ def test_random_text(question_cls):
     create_test_app()
     minlength, maxlength = 25, 60
     minwords, maxwords = 6, 10
-    tag = {"minlength": minlength, "maxlength": maxlength, "minwords": minwords, "maxwords": maxwords}
+    tag = {
+        "minlength": minlength,
+        "maxlength": maxlength,
+        "minwords": minwords,
+        "maxwords": maxwords,
+    }
     if issubclass(question_cls, Input):
         question = Input(input_tag=tag)
     else:
@@ -52,7 +57,7 @@ def test_random_text(question_cls):
 
 def test_random_number():
     # test that random number can handle non-integer responses
-    input = Input(input_tag={"type": "number", "step": .01})
+    input = Input(input_tag={"type": "number", "step": 0.01})
     response = random_number(input, pr_no_response=0)
     # make sure the response has no more than 2 decimals
     assert -Decimal(str(response)).as_tuple().exponent <= 2

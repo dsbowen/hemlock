@@ -22,8 +22,6 @@ $(document).ready(function(){
         var object = $("#" + object_id);
         var parent = $("#" + object_id + "-parent");
         var valid_count = true;
-        var valid_feedback_class = "valid-feedback";
-        var invalid_feedback_class = "invalid-feedback";
         var text = count.toString();
     
         // add feedback based on maximum allowable count
@@ -45,13 +43,12 @@ $(document).ready(function(){
         }
 
         object.text(text);
+        var invalid_class = "text-danger";
         if (valid_count){
-            parent.removeClass(invalid_feedback_class);
-            parent.addClass(valid_feedback_class);
+            parent.removeClass(invalid_class);
         }
         else {
-            parent.removeClass(valid_feedback_class);
-            parent.addClass(invalid_feedback_class);
+            parent.addClass(invalid_class);
         }
     }
 

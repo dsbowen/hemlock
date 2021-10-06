@@ -22,10 +22,10 @@
             {{ textarea(false) }}
         {% endif %}
         {{ input_group_text(question.append) }}
-        <div id="{{ question.hash }}-characters-parent" style="display:block;">
+        <div id="{{ question.hash }}-characters-parent" class="form-text w-100" style="display:block;">
             Characters: <span id="{{ question.hash }}-characters"></span>
         </div>
-        <div id="{{ question.hash }}-words-parent" style="display:block;">
+        <div id="{{ question.hash }}-words-parent" class="form-text w-100" style="display:block;">
             Words: <span id="{{ question.hash }}-words"></span>
         </div>
         {% include "hemlock/utils/feedback.html" %}

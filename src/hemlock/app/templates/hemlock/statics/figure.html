@@ -1,0 +1,8 @@
+<figure class="figure w-100 text-{{ figure_align }}">
+    <img src="{{ src }}" class="figure-img img-fluid rounded" alt="{{ alt }}">
+    {% if caption is not none %}
+        <figcaption class="figure-caption text-{{ caption_align }}">
+            {{ caption }}
+        </figcaption>
+    {% endif %}
+</figure>

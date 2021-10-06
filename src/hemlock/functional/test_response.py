@@ -35,6 +35,7 @@ datetime_input_types = {
     "time": ("HH:MM", "%H:%M"),
 }
 
+
 @test_response.register
 def random_input(input: Question, **kwargs: Any) -> Any:
     """Generate a random response for an input-like question.
@@ -56,6 +57,7 @@ def random_input(input: Question, **kwargs: Any) -> Any:
         return random_datetime(input, **kwargs)
 
     return random_text(input, **kwargs)
+
 
 @test_response.register
 def random_text(question: "Question", pr_no_response: float = 0.2) -> Optional[str]:
@@ -121,13 +123,15 @@ def random_number(input: "Question", pr_no_response: float = 0.2) -> Optional[fl
         return int(value)
     # with a small step, you may encounter floating-point issues.
     # this rounds the response to the correct number of decimal places.
-    # TODO: This isn't exactly correct. What about cases where min=1.01 and step=1? 
+    # TODO: This isn't exactly correct. What about cases where min=1.01 and step=1?
     # Flagging for followup.
     return round(value, math.ceil(-math.log10(step)))
 
 
 @test_response.register
-def random_datetime(input: "Question", pr_no_response: float = 0.2) -> Optional[datetime]:
+def random_datetime(
+    input: "Question", pr_no_response: float = 0.2
+) -> Optional[datetime]:
     """Generate a random datetime response for an input-like question.
 
     Args:

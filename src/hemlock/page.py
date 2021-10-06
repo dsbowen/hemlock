@@ -6,12 +6,12 @@ import copy
 import os
 import random
 import textwrap
-from random import sample
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
     Dict,
+    Iterable,
     List,
     Mapping,
     Optional,
@@ -25,16 +25,21 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import validates
 from sqlalchemy_mutable.html import HTMLSettingType
-from sqlalchemy_mutable.types import HTMLSettingsType, MutablePickleType
+from sqlalchemy_mutable.types import (
+    HTMLSettingsType,
+    MutablePickleType,
+    MutableDictJSONType,
+)
 from sqlalchemy_mutable.utils import is_instance
 
 from ._custom_types import MutableListPickleType
+from ._navbar import Navbar, RawBrand, RawNavitem, convert_brand, convert_navitem
 from .app import db
 from .data import Data
 from .timer import Timer
 from .utils.random import make_hash
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from .questions.base import Question
 
 HASH_LENGTH = 10
@@ -89,7 +94,7 @@ class Page(db.Model):  # type: ignore
         data (List[Union[Data, Tuple]], optional): Additional data items. Tuple inputs
             are used as arguments to the :class:`hemlock.data.Data` constructor.
             Defaults to None.
-        navbar ([type], optional): Navigation bar. Defaults to None.
+        navbar (Navbar, optional): Navigation bar. Defaults to None.
         back (Union[bool, str], optional): If a bool, indicates that the user can go
             back. If a string, this is the text of the back button. Defaults to None.
         prev_page (Page, optional): The page to which the back button takes the user.
@@ -131,7 +136,7 @@ class Page(db.Model):  # type: ignore
         questions (List[Question]): Questions for the user.
         timer (Timer): Records the amount of time the user spent on this page.
         data (List[Data], optional): Additional data items.
-        navbar ([type], optional): Navigation bar.
+        navbar (Navbar, optional): Navigation bar.
         back (Optional[str]): The text of the back button. If None, the user cannot go
             back from this page.
         prev_page (Page): The page to which the back button takes the user.
@@ -277,11 +282,25 @@ class Page(db.Model):  # type: ignore
 
     # HTML attributes
     hash = db.Column(db.String(HASH_LENGTH))
-    navbar = db.Column(db.Text)
+    navbar = db.Column(MutableDictJSONType)
     back = db.Column(db.String)
     forward = db.Column(db.String)
     template = db.Column(db.String)
     html_settings = db.Column(HTMLSettingsType)
+
+    @validates("navbar")
+    def _validate_navbar(
+        self, key: str, value: Optional[Tuple[RawBrand, Iterable[RawNavitem]]]
+    ) -> Optional[Navbar]:
+        if value is None:
+            return None
+
+        brand, navitems = value
+        return {
+            "hash": make_hash(),
+            "brand": convert_brand(brand),
+            "navitems": [convert_navitem(item) for item in navitems],
+        }
 
     @validates("back", "forward")
     def _validate_direction(
