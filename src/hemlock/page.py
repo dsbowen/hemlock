@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import copy
 import os
-import random
 import textwrap
 from typing import (
     TYPE_CHECKING,
@@ -36,6 +35,7 @@ from ._custom_types import MutableListPickleType
 from ._navbar import Navbar, RawBrand, RawNavitem, convert_brand, convert_navitem
 from .app import db
 from .data import Data
+from .functional.test_response import random_direction
 from .timer import Timer
 from .utils.random import make_hash
 
@@ -48,36 +48,6 @@ DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 CompileType = Callable[["Page"], None]
 SubmitType = Callable[["Page"], None]
 NavigateType = Callable[["Page"], List["Page"]]
-
-
-def random_direction(page: Page, pr_back: float = 0.2) -> str:
-    """Chooses a random direction for navigation.
-
-    Args:
-        page (Page): Page to navigate from.
-        pr_back (float, optional): Probability of going back if both forward and back
-            navigation are available. This parameter is ignored if it is only possible
-            to navigate in one direction. Defaults to 0.2.
-
-    Raises:
-        ValueError: If it is impossible to navigate from this page.
-
-    Returns:
-        str: "forward" or "back"
-    """
-    forward = bool(page.forward) and not page.is_last_page
-    back = bool(page.back) and not page.is_first_page
-
-    if not (forward or back):
-        raise ValueError(f"Navigation is not possible from page {page}.")
-
-    if forward and not back:
-        return "forward"
-
-    if back and not forward:
-        return "back"
-
-    return "back" if random.random() < pr_back else "forward"
 
 
 class Page(db.Model):  # type: ignore

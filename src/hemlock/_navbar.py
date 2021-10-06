@@ -20,7 +20,7 @@ def convert_brand(brand: RawBrand) -> Brand:
     """Convert navbar brand.
 
     Args:
-        brand (RawBrand): Brand. If a string, this is the brand label. If a tuple, the 
+        brand (RawBrand): Brand. If a string, this is the brand label. If a tuple, the
             brand will be interpreted as a (label, href) tuple.
 
     Raises:
@@ -46,12 +46,12 @@ def convert_navitem(item: RawNavitem) -> Navitem:
     """Convert a navitem.
 
     Args:
-        item (RawNavitem): Navitem. If a string, this is the navitem label. If a tuple, 
-            the navitem will either be interpreted as a (label, href) tuple or a (label, 
+        item (RawNavitem): Navitem. If a string, this is the navitem label. If a tuple,
+            the navitem will either be interpreted as a (label, href) tuple or a (label,
             dropdown items) tuple.
 
     Raises:
-        ValueError: If a tuple, the second element must be an href (str) or dropdown 
+        ValueError: If a tuple, the second element must be an href (str) or dropdown
             items (iterable).
         ValueError: Navitem must be a string, tuple, or mapping.
 
@@ -90,7 +90,7 @@ def convert_dropdown_item(item: RawDropdownItem) -> DropdownItem:
     """Convert a dropdown item.
 
     Args:
-        item (RawDropdownItem): Dropdown item. If a string, this is the item label. If a 
+        item (RawDropdownItem): Dropdown item. If a string, this is the item label. If a
             tuple, this is interpreted as a (label, href) tuple.
 
     Raises:

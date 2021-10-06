@@ -98,9 +98,9 @@ def test_in_page():
                         [
                             "Dropdown link 0",
                             ("Dropdown link 1", "https://dropdown-link1.html"),
-                            {"label": "Dropdown link 2", "disabled": True}
-                        ]
-                    )
-                ]
+                            {"label": "Dropdown link 2", "disabled": True},
+                        ],
+                    ),
+                ],
             )
         ).render()

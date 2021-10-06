@@ -53,7 +53,7 @@ def make_figure(
 def pandas_to_html(dataframe: pd.DataFrame, *args: Any, **kwargs: Any) -> str:
     """Convert pandas dataframe to HTML.
 
-    While pandas dataframes have a built-in ``to_html`` method, it doesn't take 
+    While pandas dataframes have a built-in ``to_html`` method, it doesn't take
     advantage of the additional stylings provided by hemlock pages.
 
     Args:
@@ -67,7 +67,7 @@ def pandas_to_html(dataframe: pd.DataFrame, *args: Any, **kwargs: Any) -> str:
     default_kwargs = {
         "classes": ["table", "table-striped", "table-hover"],
         "border": 0,
-        "justify": "match-parent"
+        "justify": "match-parent",
     }
     default_kwargs.update(kwargs)
     return dataframe.to_html(*args, **default_kwargs)

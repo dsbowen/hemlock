@@ -41,6 +41,7 @@ def make_screenout_page() -> str:
             Thank you for your continuing interest in our research!
             """
         ),
+        navbar=None,
         back=False,
         forward=False,
     ).render()
@@ -61,6 +62,7 @@ def make_500_page() -> str:
             work to resolve this issue.
             """
         ),
+        navbar=None,
         back=False,
         forward=False,
     ).render()

@@ -41,8 +41,7 @@ sqlalchemy_database_uri = os.environ.get("DATABASE_URL", "sqlite://")
 settings = {
     "loading_page": make_loading_page,
     "restart_page": make_restart_page,
-    "allow_users_to_restart": os.environ.get("ALLOW_USERS_TO_RESTART", "true").lower()
-    == "true",
+    "allow_users_to_restart": True,
     "screenout_page": make_screenout_page,
     "screenout_records": {},
     "block_duplicate_keys": [],
@@ -55,7 +54,7 @@ settings = {
         "SECRET_KEY": os.environ.get("SECRET_KEY", "secret"),
         "SQLALCHEMY_DATABASE_URI": sqlalchemy_database_uri,
         "SQLALCHEMY_TRACK_MODIFICATIONS": False,
-        "SQLALCHEMY_ENGINE_OPTIONS": dict(
+        "SQLALCHEMY_ENGINE_OPTIONS": (
             {}
             if sqlalchemy_database_uri.startswith("sqlite")
             else dict(pool_size=1, pool_recycle=10, max_overflow=0)
@@ -65,7 +64,7 @@ settings = {
 
 
 @bp.before_app_first_request
-def init_app():
+def init_app() -> None:
     """Create database and cache static pages before app first request."""
     db.create_all()
     static_pages = [

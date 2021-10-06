@@ -5,9 +5,10 @@ from itertools import product
 
 import pytest
 
-from hemlock import create_test_app
+from hemlock import User, Page, create_test_app
 from hemlock.functional.test_response import (
     datetime_input_types,
+    random_direction,
     random_input,
     random_text,
     random_number,
@@ -18,6 +19,38 @@ from hemlock.questions import Input, Textarea
 from hemlock.questions.choice_base import ChoiceQuestion
 
 INPUT_TYPES = ["text", "number", "range"] + list(datetime_input_types.keys())
+
+
+class TestRandomDirection:
+    def test_no_direction(self):
+        with pytest.raises(ValueError):
+            random_direction(Page(forward=False, back=False))
+
+    def test_forward_only(self):
+        # even with back probability == 1, go forward if back is not an option
+        assert random_direction(Page(), pr_back=1) == "forward"
+
+    def test_back_only(self):
+        # even with back probability == 0, go back if forward is not an option
+        assert random_direction(Page(forward=False, back=True), pr_back=0) == "back"
+
+    def test_any_direction(self):
+        def seed():
+            return [Page(back=True), Page(back=True), Page(back=True)]
+
+        create_test_app()
+        user = User.make_test_user(seed)
+        page = user.get_tree().page
+        assert random_direction(page, pr_back=0) == "forward"
+        assert random_direction(page, pr_back=1) == "forward"
+
+        page = user.test_request().page
+        assert random_direction(page, pr_back=0) == "forward"
+        assert random_direction(page, pr_back=1) == "back"
+
+        page = user.test_request(direction="forward").page
+        assert random_direction(page, pr_back=0) == "back"
+        assert random_direction(page, pr_back=1) == "back"
 
 
 @pytest.mark.parametrize("input_type, pr_no_response", product(INPUT_TYPES, (0, 1)))
