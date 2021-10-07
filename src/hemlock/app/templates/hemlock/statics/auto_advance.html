@@ -1,0 +1,37 @@
+<script id="auto-advance">
+    $(document).ready(function(){
+        function getMilliseconds(){
+            // get the number of milliseconds since the page was compiled
+            var curr_time = new Date();
+            return {{ after }} - (curr_time.getTime() - start_time.getTime() + localOffset);
+        }
+
+        function formatMilliseconds(milliseconds){
+            // format milliseconds in HH:MM:SS (or H:MM:SS)
+            var hours = Math.floor((milliseconds / (60 * 60 * 1000)) % 24);
+            var minutes = Math.floor((milliseconds / (60 * 1000)) % 60);
+            var minutes = (minutes < 10) ? "0" + minutes : minutes;
+            var seconds = Math.floor((milliseconds / 1000) % 60);
+            var seconds = (seconds < 10) ? "0" + seconds : seconds;
+            return hours + ":" + minutes + ":" + seconds
+        }
+        
+        const localOffset = new Date().getTimezoneOffset() * 60 * 1000;
+        const start_time = new Date("{{ start_time }}");
+        setTimeout(function(){
+            $("#forward-button").click();
+        }, getMilliseconds());
+
+        {% if clock_id is not none %}
+            // update the clock text at regular intervals
+            var clock = $("#{{ clock_id }}");
+            clock.text(formatMilliseconds(getMilliseconds()));
+            setInterval(function(){
+                milliseconds = getMilliseconds();
+                if (milliseconds > 0){
+                    clock.text(formatMilliseconds(milliseconds));
+                }
+            }, {{ clock_update_interval }})
+        {% endif %}
+    })
+</script>
