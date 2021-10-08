@@ -6,3 +6,7 @@ pydata-sphinx-theme
 pylint
 sphinx
 tox
+
+eventlet
+gunicorn
+psycopg2
