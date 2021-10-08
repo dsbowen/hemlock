@@ -233,16 +233,16 @@ class User(UserMixin, db.Model):
             self._cached_data = self.get_data(to_pandas=False, use_cached_data=False)
 
     def __init__(self, meta_data: Mapping = None):
+        self.hash = make_hash(HASH_LENGTH)
+        self.start_time = self.end_time = datetime.utcnow()
+        self.completed = self.failed = self.errored = False  # type: ignore
+        self.meta_data = meta_data or {}
+
         # need to login user before initializing trees so that the current_user object
         # will be available in the seed functions
         db.session.add(self)
         db.session.commit()
         login_user(self)
-
-        self.hash = make_hash(HASH_LENGTH)
-        self.start_time = self.end_time = datetime.utcnow()
-        self.completed = self.failed = self.errored = False  # type: ignore
-        self.meta_data = meta_data or {}
         self.trees = [Tree(func) for _, func in self._seed_funcs.values()]
 
     def __repr__(self):
@@ -276,6 +276,8 @@ class User(UserMixin, db.Model):
             "id": self.id,
             "completed": self.completed,
             "failed": self.failed,
+            "errored": self.errored,
+            "in_progress": not (self.completed or self.failed or self.errored),
             "start_time": self.start_time,
             "end_time": self.end_time,
             "total_seconds": (self.end_time - self.start_time).total_seconds(),

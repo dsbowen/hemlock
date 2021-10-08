@@ -1,7 +1,7 @@
 import pytest
 
 from hemlock import Tree, Page
-from hemlock.app import create_test_app
+from hemlock.app import create_test_app, static_pages
 
 
 def seed():
@@ -100,7 +100,7 @@ class TestProcessRequest:
         tree.request_in_progress = True
         with app.test_request_context():
             rv = tree.process_request()
-        assert rv == app.settings["loading_page"]
+        assert rv == static_pages["loading_page"]
 
     def test_refresh(self):
         # should return the current page on refresh

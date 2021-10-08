@@ -5,6 +5,7 @@ from hemlock.app import create_test_app, settings
 from hemlock.questions import Label
 
 STUDY_RULE = "/test_route_url_rule"
+ERROR_RULE = "/test_error_url_rule"
 SCREENOUT_RULE = "/screenout"
 RESTART_RULE = "/restart"
 
@@ -108,3 +109,21 @@ class TestRestart:
         # and the zeroeth page if he chose to restart
         expected_label = FIRST_PAGE_LABEL if resume else ZEROETH_PAGE_LABEL
         assert bytes(expected_label, "utf-8") in response.data
+
+
+@User.route(ERROR_RULE)
+def error_seed():
+    return Page(compile=divide_by_0)
+
+
+def divide_by_0(page):
+    x = 1 / 0
+
+
+def test():
+    app = create_test_app()
+    with app.test_client() as client:
+        client.get("/")
+        response = client.get(ERROR_RULE)
+    assert response.status == "500 INTERNAL SERVER ERROR"
+    assert b"The application encountered an error" in response.data

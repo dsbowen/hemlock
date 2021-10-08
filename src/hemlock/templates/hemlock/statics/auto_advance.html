@@ -8,6 +8,7 @@
 
         function formatMilliseconds(milliseconds){
             // format milliseconds in HH:MM:SS (or H:MM:SS)
+            var milliseconds = milliseconds + 1000; // this is like changing the clock from 0 index to 1 index
             var hours = Math.floor((milliseconds / (60 * 60 * 1000)) % 24);
             var minutes = Math.floor((milliseconds / (60 * 1000)) % 60);
             var minutes = (minutes < 10) ? "0" + minutes : minutes;
@@ -18,18 +19,23 @@
         
         const localOffset = new Date().getTimezoneOffset() * 60 * 1000;
         const start_time = new Date("{{ start_time }}");
-        setTimeout(function(){
-            $("#forward-button").click();
-        }, getMilliseconds());
 
-        {% if clock_id is not none %}
-            // update the clock text at regular intervals
+        // update the clock text at regular intervals
+        {% if clock_id is none %}
+            setTimeout(function(){
+                $("#forward-button").click();
+            }, getMilliseconds())
+        {% else %}
             var clock = $("#{{ clock_id }}");
             clock.text(formatMilliseconds(getMilliseconds()));
             setInterval(function(){
-                milliseconds = getMilliseconds();
+                var milliseconds = getMilliseconds();
                 if (milliseconds > 0){
                     clock.text(formatMilliseconds(milliseconds));
+                }
+                else{
+                    clock.text("0:00:00");
+                    $("#forward-button").click();
                 }
             }, {{ clock_update_interval }})
         {% endif %}

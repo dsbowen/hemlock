@@ -10,10 +10,10 @@ class TestAutoAdvance:
         create_test_app()
         question = Question()
         compile.auto_advance(10000)(question)
-        
+
         found_auto_advance_js = False
         for js in question.html_settings["js"]:
-            if js.startswith("<script id=\"auto-advance\""):
+            if js.startswith('<script id="auto-advance"'):
                 found_auto_advance_js = True
                 break
         assert found_auto_advance_js
@@ -26,7 +26,7 @@ class TestAutoAdvance:
         compile.auto_advance(10000)(question)
         n_auto_advance_js = 0
         for js in question.html_settings["js"]:
-            if js.startswith("<script id=\"auto-advance\""):
+            if js.startswith('<script id="auto-advance"'):
                 n_auto_advance_js += 1
         assert n_auto_advance_js == 1
 

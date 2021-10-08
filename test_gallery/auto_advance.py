@@ -5,6 +5,9 @@ from hemlock.questions import Label
 @User.route("/survey")
 def seed():
     return [
+        zeroeth_page:=Page(
+            Label("Zeroeth page.")
+        ),
         Page(
             Label(
                 "Remaining time: <span id='clock-id'></span>",
@@ -13,6 +16,8 @@ def seed():
         ),
         Page(
             Label("The End."),
+            back=True,
+            prev_page=zeroeth_page
         )
     ]
 

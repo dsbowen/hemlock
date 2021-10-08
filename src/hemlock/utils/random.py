@@ -63,7 +63,7 @@ def make_assigner(conditions: Mapping) -> Tuple[Iterable, cycle]:
     return conditions.keys(), cycle(possible_assignments)
 
 
-def assign_user(assigner: Tuple[Iterable, cycle], user: User=None) -> Dict:
+def assign_user(assigner: Tuple[Iterable, cycle], user: User = None) -> Dict:
     """Assign a user to conditions.
 
     Args:
@@ -76,8 +76,6 @@ def assign_user(assigner: Tuple[Iterable, cycle], user: User=None) -> Dict:
     if user is None:
         user = current_user
     keys, possible_assignments = assigner
-    assignment = {
-        key: value for key, value in zip(keys, next(possible_assignments))
-    }
+    assignment = {key: value for key, value in zip(keys, next(possible_assignments))}
     user.meta_data.update(assignment)
     return assignment

@@ -68,7 +68,7 @@ def auto_advance(
     obj.html_settings["js"] = [
         js
         for js in obj.html_settings["js"]
-        if not js.startswith("<script id=\"auto-advance\"")
+        if not js.startswith('<script id="auto-advance"')
     ]
     obj.html_settings["js"].append(
         render_template(

@@ -9,7 +9,9 @@ from flask import current_app, redirect, request, url_for
 from flask_login import current_user, login_required, logout_user
 from werkzeug.wrappers import Response
 
-from .app import bp, db
+from .app import bp, db, static_pages
+from .page import Page
+from .questions import Label
 from .user import User
 
 
@@ -60,7 +62,23 @@ def screenout() -> str:
     Returns:
         str: Screenout page.
     """
-    return current_app.settings["screenout_page"]  # type: ignore
+    screenout_page_key = "screenout"
+    if screenout_page_key not in static_pages:
+        static_pages[screenout_page_key] = Page(
+            Label(
+                """
+                Our records indicate that you have already participated in this or 
+                similar surveys.
+                
+                Thank you for your continuing interest in our research!
+                """
+            ),
+            navbar=None,
+            back=False,
+            forward=False,
+        ).render()
+
+    return static_pages[screenout_page_key]
 
 
 @bp.route("/restart", methods=["GET", "POST"])
@@ -80,11 +98,45 @@ def restart() -> Union[str, Response]:
 
         return redirect(User.default_url_rule)  # type: ignore
 
-    return current_app.settings["restart_page"]  # type: ignore
+    restart_page_key = "restart"
+    if restart_page_key not in static_pages:
+        static_pages[restart_page_key] = Page(
+            Label(
+                """
+                You have already started this survey. Click "Resume" to pick up where 
+                you left off or "Restart" to start the survey from the beginning.
+
+                If you restart the survey, your responses will not be saved.
+                """
+            ),
+            back="Resume",
+            forward="Restart",
+        ).render()
+
+    return static_pages[restart_page_key]
 
 
 @bp.errorhandler(500)
-def internal_server_error(error):
+def internal_server_error(error) -> None:
+    """Handle internal server error."""
     current_user.errored = True
     db.session.commit()
-    return current_app.settings["internal_server_error_page"], 500
+
+    internal_server_error_page_key = "500"
+    if internal_server_error_page_key not in static_pages:
+        static_pages[internal_server_error_page_key] = Page(
+            Label(
+                """
+                The application encountered an error. Please contact the survey 
+                administrator.
+
+                We apologize for the inconvenience and thank you for your patience as we 
+                work to resolve this issue.
+                """
+            ),
+            navbar=None,
+            back=False,
+            forward=False,
+        ).render()
+
+    return static_pages[internal_server_error_page_key], 500

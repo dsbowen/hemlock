@@ -7,15 +7,16 @@ from typing import TYPE_CHECKING, Any, Callable, List, Union, TypeVar
 
 import matplotlib.pyplot as plt
 from IPython import display
-from flask import current_app, redirect, request, url_for
+from flask import redirect, render_template, request, url_for
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.orderinglist import ordering_list
 from werkzeug.wrappers.response import Response
 
 from ._display_navigation import display_navigation
-from .app import db
+from .app import db, static_pages
+from .page import Page
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from .page import Page
 
 TreeType = TypeVar("TreeType", bound="Tree")
@@ -180,7 +181,13 @@ class Tree(db.Model):
         """
         # return a loading page if a request is in progress
         if self.request_in_progress:
-            return current_app.settings["loading_page"]  # type: ignore
+            loading_page_key = "loading_page"
+            if loading_page_key not in static_pages:
+                static_pages[loading_page_key] = render_template(
+                    "hemlock/utils/loading_page.html", page=Page()
+                )
+
+            return static_pages[loading_page_key]
 
         # return the HTML for the current page if the user refreshed the page
         if request.method == self.prev_request_method == "GET":
