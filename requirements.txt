@@ -7,6 +7,6 @@ pylint
 sphinx
 tox
 
-eventlet
+eventlet==0.30.2
 gunicorn
 psycopg2
