@@ -30,6 +30,9 @@ Mutable.set_session(db.session)
 
 # create default settings
 sqlalchemy_database_uri = os.environ.get("DATABASE_URL", "sqlite://")
+if sqlalchemy_database_uri.startswith("postgres://"):
+    # see https://help.heroku.com/ZKNTJQSK/why-is-sqlalchemy-1-4-x-not-connecting-to-heroku-postgres
+    sqlalchemy_database_uri = sqlalchemy_database_uri.replace("postgres://", "postgresql://", 1)
 settings = {
     "allow_users_to_restart": True,
     "screenout_records": {},
