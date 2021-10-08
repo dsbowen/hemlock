@@ -10,3 +10,4 @@ tox
 eventlet==0.30.2
 gunicorn
 psycopg2
+-e .
