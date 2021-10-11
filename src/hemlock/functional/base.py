@@ -15,9 +15,12 @@ class Functional(dict):
         functions (Dict[str, Callable]): Registered functions.
 
     Examples:
-        Accessing registered functions is similar to accessing columns in a pandas DataFrame. If you access a function with a tuple, the first item of the tuple is understood as the key, while the rest of tuple items are passed to the function as arguments.
+        Accessing registered functions is similar to accessing columns in a pandas
+        DataFrame. If you access a function with a tuple, the first item of the tuple is
+        understood as the key, while the rest of tuple items are passed to the function
+        as arguments.
 
-        .. doctest::
+        .. code-block::
 
             >>> from hemlock.functional import Functional
             >>> functional = Functional()

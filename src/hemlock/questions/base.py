@@ -35,6 +35,8 @@ ValidateType = Callable[["Question"], ValidateReturnType]
 class Question(Data):
     """Mixin for question objects.
 
+    Subclasses :class:`hemlock.data.Data`.
+
     Args:
         label (str, optional): Question label, prompt, or instructions. Defaults to None.
         floating_label (str, optional): Label that floats in the input tag. Defaults
@@ -60,6 +62,7 @@ class Question(Data):
         params (Any, optional): Additional parameters. Defaults to None.
         extra_html_settings (Mapping[str, HTMLSettingType], optional): Additional HTML
             settings used to update the defaults. Defaults to None.
+        **kwargs (Any): Passed to the :class:`hemlock.data.Data` constructor.
 
     Attributes:
         id (int): Unique question identity.

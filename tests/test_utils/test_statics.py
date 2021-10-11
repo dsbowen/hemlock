@@ -48,7 +48,7 @@ class TestRecompileQuestion:
         try:
             recompile_question({"data": label.hash})
         except RuntimeError:
-            # A runtime error is expected because this function attempts a socket 
+            # A runtime error is expected because this function attempts a socket
             # emission outside a namespace.
             # However, the label should still be added
             pass

@@ -5,6 +5,7 @@
         {% block head %}
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="https://dsbowen.gitlab.io/hemlock/_static/favicon.png">
         {{ page.html_settings.get_css() | safe}}
         {% for question in page.questions %}
             {{ question.html_settings.get_css() | safe }}
@@ -96,8 +97,8 @@
                 {% endif %}
                 <p style="clear:both;"><br></p>
     
-                {% if page.banner is not none %}
-                <div id="banner">{{ page.banner | safe }}</div>
+                {% if for_notebook_display is sameas false %}
+                    {{ page.defaults["banner"] | safe }}
                 {% endif %}
             {% endblock %}
             </form>

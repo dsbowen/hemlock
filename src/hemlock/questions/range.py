@@ -20,13 +20,13 @@ class Range(Question):
 
     An range question allows users to enter a numeric response using a range slider.
 
-    Subclasses :class:`Question`.
+    Subclasses :class:`hemlock.questions.base.Question`.
 
     Args:
-        *args (Any): Passed to :class:`Question` constructor.
+        *args (Any): Passed to :class:`hemlock.questions.base.Question` constructor.
         input_tag (Mapping[str, HTMLAttrType], optional): Additional attributes of the
             HTML input tag. Defaults to None.
-        **kwargs (Any): Passed to :class:`Question` constructor.
+        **kwargs (Any): Passed to :class:`hemlock.questions.base.Question` constructor.
     """
 
     id = db.Column(db.Integer, db.ForeignKey("question.id"), primary_key=True)
@@ -48,7 +48,7 @@ class Range(Question):
 
     @hybrid_property
     def response(self) -> Optional[float]:
-        """See :meth:`Question.response`."""
+        """See :meth:`hemlock.questions.base.Question.response`."""
         return None if self.raw_response is None else float(self.raw_response)
 
     def __init__(
@@ -62,5 +62,5 @@ class Range(Question):
             self.input_tag.update_attrs(input_tag)
 
     def make_raw_test_response(self, response: float) -> str:
-        """See :meth:`Question.make_raw_response`."""
+        """See :meth:`hemlock.questions.base.Question.make_raw_test_response`."""
         return str(response)

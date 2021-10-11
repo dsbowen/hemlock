@@ -13,7 +13,7 @@ from .data import Data
 class Timer(Data):
     """Timer.
 
-    Subclasses :class:`hemlock.Data`.
+    Subclasses :class:`hemlock.data.Data`.
 
     Attributes:
         is_running (bool): Indicates that the timer is running.

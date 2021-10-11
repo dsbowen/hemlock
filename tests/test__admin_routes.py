@@ -1,6 +1,9 @@
+import io
+
+import pandas as pd
 import pytest
 
-from hemlock import User, create_test_app
+from hemlock import User, Page, create_test_app
 from hemlock._admin_routes import password_is_correct, get_user_status
 from hemlock.app import db, settings
 from hemlock.questions import Label
@@ -8,6 +11,7 @@ from hemlock.questions import Label
 PASSWORD = "password"
 LOGIN_RULE = "/admin-login"
 LOGOUT_RULE = "/admin-logout"
+DOWNLOAD_RULE = "/admin-download"
 STATUS_RULE = "/admin-status"
 
 
@@ -18,6 +22,17 @@ def login_client():
     with app.test_client() as client:
         yield client
     settings["config"]["PASSWORD"] = ""
+
+
+@pytest.fixture
+def client():
+    def seed():
+        return Page()
+
+    app = create_test_app()
+    User.make_test_user(seed).test_get()
+    with app.test_client() as client:
+        yield client
 
 
 class TestLogin:
@@ -63,11 +78,16 @@ def test_logout(login_client):
     assert bytes(f'href="{LOGIN_RULE}"', "utf-8") in response.data
 
 
+def test_download(client):
+    response = client.get(DOWNLOAD_RULE)
+    df = pd.read_csv(io.StringIO(str(response.data, "utf-8")))
+    assert len(df) == 1
+    assert df.completed.all()
+
+
 class TestStatus:
-    def test_request(self):
-        app = create_test_app()
-        with app.test_client() as client:
-            response = client.get(STATUS_RULE)
+    def test_request(self, client):
+        response = client.get(STATUS_RULE)
         assert b"No users yet." in response.data
 
     @pytest.mark.parametrize("with_users", (True, False))

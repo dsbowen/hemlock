@@ -23,17 +23,17 @@ class Input(Question):
 
     An input question allows users to enter a free text response.
 
-    Subclasses :class:`Question`.
+    Subclasses :class:`hemlock.questions.base.Question`.
 
     Args:
-        *args (Any): Passed to :class:`Question` constructor.
+        *args (Any): Passed to :class:`hemlock.questions.base.Question` constructor.
         input_tag (Mapping[str, HTMLAttrType], optional): Additional attributes of the
             HTML input tag. Defaults to None.
-        **kwargs (Any): Passed to :class:`Question` constructor.
+        **kwargs (Any): Passed to :class:`hemlock.questions.base.Question` constructor.
 
     Examples:
-        The most common use of the `input_tag` attribute is for setting the input type.
-        For example, let's require users to enter a number.
+        The most common use of the ``input_tag`` attribute is for setting the input
+        type. For example, let's require users to enter a number.
 
         .. doctest::
 
@@ -51,13 +51,13 @@ class Input(Question):
             >>> question.input_tag["min"], question.input_tag["max"]
             (0, 10)
 
-        You can also require users to enter a certain number of words.
+        You can also require users to enter a certain input length.
 
         .. doctest::
 
             >>> from hemlock.questions import Input
-            >>> question = Input(input_tag={"minwords": 5, "maxwords": 10})
-            >>> question.input_tag["minwords"], question.input_tag["maxwords"]
+            >>> question = Input(input_tag={"minlength": 5, "maxlength": 10})
+            >>> question.input_tag["minlength"], question.input_tag["maxlength"]
             (5, 10)
     """
 
@@ -103,7 +103,7 @@ class Input(Question):
             self.input_tag.update_attrs(input_tag)
 
     def set_is_valid(self, is_valid: bool = None) -> None:
-        """See :meth:`Question.set_is_valid`.
+        """See :meth:`hemlock.questions.base.Question.set_is_valid`.
 
         Additionally adds appropriate validation classes to the input tag.
         """
@@ -113,7 +113,7 @@ class Input(Question):
         return return_value
 
     def run_validate_functions(self) -> bool:
-        """See :meth:`Question.run_validate_functions`.
+        """See :meth:`hemlock.questions.base.Question.run_validate_functions`.
 
         Additionally, this method validates that the user's response matches the input
         type.

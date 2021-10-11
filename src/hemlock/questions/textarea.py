@@ -20,16 +20,29 @@ class Textarea(Question):
 
     An textarea question allows users to enter a long free text response.
 
-    Subclasses :class:`Question`.
+    Subclasses :class:`hemlock.questions.base.Question`.
 
     Args:
-        *args (Any): Passed to :class:`Question` constructor.
+        *args (Any): Passed to :class:`hemlock.questions.base.Question` constructor.
         textarea_tag (Mapping[str, HTMLAttrType], optional): Additional attributes of
             the HTML textarea tag. Defaults to None.
-        **kwargs (Any): Passed to :class:`Question` constructor.
+        **kwargs (Any): Passed to :class:`hemlock.questions.base.Question` constructor.
 
     Attributes:
         textarea_tag (HTMLAttrsType): Attributes of the HTML textarea tag.
+
+    Examples:
+        In addition to requiring a certain input length, we can require a certain number
+        of words.
+
+        .. doctest::
+
+            >>> from hemlock import create_test_app
+            >>> from hemlock.questions import Textarea
+            >>> app = create_test_app()
+            >>> question = Textarea(textarea_tag={"minwords": 5, "maxwords": 10})
+            >>> question.textarea_tag["minwords"], question.textarea_tag["maxwords"]
+            (5, 10)
     """
 
     id = db.Column(db.Integer, db.ForeignKey("question.id"), primary_key=True)
@@ -61,7 +74,7 @@ class Textarea(Question):
             self.textarea_tag.update_attrs(textarea_tag)
 
     def set_is_valid(self, is_valid: bool = None) -> None:
-        """See :meth:`Question.set_is_valid`.
+        """See :meth:`hemlock.questions.base.Question.set_is_valid`.
 
         Additionally adds appropriate validation classes to the textarea tag.
         """
@@ -71,7 +84,7 @@ class Textarea(Question):
         return return_value
 
     def run_validate_functions(self) -> bool:
-        """See :meth:`Question.run_validate_functions`.
+        """See :meth:`hemlock.questions.base.Question.run_validate_functions`.
 
         Additionally, this method validates that the user's response has the correct
         word count.

@@ -15,7 +15,7 @@ class Select(ChoiceQuestion):
 
     A select question allows users to select one or more choices using a dropdown menu.
 
-    Subclasses :class:`ChoiceQuestion`.
+    Subclasses :class:`hemlock.questions.choice_base.ChoiceQuestion`.
 
     Attributes:
         select_tag (HTMLAttrsType): Attributes of the HTML select tag.

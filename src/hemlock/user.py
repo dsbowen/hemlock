@@ -68,10 +68,8 @@ class User(UserMixin, db.Model):
 
     The user has the following responsibilities:
 
-    1. The user object contains a list of branches. Based on the URL rule of a
-    request, the user determines which of its trees should process the request.
-    2. The user object stores the data for individual users and can collect the data
-    for all users.
+    1. The user object contains a list of branches. Based on the URL rule of a request, the user determines which of its trees should process the request.
+    2. The user object stores the data for individual users and can collect the data for all users.
     3. The user provides testing utilities.
 
     Args:
@@ -82,13 +80,17 @@ class User(UserMixin, db.Model):
         trees (List[Tree]): Trees that the user can navigate to.
         start_time (datetime.datetime): Time at which the user started the study.
         end_time (datetime.datetime): Time at which the user ended the study.
+        completed (bool): Indicates that the user completed the study.
+        failed (bool): Indicates that the user failed the study.
+        errored (bool): Indicates that the user experienced an error.
+        in_progress (bool): Indicates that the user is working on the study.
         params (Any): Additional parameters.
         meta_data (Dict[str, Any]): User metadata. In most studies, this will contain
             the IP address.
 
     Examples:
 
-        .. doctest::
+        .. code-block::
 
             >>> from hemlock import User, Page, create_test_app
             >>> from hemlock.questions import Input, Label
@@ -232,6 +234,10 @@ class User(UserMixin, db.Model):
                 )
             self._cached_data = self.get_data(to_pandas=False, use_cached_data=False)
 
+    @hybrid_property
+    def in_progress(self):
+        return not (self.completed or self.failed or self.errored)
+
     def __init__(self, meta_data: Mapping = None):
         self.hash = make_hash(HASH_LENGTH)
         self.start_time = self.end_time = datetime.utcnow()
@@ -242,6 +248,7 @@ class User(UserMixin, db.Model):
         # will be available in the seed functions
         db.session.add(self)
         db.session.commit()
+        self._cached_data = self.get_data(to_pandas=False)
         login_user(self)
         self.trees = [Tree(func) for _, func in self._seed_funcs.values()]
 
@@ -277,7 +284,7 @@ class User(UserMixin, db.Model):
             "completed": self.completed,
             "failed": self.failed,
             "errored": self.errored,
-            "in_progress": not (self.completed or self.failed or self.errored),
+            "in_progress": self.in_progress,
             "start_time": self.start_time,
             "end_time": self.end_time,
             "total_seconds": (self.end_time - self.start_time).total_seconds(),
@@ -316,27 +323,25 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def get_all_data(
-        to_pandas: bool = True, cached_data_only: bool = True
+        to_pandas: bool = True, refresh_if_in_progress: bool = False
     ) -> Union[pd.DataFrame, DataFrame]:
         """Get the data for all users.
 
         Args:
             to_pandas (bool, optional): Indicates. Defaults to True.
-            cached_data_only (bool, optional): Get data only from users with cached
-                data. Setting this to False can greatly increase the runtime. Defaults
-                to True.
+            refresh_if_in_progress (bool, optional): Refresh data for in progress users
+                when getting their data. Setting this to True can greatly increase the
+                runtime. Defaults to False.
 
         Returns:
             Union[pd.DataFrame, DataFrame]: Data from all users.
         """
-        if cached_data_only:
-            users = User.query.filter(User._cached_data != None).all()
-        else:
-            users = User.query.all()
-
         df = DataFrame()
-        for user in users:
-            df.add_data(user.get_data(to_pandas=False))
+        for user in User.query.all():
+            if refresh_if_in_progress and user.in_progress:
+                df.add_data(user.get_data(to_pandas=False, use_cached_data=False))
+            else:
+                df.add_data(user.get_data(to_pandas=False))
             df.pad()
 
         return pd.DataFrame(df) if to_pandas else df
@@ -437,7 +442,7 @@ class User(UserMixin, db.Model):
 
         Examples:
 
-            .. doctest::
+            .. code-block::
 
                 >>> from hemlock import User, Page, create_test_app
                 >>> from hemlock.questions import Label
@@ -498,7 +503,7 @@ class User(UserMixin, db.Model):
 
         Examples:
 
-            .. doctest::
+            .. code-block::
 
                 >>> from hemlock import User, Page, create_test_app
                 >>> from hemlock.questions import Label

@@ -96,8 +96,8 @@ def random_text(question: "Question", pr_no_response: float = 0.2) -> Optional[s
     """Generate a random text response for an input-like question.
 
     Args:
-        question (Question): Question, usually a :class:`hemlock.questions.Input` or
-            :class:`hemlock.questions.Textarea`.
+        question (Question): Question, usually a :class:`hemlock.questions.input.Input`
+            or :class:`hemlock.questions.textarea.Textarea`.
         pr_no_response (float, optional): Probability that the user doesn't respond.
             Defaults to .2.
 

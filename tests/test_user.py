@@ -123,7 +123,6 @@ class TestRoute:
 def test_completed_and_failed(property_name):
     # test that the user caches data when completing or failing the survey
     user = User.make_test_user()
-    assert user._cached_data is None
     setattr(user, property_name, True)
     assert user._cached_data is not None
     assert user._cached_data[property_name]
@@ -182,12 +181,15 @@ class TestGetData:
             user.test_request()  # user is now on page 2 of 2
         return user
 
-    def assert_expected_data(self, df, completed=True):
+    def assert_expected_data(self, df, completed=True, refresh_if_in_progress=False):
         assert (df.completed == completed).all()
         # test that all rows have been populated with the same start time
         # this should be true of all metadata variables
         assert (df.start_time == df.start_time[0]).all()
-        assert (df[self.variable_name] == self.response.format(df.id[0])).all()
+        if completed or refresh_if_in_progress:
+            assert (df[self.variable_name] == self.response.format(df.id[0])).all()
+        else:
+            assert self.variable_name not in df
 
     @pytest.mark.parametrize("n_rows", (1, 3))
     def test_single_user(self, n_rows):
@@ -198,31 +200,31 @@ class TestGetData:
         self.assert_expected_data(df.reset_index(drop=True))
 
     @pytest.mark.parametrize(
-        "n_users, complete_survey, cached_data_only",
+        "n_users, complete_survey, refresh_if_in_progress",
         product((1, 2), (True, False), (True, False)),
     )
-    def test_multiple_users(self, n_users, complete_survey, cached_data_only):
+    def test_multiple_users(self, n_users, complete_survey, refresh_if_in_progress):
         self.create_test_app()
         [self.make_user(complete_survey=complete_survey) for _ in range(n_users)]
-        df = User.get_all_data(cached_data_only=cached_data_only)
+        df = User.get_all_data(refresh_if_in_progress=refresh_if_in_progress)
 
-        if not complete_survey and cached_data_only:
-            # test that you don't get any data because users haven't completed the
-            # survey, meaning they don't have cached data
-            assert len(df) == 0
+        if complete_survey or refresh_if_in_progress:
+            assert (df.total_seconds != 0).all()
         else:
-            assert len(df) == n_users
-            for _, user_df in df.groupby("id"):
-                self.assert_expected_data(
-                    user_df.reset_index(drop=True), complete_survey
-                )
+            # if you don't refresh the data, users in progress should only have the data
+            # from the start of the survey
+            assert (df.total_seconds == 0).all()
+        for _, user_df in df.groupby("id"):
+            self.assert_expected_data(
+                user_df.reset_index(drop=True), complete_survey, refresh_if_in_progress
+            )
 
     def test_users_with_different_variables(self):
         self.create_test_app()
         User.make_test_user(meta_data={"variable0": "data0"})
         User.make_test_user(meta_data={"variable1": "data1"})
         User.make_test_user(meta_data={"variable0": "data2"})
-        df = User.get_all_data(cached_data_only=False)
+        df = User.get_all_data(refresh_if_in_progress=True)
 
         expected_variable0 = ["data0", None, "data2"]
         for value, expected_value in zip(df["variable0"], expected_variable0):

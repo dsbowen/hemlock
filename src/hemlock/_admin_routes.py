@@ -2,12 +2,14 @@
 """
 from __future__ import annotations
 
+import csv
+import io
 from datetime import timedelta
 from functools import wraps
 from typing import Callable, Union
 
 import pandas as pd
-from flask import current_app, redirect, request, session, url_for
+from flask import current_app, redirect, request, send_file, session, url_for, wrappers
 from werkzeug.wrappers import Response
 from werkzeug.security import check_password_hash
 
@@ -20,8 +22,17 @@ from .utils.statics import pandas_to_html, recompile_at_interval
 PASSWORD_KEY = "admin_password"
 
 admin_navbar = (
-    "Hemlock",
-    [("User status", "/admin-status"), ("Logout", "/admin-logout")],
+    (
+        """
+        <img src="https://dsbowen.gitlab.io/hemlock/_static/banner.png" style="max-height:30px;" alt="Hemlock">
+        """,
+        "https://dsbowen.gitlab.io/hemlock"
+    ),
+    [
+        ("User status", "/admin-status"),
+        ("Download", "/admin-download"),
+        ("Logout", "/admin-logout"),
+    ],
 )
 
 
@@ -125,6 +136,29 @@ def admin_logout() -> Response:
     """
     session.clear()
     return redirect("/admin-login")
+
+
+@bp.route("/admin-download")
+@admin_login_required
+def admin_download() -> wrappers.Response:
+    """Download the users' data.
+
+    Returns:
+        wrappers.Response: CSV of the users' data.
+    """
+    df = User.get_all_data(to_pandas=False)
+    writer = csv.writer(stringio := io.StringIO())
+    writer.writerow(df.keys())
+    writer.writerows(zip(*df.values()))
+
+    bytesio = io.BytesIO()
+    bytesio.write(stringio.getvalue().encode())
+    bytesio.seek(0)
+    stringio.close()
+
+    return send_file(
+        bytesio, as_attachment=True, download_name="data.csv", mimetype="text/csv"
+    )
 
 
 @bp.route("/admin-status")

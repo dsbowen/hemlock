@@ -3,10 +3,19 @@ image: python:3.9
 ports:
   - port: 8000
     onOpen: open-preview
+  - port: 5000
+    onOpen: open-preview
 
 tasks:
-  - init: pip install -r ./requirements.txt
+  - name: Dependencies
+    init: |
+      pip install -r ./requirements.txt
+      pip install -e .
     command: export TOXENV=py39
+
+gitlab:
+  prebuilds:
+    master: true
 
 vscode:
   extensions:

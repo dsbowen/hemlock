@@ -125,3 +125,4 @@ tmp/
 temp/
 *.db
 *.db-journal
+latest.dump

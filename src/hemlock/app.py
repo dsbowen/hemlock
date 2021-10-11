@@ -21,18 +21,30 @@ bp = Blueprint(
     static_folder="static",
     static_url_path="/hemlock/static",
 )
+
 db = SQLAlchemy()
+Mutable.set_session(db.session)
+
 login_manager = LoginManager()
 login_manager.login_view = "hemlock.index"
 login_manager.login_message = None
-socketio = SocketIO()
-Mutable.set_session(db.session)
+
+redis_url = os.environ.get("REDIS_URL")
+if redis_url:
+    # TODO: test that socketio can work with Redis
+    socketio = SocketIO(message_queue=redis_url)
+else:
+    socketio = SocketIO()
+
 
 # create default settings
 sqlalchemy_database_uri = os.environ.get("DATABASE_URL", "sqlite://")
 if sqlalchemy_database_uri.startswith("postgres://"):
     # see https://help.heroku.com/ZKNTJQSK/why-is-sqlalchemy-1-4-x-not-connecting-to-heroku-postgres
-    sqlalchemy_database_uri = sqlalchemy_database_uri.replace("postgres://", "postgresql://", 1)
+    sqlalchemy_database_uri = sqlalchemy_database_uri.replace(
+        "postgres://", "postgresql://", 1
+    )
+
 settings = {
     "allow_users_to_restart": True,
     "screenout_records": {},

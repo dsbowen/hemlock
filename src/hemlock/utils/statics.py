@@ -103,7 +103,7 @@ def recompile_at_interval(interval: int, question: "Question") -> "Question":
             "hemlock/statics/recompile_at_interval.js",
             hash=question.hash,
             interval=interval,
-        )
+        ),
     ]
     return question
 

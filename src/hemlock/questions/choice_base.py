@@ -24,7 +24,7 @@ ChoiceType = Union[str, Tuple[Any, str], Mapping[Any, Any]]
 class ChoiceQuestion(Question):
     """Mixin for questions with choices.
 
-    Subclasses :class:`Question`.
+    Subclasses :class:`hemlock.questions.base.Question`.
 
     Args:
         label (str, optional): Question label, prompt, or instructions. Defaults to
@@ -35,8 +35,8 @@ class ChoiceQuestion(Question):
             choices. Defaults to None.
         record_choice_indices (bool, optional): Indicates that the choice order should
         be recorded in the data frame. Defaults to None.
-        **kwargs (Any): Additional keyword arguments passed to :class:`Question`
-            constructor.
+        **kwargs (Any): Additional keyword arguments passed to the
+            :class:`hemlock.questions.base.Question` constructor.
 
     Attributes:
         choices (List[Dict[Any, Any]]): Choices that the user can select.

@@ -154,13 +154,13 @@ class Page(db.Model):  # type: ignore
 
         .. doctest::
 
-            >>> from hemlock import User, Page, create_test_app
-            >>> from hemlock.data import Data
-            >>> app = create_test_app()
+            >>> from hemlock import User, Page, Data, create_test_app
             >>> def seed():
             ...     return Page(data=[("variable0", 0), Data("variable1", 1)])
             ...
+            >>> app = create_test_app()
             >>> user = User.make_test_user(seed)
+            >>> _ = user.test_get()
             >>> user.get_data()[["variable0", "variable1"]]
                variable0  variable1
             0          0          1
@@ -205,6 +205,11 @@ class Page(db.Model):  # type: ignore
                 "style": {"float": "right"},
             },
         },
+        banner="""
+        <div class="text-center">
+            <img src="https://dsbowen.gitlab.io/hemlock/_static/banner.png" style="max-width: 200px;" alt="Banner">
+        </div>
+        """,
     )
 
     _tree_id = db.Column(db.Integer, db.ForeignKey("tree.id"))

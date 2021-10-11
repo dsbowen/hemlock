@@ -14,15 +14,15 @@ class Check(ChoiceQuestion):
 
     A check question allows users to select one or more choices by checking a box.
 
-    Subclasses :class:`ChoiceQuestion`.
+    Subclasses :class:`hemlock.questions.choice_base.ChoiceQuestion`.
 
     Args:
-        *args (Any): Passed to :class:`ChoiceQuestion` constructor.
+        *args (Any): Passed to :class:`hemlock.questions.choice_base.ChoiceQuestion` constructor.
         inline (bool, optional): Indicates that the choices will appear inline. Defaults
             to None.
         switch (bool, optional): Indicates that the check or radio button will be a
             switch. Defaults to None.
-        **kwargs (Any): Passed to :class:`ChoiceQuestion` constructor.
+        **kwargs (Any): Passed to :class:`hemlock.questions.choice_base.ChoiceQuestion` constructor.
     """
 
     id = db.Column(db.Integer, db.ForeignKey("question.id"), primary_key=True)
