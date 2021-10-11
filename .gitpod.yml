@@ -13,10 +13,6 @@ tasks:
       pip install -e .
     command: export TOXENV=py39
 
-gitlab:
-  prebuilds:
-    master: true
-
 vscode:
   extensions:
     - almenon.arepl@1.0.20:Uu7lIOwyLgmNWpTwCl/iqQ==
