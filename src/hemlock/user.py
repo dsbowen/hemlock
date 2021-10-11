@@ -213,7 +213,7 @@ class User(UserMixin, db.Model):
                     "Indicating that the user completed the study, but the user has already failed the study.",
                     RuntimeWarning,
                 )
-            self._cached_data = self.get_data(to_pandas=False, use_cached_data=False)
+            self.cache_data()
 
     _failed = db.Column(db.Boolean)
 
@@ -232,7 +232,7 @@ class User(UserMixin, db.Model):
                     "Indicating that the user failed the study, but the user has already completed the study.",
                     RuntimeWarning,
                 )
-            self._cached_data = self.get_data(to_pandas=False, use_cached_data=False)
+            self.cache_data()
 
     @hybrid_property
     def in_progress(self):
@@ -267,6 +267,11 @@ class User(UserMixin, db.Model):
         # get the index of the requested tree
         index = self._seed_funcs[url_rule or self.default_url_rule][0]  # type: ignore
         return self.trees[index]
+
+    def cache_data(self) -> None:
+        """Cache the user's data.
+        """
+        self._cached_data = self.get_data(to_pandas=False, use_cached_data=False)
 
     def get_meta_data(self, convert_datetime_to_string: bool = False) -> Dict[str, Any]:
         """Get the user's metadata.

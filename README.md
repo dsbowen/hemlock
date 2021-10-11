@@ -7,4 +7,4 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/dsbowen%2Fhemlock/HEAD?urlpath=lab/tree/examples)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-A frameword for creating online surveys and experiments. [Read the docs](https://dsbowen.gitlab.io/hemlock).
+A framework for creating online surveys and experiments. [Read the docs](https://dsbowen.gitlab.io/hemlock).
