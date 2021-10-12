@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import csv
 import io
+import os
 from datetime import timedelta
 from functools import wraps
 from typing import Callable, Union
 
 import pandas as pd
-from flask import current_app, redirect, request, send_file, session, url_for, wrappers
+from flask import current_app, request, send_file, session, url_for, wrappers
 from werkzeug.wrappers import Response
 from werkzeug.security import check_password_hash
 
@@ -17,6 +18,7 @@ from .app import bp, db, static_pages
 from .user import User
 from .page import Page
 from .questions import Input, Label
+from .utils import redirect
 from .utils.statics import pandas_to_html, recompile_at_interval
 
 PASSWORD_KEY = "admin_password"
@@ -169,6 +171,21 @@ def admin_status() -> str:
     Returns:
         str: HTML.
     """
+    if (
+        "GITPOD_HOST" in os.environ
+        and os.environ.get("VS_CODE_REMOTE", "False").lower() != "true"
+    ):  # pragma: no cover
+        # websocket will not reliably connect in gitpod
+        # but will work in VS code remote
+        page = Page(
+            label:=Label(),
+            navbar=admin_navbar,
+            forward=False,
+            back=False
+        )
+        get_user_status(label)
+        return page.render()
+
     status_page_key = "status"
     if status_page_key not in static_pages:
         # create and cache user status page

@@ -5,7 +5,7 @@ from __future__ import annotations
 import copy
 from typing import Union
 
-from flask import current_app, redirect, request, url_for
+from flask import current_app, request, url_for
 from flask_login import current_user, login_required, logout_user
 from werkzeug.wrappers import Response
 
@@ -13,6 +13,7 @@ from .app import bp, db, static_pages
 from .page import Page
 from .questions import Label
 from .user import User
+from .utils import redirect
 
 
 @bp.route("/")

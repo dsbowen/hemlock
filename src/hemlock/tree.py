@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Callable, List, Union, TypeVar
 
 import matplotlib.pyplot as plt
 from IPython import display
-from flask import redirect, render_template, request, url_for
+from flask import render_template, request, url_for
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.orderinglist import ordering_list
 from werkzeug.wrappers.response import Response
@@ -15,6 +15,7 @@ from werkzeug.wrappers.response import Response
 from ._display_navigation import display_navigation
 from .app import db, static_pages
 from .page import Page
+from .utils import redirect
 
 if TYPE_CHECKING:
     from .page import Page
