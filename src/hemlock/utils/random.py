@@ -1,3 +1,5 @@
+"""Randomization.
+"""
 from __future__ import annotations
 
 from itertools import cycle, product

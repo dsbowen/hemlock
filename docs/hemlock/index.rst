@@ -37,6 +37,7 @@ API reference
     :maxdepth: 2
     :caption: Utilities
 
+    Base <utils/base>
     Format <utils/format>
     Random <utils/random>
     Statics <utils/statics>

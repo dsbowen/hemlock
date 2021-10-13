@@ -23,13 +23,9 @@ A framework for creating online surveys and experiments.
    .. image:: https://img.shields.io/badge/License-MIT-brightgreen.svg
       :target: https://gitlab.com/dsbowen/hemlock/-/blob/master/LICENSE
 
-Open in Gitpod
-==============
-
+| 
 .. image:: https://gitpod.io/button/open-in-gitpod.svg
    :target: https://gitpod.io/#https://gitlab.com/dsbowen/hemlock
-
-Use the VS code remote desktop until `this issue <https://github.com/gitpod-io/gitpod/issues/6151>`_ is resolved.
 
 Installation
 ============

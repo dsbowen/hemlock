@@ -5,7 +5,7 @@ import pytest
 
 from hemlock import User, Page, create_test_app
 from hemlock._admin_routes import password_is_correct, get_user_status
-from hemlock.app import db, settings
+from hemlock.app import Config, db
 from hemlock.questions import Label
 
 PASSWORD = "password"
@@ -17,11 +17,12 @@ STATUS_RULE = "/admin-status"
 
 @pytest.fixture
 def login_client():
-    settings["config"]["PASSWORD"] = PASSWORD
-    app = create_test_app()
+    class TestConfig(Config):
+        PASSWORD = PASSWORD
+
+    app = create_test_app(TestConfig())
     with app.test_client() as client:
         yield client
-    settings["config"]["PASSWORD"] = ""
 
 
 @pytest.fixture

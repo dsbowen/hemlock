@@ -210,7 +210,8 @@ class User(UserMixin, db.Model):
         if completed:
             if self.failed:
                 warnings.warn(
-                    "Indicating that the user completed the study, but the user has already failed the study.",
+                    "Indicating that the user completed the study,"
+                    " but the user has already failed the study.",
                     RuntimeWarning,
                 )
             self.cache_data()
@@ -229,7 +230,8 @@ class User(UserMixin, db.Model):
         if failed:
             if self.completed:
                 warnings.warn(
-                    "Indicating that the user failed the study, but the user has already completed the study.",
+                    "Indicating that the user failed the study,"
+                    " but the user has already completed the study.",
                     RuntimeWarning,
                 )
             self.cache_data()
@@ -269,8 +271,7 @@ class User(UserMixin, db.Model):
         return self.trees[index]
 
     def cache_data(self) -> None:
-        """Cache the user's data.
-        """
+        """Cache the user's data."""
         self._cached_data = self.get_data(to_pandas=False, use_cached_data=False)
 
     def get_meta_data(self, convert_datetime_to_string: bool = False) -> Dict[str, Any]:
@@ -540,7 +541,10 @@ class User(UserMixin, db.Model):
             page_visits[tree.page.get_position()] += 1
             if page_visits[tree.page.get_position()] > max_page_visits:
                 raise RuntimeError(
-                    f"The test user has visited the same page more than {max_page_visits} times. Check that your validate functions don't always return False and that your survey doesn't contain an infinite loop. The page is\n{tree.page}"
+                    f"The test user has visited the same page more than {max_page_visits} times."
+                    " Check that your validate functions don't always return False"
+                    " and that your survey doesn't contain an infinite loop."
+                    " The page is\n{tree.page}"
                 )
             if verbosity == 2:
                 tree.display()

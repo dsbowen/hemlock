@@ -25,16 +25,17 @@ def redirect(location: str, *args: Any, **kwargs: Any) -> Response:
         Response: Redirect response.
     """
     if (
-        location.startswith("/") and "GITPOD_HOST" in os.environ
+        location.startswith("/")
+        and "GITPOD_HOST" in os.environ
         and os.environ.get("VS_CODE_REMOTE", "False").lower() != "true"
     ):  # pragma: no cover
         # change URL root to gitpod workspace url
         url_root = request.url_root
         if "http" in url_root:
             url_root = url_root.lstrip("http://")
-        
+
         index = url_root.index(":") + 1
-        port = url_root[index: index+4]  # port is the 4 numbers after ":"
+        port = url_root[index : index + 4]  # port is the 4 numbers after ":"
         gp_url_port = subprocess.check_output(f"gp url {port}", shell=True)
         location = gp_url_port.decode("utf-8").strip() + location
 

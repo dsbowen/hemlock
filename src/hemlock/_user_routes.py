@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Union
+from typing import Tuple, Union
 
 from flask import current_app, request, url_for
 from flask_login import current_user, login_required, logout_user
@@ -33,24 +33,24 @@ def index() -> Response:
     meta_data = dict(request.args)
     meta_data["ipv4"] = request.remote_addr  # type: ignore
 
-    if matching_record_found(current_app.settings["screenout_records"]):  # type: ignore
+    if matching_record_found(current_app.config["SCREENOUT_RECORDS"]):
         return redirect(url_for("hemlock.screenout"))
 
     if current_user.is_authenticated:
         if (
             current_user.get_tree().page.is_first_page
-            or not current_app.settings["allow_users_to_restart"]  # type: ignore
+            or not current_app.config["ALLOW_USERS_TO_RESTART"]
         ):
             return redirect(User.default_url_rule)  # type: ignore
         return redirect(url_for("hemlock.restart"))
 
-    if matching_record_found(current_app.user_metadata):  # type: ignore
+    if matching_record_found(user_metadata := current_app.config["USER_METADATA"]):
         return redirect(url_for("hemlock.screenout"))
 
     for key, value in meta_data.items():
-        if key in current_app.settings["block_duplicate_keys"]:  # type: ignore
-            current_app.user_metadata[key].append(value)  # type: ignore
-
+        if key in current_app.config["BLOCK_DUPLICATE_KEYS"]:
+            user_metadata[key].append(value)
+    
     User(meta_data=meta_data)
     db.session.commit()
     return redirect(User.default_url_rule)  # type: ignore
@@ -118,7 +118,7 @@ def restart() -> Union[str, Response]:
 
 
 @bp.errorhandler(500)
-def internal_server_error(error) -> None:
+def internal_server_error(error) -> Tuple[str, int]:
     """Handle internal server error."""
     current_user.errored = True
     db.session.commit()

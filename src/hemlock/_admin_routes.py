@@ -28,7 +28,7 @@ admin_navbar = (
         """
         <img src="https://dsbowen.gitlab.io/hemlock/_static/banner.png" style="max-height:30px;" alt="Hemlock">
         """,
-        "https://dsbowen.gitlab.io/hemlock"
+        "https://dsbowen.gitlab.io/hemlock",
     ),
     [
         ("User status", "/admin-status"),
@@ -177,12 +177,7 @@ def admin_status() -> str:
     ):  # pragma: no cover
         # websocket will not reliably connect in gitpod
         # but will work in VS code remote
-        page = Page(
-            label:=Label(),
-            navbar=admin_navbar,
-            forward=False,
-            back=False
-        )
+        page = Page(label := Label(), navbar=admin_navbar, forward=False, back=False)
         get_user_status(label)
         return page.render()
 

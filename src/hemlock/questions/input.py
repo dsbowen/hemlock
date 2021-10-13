@@ -177,7 +177,10 @@ class Input(Question):
                 datetime.strptime(response, datetime_format)
             except ValueError:
                 raise ValueError(
-                    f"Response {repr(response)} to input {self} does not match format {html_format}. For example, right now it is {datetime.utcnow().strftime(datetime_format)}."
+                    f"Response {repr(response)} to input {self}"
+                    f" does not match format {html_format}."
+                    " For example, right now it is"
+                    f" {datetime.utcnow().strftime(datetime_format)}."
                 )
             return response
 

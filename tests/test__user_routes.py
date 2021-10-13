@@ -1,7 +1,7 @@
 import pytest
 
-from hemlock import User, Page
-from hemlock.app import create_test_app, settings
+from hemlock import User, Page, create_test_app
+from hemlock.app import Config
 from hemlock.questions import Label
 
 STUDY_RULE = "/test_route_url_rule"
@@ -36,42 +36,40 @@ class TestIndex:
 
     def test_screenout(self):
         key, value = "key", "value"
-        settings["screenout_records"] = {key: [value]}
-        app = create_test_app()
+        config = Config()
+        config.SCREENOUT_RECORDS = {key: [value]}
+        app = create_test_app(config)
         with app.test_client() as client:
             response = client.get("/", query_string={key: value})
-        settings["screenout_records"].clear()
         assert bytes(f'href="{SCREENOUT_RULE}"', "utf-8") in response.data
 
     @pytest.mark.parametrize("allow_users_to_restart", (True, False))
     def test_restart(self, allow_users_to_restart):
-        settings["allow_users_to_restart"] = allow_users_to_restart
-        app = create_test_app()
+        config = Config()
+        config.ALLOW_USERS_TO_RESTART = allow_users_to_restart
+        app = create_test_app(config)
         with app.test_client() as client:
             client.get("/")
             client.post(STUDY_RULE, data={"direction": "forward"})
             response = client.get("/")
-        settings["allow_users_to_restart"] = True
         expected_rule = RESTART_RULE if allow_users_to_restart else STUDY_RULE
         assert bytes(f'href="{expected_rule}"', "utf-8") in response.data
 
     @pytest.mark.parametrize("block_duplicates", (True, False))
     def test_duplicate(self, block_duplicates):
         query_string = {"key": "value"}
-
+        config = Config()
+        config.USER_METADATA.clear()
         if block_duplicates:
-            settings["block_duplicate_keys"] = query_string.keys()
-        else:
-            settings["block_duplicate_keys"] = []
+            config.BLOCK_DUPLICATE_KEYS = query_string.keys()
 
-        app = create_test_app()
+        app = create_test_app(config)
         with app.test_client() as client:
             client.get("/", query_string=query_string)
 
         with app.test_client() as client:
             response = client.get("/", query_string=query_string)
 
-        settings["block_duplicate_keys"] = []
         expected_rule = SCREENOUT_RULE if block_duplicates else STUDY_RULE
         assert bytes(f'href="{expected_rule}"', "utf-8") in response.data
 

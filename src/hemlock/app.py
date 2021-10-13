@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 from collections import defaultdict
-from typing import Any, Dict
+from typing import Any, Dict, List, Mapping, Union
 
 from flask import Blueprint, Flask
 from flask_login import LoginManager
@@ -29,43 +29,53 @@ login_manager = LoginManager()
 login_manager.login_view = "hemlock.index"
 login_manager.login_message = None
 
-redis_url = os.environ.get("REDIS_URL")
-if redis_url:
-    # TODO: test that socketio can work with Redis
+if redis_url := os.getenv("REDIS_URL"):
     socketio = SocketIO(message_queue=redis_url)
 else:
     socketio = SocketIO()
 
-
-# create default settings
-sqlalchemy_database_uri = os.environ.get("DATABASE_URL", "sqlite://")
-if sqlalchemy_database_uri.startswith("postgres://"):
-    # see https://help.heroku.com/ZKNTJQSK/why-is-sqlalchemy-1-4-x-not-connecting-to-heroku-postgres
-    sqlalchemy_database_uri = sqlalchemy_database_uri.replace(
-        "postgres://", "postgresql://", 1
-    )
-
-settings = {
-    "allow_users_to_restart": True,
-    "screenout_records": {},
-    "block_duplicate_keys": [],
-    "static_folder": "static",
-    "template_folder": os.path.join(os.getcwd(), "templates"),
-    "config": {
-        "PASSWORD": os.environ.get("PASSWORD", ""),
-        "SECRET_KEY": os.environ.get("SECRET_KEY", "secret"),
-        "SQLALCHEMY_DATABASE_URI": sqlalchemy_database_uri,
-        "SQLALCHEMY_TRACK_MODIFICATIONS": False,
-        "SQLALCHEMY_ENGINE_OPTIONS": (
-            {}
-            if sqlalchemy_database_uri.startswith("sqlite")
-            else dict(pool_size=1, pool_recycle=10, max_overflow=0)
-        ),
-    },
-}
-
 # for caching static pages
-static_pages = {}
+static_pages: Dict[str, str] = {}
+
+
+class Config:
+    """Default configuration file."""
+
+    ALLOW_USERS_TO_RESTART: bool = True
+    SCREENOUT_RECORDS: Dict[str, List[str]] = {}
+    BLOCK_DUPLICATE_KEYS: List[str] = []
+    SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
+    USER_METADATA: defaultdict[str, List[str]] = defaultdict(list)
+
+    @property
+    def PASSWORD(self) -> str:
+        return os.getenv("PASSWORD", "")
+
+    @property
+    def PASSWORD_HASH(self) -> str:
+        if not hasattr(self, "_PASSWORD_HASH"):
+            self._PASSWORD_HASH = generate_password_hash(self.PASSWORD)
+        return self._PASSWORD_HASH
+
+    @property
+    def SECRET_KEY(self) -> str:
+        return os.getenv("SECRET_KEY", "secret")
+
+    @property
+    def SQLALCHEMY_DATABASE_URI(self) -> str:
+        uri = os.getenv("DATABASE_URL", "sqlite://")
+        if uri.startswith("postgres://"):
+            # see https://help.heroku.com/ZKNTJQSK/why-is-sqlalchemy-1-4-x-not-connecting-to-heroku-postgres
+            return uri.replace("postgres://", "postgresql://", 1)
+
+        return uri
+
+    @property
+    def SQLALCHEMY_ENGINE_OPTIONS(self) -> Dict[str, Any]:
+        if self.SQLALCHEMY_DATABASE_URI.startswith("sqlite"):
+            return {}
+
+        return {"pool_size": 1, "pool_recycle": 10, "max_overflow": 0}
 
 
 @bp.before_app_first_request
@@ -74,27 +84,26 @@ def init_app() -> None:
     db.create_all()
 
 
-def create_app(settings: Dict[Any, Any] = settings) -> Flask:
+def create_app(config: Union[Mapping, Config] = None, **kwargs: Any) -> Flask:
     """Create application.
 
+    See :class:`hemlock.app.Config` for default configuration.
+
     Args:
-        settings (Dict[Any, Any], optional): Applciation settings. Defaults to settings.
+        config (Union[Mapping, Config]): Configuration object. Defaults to None.
+        **kwargs (Any): Passed to `flask.Flask`.
 
     Returns:
         Flask: Application.
     """
-    app = Flask(
-        __name__,
-        static_folder=settings["static_folder"],
-        template_folder=settings["template_folder"],
-    )
+    app = Flask(__name__, **kwargs)
 
-    settings["config"]["PASSWORD_HASH"] = generate_password_hash(
-        settings["config"].get("PASSWORD", "")
-    )
-    app.config.update(settings["config"])
-    app.settings = settings  # type: ignore
-    app.user_metadata = defaultdict(list)  # type: ignore
+    if config is None:
+        config = Config()
+    if isinstance(config, Mapping):
+        app.config.update(config)
+    else:
+        app.config.from_object(config)
     app.register_blueprint(bp)
 
     # initialize extensions
@@ -105,16 +114,15 @@ def create_app(settings: Dict[Any, Any] = settings) -> Flask:
     return app
 
 
-def create_test_app(settings: Dict[Any, Any] = settings) -> Flask:
+def create_test_app(*args: Any, **kwargs: Any) -> Flask:
     """Create a test application.
 
-    Args:
-        settings (Dict[Any, Any], optional): Application settings. Defaults to settings.
+    Arguments and keywords arguments passed to :func:`hemlock.app.create_app`.
 
     Returns:
         Flask: Test application.
     """
-    app = create_app(settings)
+    app = create_app(*args, **kwargs)
     app.app_context().push()
     init_app()
 
