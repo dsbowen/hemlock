@@ -60,7 +60,8 @@ def make_assigner(conditions: Mapping) -> Tuple[Iterable, cycle]:
             >>> user.get_meta_data()["factor0"], user.get_meta_data()["factor1"]
             (1, 'high')
     """
-    possible_assignments = list(product(*dict(conditions).values()))
+    conditions = dict(conditions)
+    possible_assignments = list(product(*conditions.values()))
     shuffle(possible_assignments)
     return conditions.keys(), cycle(possible_assignments)
 
@@ -69,7 +70,8 @@ def assign_user(assigner: Tuple[Iterable, cycle], user: User = None) -> Dict:
     """Assign a user to conditions.
 
     Args:
-        assigner (Tuple[Iterable, cycle]): See :func:`make_assigner`.
+        assigner (Tuple[Iterable, cycle]): See 
+            :func:`hemlock.utils.random.make_assigner`.
         user (User, optional): User to assign. Defaults to None.
 
     Returns:

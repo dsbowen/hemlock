@@ -29,10 +29,7 @@ login_manager = LoginManager()
 login_manager.login_view = "hemlock.index"
 login_manager.login_message = None
 
-if redis_url := os.getenv("REDIS_URL"):
-    socketio = SocketIO(message_queue=redis_url)
-else:
-    socketio = SocketIO()
+socketio = SocketIO()
 
 # for caching static pages
 static_pages: Dict[str, str] = {}
@@ -84,13 +81,13 @@ def init_app() -> None:
     db.create_all()
 
 
-def create_app(config: Union[Mapping, Config] = None, **kwargs: Any) -> Flask:
+def create_app(*config: Union[Mapping, Config], **kwargs: Any) -> Flask:
     """Create application.
 
     See :class:`hemlock.app.Config` for default configuration.
 
     Args:
-        config (Union[Mapping, Config]): Configuration object. Defaults to None.
+        *config (Union[Mapping, Config]): Configuration objects. Defaults to None.
         **kwargs (Any): Passed to `flask.Flask`.
 
     Returns:
@@ -98,12 +95,15 @@ def create_app(config: Union[Mapping, Config] = None, **kwargs: Any) -> Flask:
     """
     app = Flask(__name__, **kwargs)
 
-    if config is None:
-        config = Config()
-    if isinstance(config, Mapping):
-        app.config.update(config)
-    else:
-        app.config.from_object(config)
+    # set up configuration
+    if not config:
+        config = (Config(),)
+    for item in config:
+        if isinstance(item, Mapping):
+            app.config.update(item)
+        else:
+            app.config.from_object(item)
+
     app.register_blueprint(bp)
 
     # initialize extensions

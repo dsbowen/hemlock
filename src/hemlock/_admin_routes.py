@@ -4,38 +4,26 @@ from __future__ import annotations
 
 import csv
 import io
-import os
 from datetime import timedelta
-from functools import wraps
-from typing import Callable, Union
+from typing import Union
 
 import pandas as pd
-from flask import current_app, request, send_file, session, url_for, wrappers
+from flask import request, send_file, session, url_for, wrappers
 from werkzeug.wrappers import Response
-from werkzeug.security import check_password_hash
 
+from .admin_route_utils import (
+    PASSWORD_KEY,
+    in_gitpod_ide,
+    login_required,
+    navbar,
+    password_is_correct,
+)
 from .app import bp, db, static_pages
 from .user import User
 from .page import Page
 from .questions import Input, Label
 from .utils import redirect
 from .utils.statics import pandas_to_html, recompile_at_interval
-
-PASSWORD_KEY = "admin_password"
-
-admin_navbar = (
-    (
-        """
-        <img src="https://dsbowen.gitlab.io/hemlock/_static/banner.png" style="max-height:30px;" alt="Hemlock">
-        """,
-        "https://dsbowen.gitlab.io/hemlock",
-    ),
-    [
-        ("User status", "/admin-status"),
-        ("Download", "/admin-download"),
-        ("Logout", "/admin-logout"),
-    ],
-)
 
 
 @bp.route("/admin-login", methods=["GET", "POST"])
@@ -70,7 +58,7 @@ def admin_login() -> Union[str, Response]:
                 floating_label="Password",
                 input_tag={"type": "password"},
             ),
-            navbar=admin_navbar,
+            navbar=navbar,
             back=False,
             forward="Login",
         )
@@ -93,43 +81,8 @@ def admin_login() -> Union[str, Response]:
     return page.render()
 
 
-def password_is_correct() -> bool:
-    """Checks if the client has the correct password stored in session.
-
-    Returns:
-        bool: Correct password indicator.
-    """
-    return check_password_hash(
-        current_app.config.get("PASSWORD_HASH"),  # type: ignore
-        session.get(PASSWORD_KEY, ""),
-    )
-
-
-def admin_login_required(
-    view_function: Callable[[], Union[str, Response]]
-) -> Callable[[], Union[str, Response]]:
-    """Decorator requiring admin login before accessing a page.
-
-    Args:
-        view_function (Callable[[], Union[str, Response]]): Admin view function.
-
-    Returns:
-        Callable[[], Union[str, Response]]: Decorated view function.
-    """
-
-    @wraps(view_function)
-    def login_required_wrapper():
-        if password_is_correct():
-            return view_function()
-
-        requested_url = url_for(f"hemlock.{view_function.__name__}")
-        return redirect(url_for("hemlock.admin_login", requested_url=requested_url))
-
-    return login_required_wrapper
-
-
 @bp.route("/admin-logout")
-@admin_login_required
+@login_required
 def admin_logout() -> Response:
     """Clear the password cookie.
 
@@ -141,7 +94,7 @@ def admin_logout() -> Response:
 
 
 @bp.route("/admin-download")
-@admin_login_required
+@login_required
 def admin_download() -> wrappers.Response:
     """Download the users' data.
 
@@ -164,20 +117,20 @@ def admin_download() -> wrappers.Response:
 
 
 @bp.route("/admin-status")
-@admin_login_required
+@login_required
 def admin_status() -> str:
     """User status page.
 
     Returns:
         str: HTML.
     """
-    if (
-        "GITPOD_HOST" in os.environ
-        and os.environ.get("VS_CODE_REMOTE", "False").lower() != "true"
-    ):  # pragma: no cover
+    init_label: str = "No users yet. Go get some people to take your survey!"
+    if in_gitpod_ide():
         # websocket will not reliably connect in gitpod
         # but will work in VS code remote
-        page = Page(label := Label(), navbar=admin_navbar, forward=False, back=False)
+        page = Page(
+            label := Label(init_label), navbar=navbar, forward=False, back=False
+        )
         get_user_status(label)
         return page.render()
 
@@ -187,12 +140,9 @@ def admin_status() -> str:
         page = Page(
             recompile_at_interval(
                 30000,
-                label := Label(
-                    "No users yet. Go get some people to take your survey!",
-                    compile=get_user_status,
-                ),
+                label := Label(init_label, compile=get_user_status),
             ),
-            navbar=admin_navbar,
+            navbar=navbar,
             forward=False,
             back=False,
         )

@@ -1,4 +1,5 @@
 import io
+import os
 
 import pandas as pd
 import pytest
@@ -87,8 +88,17 @@ def test_download(client):
 
 
 class TestStatus:
-    def test_request(self, client):
+    @pytest.mark.parametrize("in_gitpod", (True, False))
+    def test_request(self, client, in_gitpod):
+        if in_gitpod:
+            os.environ["GITPOD_HOST"] = "host"
+
+        [db.session.delete(user) for user in User.query.all()]
+        db.session.commit()
         response = client.get(STATUS_RULE)
+        if "GITPOD_HOST" in os.environ:
+            os.environ.pop("GITPOD_HOST")
+
         assert b"No users yet." in response.data
 
     @pytest.mark.parametrize("with_users", (True, False))

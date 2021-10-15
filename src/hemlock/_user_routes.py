@@ -50,7 +50,7 @@ def index() -> Response:
     for key, value in meta_data.items():
         if key in current_app.config["BLOCK_DUPLICATE_KEYS"]:
             user_metadata[key].append(value)
-    
+
     User(meta_data=meta_data)
     db.session.commit()
     return redirect(User.default_url_rule)  # type: ignore
