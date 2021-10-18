@@ -81,19 +81,23 @@ def init_app() -> None:
     db.create_all()
 
 
-def create_app(*config: Union[Mapping, Config], **kwargs: Any) -> Flask:
+def create_app(*config: Union[Mapping, Config], template_folder: str=None, **kwargs: Any) -> Flask:
     """Create application.
 
     See :class:`hemlock.app.Config` for default configuration.
 
     Args:
         *config (Union[Mapping, Config]): Configuration objects. Defaults to None.
-        **kwargs (Any): Passed to `flask.Flask`.
+        template_folder (str, optional): Template folder argument for ``flask.Flask``.
+        **kwargs (Any): Passed to ``flask.Flask``.
 
     Returns:
         Flask: Application.
     """
-    app = Flask(__name__, **kwargs)
+    if template_folder is None:
+        template_folder = os.path.join(os.getcwd(), "templates")
+
+    app = Flask(__name__, template_folder=template_folder, **kwargs)
 
     # set up configuration
     if not config:
@@ -123,6 +127,7 @@ def create_test_app(*args: Any, **kwargs: Any) -> Flask:
         Flask: Test application.
     """
     app = create_app(*args, **kwargs)
+    app.config["TESTING"] = True
     app.app_context().push()
     init_app()
 

@@ -28,7 +28,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.types import JSON
 from sqlalchemy_mutable.types import MutablePickleType, MutableDictJSONType
-from sqlalchemy_mutable.utils import is_callable
+from sqlalchemy_mutable.utils import get_object, is_callable
 from werkzeug.wrappers.response import Response
 
 from ._data_frame import DataFrame
@@ -274,12 +274,12 @@ class User(UserMixin, db.Model):
         """Cache the user's data."""
         self._cached_data = self.get_data(to_pandas=False, use_cached_data=False)
 
-    def get_meta_data(self, convert_datetime_to_string: bool = False) -> Dict[str, Any]:
+    def get_meta_data(self, convert_to_string: bool = False) -> Dict[str, Any]:
         """Get the user's metadata.
 
         Args:
-            convert_datetime_to_string (bool, optional): Indicates that the user's start
-                and end times should be converted to a string. Defaults to False.
+            convert_to_string (bool, optional): Indicates that the user's start and end
+                times should be converted to a string. Defaults to False.
 
         Returns:
             Dict[str, Any]: User's metadata. This is the ``user.meta_data`` attribute
@@ -295,11 +295,14 @@ class User(UserMixin, db.Model):
             "end_time": self.end_time,
             "total_seconds": (self.end_time - self.start_time).total_seconds(),
         }
-        if convert_datetime_to_string:
-            metadata["start_time"] = str(self.start_time)
-            metadata["end_time"] = str(self.end_time)
+        if convert_to_string:
+            metadata["start_time"] = str(metadata["start_time"])
+            metadata["end_time"] = str(metadata["end_time"])
 
         metadata.update(self.meta_data)
+        for key, item in metadata.items():
+            metadata[key] = get_object(item)
+
         return metadata
 
     def get_data(
@@ -319,7 +322,7 @@ class User(UserMixin, db.Model):
         if use_cached_data and self._cached_data is not None:
             df = self._cached_data
         else:
-            meta_data = self.get_meta_data(convert_datetime_to_string=True)
+            meta_data = self.get_meta_data(convert_to_string=True)
             meta_data = {key: [item] for key, item in meta_data.items()}
             df = DataFrame(meta_data, fill_rows=True)
             [df.add_branch(tree.branch) for tree in self.trees]

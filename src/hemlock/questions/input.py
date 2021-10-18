@@ -9,6 +9,7 @@ from typing import Any, Mapping
 
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_mutable.html import HTMLAttrType
+from sqlalchemy_mutable.utils import is_instance
 
 from ..app import db
 from ..functional.test_response import datetime_input_types, random_input
@@ -183,5 +184,15 @@ class Input(Question):
                     f" {datetime.utcnow().strftime(datetime_format)}."
                 )
             return response
+
+        if input_type == TEXT_INPUT_TYPE and not is_instance(response, str):
+            raise ValueError(
+                f"Error on input {self}"
+                f"\nThis input accepts any text but the test response was {response} of"
+                f" type {type(response)}. A common cause of this error is that you want"
+                " users to enter a number but didn't require the input type to be a"
+                " number. You can do this with:"
+                "\n>>> Input(input_tag={\"type\": \"number\"})"
+            )
 
         return str(response)

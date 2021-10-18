@@ -110,13 +110,11 @@ def random_text(question: "Question", pr_no_response: float = 0.2) -> Optional[s
         tag = question.input_tag
     elif hasattr(question, "textarea_tag"):
         tag = question.textarea_tag
-    print(tag)
 
     if not tag.get("required") and random.random() < pr_no_response:
         return None
 
     length = random.randint(tag.get("minlength", 1), tag.get("maxlength", 20))
-    print(length)
     n_words = random.randint(tag.get("minwords", 1), tag.get("maxwords", 5))
     n_words = min(n_words, math.ceil(length / 2))
     n_whitespace_characters = n_words - 1

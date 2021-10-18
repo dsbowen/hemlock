@@ -14,6 +14,7 @@ hemlock.utils.format
    .. autosummary::
    
       convert_markdown
+      plural
    
    
 

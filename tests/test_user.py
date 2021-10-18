@@ -131,24 +131,24 @@ def test_completed_and_failed(property_name):
 def test_repr():
     user = User.make_test_user()
     assert repr(user).startswith("<User")
-    assert str(user.get_meta_data(convert_datetime_to_string=True)) in repr(user)
+    assert str(user.get_meta_data(convert_to_string=True)) in repr(user)
 
 
 @pytest.mark.parametrize(
-    "meta_data, convert_datetime_to_string",
+    "meta_data, convert_to_string",
     product((None, {"hello": "world"}), (True, False)),
 )
-def test_get_meta_data(meta_data, convert_datetime_to_string):
+def test_get_meta_data(meta_data, convert_to_string):
     user = User.make_test_user(meta_data=meta_data)
     user_meta_data = user.get_meta_data(
-        convert_datetime_to_string=convert_datetime_to_string
+        convert_to_string=convert_to_string
     )
 
     assert user_meta_data["completed"] is False
     assert user_meta_data["failed"] is False
 
     assert user_meta_data["total_seconds"] == 0
-    if convert_datetime_to_string:
+    if convert_to_string:
         assert isinstance(user_meta_data["start_time"], str)
         assert isinstance(user_meta_data["end_time"], str)
 
