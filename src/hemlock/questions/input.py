@@ -192,7 +192,7 @@ class Input(Question):
                 f" type {type(response)}. A common cause of this error is that you want"
                 " users to enter a number but didn't require the input type to be a"
                 " number. You can do this with:"
-                "\n>>> Input(input_tag={\"type\": \"number\"})"
+                '\n>>> Input(input_tag={"type": "number"})'
             )
 
         return str(response)

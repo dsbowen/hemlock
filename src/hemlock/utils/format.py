@@ -38,7 +38,7 @@ def convert_markdown(value: str, strip_last_paragraph: bool = False) -> str:
     return "\n".join(lines)
 
 
-def plural(number: float, singular_form: str, plural_form: str=None) -> str:
+def plural(number: float, singular_form: str, plural_form: str = None) -> str:
     """Make a word singular or plural depending on the quantity.
 
     Args:

@@ -70,7 +70,7 @@ def assign_user(assigner: Tuple[Iterable, cycle], user: User = None) -> Dict:
     """Assign a user to conditions.
 
     Args:
-        assigner (Tuple[Iterable, cycle]): See 
+        assigner (Tuple[Iterable, cycle]): See
             :func:`hemlock.utils.random.make_assigner`.
         user (User, optional): User to assign. Defaults to None.
 

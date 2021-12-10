@@ -81,7 +81,9 @@ def init_app() -> None:
     db.create_all()
 
 
-def create_app(*config: Union[Mapping, Config], template_folder: str=None, **kwargs: Any) -> Flask:
+def create_app(
+    *config: Union[Mapping, Config], template_folder: str = None, **kwargs: Any
+) -> Flask:
     """Create application.
 
     See :class:`hemlock.app.Config` for default configuration.
@@ -100,9 +102,7 @@ def create_app(*config: Union[Mapping, Config], template_folder: str=None, **kwa
     app = Flask(__name__, template_folder=template_folder, **kwargs)
 
     # set up configuration
-    if not config:
-        config = (Config(),)
-    for item in config:
+    for item in config or (Config(),):
         if isinstance(item, Mapping):
             app.config.update(item)
         else:

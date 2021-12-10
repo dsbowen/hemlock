@@ -1,6 +1,8 @@
 import pytest
 
+from flask_login import current_user
 from hemlock import User, Page, create_test_app
+from hemlock._user_routes import internal_server_error
 from hemlock.app import Config
 from hemlock.questions import Label
 
@@ -106,3 +108,12 @@ class TestRestart:
         # and the zeroeth page if he chose to restart
         expected_label = FIRST_PAGE_LABEL if resume else ZEROETH_PAGE_LABEL
         assert bytes(expected_label, "utf-8") in response.data
+
+
+def test_internal_server_error():
+    app = create_test_app()
+    with app.test_request_context():
+        response = internal_server_error("error")
+        assert current_user.errored
+    assert "The application encountered an error" in response[0]
+    assert response[1] == 500

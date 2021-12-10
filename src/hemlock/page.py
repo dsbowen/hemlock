@@ -187,7 +187,10 @@ class Page(db.Model):  # type: ignore
             "js": open(os.path.join(DIR_PATH, "_page_js.html"), "r")
             .read()
             .splitlines(),
-            "div": {"class": ["container", "vh-100", "d-flex", "align-items-center"]},
+            "div": {
+                "class": ["container", "min-vh-100", "d-flex", "align-items-center"],
+                "style": {"padding-bottom": "20px"}
+            },
             "back-button": {
                 "id": "back-button",
                 "class": ["btn", "btn-primary"],
@@ -482,15 +485,15 @@ class Page(db.Model):  # type: ignore
         return ".".join(indices)
 
     def display(self):
-        # we remove the vh-100 class from the div tag wrapping the form and add it back
+        # we remove the min-vh-100 class from the div tag wrapping the form and add it back
         # after displaying in a notebook.
-        # the vh-100 class makes sure the form extends from the top to the botton of
-        # the screen, but we don't want this when displaying in Jupyter
+        # the min-vh-100 class makes sure the form extends from the top to the botton of
+        # the screen, but we don't want this when displaying in a notebook
         div_class = self.html_settings["div"]["class"]
-        vh_100 = "vh-100" in div_class
+        vh_100 = "min-vh-100" in div_class
         if vh_100:
             div_class = self.html_settings["div"]["class"].copy()
-            self.html_settings["div"]["class"].remove("vh-100")
+            self.html_settings["div"]["class"].remove("min-vh-100")
 
         return_value = display.HTML(self.render(for_notebook_display=True))
 
