@@ -1,21 +1,55 @@
-from itertools import product
+import pytest
+from sqlalchemy_mutable.utils import partial
 
 from hemlock import User, Page, create_test_app
-from hemlock.utils.random import assign_user, make_assigner
+from hemlock.app import db
+from hemlock.utils.random import Assigner
 
 
-def test_assign_user():
-    def seed():
-        assign_user(assigner)
+@pytest.fixture(
+    scope="module",
+    params=(
+        {"factor0": (0, 1)},
+        {"factor0": (0, 1), "factor1": ("low", "med", "high")},
+    ),
+)
+def assigner(request):
+    return Assigner(request.param)
+
+
+@pytest.fixture
+def app():
+    yield create_test_app()
+    [db.session.delete(user) for user in User.query.all()]
+    db.session.commit()
+
+
+class TestAssigner:
+    def seed(self, assigner):
+        assigner.assign_user()
         return Page()
 
-    conditions = {"factor0": (0, 1), "factor1": ("low", "medium", "high")}
-    assigner = make_assigner(conditions)
-    # we expect the users to be evenly assigned to all possible cells
-    expected_assignments = list(product(*conditions.values()))
-    create_test_app()
-    for _ in range(len(expected_assignments)):
-        user = User.make_test_user(seed)
-        metadata = user.get_meta_data()
-        expected_assignments.remove((metadata["factor0"], metadata["factor1"]))
-    assert not expected_assignments
+    def test_assign_user(self, app, assigner):
+        expected_assignments = set(assigner.possible_assignments)
+        for _ in range(len(expected_assignments)):
+            user = User.make_test_user(partial(self.seed, assigner))
+            metadata = user.get_meta_data()
+            expected_assignments.remove(
+                tuple(metadata[name] for name in assigner.factor_names)
+            )
+        assert not expected_assignments
+
+    def test_get_cum_assigned(self, app, assigner):
+        df = assigner.get_cum_assigned()
+        if len(assigner.factor_names) == 1:
+            expected_values = set(value[0] for value in assigner.possible_assignments)
+        else:
+            assert set(df.index.names) == set(assigner.factor_names)
+            expected_values = set(assigner.possible_assignments)
+        assert expected_values == set(df.index.values)
+        assert (df["count"] == 0).all()
+
+        for _ in range(len(expected_values)):
+            user = User.make_test_user(partial(self.seed, assigner))
+            user.test_get()
+        assert (assigner.get_cum_assigned()["count"] == 1).all()

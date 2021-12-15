@@ -140,9 +140,7 @@ def test_repr():
 )
 def test_get_meta_data(meta_data, convert_to_string):
     user = User.make_test_user(meta_data=meta_data)
-    user_meta_data = user.get_meta_data(
-        convert_to_string=convert_to_string
-    )
+    user_meta_data = user.get_meta_data(convert_to_string=convert_to_string)
 
     assert user_meta_data["completed"] is False
     assert user_meta_data["failed"] is False

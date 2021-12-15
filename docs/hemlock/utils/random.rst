@@ -13,8 +13,7 @@ hemlock.utils.random
 
    .. autosummary::
    
-      assign_user
-      make_assigner
+      Assigner
       make_hash
    
    

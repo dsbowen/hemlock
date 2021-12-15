@@ -189,7 +189,7 @@ class Page(db.Model):  # type: ignore
             .splitlines(),
             "div": {
                 "class": ["container", "min-vh-100", "d-flex", "align-items-center"],
-                "style": {"padding-bottom": "20px"}
+                "style": {"padding-bottom": "20px"},
             },
             "back-button": {
                 "id": "back-button",

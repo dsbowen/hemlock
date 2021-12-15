@@ -15,9 +15,8 @@ class TestConfig:
 
         if postgres:
             os.environ.pop("DATABASE_URL")
-            # test that URL uses postgresql scheme for 
+            # test that URL uses postgresql scheme for
             # Heroku + sqlalchemy 1.4 compatibility
             assert uri == "postgresql://db"
         else:
             assert uri == "sqlite://"
-            
