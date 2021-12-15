@@ -23,6 +23,7 @@
         // update the clock text at regular intervals
         {% if clock_id is none %}
             setTimeout(function(){
+                // TODO: what if there's no forward button on the page?
                 $("#forward-button").click();
             }, getMilliseconds())
         {% else %}
@@ -35,6 +36,7 @@
                 }
                 else{
                     clock.text("0:00:00");
+                    // TODO: what if there's no forward button on the page?
                     $("#forward-button").click();
                 }
             }, {{ clock_update_interval }})

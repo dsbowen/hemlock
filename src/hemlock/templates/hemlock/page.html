@@ -109,8 +109,15 @@
             {{ question.html_settings.get_js() | safe }}
         {% endfor %}
         <script>
+            var prevent_submit_class = "prevent_submit";
             $("form").submit( function(e) {
-                $(".loading").css("display", "flex");
+                if ($(this).hasClass(prevent_submit_class)) {
+                    e.preventDefault();
+                }
+                else {
+                    $(".loading").css("display", "flex");
+                    $(this).addClass(prevent_submit_class);
+                }
             });
         </script>
     {% endblock %}
