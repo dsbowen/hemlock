@@ -113,7 +113,7 @@ class Assigner:
             )
 
         count_df = pd.DataFrame(index=index)
-        if len(df) > 0:
+        if len(df) > 0 and all([name in df for name in self.factor_names]):
             count_df["count"] = df.groupby(self.factor_names)["id"].count()
             count_df.fillna(0, inplace=True)
         else:

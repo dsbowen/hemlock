@@ -27,7 +27,7 @@ def app():
 class TestAssigner:
     def seed(self, assigner):
         assigner.assign_user()
-        return Page()
+        return [Page(), Page()]
 
     def test_assign_user(self, app, assigner):
         expected_assignments = set(assigner.possible_assignments)
@@ -47,9 +47,16 @@ class TestAssigner:
             assert set(df.index.names) == set(assigner.factor_names)
             expected_values = set(assigner.possible_assignments)
         assert expected_values == set(df.index.values)
+        
+        # test that the count is 0 when there are no users
         assert (df["count"] == 0).all()
 
+        # test that the count is 0 when there are in progress users but no one has
+        # finished (so the factor names aren't in the dataframe)
+        User.make_test_user(partial(self.seed, assigner))
+        assert (assigner.get_cum_assigned()["count"] == 0).all()
+
+        # test that the count is 1 when exactly 1 user has finished in all conditions
         for _ in range(len(expected_values)):
-            user = User.make_test_user(partial(self.seed, assigner))
-            user.test_get()
+            User.make_test_user(partial(self.seed, assigner)).test()
         assert (assigner.get_cum_assigned()["count"] == 1).all()
