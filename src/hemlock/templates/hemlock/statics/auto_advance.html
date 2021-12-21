@@ -18,21 +18,16 @@
         }
 
         function go_forward(){
-            if (!form_submitted && !$("form").hasClass(form_submitted_class)){
+            // page.html adds "submitted" class to the form on submission
+            // this prevents double submission
+            if (!$("form").hasClass("submitted")){
                 // TODO: what if there's no forward button on the page?
                 $("#forward-button").click();
-                form_submitted = true;
-            }
-            else{
-                console.log("preventing form submission");
             }
         }
 
         const localOffset = new Date().getTimezoneOffset() * 60 * 1000;
         const start_time = new Date("{{ start_time }}");
-        var form_submitted = false;
-        // page.html uses the same form submitted class
-        var form_submitted_class = "form-submitted";
 
         // update the clock text at regular intervals
         {% if clock_id is none %}

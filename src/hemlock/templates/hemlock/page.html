@@ -110,16 +110,17 @@
         {% endfor %}
         <script>
             $(document).ready( function() {
-                var form_submitted_class = "form-submitted"
-                var form_submitted = false;
+                var submitted_class = "submitted";
                 $("form").submit( function(e) {
-                    if (form_submitted || $(this).hasClass(form_submitted_class)) {
+                    if ($(this).hasClass(submitted_class)) {
                         e.preventDefault();
                     }
                     else {
+                        $(this).addClass(submitted_class);
                         $(".loading").css("display", "flex");
-                        form_submitted = true;
-                        $(this).addClass(form_submitted_class);
+                        $("input").prop("readonly", true);
+                        $("select").prop("readonly", true);
+                        $("textarea").prop("readonly", true);
                     }
                 });
             })

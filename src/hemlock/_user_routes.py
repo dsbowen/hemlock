@@ -35,7 +35,10 @@ def index() -> Response:
         # get querystring arguments from the redirect
         parsed_url = urlparse(request.args["next"])
         meta_data = dict(parse_qs(parsed_url.query))
-        meta_data = {key: (value[0] if len(value) == 1 else value) for key, value in meta_data.items()}
+        meta_data = {
+            key: (value[0] if len(value) == 1 else value)
+            for key, value in meta_data.items()
+        }
         meta_data["next"] = parsed_url.path
     else:
         meta_data = dict(request.args)
