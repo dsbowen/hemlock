@@ -9,11 +9,12 @@ ports:
 tasks:
   - name: Dependencies
     init: |
-      pip install -r ./requirements.txt
-      pip install .
+      pip install -e .
     # set VS_CODE_REMOTE to False when working in gitpod's in-browser IDE
     # set to True when working in VS code remote desktop
-    command: export TOXENV=py39 VS_CODE_REMOTE=False
+    command: |
+      export TOXENV=py39 VS_CODE_REMOTE=False
+      pip install -r ./requirements.txt
 
 vscode:
   extensions:

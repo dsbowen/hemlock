@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 from typing import Tuple, Union
+from urllib.parse import urlparse, parse_qs
 
 from flask import current_app, request, url_for
 from flask_login import current_user, login_required, logout_user
@@ -30,7 +31,15 @@ def index() -> Response:
     def matching_record_found(mapping):
         return any([value in mapping.get(key, []) for key, value in meta_data.items()])
 
-    meta_data = dict(request.args)
+    if "next" in request.args:
+        # get querystring arguments from the redirect
+        parsed_url = urlparse(request.args["next"])
+        meta_data = dict(parse_qs(parsed_url.query))
+        meta_data = {key: (value[0] if len(value) == 1 else value) for key, value in meta_data.items()}
+        meta_data["next"] = parsed_url.path
+    else:
+        meta_data = dict(request.args)
+
     meta_data["ipv4"] = request.remote_addr  # type: ignore
 
     if matching_record_found(current_app.config["SCREENOUT_RECORDS"]):

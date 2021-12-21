@@ -1,4 +1,4 @@
-from hemlock import User, Page, create_app
+from hemlock import User, Page, create_app, socketio
 from hemlock.functional import compile
 from hemlock.questions import Label
 
@@ -24,4 +24,4 @@ def seed():
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, debug=True)

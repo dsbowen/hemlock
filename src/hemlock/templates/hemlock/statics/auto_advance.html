@@ -16,15 +16,28 @@
             var seconds = (seconds < 10) ? "0" + seconds : seconds;
             return hours + ":" + minutes + ":" + seconds
         }
-        
+
+        function go_forward(){
+            if (!form_submitted && !$("form").hasClass(form_submitted_class)){
+                // TODO: what if there's no forward button on the page?
+                $("#forward-button").click();
+                form_submitted = true;
+            }
+            else{
+                console.log("preventing form submission");
+            }
+        }
+
         const localOffset = new Date().getTimezoneOffset() * 60 * 1000;
         const start_time = new Date("{{ start_time }}");
+        var form_submitted = false;
+        // page.html uses the same form submitted class
+        var form_submitted_class = "form-submitted";
 
         // update the clock text at regular intervals
         {% if clock_id is none %}
             setTimeout(function(){
-                // TODO: what if there's no forward button on the page?
-                $("#forward-button").click();
+                go_forward();
             }, getMilliseconds())
         {% else %}
             var clock = $("#{{ clock_id }}");
@@ -36,8 +49,7 @@
                 }
                 else{
                     clock.text("0:00:00");
-                    // TODO: what if there's no forward button on the page?
-                    $("#forward-button").click();
+                    go_forward();
                 }
             }, {{ clock_update_interval }})
         {% endif %}

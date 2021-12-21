@@ -79,7 +79,7 @@
         {% endif %}
 
         <div {{ page.html_settings["div"].get_attrs() | safe }}>
-            <form method="POST" class="w-100" enctype="multipart/form-data">
+            <form method="POST" class="w-100" style="margin-top:80px;" enctype="multipart/form-data">
             {% block form %}                
                 {% for question in page.questions %}
                     {{ question.render() | safe}}
@@ -109,16 +109,20 @@
             {{ question.html_settings.get_js() | safe }}
         {% endfor %}
         <script>
-            var prevent_submit_class = "prevent_submit";
-            $("form").submit( function(e) {
-                if ($(this).hasClass(prevent_submit_class)) {
-                    e.preventDefault();
-                }
-                else {
-                    $(".loading").css("display", "flex");
-                    $(this).addClass(prevent_submit_class);
-                }
-            });
+            $(document).ready( function() {
+                var form_submitted_class = "form-submitted"
+                var form_submitted = false;
+                $("form").submit( function(e) {
+                    if (form_submitted || $(this).hasClass(form_submitted_class)) {
+                        e.preventDefault();
+                    }
+                    else {
+                        $(".loading").css("display", "flex");
+                        form_submitted = true;
+                        $(this).addClass(form_submitted_class);
+                    }
+                });
+            })
         </script>
     {% endblock %}
     </body>

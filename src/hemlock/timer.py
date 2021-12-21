@@ -81,5 +81,5 @@ class Timer(Data):
     def pause(self):
         """Pause the timer."""
         if self.is_running:
-            self.total_seconds += (datetime.utcnow() - self.start_time).total_seconds()
+            self.data += (datetime.utcnow() - self.start_time).total_seconds()
             self.is_running = False
