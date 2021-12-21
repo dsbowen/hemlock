@@ -180,8 +180,16 @@ class Tree(db.Model):
         Returns:
             Union[str, Response]: HTML of the next page.
         """
+        # TODO: remove logging after pilots
+        import logging
         # return a loading page if a request is in progress
-        if self.request_in_progress:
+        # or the client submits 2 consecutive POST requests
+        if (
+            self.request_in_progress
+            or request.method == self.prev_request_method == "POST"
+        ):
+            if request.method == self.prev_request_method == "POST":
+                logging.info("Prevented double submit via request.method == self.prev_request_methd == 'POST'")
             loading_page_key = "loading_page"
             if loading_page_key not in static_pages:
                 static_pages[loading_page_key] = render_template(
@@ -214,4 +222,5 @@ class Tree(db.Model):
         self.page.direction_to = direction_from
 
         self.request_in_progress = False
+        self.redirecting = True
         return redirect(self.url_rule)

@@ -102,6 +102,16 @@ class TestProcessRequest:
             rv = tree.process_request()
         assert rv == static_pages["loading_page"]
 
+    def test_double_submit(self):
+        # should return loading page after double submit
+        app = create_test_app()
+        tree = Tree(seed, url_rule="/survey")
+        tree.prev_request_method = "POST"
+        tree.request_in_progress = False
+        with app.test_request_context(method="POST", data={"direction": "forward"}):
+            rv = tree.process_request()
+        assert rv == static_pages["loading_page"]
+
     def test_refresh(self):
         # should return the current page on refresh
         app = create_test_app()
@@ -120,6 +130,9 @@ class TestProcessRequest:
         with app.test_request_context(method="POST", data={"direction": "forward"}):
             tree.process_request()
         assert tree.page is tree.branch[1]
+
+        with app.test_request_context():
+            tree.process_request()
 
         with app.test_request_context(method="POST", data={"direction": "back"}):
             tree.process_request()
