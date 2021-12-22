@@ -1,5 +1,3 @@
-image: python:3.9
-
 ports:
   - port: 8000
     onOpen: open-preview
