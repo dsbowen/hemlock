@@ -3,5 +3,5 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python==3.9.6
+  - python==3.8.12
   - pip

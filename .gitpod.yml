@@ -1,5 +1,3 @@
-image: python:3.9
-
 ports:
   - port: 8000
     onOpen: open-preview
@@ -13,7 +11,7 @@ tasks:
     # set VS_CODE_REMOTE to False when working in gitpod's in-browser IDE
     # set to True when working in VS code remote desktop
     command: |
-      export TOXENV=py39 VS_CODE_REMOTE=False
+      export VS_CODE_REMOTE=False
       pip install -r ./requirements.txt
 
 vscode:
