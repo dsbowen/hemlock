@@ -12,7 +12,8 @@ from hemlock.questions import Label
 from .utils import clear_users
 
 PASSWORD = "password"
-PASSWORD_INPUT_HASH = "password_input_hash"
+# truncate to 10 because the hash can be at most 10 characters long
+PASSWORD_INPUT_HASH = "password_input_hash"[:10]
 LOGIN_RULE = "/admin-login"
 LOGOUT_RULE = "/admin-logout"
 DOWNLOAD_RULE = "/admin-download"

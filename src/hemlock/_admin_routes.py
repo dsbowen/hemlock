@@ -34,7 +34,8 @@ def admin_login() -> Union[str, Response]:
         Union[str, Response]: HTML of the login page or redirect to a page in the admin
             dashboard.
     """
-    password_input_hash = "password_input_hash"
+    # truncate to 10 because the hash can be at most 10 characters long
+    password_input_hash = "password_input_hash"[:10]
     login_page_hash_key = "login_page_id"
     default_url = "/admin-status"
     requested_url = request.args.get("requested_url")
