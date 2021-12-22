@@ -1,3 +1,6 @@
+image:
+  file: .gitpod.Dockerfile
+
 ports:
   - port: 8000
     onOpen: open-preview
@@ -12,7 +15,7 @@ tasks:
     # set to True when working in VS code remote desktop
     command: |
       export TOXENV=py39 VS_CODE_REMOTE=False
-      pip install -r ./requirements.txt
+      pip install -r requirements.txt
 
 vscode:
   extensions:
