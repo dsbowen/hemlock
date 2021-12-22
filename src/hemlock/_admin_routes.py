@@ -22,6 +22,7 @@ from .app import bp, db, static_pages
 from .user import User
 from .page import Page
 from .questions import Input, Label
+from .questions.base import HASH_LENGTH
 from .utils import redirect
 from .utils.statics import pandas_to_html, recompile_at_interval
 
@@ -34,8 +35,7 @@ def admin_login() -> Union[str, Response]:
         Union[str, Response]: HTML of the login page or redirect to a page in the admin
             dashboard.
     """
-    # truncate to 10 because the hash can be at most 10 characters long
-    password_input_hash = "password_input_hash"[:10]
+    password_input_hash = "password_input_hash"[:HASH_LENGTH]
     login_page_hash_key = "login_page_id"
     default_url = "/admin-status"
     requested_url = request.args.get("requested_url")

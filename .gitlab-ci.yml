@@ -1,7 +1,7 @@
 # This file is a template, and might need editing before it works on your project.
 # Official language image. Look for the different tagged releases at:
 # https://hub.docker.com/r/library/python/tags/
-image: python:3.9
+image: python:3.8
 
 # Change pip's cache directory to be inside the project directory since we can
 # only cache local items.
@@ -9,7 +9,7 @@ variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   REPORTS_DIR: "." # directory where code quality reports are filed
   SPHINX_BUILD_DIR: "docs/_build"
-  TOXENV: py39
+  TOXENV: py38
   RUN_BUILD: 1
   RUN_TEST: 1
   RUN_DOCTEST: 1

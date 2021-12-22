@@ -8,12 +8,12 @@ from hemlock import User, Page, create_test_app
 from hemlock._admin_routes import password_is_correct, get_user_status
 from hemlock.app import Config, db
 from hemlock.questions import Label
+from hemlock.questions.base import HASH_LENGTH
 
 from .utils import clear_users
 
 PASSWORD = "password"
-# truncate to 10 because the hash can be at most 10 characters long
-PASSWORD_INPUT_HASH = "password_input_hash"[:10]
+PASSWORD_INPUT_HASH = "password_input_hash"[:HASH_LENGTH]
 LOGIN_RULE = "/admin-login"
 LOGOUT_RULE = "/admin-logout"
 DOWNLOAD_RULE = "/admin-download"
