@@ -34,13 +34,14 @@ def admin_login() -> Union[str, Response]:
         Union[str, Response]: HTML of the login page or redirect to a page in the admin
             dashboard.
     """
+    password_input_hash = "password_input_hash"
     login_page_hash_key = "login_page_id"
     default_url = "/admin-status"
     requested_url = request.args.get("requested_url")
 
     if request.method == "POST":
         # send the admin to the dashboard if the password was correct
-        session[PASSWORD_KEY] = next(request.form.values())
+        session[PASSWORD_KEY] = request.form[password_input_hash]
         if password_is_correct():
             return redirect(requested_url or default_url)
         return redirect(url_for("hemlock.admin_login", requested_url=requested_url))
@@ -62,6 +63,7 @@ def admin_login() -> Union[str, Response]:
             back=False,
             forward="Login",
         )
+        password_input.hash = password_input_hash
         db.session.add(page)
         db.session.commit()
         session[login_page_hash_key] = page.hash

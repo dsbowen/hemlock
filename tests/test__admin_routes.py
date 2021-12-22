@@ -12,6 +12,7 @@ from hemlock.questions import Label
 from .utils import clear_users
 
 PASSWORD = "password"
+PASSWORD_INPUT_HASH = "password_input_hash"
 LOGIN_RULE = "/admin-login"
 LOGOUT_RULE = "/admin-logout"
 DOWNLOAD_RULE = "/admin-download"
@@ -59,14 +60,14 @@ class TestLogin:
 
     def test_correct_password(self, login_client):
         login_client.get(LOGIN_RULE)
-        response = login_client.post(LOGIN_RULE, data={"input_hash": PASSWORD})
+        response = login_client.post(LOGIN_RULE, data={PASSWORD_INPUT_HASH: PASSWORD})
         assert password_is_correct()
         bytes(f'href="{STATUS_RULE}"', "utf-8") in response.data
 
     def test_incorrect_password(self, login_client):
         login_client.get(LOGIN_RULE)
         response = login_client.post(
-            LOGIN_RULE, data={"input_hash": "incorrect_password"}, follow_redirects=True
+            LOGIN_RULE, data={PASSWORD_INPUT_HASH: "incorrect_password"}, follow_redirects=True
         )
         assert not password_is_correct()
         assert self.enter_password in response.data
@@ -76,7 +77,7 @@ class TestLogin:
 
 def test_logout(login_client):
     login_client.get(LOGIN_RULE)
-    login_client.post(LOGIN_RULE, data={"hash": PASSWORD})
+    login_client.post(LOGIN_RULE, data={PASSWORD_INPUT_HASH: PASSWORD})
     assert password_is_correct()
     response = login_client.get(LOGOUT_RULE)
     assert not password_is_correct()
