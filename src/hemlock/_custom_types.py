@@ -31,6 +31,8 @@ MutableList.associate_with(MutableListPickleType)
 
 
 class MutableChoiceList(MutableList):
+    cache_ok = False
+
     def _convert_item(self, item: Any, root: Mutable = None) -> MutableDict:
         """Convert a choice item to a dictionary.
 

@@ -3,17 +3,17 @@ from itertools import combinations_with_replacement, product
 import numpy as np
 import pytest
 
-from hemlock import User, Page, create_test_app
+from hemlock import User, Page
 from hemlock.questions import Textarea
 
 from . import utils
+from ..utils import app
 
 
 @pytest.mark.parametrize(
     "is_valid0, is_valid1", combinations_with_replacement((None, True, False), r=2)
 )
-def test_set_is_valid(is_valid0, is_valid1):
-    create_test_app()
+def test_set_is_valid(app, is_valid0, is_valid1):
     utils.test_set_is_valid(is_valid0, is_valid1, Textarea, "textarea")
 
 
@@ -25,14 +25,13 @@ def test_set_is_valid(is_valid0, is_valid1):
         (None, "one", "two words", "three different words"),
     ),
 )
-def test_word_count(minwords, maxwords, response):
+def test_word_count(app, minwords, maxwords, response):
     def seed():
         return [
             Page(Textarea(textarea_tag={"minwords": minwords, "maxwords": maxwords})),
             Page(),
         ]
 
-    create_test_app()
     user = User.make_test_user(seed)
     user.test_request([response])
     question = user.get_tree().branch[0].questions[0]

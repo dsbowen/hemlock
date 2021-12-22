@@ -1,9 +1,11 @@
 import pytest
 from sqlalchemy_mutable.utils import partial
 
-from hemlock import User, Page, create_test_app
+from hemlock import User, Page
 from hemlock.app import db
 from hemlock.utils.random import Assigner
+
+from ..utils import app
 
 
 @pytest.fixture(
@@ -15,13 +17,6 @@ from hemlock.utils.random import Assigner
 )
 def assigner(request):
     return Assigner(request.param)
-
-
-@pytest.fixture
-def app():
-    yield create_test_app()
-    [db.session.delete(user) for user in User.query.all()]
-    db.session.commit()
 
 
 class TestAssigner:
@@ -47,7 +42,7 @@ class TestAssigner:
             assert set(df.index.names) == set(assigner.factor_names)
             expected_values = set(assigner.possible_assignments)
         assert expected_values == set(df.index.values)
-        
+
         # test that the count is 0 when there are no users
         assert (df["count"] == 0).all()
 

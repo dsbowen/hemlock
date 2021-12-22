@@ -80,6 +80,7 @@
 
         <div {{ page.html_settings["div"].get_attrs() | safe }}>
             <form method="POST" class="w-100" style="margin-top:80px;" enctype="multipart/form-data">
+                <input id="page-hash" name="page-hash" type="hidden" value="{{ page.hash }}">
             {% block form %}                
                 {% for question in page.questions %}
                     {{ question.render() | safe}}

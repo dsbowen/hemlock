@@ -5,7 +5,7 @@ from itertools import product
 
 import pytest
 
-from hemlock import User, Page, create_test_app
+from hemlock import User, Page
 from hemlock.functional.test_response import (
     datetime_input_types,
     random_direction,
@@ -17,6 +17,8 @@ from hemlock.functional.test_response import (
 )
 from hemlock.questions import Input, Textarea
 from hemlock.questions.choice_base import ChoiceQuestion
+
+from ..utils import app
 
 INPUT_TYPES = ["text", "number", "range"] + list(datetime_input_types.keys())
 
@@ -34,11 +36,10 @@ class TestRandomDirection:
         # even with back probability == 0, go back if forward is not an option
         assert random_direction(Page(forward=False, back=True), pr_back=0) == "back"
 
-    def test_any_direction(self):
+    def test_any_direction(self, app):
         def seed():
             return [Page(back=True), Page(back=True), Page(back=True)]
 
-        create_test_app()
         user = User.make_test_user(seed)
         page = user.get_tree().page
         assert random_direction(page, pr_back=0) == "forward"
@@ -69,8 +70,7 @@ def test_random_input(input_type, pr_no_response):
 
 
 @pytest.mark.parametrize("question_cls", (Input, Textarea))
-def test_random_text(question_cls):
-    create_test_app()
+def test_random_text(app, question_cls):
     minlength, maxlength = 25, 60
     minwords, maxwords = 6, 10
     tag = {

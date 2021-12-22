@@ -4,10 +4,11 @@ from hemlock import Page, create_test_app
 from hemlock.functional import compile
 from hemlock.questions.base import Question
 
+from ..utils import app
+
 
 class TestAutoAdvance:
-    def test_basic(self):
-        create_test_app()
+    def test_basic(self, app):
         question = Question()
         compile.auto_advance(10000)(question)
 
@@ -18,9 +19,8 @@ class TestAutoAdvance:
                 break
         assert found_auto_advance_js
 
-    def test_multiple_compile(self):
+    def test_multiple_compile(self, app):
         # test that rerunning the compile function removes the first auto-advance js
-        create_test_app()
         question = Question()
         compile.auto_advance(10000)(question)
         compile.auto_advance(10000)(question)

@@ -1,6 +1,5 @@
 import pandas as pd
 
-from hemlock import create_test_app
 from hemlock.app import db
 from hemlock.questions import Label
 from hemlock.questions.base import Question
@@ -11,12 +10,13 @@ from hemlock.utils.statics import (
     recompile_question,
 )
 
+from ..utils import app
+
 # Note: These tests mostly test that the functions run without error.
 # See test_gallery for tests of expected behavior.
 
 
-def test_make_figure():
-    create_test_app()
+def test_make_figure(app):
     src = "https://src.html"
     html = make_figure(src)
     assert src in html

@@ -6,6 +6,8 @@ from hemlock._user_routes import internal_server_error
 from hemlock.app import Config
 from hemlock.questions import Label
 
+from .utils import app, client, clear_users, make_post_data
+
 STUDY_RULE = "/test_route_url_rule"
 SCREENOUT_RULE = "/screenout"
 RESTART_RULE = "/restart"
@@ -20,20 +22,20 @@ def seed():
 
 
 class TestIndex:
-    def test_new_user(self):
-        app = create_test_app()
-        with app.test_client() as client:
-            response = client.get("/")
-        assert bytes(f'href="{STUDY_RULE}"', "utf-8") in response.data
+    def test_new_user(self, client):
+        assert bytes(f'href="{STUDY_RULE}"', "utf-8") in client.get("/").data
 
-    def test_restart_on_first_page(self):
+    @pytest.mark.parametrize("route", ("/", STUDY_RULE))
+    def test_metadata_from_querystring(self, client, route):
+        key, value = "key", "value"
+        client.get(route, query_string={key: value}, follow_redirects=True)
+        assert current_user.get_meta_data()[key] == value
+
+    def test_restart_on_first_page(self, client):
         # client should be taken back to the first page if he attempts to restart
         # while still on the first page
-        app = create_test_app()
-        with app.test_client() as client:
-            client.get("/", follow_redirects=True)
-            response = client.get("/")
-        assert bytes(f'href="{STUDY_RULE}"', "utf-8") in response.data
+        client.get("/", follow_redirects=True)
+        assert bytes(f'href="{STUDY_RULE}"', "utf-8") in client.get("/").data
 
     def test_screenout(self):
         key, value = "key", "value"
@@ -42,6 +44,7 @@ class TestIndex:
         app = create_test_app(config)
         with app.test_client() as client:
             response = client.get("/", query_string={key: value})
+        clear_users()
         assert bytes(f'href="{SCREENOUT_RULE}"', "utf-8") in response.data
 
     @pytest.mark.parametrize("allow_users_to_restart", (True, False))
@@ -51,9 +54,10 @@ class TestIndex:
         app = create_test_app(config)
         with app.test_client() as client:
             client.get("/")
-            client.post(STUDY_RULE, data={"direction": "forward"})
+            client.post(STUDY_RULE, data=make_post_data())
             response = client.get("/")
         expected_rule = RESTART_RULE if allow_users_to_restart else STUDY_RULE
+        clear_users()
         assert bytes(f'href="{expected_rule}"', "utf-8") in response.data
 
     @pytest.mark.parametrize("block_duplicates", (True, False))
@@ -72,46 +76,38 @@ class TestIndex:
             response = client.get("/", query_string=query_string)
 
         expected_rule = SCREENOUT_RULE if block_duplicates else STUDY_RULE
+        clear_users()
         assert bytes(f'href="{expected_rule}"', "utf-8") in response.data
 
 
-def test_screenout():
-    app = create_test_app()
-    with app.test_client() as client:
-        response = client.get(SCREENOUT_RULE)
-    assert response.status == "200 OK"
+def test_screenout(client):
+    assert client.get(SCREENOUT_RULE).status == "200 OK"
 
 
 class TestRestart:
     @staticmethod
     def get_restart_response(client):
         client.get("/")
-        client.post(STUDY_RULE, data={"direction": "forward"})
+        client.post(STUDY_RULE, data=make_post_data())
         return client.get(RESTART_RULE)
 
-    def test_get(self):
-        app = create_test_app()
-        with app.test_client() as client:
-            response = self.get_restart_response(client)
-        assert response.status == "200 OK"
+    def test_get(self, client):
+        assert self.get_restart_response(client).status == "200 OK"
 
     @pytest.mark.parametrize("resume", (True, False))
-    def test_post(self, resume):
+    def test_post(self, client, resume):
         direction = "back" if resume else "forward"
-        app = create_test_app()
-        with app.test_client() as client:
-            self.get_restart_response(client)
-            response = client.post(
-                RESTART_RULE, data={"direction": direction}, follow_redirects=True
-            )
+        self.get_restart_response(client)
+        response = client.post(
+            RESTART_RULE, data={"direction": direction}, follow_redirects=True
+        )
         # client should be on the first page if he chose to resume
         # and the zeroeth page if he chose to restart
         expected_label = FIRST_PAGE_LABEL if resume else ZEROETH_PAGE_LABEL
         assert bytes(expected_label, "utf-8") in response.data
 
 
-def test_internal_server_error():
-    app = create_test_app()
+def test_internal_server_error(app):
     with app.test_request_context():
         response = internal_server_error("error")
         assert current_user.errored

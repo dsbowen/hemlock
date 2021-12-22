@@ -3,9 +3,15 @@ import pytest
 from hemlock import Tree, Page
 from hemlock.app import create_test_app, static_pages
 
+from .utils import app
+
 
 def seed():
     return [Page(), Page()]
+
+
+def make_post_data(tree, direction="forward"):
+    return {"direction": direction, "page-hash": tree.page.hash}
 
 
 def test_custom_url_rule():
@@ -93,28 +99,42 @@ class TestNavigation:
 
 
 class TestProcessRequest:
-    def test_request_in_progress(self):
+    def test_request_in_progress(self, app):
         # should return a loading page if the tree is already processing a request
-        app = create_test_app()
         tree = Tree(seed)
         tree.request_in_progress = True
         with app.test_request_context():
             rv = tree.process_request()
         assert rv == static_pages["loading_page"]
 
-    def test_double_submit(self):
-        # should return loading page after double submit
-        app = create_test_app()
+    def test_double_post(self, app):
+        # should return loading page after two consecutive POST requests
         tree = Tree(seed, url_rule="/survey")
         tree.prev_request_method = "POST"
         tree.request_in_progress = False
-        with app.test_request_context(method="POST", data={"direction": "forward"}):
+        with app.test_request_context(method="POST", data=make_post_data(tree)):
             rv = tree.process_request()
         assert rv == static_pages["loading_page"]
 
-    def test_refresh(self):
+    def test_stale_post(self, app):
+        # should return the cached page after stale POST request
+        # the request is "stale" in the sense that it was issued on the previous page
+        # e.g., a user submits 2 POST requests from the same page, the first POST
+        # request redirects with a GET request, then the second POST request is
+        # processed
+        tree = Tree(seed, url_rule="/survey")
+        with app.test_request_context():
+            tree.process_request()
+        with app.test_request_context(method="POST", data=make_post_data(tree)):
+            tree.process_request()
+        with app.test_request_context():
+            tree.process_request()
+        with app.test_request_context(method="POST", data={"direction": "forward", "page-hash": tree.branch[0].hash}):
+            rv = tree.process_request()
+        assert rv == tree.cached_page_html
+
+    def test_refresh(self, app):
         # should return the current page on refresh
-        app = create_test_app()
         tree = Tree(seed)
         with app.test_request_context():
             tree.process_request()
@@ -122,18 +142,17 @@ class TestProcessRequest:
             rv = tree.process_request()
         assert rv == tree.cached_page_html
 
-    def test_post(self):
-        app = create_test_app()
+    def test_post(self, app):
         tree = Tree(seed, url_rule="/survey")
         assert tree.page is tree.branch[0]
 
-        with app.test_request_context(method="POST", data={"direction": "forward"}):
+        with app.test_request_context(method="POST", data=make_post_data(tree)):
             tree.process_request()
         assert tree.page is tree.branch[1]
 
         with app.test_request_context():
             tree.process_request()
 
-        with app.test_request_context(method="POST", data={"direction": "back"}):
+        with app.test_request_context(method="POST", data=make_post_data(tree, "back")):
             tree.process_request()
         assert tree.page is tree.branch[0]

@@ -4,11 +4,11 @@ import pytest
 from sqlalchemy_mutable.utils import partial
 
 from hemlock import User, Page
-from hemlock.app import create_test_app
 from hemlock.questions import Check, Input, Label, Range, Select, Textarea
 from hemlock.questions.base import Question
 
 from . import utils
+from ..utils import app
 
 question_classes = [Check, Input, Label, Range, Select, Textarea]
 
@@ -24,10 +24,9 @@ def test_repr():
 
 
 @pytest.mark.parametrize("question_cls", question_classes)
-def test_display(question_cls):
+def test_display(app, question_cls):
     # Note: this function simply tests that the display method runs without error.
     # Run the display method in a notebook to verify expected behavior.
-    create_test_app()
     question_cls().display()
 
 
@@ -80,10 +79,9 @@ def test_set_is_valid(is_valid0, is_valid1):
 
 
 @pytest.mark.parametrize("question_cls", question_classes)
-def test_render(question_cls):
+def test_render(app, question_cls):
     # Note: this test simply tests that the render method runs without error
     # it does not verify that the resulting HTML gives expected behavior
-    create_test_app()
     question_cls().render()
 
 

@@ -9,6 +9,8 @@ from hemlock._admin_routes import password_is_correct, get_user_status
 from hemlock.app import Config, db
 from hemlock.questions import Label
 
+from .utils import clear_users
+
 PASSWORD = "password"
 LOGIN_RULE = "/admin-login"
 LOGOUT_RULE = "/admin-logout"
@@ -35,6 +37,7 @@ def client():
     User.make_test_user(seed).test_get()
     with app.test_client() as client:
         yield client
+    clear_users()
 
 
 class TestLogin:
@@ -93,8 +96,7 @@ class TestStatus:
         if in_gitpod:
             os.environ["GITPOD_HOST"] = "host"
 
-        [db.session.delete(user) for user in User.query.all()]
-        db.session.commit()
+        clear_users()
         response = client.get(STATUS_RULE)
         if "GITPOD_HOST" in os.environ:
             os.environ.pop("GITPOD_HOST")
@@ -106,8 +108,7 @@ class TestStatus:
         if with_users:
             User.make_test_user()
         else:
-            [db.session.delete(user) for user in User.query.all()]
-            db.session.commit()
+            clear_users()
 
         get_user_status(label := Label())
         if with_users:

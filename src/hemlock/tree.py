@@ -182,6 +182,7 @@ class Tree(db.Model):
         """
         # TODO: remove logging after pilots
         import logging
+
         # return a loading page if a request is in progress
         # or the client submits 2 consecutive POST requests
         if (
@@ -189,7 +190,9 @@ class Tree(db.Model):
             or request.method == self.prev_request_method == "POST"
         ):
             if request.method == self.prev_request_method == "POST":
-                logging.info("Prevented double submit via request.method == self.prev_request_methd == 'POST'")
+                logging.info(
+                    "Prevented double submit via request.method == self.prev_request_methd == 'POST'"
+                )
             loading_page_key = "loading_page"
             if loading_page_key not in static_pages:
                 static_pages[loading_page_key] = render_template(
@@ -198,8 +201,16 @@ class Tree(db.Model):
 
             return static_pages[loading_page_key]
 
-        # return the HTML for the current page if the user refreshed the page
-        if request.method == self.prev_request_method == "GET":
+        # return the HTML for the current page if the POST request is for another page
+        # (e.g., the POST request is a double submit from a previous page)
+        # or the user refreshed the page
+        if (
+            request.method == "POST" and request.form["page-hash"] != self.page.hash
+        ) or request.method == self.prev_request_method == "GET":
+            if request.method == "POST" and request.form["page-hash"] != self.page.hash:
+                logging.info(
+                    "Prevented double submit via request.form['page-hash'] != self.page.hash"
+                )
             return self.cached_page_html
 
         self.request_in_progress = True

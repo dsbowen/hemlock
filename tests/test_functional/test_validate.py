@@ -5,13 +5,14 @@ from itertools import product
 
 import pytest
 
-from hemlock import User, Page, create_test_app
+from hemlock import User, Page
 from hemlock.functional import validate
 from hemlock.questions import Check, Input
 
+from ..utils import app
+
 
 def make_test_question(seed, response):
-    create_test_app()
     user = User.make_test_user(seed)
     user.test_request([response])
     return user.get_tree().branch[0].questions[0]
@@ -21,7 +22,7 @@ def make_test_question(seed, response):
     "choice_question, response",
     ((True, None), (True, 0), (True, {0, 1}), (False, None), (False, "test response")),
 )
-def test_require_response(choice_question, response):
+def test_require_response(app, choice_question, response):
     def seed():
         question = (
             Check(choices=[0, 1, 2], multiple=True) if choice_question else Input()
@@ -37,7 +38,7 @@ def test_require_response(choice_question, response):
 
 
 @pytest.mark.parametrize("response", ("a", "b"))
-def test_response_in(response):
+def test_response_in(app, response):
     valid_set = ("b", "c")
 
     def seed():
@@ -51,7 +52,7 @@ def test_response_in(response):
 
 
 @pytest.mark.parametrize("response", ("a", "b"))
-def test_response_not_in(response):
+def test_response_not_in(app, response):
     invalid_set = ("b", "c")
 
     def seed():
@@ -66,7 +67,7 @@ def test_response_not_in(response):
 
 class TestCompareResponse:
     @pytest.mark.parametrize("response", ("a", "b"))
-    def test_basic(self, response):
+    def test_basic(self, app, response):
         value = "a"
 
         def seed():
@@ -82,7 +83,7 @@ class TestCompareResponse:
             assert question.is_valid is False
 
     @pytest.mark.parametrize("response", ("a", "b"))
-    def test_value_as_question(self, response):
+    def test_value_as_question(self, app, response):
         value = "a"
 
         def seed():
@@ -97,7 +98,6 @@ class TestCompareResponse:
                 Page(),
             ]
 
-        create_test_app()
         user = User.make_test_user(seed)
         user.test_request()
         question = user.get_tree().branch[0].questions[1]
@@ -110,7 +110,7 @@ class TestCompareResponse:
     @pytest.mark.parametrize(
         "response, comparison", product((-1, 0, 1), ("<", "<=", "==", "!=", ">=", ">"))
     )
-    def test_comparison_operators(self, response, comparison):
+    def test_comparison_operators(self, app, response, comparison):
         value = 0
 
         def seed():
@@ -142,7 +142,7 @@ class TestCompareResponse:
             assert question.is_valid is False
 
     @pytest.mark.parametrize("response", ("01234", "012345"))
-    def test_length(self, response):
+    def test_length(self, app, response):
         value = 5
 
         def seed():
@@ -162,7 +162,7 @@ class TestCompareResponse:
             assert question.is_valid is False
 
     @pytest.mark.parametrize("response", ("one", "two words"))
-    def test_word_count(self, response):
+    def test_word_count(self, app, response):
         value = 1
 
         def seed():
@@ -180,7 +180,7 @@ class TestCompareResponse:
             assert question.is_valid is False
 
     @pytest.mark.parametrize("response", ("1", "1.00"))
-    def test_decimals(self, response):
+    def test_decimals(self, app, response):
         value = 2
 
         def seed():
@@ -204,7 +204,7 @@ class TestCompareResponse:
 @pytest.mark.parametrize(
     "response", ("one", "two words", "three word response", "a four word response")
 )
-def test_response_in_range(response):
+def test_response_in_range(app, response):
     minwords, maxwords = 2, 3
 
     def seed():
@@ -227,7 +227,7 @@ def test_response_in_range(response):
 
 
 @pytest.mark.parametrize("response", ("hello world", "goodbye world"))
-def test_re_full_match(response):
+def test_re_full_match(app, response):
     pattern = r"hello *"
 
     def seed():

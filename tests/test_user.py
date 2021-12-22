@@ -5,17 +5,18 @@ from flask_login import current_user
 from sqlalchemy_mutable.utils import partial
 
 from hemlock import User, Page
-from hemlock.app import create_test_app, db
+from hemlock.app import db
 from hemlock.user import load_user
 from hemlock.questions import Input
+
+from .utils import app, clear_routes
 
 
 def seed():
     return [Page(), Page()]
 
 
-def test_load_user():
-    create_test_app()
+def test_load_user(app):
     user = User.make_test_user()
     db.session.add(user)
     db.session.commit()
@@ -23,31 +24,23 @@ def test_load_user():
 
 
 class TestRoute:
-    def clear_routes(self):
-        User._seed_funcs.clear()
-        User.default_url_rule = None
-
-    def test_single(self):
-        self.clear_routes()
+    def test_single(self, app):
+        clear_routes()
         url_rule = "/test_single_rule"
 
         @User.route(url_rule)
         def test_single_seed():
             return Page()
 
-        create_test_app()
         user = User.make_test_user()
-
         assert user._seed_funcs == {url_rule: (0, test_single_seed)}
         assert user.default_url_rule == url_rule
 
         assert user.get_tree() is user.trees[0]
         assert user.get_tree(url_rule) is user.trees[0]
 
-        self.clear_routes()
-
-    def test_multiple(self):
-        self.clear_routes()
+    def test_multiple(self, app):
+        clear_routes()
         url_rules = ("/test_multiple_rule0", "/test_multiple_rule1")
 
         @User.route(url_rules[0])
@@ -58,7 +51,6 @@ class TestRoute:
         def test_multiple_seed1():
             return Page()
 
-        create_test_app()
         user = User.make_test_user()
 
         assert user._seed_funcs == {
@@ -71,10 +63,8 @@ class TestRoute:
         assert user.get_tree(url_rules[0]) is user.trees[0]
         assert user.get_tree(url_rules[1]) is user.trees[1]
 
-        self.clear_routes()
-
-    def test_manual_seed(self):
-        self.clear_routes()
+    def test_manual_seed(self, app):
+        clear_routes()
         url_rule = "/test_manual_seed_rule"
 
         @User.route(url_rule)
@@ -84,9 +74,7 @@ class TestRoute:
         def test_seed():
             return [Page(), Page()]
 
-        create_test_app()
         user = User.make_test_user(test_seed)
-
         assert user._seed_funcs == {
             url_rule: (0, test_manual_seed),
             "/test": (1, test_seed),
@@ -94,11 +82,9 @@ class TestRoute:
         assert user.default_url_rule == "/test"
         assert len(user.get_tree().branch) == 2
 
-        self.clear_routes()
-
     @pytest.mark.filterwarnings("ignore::RuntimeWarning")
-    def test_overwrite(self):
-        self.clear_routes()
+    def test_overwrite(self, app):
+        clear_routes()
         url_rule = "/test_overwrite_rule"
 
         @User.route(url_rule)
@@ -109,14 +95,10 @@ class TestRoute:
         def test_overwrite_seed1():
             return [Page(), Page()]
 
-        create_test_app()
         user = User.make_test_user()
-
         assert user._seed_funcs == {url_rule: (0, test_overwrite_seed1)}
         assert user.default_url_rule == url_rule
         assert len(user.get_tree().branch) == 2
-
-        self.clear_routes()
 
 
 @pytest.mark.parametrize("property_name", ("completed", "failed"))
@@ -159,11 +141,6 @@ class TestGetData:
     variable_name = "variable_name"
     response = "user_response{}"
 
-    def create_test_app(self):
-        create_test_app()
-        [db.session.delete(user) for user in User.query.all()]
-        db.session.commit()
-
     def make_user(self, n_rows=1, complete_survey=True):
         def seed(n_rows=1):
             return [
@@ -190,8 +167,7 @@ class TestGetData:
             assert self.variable_name not in df
 
     @pytest.mark.parametrize("n_rows", (1, 3))
-    def test_single_user(self, n_rows):
-        self.create_test_app()
+    def test_single_user(self, app, n_rows):
         user = self.make_user(n_rows)
         df = user.get_data()
         assert len(df) == n_rows
@@ -201,8 +177,7 @@ class TestGetData:
         "n_users, complete_survey, refresh_if_in_progress",
         product((1, 2), (True, False), (True, False)),
     )
-    def test_multiple_users(self, n_users, complete_survey, refresh_if_in_progress):
-        self.create_test_app()
+    def test_multiple_users(self, app, n_users, complete_survey, refresh_if_in_progress):
         [self.make_user(complete_survey=complete_survey) for _ in range(n_users)]
         df = User.get_all_data(refresh_if_in_progress=refresh_if_in_progress)
 
@@ -217,8 +192,7 @@ class TestGetData:
                 user_df.reset_index(drop=True), complete_survey, refresh_if_in_progress
             )
 
-    def test_users_with_different_variables(self):
-        self.create_test_app()
+    def test_users_with_different_variables(self, app):
         User.make_test_user(meta_data={"variable0": "data0"})
         User.make_test_user(meta_data={"variable1": "data1"})
         User.make_test_user(meta_data={"variable0": "data2"})

@@ -647,13 +647,14 @@ class User(UserMixin, db.Model):
             for question, response in responses.items()
         }
 
-        # set the requested direction
+        # set the requested direction and page hash
         if direction is None:
             if is_callable(page.test_direction):
                 direction = page.test_direction(page)
             else:
                 direction = page.test_direction
         data["direction"] = direction
+        data["page-hash"] = page.hash
 
         # log the page and planned responses
         if verbose:

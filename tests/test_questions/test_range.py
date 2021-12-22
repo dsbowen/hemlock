@@ -1,12 +1,12 @@
 import pytest
 
-from hemlock import create_test_app
 from hemlock.questions import Range
+
+from ..utils import app
 
 
 @pytest.mark.parametrize("min_value, max_value", ((0, 100), (101, 200)))
-def test_response(min_value, max_value):
-    create_test_app()
+def test_response(app, min_value, max_value):
     question = Range(input_tag={"min": min_value, "max": max_value})
     response = question.test_response(question)
     raw_response = question.make_raw_test_response(response)

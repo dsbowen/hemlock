@@ -28,7 +28,7 @@ def redirect(location: str, *args: Any, **kwargs: Any) -> Response:
         location.startswith("/")
         and "GITPOD_HOST" in os.environ
         and os.environ.get("VS_CODE_REMOTE", "False").lower() != "true"
-    ):
+    ):  # pragma: no cover
         # change URL root to gitpod workspace url
         url_root = request.url_root
         if "http" in url_root:

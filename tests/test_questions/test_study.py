@@ -3,9 +3,11 @@ import random
 
 import pytest
 
-from hemlock import User, Page, create_test_app
+from hemlock import User, Page
 from hemlock.questions import Check, Input, Label, Range, Select, Textarea
 from hemlock.questions.input import datetime_input_types
+
+from ..utils import app
 
 SKIP = True
 
@@ -29,6 +31,5 @@ def seed():
 
 
 @pytest.mark.skipif(SKIP, reason="Long-running test.")
-def test():
-    create_test_app()
+def test(app):
     User.test_multiple_users(20, seed)
