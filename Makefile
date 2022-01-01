@@ -15,7 +15,7 @@ format:
 .PHONY: test
 test:
 	mkdir -p ${REPORTS_DIR}
-	tox -- --source=${MODULE_NAME} > ${REPORTS_DIR}/test.txt
+	tox -- --source=${MODULE_NAME}
 	coverage html -d ${REPORTS_DIR}/coverage
 	coverage report
 .PHONY: testserve

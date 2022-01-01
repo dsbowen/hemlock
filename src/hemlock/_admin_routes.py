@@ -170,14 +170,15 @@ def get_user_status(status_label: Label) -> None:
         return
 
     # count users by status
-    status_df = meta_df[["completed", "failed", "errored", "in_progress"]].sum()
+    statuses = ["completed", "failed", "errored", "in_progress"]
+    status_df = meta_df[statuses].sum()
     status_df["all"] = len(meta_df)
     status_df = status_df.to_frame("Count")
 
     # get median time by status
     median_time = [
         meta_df[meta_df[column]].total_seconds.quantile(0.5)
-        for column in ("completed", "failed", "errored", "in_progress")
+        for column in statuses
     ]
     median_time.append(meta_df.total_seconds.quantile(0.5))
     status_df["Median time"] = median_time

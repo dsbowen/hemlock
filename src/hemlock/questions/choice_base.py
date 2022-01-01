@@ -130,7 +130,7 @@ class ChoiceQuestion(Question):
         if default is None:
             return False
 
-        if is_instance(default, list):
+        if is_instance(default, (list, set, tuple)):
             return choice["value"] in default
 
         return choice["value"] == default
