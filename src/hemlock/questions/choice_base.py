@@ -43,6 +43,7 @@ class ChoiceQuestion(Question):
         multiple (bool): Indicates that the user can select multiple choices.
         record_choice_indices (bool): Indicates that the choice order should be recorded
             in the data frame.
+
     """
 
     defaults = copy.deepcopy(Question.defaults)
@@ -105,24 +106,37 @@ class ChoiceQuestion(Question):
 
         return textwrap.indent(question_text + choice_text, initial_indent)
 
-    def is_default(self, choice: Dict[Any, Any]) -> bool:
-        """Indicates that a given choice is a default.
+    def is_default(self, value: Any) -> bool:
+        """Indicates that a given choice value is a default.
 
         Args:
-            choice (Dict[Any, Any]): Choice which may be a default.
+            value (Any): Value to check.
 
         Returns:
-            bool: Indicator that the choice is a default.
+            bool: Indicator that the choice value is a default.
 
         Examples:
 
-            .. doctest:
+            .. doctest::
 
                 >>> from hemlock.questions.choice_base import ChoiceQuestion
                 >>> question = ChoiceQuestion(choices=["Yes", "No"], default="Yes")
-                >>> question.is_default(question.choices[0])
+                >>> question.is_default("Yes")
                 True
-                >>> question.is_default(question.choices[1])
+                >>> question.is_default("No")
+                False
+
+            Use a ``list`` to indicate that there are multiple default values.
+
+            .. doctest::
+
+                >>> from hemlock.questions.choice_base import ChoiceQuestion
+                >>> question = ChoiceQuestion(choices=["Red", "Green", "Blue"], multiple=True, default=["Red", "Green"])
+                >>> question.is_default("Red")
+                True
+                >>> question.is_default("Green")
+                True
+                >>> question.is_default("Blue")
                 False
         """
         default = self.get_default()
@@ -130,10 +144,10 @@ class ChoiceQuestion(Question):
         if default is None:
             return False
 
-        if is_instance(default, (list, set, tuple)):
-            return choice["value"] in default
+        if is_instance(default, (list, set)):
+            return value in default
 
-        return choice["value"] == default
+        return value == default
 
     def record_response(self) -> None:
         """Record the user's raw response.

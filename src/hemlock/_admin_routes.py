@@ -177,8 +177,7 @@ def get_user_status(status_label: Label) -> None:
 
     # get median time by status
     median_time = [
-        meta_df[meta_df[column]].total_seconds.quantile(0.5)
-        for column in statuses
+        meta_df[meta_df[column]].total_seconds.quantile(0.5) for column in statuses
     ]
     median_time.append(meta_df.total_seconds.quantile(0.5))
     status_df["Median time"] = median_time

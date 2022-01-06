@@ -12,7 +12,7 @@
             {% set index = loop.index | string() %}
             {% set id = question.hash + index %}
 
-            {% if question.is_default(choice) %}
+            {% if question.is_default(choice["value"]) %}
                 {% set selected = "selected" %}
             {% else %}
                 {% set selected = "" %}

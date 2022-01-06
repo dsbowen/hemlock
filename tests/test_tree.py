@@ -129,7 +129,10 @@ class TestProcessRequest:
             tree.process_request()
         with app.test_request_context():
             tree.process_request()
-        with app.test_request_context(method="POST", data={"direction": "forward", "page-hash": tree.branch[0].hash}):
+        with app.test_request_context(
+            method="POST",
+            data={"direction": "forward", "page-hash": tree.branch[0].hash},
+        ):
             rv = tree.process_request()
         assert rv == tree.cached_page_html
 

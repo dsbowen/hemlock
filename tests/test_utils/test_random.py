@@ -53,5 +53,5 @@ class TestAssigner:
 
         # test that the count is 1 when exactly 1 user has finished in all conditions
         for _ in range(len(expected_values)):
-            User.make_test_user(partial(self.seed, assigner)).test()
+            User.make_test_user(partial(self.seed, assigner)).test(verbosity=0)
         assert (assigner.get_cum_assigned()["count"] == 1).all()

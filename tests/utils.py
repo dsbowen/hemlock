@@ -10,6 +10,7 @@ def clear_users():
         db.session.delete(user)
     db.session.commit()
 
+
 def clear_routes():
     User._seed_funcs.clear()
     User.default_url_rule = None

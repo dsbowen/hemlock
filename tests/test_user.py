@@ -177,7 +177,9 @@ class TestGetData:
         "n_users, complete_survey, refresh_if_in_progress",
         product((1, 2), (True, False), (True, False)),
     )
-    def test_multiple_users(self, app, n_users, complete_survey, refresh_if_in_progress):
+    def test_multiple_users(
+        self, app, n_users, complete_survey, refresh_if_in_progress
+    ):
         [self.make_user(complete_survey=complete_survey) for _ in range(n_users)]
         df = User.get_all_data(refresh_if_in_progress=refresh_if_in_progress)
 

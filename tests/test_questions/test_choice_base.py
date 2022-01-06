@@ -65,27 +65,33 @@ class TestIsDefault:
 
     def test_single_choice(self):
         question = make_question(default=0)
-        assert question.is_default(question.choices[0])
+        assert question.is_default(0)
         assert not any([question.is_default(choice) for choice in question.choices[1:]])
 
     def test_multiple_choices(self):
         question = make_question(default=["value 1", 2], multiple=True)
-        assert not question.is_default(question.choices[0])
-        assert all([question.is_default(choice) for choice in question.choices[1:]])
+        assert not question.is_default(0)
+        assert all(
+            [question.is_default(choice["value"]) for choice in question.choices[1:]]
+        )
 
     def test_after_no_response(self):
-        question = make_question(default=0, response=[])
-        assert not question.is_default(question.choices[0])
+        question = make_question(default=0, response=set())
+        assert not question.is_default(0)
 
     def test_after_single_response(self):
-        question = make_question(default="value 1", response=[2])
-        assert not any([question.is_default(choice) for choice in question.choices[:2]])
-        assert question.is_default(question.choices[2])
+        question = make_question(default="value 1", response={2})
+        assert not any(
+            [question.is_default(choice["value"]) for choice in question.choices[:2]]
+        )
+        assert question.is_default(2)
 
     def test_after_multiple_responses(self):
-        question = make_question(default=[2], response=[0, "value 1"], multiple=True)
-        assert all([question.is_default(choice) for choice in question.choices[:2]])
-        assert not question.is_default(question.choices[2])
+        question = make_question(default=[2], response={0, "value 1"}, multiple=True)
+        assert all(
+            [question.is_default(choice["value"]) for choice in question.choices[:2]]
+        )
+        assert not question.is_default(2)
 
 
 class TestRecordResponseAndData:

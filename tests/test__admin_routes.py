@@ -68,7 +68,9 @@ class TestLogin:
     def test_incorrect_password(self, login_client):
         login_client.get(LOGIN_RULE)
         response = login_client.post(
-            LOGIN_RULE, data={PASSWORD_INPUT_HASH: "incorrect_password"}, follow_redirects=True
+            LOGIN_RULE,
+            data={PASSWORD_INPUT_HASH: "incorrect_password"},
+            follow_redirects=True,
         )
         assert not password_is_correct()
         assert self.enter_password in response.data

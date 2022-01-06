@@ -9,6 +9,19 @@ from hemlock.app import create_test_app
 from hemlock.data import Data
 from hemlock.questions import Input, Label
 from hemlock.questions.base import Question
+from hemlock.timer import Timer
+
+
+@pytest.mark.parametrize("timer", (None, "seconds", Timer("seconds")))
+def test_timer_setting(timer):
+    # test that the timer can be initialized with None, str, or Timer
+    page = Page(timer=timer)
+    if timer is None:
+        assert page.timer.variable is None
+    elif isinstance(timer, str):
+        assert page.timer.variable == timer
+    else:
+        assert page.timer is timer
 
 
 @pytest.mark.parametrize("as_data", (True, False))

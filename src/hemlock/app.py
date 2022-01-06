@@ -82,7 +82,10 @@ def init_app() -> None:
 
 
 def create_app(
-    *config: Union[Mapping, Config], template_folder: str = None, **kwargs: Any
+    *config: Union[Mapping, Config],
+    static_folder: str = None,
+    template_folder: str = None,
+    **kwargs: Any
 ) -> Flask:
     """Create application.
 
@@ -90,16 +93,22 @@ def create_app(
 
     Args:
         *config (Union[Mapping, Config]): Configuration objects. Defaults to None.
+        static_folder (str, optional): Static folder argument for ``flask.Flask``.
         template_folder (str, optional): Template folder argument for ``flask.Flask``.
         **kwargs (Any): Passed to ``flask.Flask``.
 
     Returns:
         Flask: Application.
     """
+    if static_folder is None:
+        static_folder = os.path.join(os.getcwd(), "static")
+
     if template_folder is None:
         template_folder = os.path.join(os.getcwd(), "templates")
 
-    app = Flask(__name__, template_folder=template_folder, **kwargs)
+    app = Flask(
+        __name__, static_folder=static_folder, template_folder=template_folder, **kwargs
+    )
 
     # set up configuration
     for item in config or (Config(),):

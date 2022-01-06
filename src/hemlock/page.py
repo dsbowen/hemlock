@@ -397,8 +397,13 @@ class Page(db.Model):  # type: ignore
         self.hash = make_hash(HASH_LENGTH)
 
         self.questions = list(questions)
-        self.timer = Timer(variable=timer) if is_instance(timer, str) else Timer()
         self.data = [] if data is None else data
+        if timer is None:
+            self.timer = Timer()
+        elif is_instance(timer, str):
+            self.timer = Timer(variable=timer)
+        else:
+            self.timer = timer
 
         set_default_attribute("navbar", navbar, True)
         set_default_attribute("back", back)
