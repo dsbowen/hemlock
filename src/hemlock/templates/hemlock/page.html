@@ -110,10 +110,16 @@
             {{ question.html_settings.get_js() | safe }}
         {% endfor %}
         <script>
-            $(document).ready( function() {
+            $(document).ready(function() {
+                // Don't allow submit buttons to work in notebook
+                {% if for_notebook_display is sameas false %}
+                    var for_notebook_display = false;
+                {% else %}
+                    var for_notebook_display = true;
+                {% endif %}
                 var submitted_class = "submitted";
                 $("form").submit( function(e) {
-                    if ($(this).hasClass(submitted_class)) {
+                    if ($(this).hasClass(submitted_class) || for_notebook_display) {
                         e.preventDefault();
                     }
                     else {

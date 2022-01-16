@@ -199,6 +199,12 @@ class ChoiceQuestion(Question):
         if not is_instance(response, (list, set)):
             response = {response}
 
+        # check that test responses are valid choices
+        if (invalid_responses := set(response) - set(choice["value"] for choice in self.choices)):
+            raise ValueError(
+                f"Test user chose invalid choices {invalid_responses} for\n{self}."
+            )
+
         # Note: jinja template loop indices start at 1, so we need to add 1 for 1 indexing
         return [
             str(i + 1)

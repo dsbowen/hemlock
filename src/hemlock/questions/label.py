@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import copy
 
-from flask import render_template
+from flask import render_template, request
 
 from ..app import db
 from ..utils.format import convert_markdown
@@ -36,3 +36,9 @@ class Label(Question):
             if self.label is None
             else convert_markdown(self.label, strip_last_paragraph=True),
         )
+
+    def make_raw_test_response(self, response: str = None) -> str:  # pylint disable=missing-function-docstring
+        # test users cannot respond to a Label
+        if response not in (None, ""):
+            raise ValueError(f"{self} does not take a response; got {response}")
+        return super().make_raw_test_response(response)

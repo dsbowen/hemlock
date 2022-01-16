@@ -173,3 +173,10 @@ class TestRecordResponseAndData:
                 f"{self.variable}_2": [0],
             },
         )
+
+
+@pytest.mark.parametrize("response", (3, [0, 3], {0, 3}))
+def test_make_raw_test_response(response):
+    # test that an error is raised when attempting to respond with a non-existent choice
+    with pytest.raises(ValueError):
+        make_question().make_raw_test_response(response)
