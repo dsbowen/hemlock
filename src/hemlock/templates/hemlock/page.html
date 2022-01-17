@@ -111,15 +111,13 @@
         {% endfor %}
         <script>
             $(document).ready(function() {
-                // Don't allow submit buttons to work in notebook
-                {% if for_notebook_display is sameas false %}
-                    var for_notebook_display = false;
-                {% else %}
-                    var for_notebook_display = true;
-                {% endif %}
                 var submitted_class = "submitted";
+                {% if for_notebook_display is sameas true %}
+                    // Don't allow submit buttons to work in notebook
+                    $("form").addClass(submitted_class);
+                {% endif %}
                 $("form").submit( function(e) {
-                    if ($(this).hasClass(submitted_class) || for_notebook_display) {
+                    if ($(this).hasClass(submitted_class)) {
                         e.preventDefault();
                     }
                     else {
