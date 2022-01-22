@@ -37,7 +37,9 @@ class Label(Question):
             else convert_markdown(self.label, strip_last_paragraph=True),
         )
 
-    def make_raw_test_response(self, response: str = None) -> str:  # pylint disable=missing-function-docstring
+    def make_raw_test_response(
+        self, response: str = None
+    ) -> str:  # pylint disable=missing-function-docstring
         # test users cannot respond to a Label
         if response not in (None, ""):
             raise ValueError(f"{self} does not take a response; got {response}")

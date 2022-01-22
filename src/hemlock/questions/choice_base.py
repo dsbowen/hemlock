@@ -200,7 +200,9 @@ class ChoiceQuestion(Question):
             response = {response}
 
         # check that test responses are valid choices
-        if (invalid_responses := set(response) - set(choice["value"] for choice in self.choices)):
+        if invalid_responses := set(response) - set(
+            choice["value"] for choice in self.choices
+        ):
             raise ValueError(
                 f"Test user chose invalid choices {invalid_responses} for\n{self}."
             )

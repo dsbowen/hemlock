@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import csv
 import io
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Union
 
 import pandas as pd
@@ -115,7 +115,10 @@ def admin_download() -> wrappers.Response:
     stringio.close()
 
     return send_file(
-        bytesio, as_attachment=True, download_name="data.csv", mimetype="text/csv"
+        bytesio,
+        as_attachment=True,
+        download_name=f"data_{datetime.now()}.csv",
+        mimetype="text/csv",
     )
 
 

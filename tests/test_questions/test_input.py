@@ -1,6 +1,8 @@
 from datetime import datetime
 from itertools import combinations_with_replacement
+from multiprocessing.sharedctypes import Value
 
+import numpy as np
 import pytest
 
 from hemlock.questions import Input
@@ -106,3 +108,18 @@ class TestMakeRawTestResponse:
     def test_invalid_response(self, input_type, response):
         with pytest.raises(ValueError):
             Input(input_tag={"type": input_type}).make_raw_test_response(response)
+
+    @pytest.mark.parametrize("min_value", (None, 0, "0"))
+    @pytest.mark.parametrize("max_value", (None, 1, "1"))
+    @pytest.mark.parametrize("response", (-1, 0, 2))
+    def test_value_in_range(self, min_value, max_value, response):
+        input = Input(input_tag={"type": "number", "min": min_value, "max": max_value})
+        if min_value is None:
+            min_value = -np.inf
+        if max_value is None:
+            max_value = np.inf
+        if not (float(min_value) <= response <= float(max_value)):
+            with pytest.raises(ValueError):
+                input.make_raw_test_response(response)
+        else:
+            input.make_raw_test_response(response)

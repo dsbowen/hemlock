@@ -622,6 +622,12 @@ class User(UserMixin, db.Model):
         if responses is None:
             responses = {}
         elif isinstance(responses, (list, tuple)):
+            if len(page.questions) != len(responses):
+                raise ValueError(
+                    "Number of responses does not match number of questions\n"
+                    f"Responses: {responses}\n"
+                    f"Page: {page}"
+                )
             responses = {
                 question: response
                 for question, response in zip(page.questions, responses)

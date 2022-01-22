@@ -161,11 +161,20 @@ class Input(Question):
         # make sure the raw response is in the expected format
         if input_type == NUMBER_INPUT_TYPE:
             try:
-                float(response)
+                float_response = float(response)
             except ValueError:
                 raise ValueError(
                     f"Response {repr(response)} to input {self} cannot be converted to a float."
                 )
+            # make sure raw response is in the correct value range
+            if (
+                min_value := self.input_tag.get("min")
+            ) is not None and float_response < float(min_value):
+                raise ValueError(f"Reponse {response} is less than min {min_value}.")
+            if (
+                max_value := self.input_tag.get("max")
+            ) is not None and float_response > float(max_value):
+                raise ValueError(f"Response {response} is greater than max {max_value}")
             return str(response)
 
         if input_type in datetime_input_types:

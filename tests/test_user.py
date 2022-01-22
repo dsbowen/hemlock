@@ -323,7 +323,7 @@ class TestTest:
     def validate(question):
         return False
 
-    def test_max_visits(self):
+    def test_max_visits(self, app):
         # test that an error is raised when the user gets stuck
         # e.g., if a validate function always returns False
         def seed():
@@ -334,3 +334,8 @@ class TestTest:
 
     def test_multiple_users(self):
         User.test_multiple_users(n_users=3, seed_func=seed)
+
+    def test_incorrect_number_of_responses(self, app):
+        # page 0 contains no questions
+        with pytest.raises(ValueError):
+            User.make_test_user(seed).test_request(["response"])
