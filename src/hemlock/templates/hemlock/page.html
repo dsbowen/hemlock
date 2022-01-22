@@ -87,12 +87,12 @@
                 {% endfor %}
     
                 {% if page.forward is not none and not page.is_last_page %}
-                <button {{ page.html_settings["forward-button"].get_attrs() | safe }}>
+                <button {{ page.html_settings["forward-button"].get_attrs() | safe }}{% if for_notebook_display is sameas true %} disabled{% endif %}>
                     {{ page.forward }}
                 </button>
                 {% endif %}
                 {% if page.back is not none and not page.is_first_page %}
-                <button {{ page.html_settings["back-button"].get_attrs() | safe }}>
+                <button {{ page.html_settings["back-button"].get_attrs() | safe }}{% if for_notebook_display is sameas true %} disabled{% endif %}>
                     {{ page.back }}
                 </button>
                 {% endif %}
@@ -111,15 +111,9 @@
         {% endfor %}
         <script>
             $(document).ready(function() {
-                // Don't allow submit buttons to work in notebook
-                {% if for_notebook_display is sameas false %}
-                    var for_notebook_display = false;
-                {% else %}
-                    var for_notebook_display = true;
-                {% endif %}
                 var submitted_class = "submitted";
                 $("form").submit( function(e) {
-                    if ($(this).hasClass(submitted_class) || for_notebook_display) {
+                    if ($(this).hasClass(submitted_class)) {
                         e.preventDefault();
                     }
                     else {
