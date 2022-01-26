@@ -27,58 +27,14 @@ A framework for creating online surveys and experiments.
 .. image:: https://gitpod.io/button/open-in-gitpod.svg
    :target: https://gitpod.io/#https://gitlab.com/dsbowen/hemlock
 
-Installation
-============
-
-.. code-block:: console
-
-   $ pip install hemlock-survey
+|
 
 Quickstart
 ==========
 
-Let's create a simple app to ask users for their name and then greet them. Put the following in ``app.py``.
+.. raw:: html
 
-.. code-block::
-
-   from hemlock import User, Page, create_app, socketio
-   from hemlock.functional import validate
-   from hemlock.questions import Input, Label
-   from sqlalchemy_mutable.utils import partial
-
-
-   @User.route("/survey")
-   def seed():
-      return [
-         Page(
-            name_input:=Input(
-               "What's your name?",
-               validate=validate.require_response("Please enter your name.")
-            )
-         ),
-         Page(
-            Label(compile=partial(greet_user, name_input))
-         )
-      ]
-
-
-   def greet_user(greet_label, name_input):
-      greet_label.label = f"Hello, {name_input.response}!"
-
-
-   app = create_app()
-
-   if __name__ == "__main__":
-      socketio.run(app)
-
-
-Run the app with
-
-.. code-block:: console
-
-   $ python app.py
-
-Open http://localhost:5000 in your browser. Open http://localhost:5000/admin-status to see users' progress and download data.
+    <iframe width="640" height="360" src="https://www.youtube.com/embed/vL76l5Ebl64" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 .. toctree::
    :maxdepth: 2
