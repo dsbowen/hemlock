@@ -82,11 +82,13 @@ class Assigner:
             return list(value)
         return value
 
-    def assign_user(self, user: User = None) -> dict[Any, Any]:
+    def assign_user(self, user: User = None, df: pd.DataFrame = None) -> dict[Any, Any]:
         """Assign a user to conditions.
 
         Args:
-            user (User, optional): User to assign. Defaults to None.
+            user (User, optional): User to assign. If None, this method assigns the
+                current user. Defaults to None.
+            df (pd.DataFrame, optional): Passed to `:meth:Assigner.get_cum_assigned`.
 
         Returns:
             dict[Any, Any]: Maps factor names to assignment values.
@@ -95,7 +97,7 @@ class Assigner:
             user = current_user
 
         # randomly select a condition with the fewest users
-        cum_assigned = self.get_cum_assigned()
+        cum_assigned = self.get_cum_assigned(df)
         values = (
             cum_assigned[cum_assigned["count"] == cum_assigned["count"].min()]
             .sample()
