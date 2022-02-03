@@ -46,12 +46,7 @@ class TestAssigner:
         # test that the count is 0 when there are no users
         assert (df["count"] == 0).all()
 
-        # test that the count is 0 when there are in progress users but no one has
-        # finished (so the factor names aren't in the dataframe)
-        User.make_test_user(partial(self.seed, assigner))
-        assert (assigner.get_cum_assigned()["count"] == 0).all()
-
-        # test that the count is 1 when exactly 1 user has finished in all conditions
+        # test that the count is 1 when a user has been assigned to each condition
         for _ in range(len(expected_values)):
-            User.make_test_user(partial(self.seed, assigner)).test(verbosity=0)
+            User.make_test_user(partial(self.seed, assigner))
         assert (assigner.get_cum_assigned()["count"] == 1).all()

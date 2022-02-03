@@ -2,12 +2,12 @@
 """
 from __future__ import annotations
 
-import copy
-from itertools import cycle, product
-from random import choice, choices, shuffle
+from itertools import product
+from random import choice, choices
 from string import digits, ascii_letters
 from typing import TYPE_CHECKING, Any, Mapping
 
+import numpy as np
 import pandas as pd
 from flask_login import current_user
 
@@ -66,9 +66,21 @@ class Assigner:
         conditions = dict(conditions)
         self.factor_names: list = list(conditions.keys())
         self.possible_assignments: list[tuple] = list(product(*conditions.values()))
-        possible_assignments = copy.copy(self.possible_assignments)
-        shuffle(possible_assignments)
-        self._possible_assignments_cycle = cycle(possible_assignments)
+
+    def _decode_numpy(self, value: Any) -> Any:
+        """Converts numpy values for JSON serialization.
+
+        Args:
+            value (Any): Value to be decoded.
+
+        Returns:
+            Any: Decoded value.
+        """
+        if isinstance(value, np.integer):
+            return int(value)
+        if isinstance(value, np.ndarray):
+            return list(value)
+        return value
 
     def assign_user(self, user: User = None) -> dict[Any, Any]:
         """Assign a user to conditions.
@@ -81,11 +93,19 @@ class Assigner:
         """
         if user is None:
             user = current_user
+
+        # randomly select a condition with the fewest users
+        cum_assigned = self.get_cum_assigned()
+        values = (
+            cum_assigned[cum_assigned["count"] == cum_assigned["count"].min()]
+            .sample()
+            .index[0]
+        )
+        if len(self.factor_names) == 1:
+            values = [values]
         assignment = {
-            key: value
-            for key, value in zip(
-                self.factor_names, next(self._possible_assignments_cycle)
-            )
+            key: self._decode_numpy(value)
+            for key, value in zip(self.factor_names, values)
         }
         user.meta_data.update(assignment)
         return assignment
@@ -95,7 +115,7 @@ class Assigner:
 
         Args:
             df (pd.DataFrame, optional): Dataframe of user data. If None, uses the
-                output of :meth:`hemlock.user.User.get_all_data`. Defaults to None.
+                `:class:hemlock.user.User` metdata. Defaults to None.
 
         Returns:
             pd.DataFrame: Cumulative number of users in each condition.
@@ -103,7 +123,7 @@ class Assigner:
         if df is None:
             from ..user import User
 
-            df = User.get_all_data().drop_duplicates("id")
+            df = pd.DataFrame([user.get_meta_data() for user in User.query.all()])
 
         if len(self.factor_names) == 1:
             index = [value[0] for value in self.possible_assignments]
