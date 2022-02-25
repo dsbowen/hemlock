@@ -34,7 +34,17 @@ Quickstart
 
 .. raw:: html
 
-    <iframe width="640" height="360" src="https://www.youtube.com/embed/vL76l5Ebl64" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="640" height="360" src="https://www.youtube.com/embed/rY9pXzuMVV8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+|
+Sign up for `Github <https://github.com>`_.
+
+Create a repository based on the `Hemlock template <https://github.com/dsbowen/hemlock-template/generate>`_.
+
+Create a repository based on the `Hemlock tutorial <https://github.com/dsbowen/hemlock-tutorial/generate>`_.
+
+API reference
+=============
 
 .. toctree::
    :maxdepth: 2
