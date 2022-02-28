@@ -29,7 +29,7 @@ A framework for creating online surveys and experiments.
 
 |
 
-Quickstart
+Start here
 ==========
 
 .. raw:: html
@@ -50,6 +50,7 @@ API reference
    :maxdepth: 2
 
    hemlock/index
+   Extensions <extensions>
    Changelog <changelog>
 
 Indices and tables
