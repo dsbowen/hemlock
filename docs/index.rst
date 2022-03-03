@@ -32,9 +32,13 @@ A framework for creating online surveys and experiments.
 Start here
 ==========
 
+The best way to get started is to follow along with this video. If you're new to programming, this should take 30-45 minutes.
+
+If you run into trouble, check out the `Hemlock issues page <https://github.com/dsbowen/hemlock/issues>`_ for help.
+
 .. raw:: html
 
-    <iframe width="640" height="360" src="https://www.youtube.com/embed/pValdImtoIk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="640" height="360" src="https://www.youtube.com/embed/IWon6yu2iUs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 |
 Sign up for `Github <https://github.com>`_.
