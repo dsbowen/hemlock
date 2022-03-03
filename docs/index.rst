@@ -34,7 +34,7 @@ Start here
 
 .. raw:: html
 
-    <iframe width="640" height="360" src="https://www.youtube.com/embed/rY9pXzuMVV8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="640" height="360" src="https://www.youtube.com/embed/pValdImtoIk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 |
 Sign up for `Github <https://github.com>`_.
