@@ -26,6 +26,7 @@ from flask import current_app, request
 from flask_login import UserMixin, current_user, login_required, login_user
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy.orm import validates
 from sqlalchemy.types import JSON
 from sqlalchemy_mutable.types import MutablePickleType, MutableDictJSONType
 from sqlalchemy_mutable.utils import get_object, is_callable
@@ -33,6 +34,7 @@ from werkzeug.wrappers.response import Response
 
 from ._data_frame import DataFrame
 from .app import bp, db, login_manager
+from .data import Data
 from .tree import Tree
 from .utils.random import make_hash
 
@@ -126,6 +128,21 @@ class User(UserMixin, db.Model):
     trees = db.relationship(
         "Tree", order_by="Tree.index", collection_class=ordering_list("index")
     )
+
+    data = db.relationship(
+        "Data",
+        order_by="Data.index",
+        collection_class=ordering_list("index"),
+        foreign_keys="Data._user_id",
+    )
+
+    @validates("data")
+    def _validate_data(self, key: str, data: Union[Data, Tuple]) -> Data:
+        """Data can be input as a :class:`hemlock.data.Data` object or a tuple.
+
+        Tuple inputs are used as arguments for the ``Data`` constructor.
+        """
+        return data if isinstance(data, Data) else Data(*data)
 
     @classmethod
     def route(
@@ -325,6 +342,9 @@ class User(UserMixin, db.Model):
             meta_data = self.get_meta_data(convert_to_string=True)
             meta_data = {key: [item] for key, item in meta_data.items()}
             df = DataFrame(meta_data, fill_rows=True)
+            for item in self.data:
+                if item.variable:
+                    df.add_data(item.pack_data(), item.fill_rows)
             [df.add_branch(tree.branch) for tree in self.trees]
             df.pad()
 

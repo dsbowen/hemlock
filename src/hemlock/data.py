@@ -51,6 +51,7 @@ class Data(db.Model):  # type: ignore
     data_type = db.Column(db.String)
     __mapper_args__ = {"polymorphic_identity": "data", "polymorphic_on": data_type}
 
+    _user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     _page_id = db.Column(db.Integer, db.ForeignKey("page.id"))
 
     variable = db.Column(db.String)

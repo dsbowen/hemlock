@@ -127,6 +127,7 @@ class Assigner:
 
             df = pd.DataFrame([user.get_meta_data() for user in User.query.all()])
 
+        df = df.drop_duplicates(subset="id")
         if len(self.factor_names) == 1:
             index = [value[0] for value in self.possible_assignments]
         else:
