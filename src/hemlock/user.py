@@ -446,7 +446,12 @@ class User(UserMixin, db.Model):
                 user._seed_funcs = user._seed_funcs.copy()
                 user._seed_funcs[url_rule] = index, seed_func
                 user.default_url_rule = url_rule
-                user.trees.append(Tree(seed_func, url_rule))
+                user.trees = user.trees + [Tree(seed_func, url_rule)]
+                # Note: can't use
+                # >>> user.trees.append(Tree(seed_func, url_rule))
+                # or else you get a collection class issue if you run
+                # >>> db.session.commit()
+                # in the seed function
 
         return user
 

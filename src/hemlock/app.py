@@ -85,7 +85,7 @@ def create_app(
     *config: Union[Mapping, Config],
     static_folder: str = None,
     template_folder: str = None,
-    **kwargs: Any
+    **kwargs: Any,
 ) -> Flask:
     """Create application.
 

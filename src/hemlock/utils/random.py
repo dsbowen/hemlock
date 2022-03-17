@@ -117,7 +117,7 @@ class Assigner:
 
         Args:
             df (pd.DataFrame, optional): Dataframe of user data. If None, uses the
-                `:class:hemlock.user.User` metdata. Defaults to None.
+                :class:`hemlock.user.User` metdata. Defaults to None.
 
         Returns:
             pd.DataFrame: Cumulative number of users in each condition.
