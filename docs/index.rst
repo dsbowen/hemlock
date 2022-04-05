@@ -37,13 +37,19 @@ Hemlock is your solution for cutting-edge survey methods.
          flex-direction : row;
       }
 
+      @media only screen and (max-width: 760px) {
+         .container .box {
+            display: block;
+         }
+      }
+
       .card {
          box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
          transition: 0.3s;
-         width: 30%;
+         width: 100%;
          border-radius: 5px;
          text-align: center;
-         margin: 0 10px;
+         margin: 10px;
       }
 
       .heading-font {
@@ -96,16 +102,12 @@ Hemlock is your solution for cutting-edge survey methods.
       </div>
    </div>
 
-|
-
 .. raw:: html
 
    <style>
       .custom-button {
-         background-color: #007bff;
          border: none;
          border-radius: .25rem;
-         color: white;
          padding: 7px;
          text-align: center;
          text-decoration: none;
@@ -113,13 +115,25 @@ Hemlock is your solution for cutting-edge survey methods.
          font-size: 16px;
          margin: 4px 2px;
       }
+
+      .primary-button {
+         background-color: #007bff;
+         border-color: #007bff;
+         color: white;
+      }
+
+      .light-button {
+         background-color: #f8f9fa;
+         border-color: #f8f9fa;
+         color: #212529
+      }
    </style>
 
-   <button class="custom-button" onclick="window.location.href='examples.html'">
+   <button class="custom-button primary-button" onclick="window.location.href='examples.html'">
       See examples
    </button>
 
-   <button class="custom-button" style="background-color:#f8f9fa;color:#212529;" onclick="window.location.href='getting_started.html'">
+   <button class="custom-button light-button" onclick="window.location.href='getting_started.html'">
       Get started
    </button>
 

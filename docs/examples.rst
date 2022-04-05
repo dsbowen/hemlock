@@ -92,19 +92,19 @@ First, we randomly assign users to be either the proposer or the responder. The 
         df = User.get_all_data()
         try:
             if proposer:
-            proposal = int(question.response)
-            response = int(df.response.dropna().sample())
-            if proposal >= response:
-                label.label = f"Your proposal was accepted! You won ${TOTAL_AMOUNT - proposal}."
+                proposal = int(question.response)
+                response = int(df.response.dropna().sample())
+                if proposal >= response:
+                    label.label = f"Your proposal was accepted! You won ${TOTAL_AMOUNT - proposal}."
+                else:
+                    label.label = f"The responder refused to accept any proposal of less than ${response}."
             else:
-                label.label = f"The responder refused to accept any proposal of less than ${response}."
-            else:
-            proposal = int(df.proposal.dropna().sample())
-            response = int(question.response)
-            if proposal >= response:
-                label.label = f"You accepted the proposal! You won ${proposal}."
-            else:
-                label.label = f"The proposer offered ${proposal}, so you rejected the offer."
+                proposal = int(df.proposal.dropna().sample())
+                response = int(question.response)
+                if proposal >= response:
+                    label.label = f"You accepted the proposal! You won ${proposal}."
+                else:
+                    label.label = f"The proposer offered ${proposal}, so you rejected the offer."
         except:
             pass
 

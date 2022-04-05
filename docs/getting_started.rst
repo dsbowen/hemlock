@@ -16,7 +16,26 @@ I want to understand everything
 
     <p>This getting started video takes you through a full Hemlock workflow step by step with detailed explanations geared towards new programmers. Budget 45 minutes.</p>
 
-    <iframe width="640" height="360" src="https://www.youtube.com/embed/7zoOYyRFMu4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <style>
+        .aspect-ratio {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56%; /* The height of the item will now be 56% of the width. */
+        }
+
+        .aspect-ratio iframe {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+        }
+    </style>
+
+    <div class="aspect-ratio">
+        <iframe src="https://www.youtube.com/embed/7zoOYyRFMu4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
 
 Video description
 ~~~~~~~~~~~~~~~~~
@@ -46,7 +65,9 @@ I want to get started as quickly as possible
 
     <p>Make sure you have a <a href="https://github.com" target="_blank">GitHub account</a> and the <a href="https://gitpod.io/docs/browser-extension" target="_blank">Gitpod browser extension</a> (not necessary if you intend to clone the repository and work locally) before starting.</p>
 
-    <iframe width="640" height="360" src="https://www.youtube.com/embed/DTvzUZb23w4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <div class="aspect-ratio">
+        <iframe src="https://www.youtube.com/embed/DTvzUZb23w4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
 
 Video description
 ~~~~~~~~~~~~~~~~~
