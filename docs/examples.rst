@@ -36,6 +36,63 @@ Let's ask the user for their name and then greet them.
     if __name__ == "__main__":
         socketio.run(app, debug=True)
 
+Real-time graphs
+~~~~~~~~~~~~~~~~
+
+Let's create an up-to-the-minute graph of Microsoft's stock price and ask participants to predict its closing value.
+
+.. raw:: html
+
+    <img src="_static/stock_forecasting.gif">
+
+This example requires two additional packages: ``seaborn`` and ``yfinance``, which you can pip install.
+
+.. code-block:: bash
+
+    $ pip install seaborn yfinance
+
+.. code-block::
+
+    import io
+    import base64
+
+    import seaborn as sns
+    import yfinance as yf
+    from hemlock import User, Page, create_app, socketio
+    from hemlock.questions import Input, Label
+    from hemlock.utils.statics import make_figure
+
+    sns.set()
+    ticker = yf.Ticker("MSFT")
+
+    @User.route("/survey")
+    def seed():
+        df = ticker.history(period="1d", interval="1m").reset_index()
+        ax = sns.lineplot(x=df.Datetime, y=df.Close)
+        ax.set_xlabel("Time")
+        ax.set_ylabel("Price")
+        ax.figure.savefig(buffer := io.BytesIO())
+        src = f"data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode()}"
+        return [
+            Page(
+                Input(
+                    "Here's a real-time graph of Microsoft's stock price today. "
+                    "What do you think Microsoft stock will close at?"
+                    f"{make_figure(src, figure_align='center')}",
+                    input_tag={"type": "number", "min": 0}
+                )
+            ),
+            Page(
+                Label("Thanks for taking this survey!")
+            )
+        ]
+
+    app = create_app()
+
+    if __name__ == "__main__":
+        socketio.run(app, debug=True)
+
+
 Ultimatum game
 ~~~~~~~~~~~~~~
 
