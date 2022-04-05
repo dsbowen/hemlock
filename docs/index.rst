@@ -4,9 +4,9 @@
    contain the root `toctree` directive.
 
 Hemlock documentation
-===========================================
+=====================
 
-A framework for creating online surveys and experiments.
+Hemlock is your solution for cutting-edge survey methods.
 
 .. image:: https://gitlab.com/dsbowen/hemlock/badges/master/pipeline.svg
    :target: https://gitlab.com/dsbowen/hemlock/-/commits/master
@@ -23,29 +23,107 @@ A framework for creating online surveys and experiments.
    .. image:: https://img.shields.io/badge/License-MIT-brightgreen.svg
       :target: https://gitlab.com/dsbowen/hemlock/-/blob/master/LICENSE
 
-| 
-.. image:: https://gitpod.io/button/open-in-gitpod.svg
-   :target: https://gitpod.io/#https://gitlab.com/dsbowen/hemlock
+.. | 
+.. .. image:: https://gitpod.io/button/open-in-gitpod.svg
+..    :target: https://gitpod.io/#https://gitlab.com/dsbowen/hemlock
 
 |
-
-Start here
-==========
-
-The best way to get started is to follow along with this video. If you're new to programming, this should take 30-45 minutes.
-
-If you run into trouble, check out the `Hemlock issues page <https://github.com/dsbowen/hemlock/issues>`_ for help.
 
 .. raw:: html
 
-    <iframe width="640" height="360" src="https://www.youtube.com/embed/IWon6yu2iUs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+   <style>
+      .container .box {
+         display : flex;
+         flex-direction : row;
+      }
+
+      .card {
+         box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+         transition: 0.3s;
+         width: 30%;
+         border-radius: 5px;
+         text-align: center;
+         margin: 0 10px;
+      }
+
+      .heading-font {
+         font-size: clamp(20px, 1.66667vw, 28px);
+      }
+
+      .card:hover {
+         box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+      }
+
+      img {
+         border-radius: 5px 5px 0 0;
+      }
+
+      .card-body {
+         padding: 2px 16px;
+      }
+
+      .custom-icon {
+         font-size: 100px;
+         margin-top: 10px;
+      }
+   </style>
+
+   <div class="container">
+      <div class="box">
+         <div class="card">
+            <i class="fab fa-python custom-icon"></i>
+            <div class="card-body">
+               <h4 class="heading-font">Program in Python</h4>
+               <p>Program surveys in a powerful, user-friendly language</p>
+            </div>
+         </div>
+
+         <div class="card">
+            <i class="fas fa-rocket custom-icon"></i>
+            <div class="card-body">
+               <h4 class="heading-font">Create surveys faster</h4>
+               <p>Write functions and loops to create surveys faster</p>
+            </div>
+         </div>
+
+         <div class="card">
+            <i class="fas fa-code-branch custom-icon"></i>
+            <div class="card-body">
+               <h4 class="heading-font">Use cutting-edge methods</h4>
+               <p>Easily use adaptive experimentation and interactive machine learning</p>
+            </div>
+         </div>
+      </div>
+   </div>
 
 |
-Sign up for `Github <https://github.com>`_.
 
-Create a repository based on the `Hemlock template <https://github.com/dsbowen/hemlock-template/generate>`_.
+.. raw:: html
 
-Create a repository based on the `Hemlock tutorial <https://github.com/dsbowen/hemlock-tutorial/generate>`_.
+   <style>
+      .custom-button {
+         background-color: #007bff;
+         border: none;
+         border-radius: .25rem;
+         color: white;
+         padding: 7px;
+         text-align: center;
+         text-decoration: none;
+         display: inline-block;
+         font-size: 16px;
+         margin: 4px 2px;
+      }
+   </style>
+
+   <button class="custom-button" onclick="window.location.href='examples.html'">
+      See examples
+   </button>
+
+   <button class="custom-button" style="background-color:#f8f9fa;color:#212529;" onclick="window.location.href='getting_started.html'">
+      Get started
+   </button>
+
+|
 
 API reference
 =============
@@ -54,6 +132,8 @@ API reference
    :maxdepth: 2
 
    hemlock/index
+   Examples <examples>
+   Getting started <getting_started>
    Extensions <extensions>
    Changelog <changelog>
 

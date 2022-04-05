@@ -150,6 +150,8 @@ def random_number(input: "Question", pr_no_response: float = 0.2) -> Optional[fl
     start = input_tag.get("min", -10000)
     stop = input_tag.get("max", 10000)
     step = input_tag.get("step", 1)
+    if step == "any":
+        step = random.choice((1., .1, .01))
     value = np.random.choice(np.arange(start, stop, step))
     if is_instance(start, int) and is_instance(stop, int) and is_instance(step, int):
         return int(value)
